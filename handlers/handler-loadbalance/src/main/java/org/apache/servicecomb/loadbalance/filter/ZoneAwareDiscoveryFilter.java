@@ -32,6 +32,8 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   public static final String GROUP_PREFIX = "zone_aware_group_";
 
+  public static final String GROUP_SIZE = "zone_aware_group_size";
+
   private DataCenterProperties dataCenterProperties;
 
   @Autowired
@@ -57,6 +59,11 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   }
 
   @Override
+  protected String groupsSizeParameter() {
+    return GROUP_SIZE;
+  }
+
+  @Override
   protected String groupPrefix() {
     return GROUP_PREFIX;
   }
@@ -68,7 +75,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
     List<StatefulDiscoveryInstance> instancesAZMatch = new ArrayList<>();
     List<StatefulDiscoveryInstance> instancesNoMatch = new ArrayList<>();
 
-    this.groups = 1;
+    int groups = 1;
 
     for (StatefulDiscoveryInstance server : instances) {
       if (regionAndAZMatch(server)) {
@@ -94,6 +101,8 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
     parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
         .subName(parent, GROUP_PREFIX + groups).data(instancesNoMatch));
+
+    parent.attribute(GROUP_SIZE, groups);
   }
 
   private boolean regionAndAZMatch(StatefulDiscoveryInstance target) {

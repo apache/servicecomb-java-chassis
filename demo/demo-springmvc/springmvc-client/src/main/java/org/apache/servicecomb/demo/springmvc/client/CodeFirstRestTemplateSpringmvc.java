@@ -73,8 +73,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestContentType testContentType = new TestContentType();
 
-  private MicroserviceProperties microserviceProperties;
-
   @Autowired
   public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
     this.microserviceProperties = microserviceProperties;

@@ -104,7 +104,7 @@ servicecomb:
                           httpStatus: 421
                           percent: 50
 
-# test governance retry
+  # test governance retry
   matchGroup:
     retry-governance: |
       matches:
@@ -114,10 +114,6 @@ servicecomb:
     retry-governance: |
       maxAttempts: 2
       retryOnResponseStatus: [500]
-
-3rd-svc:
-  urls:
-    - rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi
 
 #########SSL options
 # open jdk 8 now TLSv1.3 not available

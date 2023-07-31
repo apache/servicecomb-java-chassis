@@ -528,7 +528,7 @@ public class SCBEngine {
           return config;
         }
         VersionedCache instances = discoveryManager.getOrCreateVersionedCache(parseAppId(microserviceName),
-            microserviceName);
+            parseMicroserviceName(microserviceName).getShortName());
         List<StatefulDiscoveryInstance> statefulDiscoveryInstances = instances.data();
         if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
           return null;

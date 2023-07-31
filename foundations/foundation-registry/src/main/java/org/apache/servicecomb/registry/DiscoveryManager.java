@@ -18,10 +18,10 @@
 package org.apache.servicecomb.registry;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.Discovery;
@@ -59,13 +59,24 @@ public class DiscoveryManager implements LifeCycle {
     }
   }
 
-  public void onInstancesChanged(String application, String serviceName,
+  private void onInstancesChanged(String application, String serviceName,
+      List<? extends DiscoveryInstance> instances) {
+    onInstancesChanged(null, application, serviceName, instances);
+  }
+
+  private void onInstancesChanged(String discoveryName, String application, String serviceName,
       List<? extends DiscoveryInstance> instances) {
     Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(application, key ->
         new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, key -> new ConcurrentHashMapEx<>());
 
     for (StatefulDiscoveryInstance statefulInstance : statefulInstances.values()) {
-      statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
+      if (StringUtils.isEmpty(discoveryName)) {
+        statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
+        continue;
+      }
+      if (discoveryName.equals(statefulInstance.getDiscoveryName())) {
+        statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
+      }
     }
 
     for (DiscoveryInstance instance : instances) {
@@ -83,7 +94,8 @@ public class DiscoveryManager implements LifeCycle {
     StringBuilder instanceInfo = new StringBuilder();
     for (DiscoveryInstance instance : instances) {
       instanceInfo.append("{").append(instance.getInstanceId())
-          .append(",").append(instance.getStatus()).append(",").append(instance.getEndpoints()).append("}");
+          .append(",").append(instance.getStatus()).append(",").append(instance.getEndpoints())
+          .append(instance.getDiscoveryName()).append(",").append("}");
     }
     LOGGER.info("Applying new instance list for {}/{}/{}. Endpoints {}",
         application, serviceName, instances.size(), instanceInfo);
@@ -161,15 +173,18 @@ public class DiscoveryManager implements LifeCycle {
   }
 
   public List<? extends DiscoveryInstance> findServiceInstances(String application, String serviceName) {
-    List<? extends DiscoveryInstance> result;
+    List<DiscoveryInstance> result = new ArrayList<>();
     for (Discovery<? extends DiscoveryInstance> discovery : discoveryList) {
-      result = discovery.findServiceInstances(application, serviceName);
-      if (CollectionUtils.isEmpty(result)) {
+      if (!discovery.enabled(application, serviceName)) {
         continue;
       }
-      return result;
+      List<? extends DiscoveryInstance> temp = discovery.findServiceInstances(application, serviceName);
+      if (CollectionUtils.isEmpty(temp)) {
+        continue;
+      }
+      result.addAll(temp);
     }
-    return Collections.emptyList();
+    return result;
   }
 
   @Override

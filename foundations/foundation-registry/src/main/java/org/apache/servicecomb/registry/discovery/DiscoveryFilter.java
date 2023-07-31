@@ -21,6 +21,9 @@ import org.springframework.core.Ordered;
 
 /**
  * Server list filters for DiscoveryTree.
+ *
+ * Implementation Notice: DiscoveryFilter is initialized using bean and instance shared for all
+ * microservices. If implementation has states, can put the states to DiscoveryContext or parent DiscoveryTreeNode.
  */
 public interface DiscoveryFilter extends Ordered {
   default boolean enabled() {

@@ -37,6 +37,8 @@ import org.springframework.util.CollectionUtils;
 import com.google.common.eventbus.Subscribe;
 
 public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
+  public static final String SC_DISCOVERY_NAME = "sc-discovery";
+
   private SCConfigurationProperties configurationProperties;
 
   private ServiceCenterClient serviceCenterClient;
@@ -64,7 +66,7 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
 
   @Override
   public String name() {
-    return "sc-discovery";
+    return SCDiscovery.SC_DISCOVERY_NAME;
   }
 
   @Override
@@ -98,7 +100,7 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   @Subscribe
   @SuppressWarnings("unused")
   public void onInstanceChangedEvent(InstanceChangedEvent event) {
-    this.instanceChangedListener.onInstanceChanged(event.getAppName(), event.getAppName(),
+    this.instanceChangedListener.onInstanceChanged(name(), event.getAppName(), event.getAppName(),
         toDiscoveryInstances(event.getInstances()));
   }
 

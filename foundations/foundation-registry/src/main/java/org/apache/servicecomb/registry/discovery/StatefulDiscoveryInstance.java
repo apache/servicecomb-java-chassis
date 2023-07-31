@@ -118,6 +118,11 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
+  public String getDiscoveryName() {
+    return this.discoveryInstance.getDiscoveryName();
+  }
+
+  @Override
   public String getEnvironment() {
     return this.discoveryInstance.getEnvironment();
   }
@@ -170,5 +175,10 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
   @Override
   public String getInstanceId() {
     return this.discoveryInstance.getInstanceId();
+  }
+
+  @Override
+  public String getServiceId() {
+    return this.discoveryInstance.getServiceId();
   }
 }

@@ -42,6 +42,11 @@ public class ZeroConfigDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
+  public String getDiscoveryName() {
+    return AbstractLightweightDiscovery.ZERO_CONFIG_NAME;
+  }
+
+  @Override
   public String getEnvironment() {
     return microservice.getEnvironment();
   }

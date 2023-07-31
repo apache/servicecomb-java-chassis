@@ -30,6 +30,8 @@ import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractLightweightDiscovery implements Discovery<ZeroConfigDiscoveryInstance> {
+  public static final String ZERO_CONFIG_NAME = "zero-discovery";
+
   protected EventBus eventBus;
 
   protected Store store;

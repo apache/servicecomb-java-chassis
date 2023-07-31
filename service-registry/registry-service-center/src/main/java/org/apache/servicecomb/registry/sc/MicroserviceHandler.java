@@ -111,12 +111,12 @@ public class MicroserviceHandler {
   }
 
   public static MicroserviceInstance createMicroserviceInstance(
-      SCConfigurationProperties bootstrapProperties,
+      SCConfigurationProperties scConfigurationProperties,
       MicroserviceProperties microserviceProperties,
       DataCenterProperties dataCenterProperties) {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-    String hostName = StringUtils.isEmpty(bootstrapProperties.getHostname()) ? NetUtils.getHostName()
-        : bootstrapProperties.getHostname();
+    String hostName = StringUtils.isEmpty(scConfigurationProperties.getHostname()) ? NetUtils.getHostName()
+        : scConfigurationProperties.getHostname();
     microserviceInstance.setHostName(hostName);
     DataCenterInfo dataCenterInfo = new DataCenterInfo();
     dataCenterInfo.setName(dataCenterProperties.getName());
@@ -126,8 +126,8 @@ public class MicroserviceHandler {
 
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.push);
-    healthCheck.setInterval(bootstrapProperties.getHealthCheckInterval());
-    healthCheck.setTimes(bootstrapProperties.getHealthCheckTimes());
+    healthCheck.setInterval(scConfigurationProperties.getHealthCheckInterval());
+    healthCheck.setTimes(scConfigurationProperties.getHealthCheckTimes());
     microserviceInstance.setHealthCheck(healthCheck);
     String currTime = String.valueOf(System.currentTimeMillis());
     microserviceInstance.setTimestamp(currTime);
@@ -146,7 +146,7 @@ public class MicroserviceHandler {
     properties.putAll(microserviceProperties.getProperties());
     properties.putAll(genCasProperties());
     microserviceInstance.setProperties(properties);
-    microserviceInstance.setStatus(MicroserviceInstanceStatus.valueOf(bootstrapProperties.getInitialStatus()));
+    microserviceInstance.setStatus(MicroserviceInstanceStatus.valueOf(scConfigurationProperties.getInitialStatus()));
     return microserviceInstance;
   }
 

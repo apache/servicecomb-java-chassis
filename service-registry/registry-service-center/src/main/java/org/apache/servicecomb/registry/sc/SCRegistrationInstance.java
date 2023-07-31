@@ -102,8 +102,13 @@ public class SCRegistrationInstance implements RegistrationInstance {
   }
 
   @Override
+  public String getServiceId() {
+    return microservice.getServiceId();
+  }
+
+  @Override
   public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
+    return MicroserviceInstanceStatus.valueOf(microserviceInstance.getStatus().name());
   }
 
   @Override

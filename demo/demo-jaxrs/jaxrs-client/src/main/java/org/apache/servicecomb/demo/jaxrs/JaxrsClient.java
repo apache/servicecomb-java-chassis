@@ -34,6 +34,7 @@ import org.apache.servicecomb.demo.jaxrs.client.CodeFirstRestTemplateJaxrs;
 import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceClient;
 import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
@@ -87,7 +88,7 @@ public class JaxrsClient {
   public static void run() throws Exception {
     CategorizedTestCaseRunner.runCategorizedTestCase("jaxrs");
 
-    CodeFirstRestTemplate codeFirstClient = new CodeFirstRestTemplateJaxrs();
+    CodeFirstRestTemplate codeFirstClient = BeanUtils.getBean(CodeFirstRestTemplateJaxrs.class);
     codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
     testCompute(templateNew);
     testValidator(templateNew);

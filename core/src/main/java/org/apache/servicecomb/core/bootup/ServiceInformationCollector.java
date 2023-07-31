@@ -33,6 +33,7 @@ public class ServiceInformationCollector implements BootUpInformationCollector {
 
   @Override
   public String collect() {
+    // TODO: add discovery info
     return registrationManager.info();
   }
 

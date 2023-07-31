@@ -23,8 +23,6 @@ import org.apache.servicecomb.registry.lightweight.ZeroConfigDiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
-  private static final String NAME = "zero-config discovery";
-
   private Config config;
 
   @Autowired
@@ -35,7 +33,7 @@ public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
 
   @Override
   public String name() {
-    return NAME;
+    return ZERO_CONFIG_NAME;
   }
 
   @Override

@@ -186,7 +186,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
         }
       }
     } catch (Exception e) {
-      LOGGER.error("find service {}#{} instance failed.", k.appId, k.serviceName, e);
+      LOGGER.warn("find service {}#{} instance failed.", k.appId, k.serviceName, e);
       if (!(e.getCause() instanceof IOException)) {
         // for IOException, do not remove cache, or when service center
         // not available, invocation between microservices will fail.

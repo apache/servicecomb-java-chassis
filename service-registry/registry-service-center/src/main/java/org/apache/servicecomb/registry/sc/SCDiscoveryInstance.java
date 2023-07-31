@@ -46,6 +46,11 @@ public class SCDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
+  public String getDiscoveryName() {
+    return SCDiscovery.SC_DISCOVERY_NAME;
+  }
+
+  @Override
   public String getEnvironment() {
     return microservice.getEnvironment();
   }
@@ -100,5 +105,10 @@ public class SCDiscoveryInstance extends AbstractDiscoveryInstance {
   @Override
   public String getInstanceId() {
     return microserviceInstance.getInstanceId();
+  }
+
+  @Override
+  public String getServiceId() {
+    return microservice.getServiceId();
   }
 }
