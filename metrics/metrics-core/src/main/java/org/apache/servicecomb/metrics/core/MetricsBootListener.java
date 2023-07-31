@@ -18,12 +18,11 @@ package org.apache.servicecomb.metrics.core;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -31,6 +30,8 @@ public class MetricsBootListener implements BootListener {
   private final MetricsBootstrap metricsBootstrap;
 
   private SlowInvocationLogger slowInvocationLogger;
+
+  private MetricsRestPublisher metricsRestPublisher;
 
   public MetricsBootstrap getMetricsBootstrap() {
     return metricsBootstrap;
@@ -44,14 +45,17 @@ public class MetricsBootListener implements BootListener {
     this.metricsBootstrap = metricsBootstrap;
   }
 
+  @Autowired
+  public void setMetricsRestPublisher(MetricsRestPublisher metricsRestPublisher) {
+    this.metricsRestPublisher = metricsRestPublisher;
+  }
+
   @Override
   public void onBeforeProducerProvider(BootEvent event) {
     if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.metrics.endpoint.enabled", true).get()) {
       return;
     }
 
-    MetricsRestPublisher metricsRestPublisher =
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
     event.getScbEngine().getProducerProviderManager()
         .addProducerMeta("metricsEndpoint", metricsRestPublisher);
   }

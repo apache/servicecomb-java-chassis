@@ -17,6 +17,8 @@
 package org.apache.servicecomb.config;
 
 public class DataCenterProperties {
+  public static final String PREFIX = "servicecomb.datacenter";
+
   private String name;
 
   private String region;

@@ -18,6 +18,7 @@ package org.apache.servicecomb.registry.sc;
 
 import java.util.List;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterWatch;
@@ -54,5 +55,12 @@ public class SCConfiguration {
   @Bean
   public SCDiscovery scDiscovery() {
     return new SCDiscovery();
+  }
+
+  @Bean
+  public SCAddressManager scAddressManager(MicroserviceProperties microserviceProperties,
+      SCConfigurationProperties scConfigurationProperties, SCRegistration scRegistration,
+      ServiceCenterClient serviceCenterClient) {
+    return new SCAddressManager(microserviceProperties, scConfigurationProperties, serviceCenterClient, scRegistration);
   }
 }

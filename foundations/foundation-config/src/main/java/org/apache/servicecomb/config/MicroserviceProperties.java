@@ -19,7 +19,11 @@ package org.apache.servicecomb.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class MicroserviceProperties {
+  public static final String PREFIX = "servicecomb.service";
+
   private String environment;
 
   private String application;
@@ -43,6 +47,11 @@ public class MicroserviceProperties {
   }
 
   public String getApplication() {
+    if (StringUtils.isEmpty(application)) {
+      throw new IllegalStateException(
+          "Application Name is required in configuration. NOTICE: since 3.0.0, only support "
+              + PREFIX + ".application to configure microservice application.");
+    }
     return application;
   }
 
@@ -51,6 +60,11 @@ public class MicroserviceProperties {
   }
 
   public String getName() {
+    if (StringUtils.isEmpty(name)) {
+      throw new IllegalStateException(
+          "Service Name is required in configuration. NOTICE: since 3.0.0, only support "
+              + PREFIX + ".name to configure microservice name.");
+    }
     return name;
   }
 
@@ -67,6 +81,11 @@ public class MicroserviceProperties {
   }
 
   public String getVersion() {
+    if (StringUtils.isEmpty(version)) {
+      throw new IllegalStateException(
+          "Service version is required in configuration. NOTICE: since 3.0.0, only support "
+              + PREFIX + ".version to configure microservice version.");
+    }
     return version;
   }
 
