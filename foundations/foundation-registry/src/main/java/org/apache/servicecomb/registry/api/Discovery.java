@@ -27,6 +27,13 @@ import org.apache.servicecomb.foundation.common.utils.SPIOrder;
  */
 public interface Discovery<D extends DiscoveryInstance> extends SPIEnabled, SPIOrder, LifeCycle {
   interface InstanceChangedListener<D extends DiscoveryInstance> {
+    /**
+     * Called by Discovery Implementations when instance list changed.
+     * @param discoveryName Name of the calling discovery implementation
+     * @param application Microservice application
+     * @param serviceName Microservice name
+     * @param updatedInstances The latest updated instances.
+     */
     void onInstanceChanged(String discoveryName, String application, String serviceName, List<D> updatedInstances);
   }
 
@@ -35,9 +42,7 @@ public interface Discovery<D extends DiscoveryInstance> extends SPIEnabled, SPIO
   /**
    * If this implementation enabled for this microservice.
    */
-  default boolean enabled(String application, String serviceName) {
-    return true;
-  }
+  boolean enabled(String application, String serviceName);
 
   /**
    * Find all instances.

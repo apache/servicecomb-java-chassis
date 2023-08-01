@@ -102,6 +102,11 @@ public class TestDiscoveryManager {
     }
 
     @Override
+    public boolean enabled(String application, String serviceName) {
+      return false;
+    }
+
+    @Override
     public List<MyDiscoveryInstance> findServiceInstances(String application, String serviceName) {
       return null;
     }

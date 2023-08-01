@@ -27,6 +27,8 @@ import org.springframework.core.env.Environment;
 public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
   public static final String LOCAL_DISCOVERY_NAME = "local-discovery";
 
+  public static final String LOCAL_DISCOVERY_ENABLED = "servicecomb.registry.local.enabled.%s.%s";
+
   private LocalRegistryStore localRegistryStore;
 
   private Environment environment;
@@ -35,7 +37,6 @@ public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
   public void setLocalRegistryStore(LocalRegistryStore localRegistryStore) {
     this.localRegistryStore = localRegistryStore;
   }
-
 
   @Autowired
   public void setEnvironment(Environment environment) {
@@ -50,6 +51,12 @@ public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
   @Override
   public String name() {
     return LOCAL_DISCOVERY_NAME;
+  }
+
+  @Override
+  public boolean enabled(String application, String serviceName) {
+    return environment.getProperty(String.format(LOCAL_DISCOVERY_ENABLED, application, serviceName),
+        boolean.class, true);
   }
 
   @Override
