@@ -27,7 +27,6 @@ import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
-import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
@@ -97,16 +96,16 @@ public class SwaggerLoader {
   }
 
   /**
-   * Load swaggers: first from memory, then local resource and last instance.
+   * Load swaggers: first from memory, then local resource and last instance(content is from instance).
    */
   public OpenAPI loadSwagger(String appId, String microserviceName,
-      DiscoveryInstance instance, String schemaId) {
+      String schemaId, String content) {
     OpenAPI swagger = loadLocalSwagger(appId, microserviceName, schemaId);
     if (swagger != null) {
       return swagger;
     }
 
-    return loadFromRemote(appId, microserviceName, instance, schemaId);
+    return loadFromRemote(appId, microserviceName, content, schemaId);
   }
 
   /**
@@ -153,9 +152,8 @@ public class SwaggerLoader {
   }
 
   protected OpenAPI loadFromRemote(String appId, String microserviceName,
-      DiscoveryInstance instances,
+      String schemaContent,
       String schemaId) {
-    String schemaContent = instances.getSchemas().get(schemaId);
     if (schemaContent != null) {
       LOGGER.info(
           "load schema from service center, appId={}, microserviceName={}, schemaId={}.",

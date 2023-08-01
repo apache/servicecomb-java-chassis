@@ -107,7 +107,7 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   @Override
   public void init() {
     serviceCenterDiscovery = new ServiceCenterDiscovery(serviceCenterClient, EventManager.getEventBus());
-    serviceCenterDiscovery.setPollInterval(configurationProperties.getPollInterval());
+    serviceCenterDiscovery.setPollInterval(configurationProperties.getPollIntervalInMillis());
 
     // TODO: add prefetch services
 

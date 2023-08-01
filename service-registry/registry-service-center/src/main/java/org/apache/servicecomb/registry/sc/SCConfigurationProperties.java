@@ -29,21 +29,19 @@ public class SCConfigurationProperties {
    * when swagger is different between local with remote serviceCenter. if ignoreSwaggerDifferent is true.
    * it will ignore the different and continue the program. otherwise, the program will stop.
    */
-  private boolean ignoreSwaggerDifferent;
+  private boolean ignoreSwaggerDifferent = true;
 
   private boolean canOverwriteSwagger = true;
 
-  private boolean allowCrossApp = false;
-
   private String hostname;
 
-  private int healthCheckInterval = 15;
+  private int healthCheckIntervalInSeconds = 15;
 
   private int healthCheckTimes = 3;
 
-  private int healthCheckRequestTimeout = 5000;
+  private int healthCheckRequestTimeoutInMillis = 5000;
 
-  private int pollInterval = 15000;
+  private int pollIntervalInMillis = 15000;
 
   private boolean autoDiscovery = false;
 
@@ -85,14 +83,6 @@ public class SCConfigurationProperties {
     this.canOverwriteSwagger = canOverwriteSwagger;
   }
 
-  public boolean isAllowCrossApp() {
-    return allowCrossApp;
-  }
-
-  public void setAllowCrossApp(boolean allowCrossApp) {
-    this.allowCrossApp = allowCrossApp;
-  }
-
   public String getHostname() {
     return hostname;
   }
@@ -101,28 +91,28 @@ public class SCConfigurationProperties {
     this.hostname = hostname;
   }
 
-  public int getHealthCheckInterval() {
-    return healthCheckInterval;
+  public int getHealthCheckIntervalInSeconds() {
+    return healthCheckIntervalInSeconds;
   }
 
-  public void setHealthCheckInterval(int healthCheckInterval) {
-    this.healthCheckInterval = healthCheckInterval;
+  public void setHealthCheckIntervalInSeconds(int healthCheckIntervalInSeconds) {
+    this.healthCheckIntervalInSeconds = healthCheckIntervalInSeconds;
   }
 
-  public int getHealthCheckRequestTimeout() {
-    return healthCheckRequestTimeout;
+  public int getHealthCheckRequestTimeoutInMillis() {
+    return healthCheckRequestTimeoutInMillis;
   }
 
-  public void setHealthCheckRequestTimeout(int healthCheckRequestTimeout) {
-    this.healthCheckRequestTimeout = healthCheckRequestTimeout;
+  public void setHealthCheckRequestTimeoutInMillis(int healthCheckRequestTimeoutInMillis) {
+    this.healthCheckRequestTimeoutInMillis = healthCheckRequestTimeoutInMillis;
   }
 
-  public int getPollInterval() {
-    return pollInterval;
+  public int getPollIntervalInMillis() {
+    return pollIntervalInMillis;
   }
 
-  public void setPollInterval(int pollInterval) {
-    this.pollInterval = pollInterval;
+  public void setPollIntervalInMillis(int pollIntervalInMillis) {
+    this.pollIntervalInMillis = pollIntervalInMillis;
   }
 
   public boolean isAutoDiscovery() {

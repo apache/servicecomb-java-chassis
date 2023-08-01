@@ -24,8 +24,8 @@ servicecomb:
       sc:
         address: http://127.0.0.1:30100
         autodiscovery: true
-        healthCheckInterval: 3
-        pollInterval: 90000
+        healthCheckIntervalInSeconds: 3
+        pollIntervalInMillis: 90000
         watch: true
 
   rest:

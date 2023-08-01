@@ -20,8 +20,8 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -38,7 +38,6 @@ import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOpti
 import org.apache.servicecomb.transport.rest.client.HttpTransportHttpClientOptionsSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
@@ -75,20 +74,25 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
-  private MicroserviceProperties microserviceProperties;
-
-  private DiscoveryTree discoveryTree;
-
-  public CommonHttpEdgeDispatcher(DiscoveryTree discoveryTree) {
-    this.discoveryTree = discoveryTree;
+  public CommonHttpEdgeDispatcher() {
     if (this.enabled()) {
       loadConfigurations();
     }
   }
 
-  @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
+  // Maybe future change to beans
+  protected DiscoveryTree getDiscoveryTree() {
+    return BeanUtils.getBean(DiscoveryTree.class);
+  }
+
+  // Maybe future change to beans
+  protected MicroserviceProperties getMicroserviceProperties() {
+    return BeanUtils.getBean(MicroserviceProperties.class);
+  }
+
+  // Maybe future change to beans
+  protected ExtensionsManager getExtensionsManager() {
+    return BeanUtils.getBean(ExtensionsManager.class);
   }
 
   @Override
@@ -140,8 +144,8 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
       }
     };
 
-    LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation, configurationItem.getMicroserviceName(),
-        configurationItem.getVersionRule());
+    LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation, configurationItem.getMicroserviceName()
+    );
     ServiceCombServer server = loadBalancer.chooseServer(invocation);
     if (server == null) {
       LOG.warn("no available server for service {}", configurationItem.getMicroserviceName());
@@ -201,11 +205,11 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     return data -> routingContext.response().write(data);
   }
 
-  protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation, String microserviceName, String versionRule) {
+  protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation, String microserviceName) {
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
-    VersionedCache serversVersionedCache = discoveryTree.discovery(context,
-        this.microserviceProperties.getApplication(),
+    VersionedCache serversVersionedCache = getDiscoveryTree().discovery(context,
+        getMicroserviceProperties().getApplication(),
         microserviceName);
     invocation.addLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
     return loadBalancerMap
@@ -213,7 +217,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
   }
 
   private LoadBalancer createLoadBalancer(String microserviceName) {
-    RuleExt rule = BeanUtils.getBean(ExtensionsManager.class).createLoadBalancerRule(microserviceName);
+    RuleExt rule = getExtensionsManager().createLoadBalancerRule(microserviceName);
     return new LoadBalancer(rule, microserviceName);
   }
 
