@@ -118,11 +118,14 @@ public class MicroserviceHandler {
     String hostName = StringUtils.isEmpty(scConfigurationProperties.getHostname()) ? NetUtils.getHostName()
         : scConfigurationProperties.getHostname();
     microserviceInstance.setHostName(hostName);
-    DataCenterInfo dataCenterInfo = new DataCenterInfo();
-    dataCenterInfo.setName(dataCenterProperties.getName());
-    dataCenterInfo.setRegion(dataCenterProperties.getRegion());
-    dataCenterInfo.setAvailableZone(dataCenterProperties.getAvailableZone());
-    microserviceInstance.setDataCenterInfo(dataCenterInfo);
+
+    if (StringUtils.isNotEmpty(dataCenterProperties.getName())) {
+      DataCenterInfo dataCenterInfo = new DataCenterInfo();
+      dataCenterInfo.setName(dataCenterProperties.getName());
+      dataCenterInfo.setRegion(dataCenterProperties.getRegion());
+      dataCenterInfo.setAvailableZone(dataCenterProperties.getAvailableZone());
+      microserviceInstance.setDataCenterInfo(dataCenterInfo);
+    }
 
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.push);

@@ -14,15 +14,14 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
-
-APPLICATION_ID: appClient
-service_description:
-  name: appClientService
-  version: 0.0.1
 servicecomb:
   service:
+    application: appClient
+    name: appClientService
+    version: 0.0.1
     registry:
-      address: http://127.0.0.1:30100
+      sc:
+        address: http://127.0.0.1:30100
   handler:
     chain:
       Consumer:
