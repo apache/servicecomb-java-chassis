@@ -23,13 +23,13 @@ servicecomb:
     name: springmvc
     version: 0.0.3
 
-    registry:
-      sc:
-        address: http://127.0.0.1:9980,http://127.0.0.1:30100
-        autodiscovery: true
-        healthCheckIntervalInSeconds: 3
-        pollIntervalInMillis: 10000
-        watch: true
+  registry:
+    sc:
+      address: http://127.0.0.1:9980,http://127.0.0.1:30100
+      autodiscovery: true
+      healthCheckIntervalInSeconds: 3
+      pollIntervalInMillis: 10000
+      watch: true
 
   uploads:
     directory: target

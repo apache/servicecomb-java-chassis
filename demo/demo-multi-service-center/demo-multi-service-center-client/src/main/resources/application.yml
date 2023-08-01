@@ -15,17 +15,18 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-# java-chassis configurations
-APPLICATION_ID: demo-multi-service-center
-service_description:
-  name: demo-multi-service-center-client
-  version: 0.0.2
 servicecomb:
   service:
-    registry:
+    application: demo-multi-service-center
+    name: demo-multi-service-center-client
+    version: 0.0.2
+  registry:
+    sc:
       address: http://127.0.0.1:30100
-    registry-serverB:
-      address: http://127.0.0.1:40100
+#    registry:
+#      address: http://127.0.0.1:30100
+#    registry-serverB:
+#      address: http://127.0.0.1:40100
 
   transport:
     eventloop:

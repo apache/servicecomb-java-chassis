@@ -19,9 +19,9 @@ servicecomb:
     application: appClient
     name: appClientService
     version: 0.0.1
-    registry:
-      sc:
-        address: http://127.0.0.1:30100
+  registry:
+    sc:
+      address: http://127.0.0.1:30100
   handler:
     chain:
       Consumer:

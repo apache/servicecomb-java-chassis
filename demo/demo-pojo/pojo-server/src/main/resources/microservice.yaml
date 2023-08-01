@@ -15,13 +15,13 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: pojotest
-service_description:
-  name: pojo
-  version: 0.0.4
 servicecomb:
   service:
-    registry:
+    application: pojotest
+    name: pojo
+    version: 0.0.4
+  registry:
+    sc:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080?protocol=http2

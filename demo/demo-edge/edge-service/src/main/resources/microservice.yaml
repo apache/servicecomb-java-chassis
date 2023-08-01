@@ -15,13 +15,13 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: edge
-service_description:
-  name: edge
-  version: 0.0.1
 servicecomb:
   service:
-    registry:
+    application: edge
+    name: edge
+    version: 0.0.1
+  registry:
+    sc:
       address: http://127.0.0.1:30100
   edge:
     filter:

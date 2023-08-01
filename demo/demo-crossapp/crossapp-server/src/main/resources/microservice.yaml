@@ -23,9 +23,9 @@ servicecomb:
     properties:
       allowCrossApp: true
       tag0: value0
-    registry:
-      sc:
-        address: http://127.0.0.1:30100
+  registry:
+    sc:
+      address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080
   cors:
