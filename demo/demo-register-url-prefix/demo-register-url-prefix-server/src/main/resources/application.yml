@@ -20,15 +20,13 @@ server:
     context-path: /hellodemo
   port: 8080
 
-# java-chassis configurations
-
-APPLICATION_ID: demo-register-url-prefix
-service_description:
-  name: demo-register-url-prefix-server
-  version: 0.0.1
 servicecomb:
   service:
-    registry:
+    application: demo-register-url-prefix
+    name: demo-register-url-prefix-server
+    version: 0.0.1
+  registry:
+    sc:
       address: http://127.0.0.1:30100
       registerUrlPrefix: true
   rest:

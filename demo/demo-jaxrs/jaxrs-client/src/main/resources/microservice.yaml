@@ -20,7 +20,8 @@ servicecomb:
     application: jaxrstest
     name: jaxrsClient
     version: 0.0.1
-    registry:
+  registry:
+    sc:
       address: http://127.0.0.1:30100
 
   matchGroup:

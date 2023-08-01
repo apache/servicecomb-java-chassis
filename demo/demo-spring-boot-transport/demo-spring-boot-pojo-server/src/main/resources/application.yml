@@ -18,15 +18,13 @@
 server:
   port: 8080
 
-# java-chassis configurations
-
-APPLICATION_ID: spring-boot-pojotest
-service_description:
-  name: spring-boot-pojo-server
-  version: 0.0.1
 servicecomb:
   service:
-    registry:
+    application: spring-boot-pojotest
+    name: spring-boot-pojo-server
+    version: 0.0.1
+  registry:
+    sc:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080

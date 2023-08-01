@@ -18,15 +18,13 @@
 server:
   port: 8080
 
-# java-chassis configurations
-
-APPLICATION_ID: demo-multi-registries
-service_description:
-  name: demo-multi-registries-server
-  version: 0.0.2
 servicecomb:
   service:
-    registry:
+    application: demo-multi-registries
+    name: demo-multi-registries-server
+    version: 0.0.2
+  registry:
+    sc:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080

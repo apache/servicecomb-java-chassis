@@ -23,10 +23,10 @@ servicecomb:
     application: demo-java-chassis-cse-v1
     name: provider
     version: 0.0.1
-    registry:
+  registry:
+    sc:
       address: https://cse.cn-south-1.myhuaweicloud.com
-      instance:
-        watch: false
+      watch: false
   config:
     client:
       serverUri: https://cse.cn-south-1.myhuaweicloud.com

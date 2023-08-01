@@ -15,12 +15,6 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: springmvcboottest
-
-service_description:
-  name: springmvc
-  version: 0.0.3
-
 server:
   port: 8080
 
@@ -30,6 +24,13 @@ test:
     schema: placeholder/schema
 
 servicecomb:
+  service:
+    application: springmvcboottest
+    name: springmvc
+    version: 0.0.3
+  registry:
+    sc:
+      address: http://127.0.0.1:30100
   test:
     vert:
       transport: false

@@ -20,13 +20,13 @@ servicecomb:
     application: springmvctest
     name: springmvcClient
     version: 0.0.1
-    registry:
-      sc:
-        address: http://127.0.0.1:30100
-        autodiscovery: true
-        healthCheckIntervalInSeconds: 3
-        pollIntervalInMillis: 90000
-        watch: true
+  registry:
+    sc:
+      address: http://127.0.0.1:30100
+      autodiscovery: true
+      healthCheckIntervalInSeconds: 3
+      pollIntervalInMillis: 90000
+      watch: true
 
   rest:
     client:

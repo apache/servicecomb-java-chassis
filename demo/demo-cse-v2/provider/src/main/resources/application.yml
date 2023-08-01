@@ -27,10 +27,10 @@ servicecomb:
     application: demo-java-chassis-cse-v2
     name: provider
     version: 0.0.1
-    registry:
+  registry:
+    sc:
       address: ${PAAS_CSE_SC_ENDPOINT:http://127.0.0.1:30100}
-      instance:
-        watch: false
+      watch: false
   kie:
     serverUri: ${PAAS_CSE_CC_ENDPOINT:http://127.0.0.1:30110}
     customLabel: public

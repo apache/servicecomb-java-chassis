@@ -15,20 +15,14 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: pojotest
-service_description:
-  name: pojoClient
-  version: 0.0.1
 servicecomb:
   service:
-    registry:
+    application: pojotest
+    name: pojoClient
+    version: 0.0.1
+  registry:
+    sc:
       address: http://127.0.0.1:30100
-      instance:
-        healthCheck:
-          interval: 2
-        watch: false
-        empty:
-          protection: true
   rest.client.enabled: false # using only http2
   swagger:
     disableDataTypeCheck: true
