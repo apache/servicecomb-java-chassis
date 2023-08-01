@@ -467,7 +467,11 @@ public class SCBEngine {
   }
 
   private void turnDownInstanceStatus() {
-    registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.DOWN);
+    try {
+      registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.DOWN);
+    } catch (Throwable e) {
+      LOGGER.warn("turn down instance status fail: {}", e.getMessage());
+    }
   }
 
   private void blockShutDownOperationForConsumerRefresh() {

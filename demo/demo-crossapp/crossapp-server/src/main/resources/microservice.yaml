@@ -15,20 +15,17 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: appServer
-service_description:
-  name: appService
-  version: 0.0.1
-  properties:
-    allowCrossApp: true
-instance_description:
-  properties:
-    tag0: value0
-
 servicecomb:
   service:
+    application: appServer
+    name: appService
+    version: 0.0.1
+    properties:
+      allowCrossApp: true
+      tag0: value0
     registry:
-      address: http://127.0.0.1:30100
+      sc:
+        address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080
   cors:
