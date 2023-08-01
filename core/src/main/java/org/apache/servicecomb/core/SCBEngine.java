@@ -527,8 +527,9 @@ public class SCBEngine {
         if (config != null) {
           return config;
         }
-        VersionedCache instances = discoveryManager.getOrCreateVersionedCache(parseAppId(microserviceName),
-            parseMicroserviceName(microserviceName).getShortName());
+        MicroserviceNameParser parser = parseMicroserviceName(microserviceName);
+        VersionedCache instances = discoveryManager.getOrCreateVersionedCache(parser.getAppId(),
+            parser.getMicroserviceName());
         List<StatefulDiscoveryInstance> statefulDiscoveryInstances = instances.data();
         if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
           return null;
@@ -577,11 +578,6 @@ public class SCBEngine {
 
   public void setProducerMicroserviceMeta(MicroserviceMeta producerMicroserviceMeta) {
     this.producerMicroserviceMeta = producerMicroserviceMeta;
-  }
-
-
-  public String parseAppId(String microserviceName) {
-    return parseMicroserviceName(microserviceName).getAppId();
   }
 
   public MicroserviceNameParser parseMicroserviceName(String microserviceName) {

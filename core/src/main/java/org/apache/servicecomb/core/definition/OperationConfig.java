@@ -75,8 +75,8 @@ public class OperationConfig {
   /**
    * whether to remove certain headers from the 3rd party invocations
    */
-  @InjectProperty(keys = {"request.clientRequestHeaderFilterEnabled${consumer-op-priority}"}, defaultValue = "true")
-  private boolean clientRequestHeaderFilterEnabled = true;
+  @InjectProperty(keys = {"request.clientRequestHeaderFilterEnabled${consumer-op-priority}"}, defaultValue = "false")
+  private boolean clientRequestHeaderFilterEnabled = false;
 
   /**
    * producer wait in thread pool timeout

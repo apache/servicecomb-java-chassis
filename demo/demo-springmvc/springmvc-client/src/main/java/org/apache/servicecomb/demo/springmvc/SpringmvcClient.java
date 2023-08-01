@@ -79,6 +79,7 @@ public class SpringmvcClient {
       LOGGER.error("-------------- test failed -------------");
     }
     TestMgr.summary();
+    LOGGER.info("-------------- last time updated checks(maybe more/less): 1281 -------------");
   }
 
   private static void changeTransport(String microserviceName, String transport) {

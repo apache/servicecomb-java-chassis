@@ -28,9 +28,6 @@ import java.util.Map.Entry;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -50,6 +47,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * encode all send data except upload
@@ -121,7 +121,7 @@ public class RestClientEncoder {
 
     protected void writeScbHeaders() throws JsonProcessingException {
       OperationConfig operationConfig = invocation.getOperationMeta().getConfig();
-      if (invocation.isThirdPartyInvocation() && operationConfig.isClientRequestHeaderFilterEnabled()) {
+      if (operationConfig.isClientRequestHeaderFilterEnabled()) {
         return;
       }
 

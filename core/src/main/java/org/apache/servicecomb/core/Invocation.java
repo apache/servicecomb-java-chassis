@@ -428,10 +428,6 @@ public class Invocation extends SwaggerInvocation {
     this.edge = edge;
   }
 
-  public boolean isThirdPartyInvocation() {
-    return referenceConfig.is3rdPartyService();
-  }
-
   public long getInvocationId() {
     return invocationId;
   }

@@ -93,9 +93,12 @@ public class DiscoveryManager implements LifeCycle {
 
     StringBuilder instanceInfo = new StringBuilder();
     for (DiscoveryInstance instance : instances) {
-      instanceInfo.append("{").append(instance.getInstanceId())
-          .append(",").append(instance.getStatus()).append(",").append(instance.getEndpoints())
-          .append(instance.getDiscoveryName()).append(",").append("}");
+      instanceInfo.append("{")
+          .append(instance.getInstanceId()).append(",")
+          .append(instance.getStatus()).append(",")
+          .append(instance.getEndpoints()).append(",")
+          .append(instance.getDiscoveryName())
+          .append("}");
     }
     LOGGER.info("Applying new instance list for {}/{}/{}. Endpoints {}",
         application, serviceName, instances.size(), instanceInfo);
