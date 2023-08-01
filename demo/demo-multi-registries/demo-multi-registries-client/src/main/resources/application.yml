@@ -26,3 +26,10 @@ servicecomb:
   registry:
     sc:
       address: http://127.0.0.1:30100
+      demo-multi-registries:
+        thirdParty-service-center:
+          enabled: false
+    local:
+      demo-multi-registries:
+        demo-multi-registries-server:
+          enabled: false

@@ -29,7 +29,7 @@
   </parent>
 
   <properties>
-    <demo.main>org.apache.servicecomb.demo.registry.ServerApplication</demo.main>
+    <demo.main>org.apache.servicecomb.demo.registry.MultiRegistriesServerApplication</demo.main>
   </properties>
   <dependencies>
     <dependency>

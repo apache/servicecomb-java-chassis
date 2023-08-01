@@ -18,19 +18,18 @@
 package org.apache.servicecomb.demo.registry;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SchemaDiscoveryTestCase implements CategorizedTestCase {
-  @RpcReference(microserviceName = "thirdParty-no-schema-server", schemaId = "ServerEndpoint")
-  IServerEndpoint serverEndpoint;
+  // Do not support this feature any more since 3.0.0
+//  @RpcReference(microserviceName = "thirdParty-no-schema-server", schemaId = "ServerEndpoint")
+//  IServerEndpoint serverEndpoint;
 
   @Override
   public void testRestTransport() throws Exception {
     // invoke thirdParty-no-schema-server(mocked by demo-multi-registries-server)
-    TestMgr.check("hello", serverEndpoint.getName("hello"));
+    //    TestMgr.check("hello", serverEndpoint.getName("hello"));
   }
 
   @Override

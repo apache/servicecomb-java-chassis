@@ -30,7 +30,7 @@ public class MultiRegistriesIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    Application.main(new String[0]);
+    MultiRegistriesClientApplication.main(new String[0]);
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }

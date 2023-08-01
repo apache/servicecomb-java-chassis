@@ -40,7 +40,7 @@ import com.google.common.eventbus.Subscribe;
 public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   public static final String SC_DISCOVERY_NAME = "sc-discovery";
 
-  public static final String SC_DISCOVERY_ENABLED = "servicecomb.registry.sc.enabled.%s.%s";
+  public static final String SC_DISCOVERY_ENABLED = "servicecomb.registry.sc.%s.%s.enabled";
 
   private SCConfigurationProperties configurationProperties;
 
