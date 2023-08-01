@@ -26,10 +26,10 @@ servicecomb:
     registry:
       sc:
         address: http://127.0.0.1:9980,http://127.0.0.1:30100
-        healthCheckInterval: 3
-        pollInterval: 10000
-        watch: true
         autodiscovery: true
+        healthCheckIntervalInSeconds: 3
+        pollIntervalInMillis: 10000
+        watch: true
 
   uploads:
     directory: target

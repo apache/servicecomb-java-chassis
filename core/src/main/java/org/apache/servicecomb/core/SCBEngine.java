@@ -17,8 +17,10 @@
 package org.apache.servicecomb.core;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -50,7 +52,6 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
@@ -538,7 +539,7 @@ public class SCBEngine {
         if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
           return null;
         }
-        config = buildMicroserviceReferenceConfig(microserviceName, statefulDiscoveryInstances.get(0));
+        config = buildMicroserviceReferenceConfig(microserviceName, statefulDiscoveryInstances);
         referenceConfigs.put(microserviceName, config);
         return config;
       }
@@ -547,23 +548,27 @@ public class SCBEngine {
   }
 
   private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(
-      String microserviceName, DiscoveryInstance instance) {
+      String microserviceName, List<StatefulDiscoveryInstance> instances) {
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, microserviceName, true);
     microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
-    boolean isServiceCenter = DefinitionConst.REGISTRY_APP_ID.equals(instance.getApplication())
-        && DefinitionConst.REGISTRY_SERVICE_NAME.equals(instance.getServiceName());
+    boolean isServiceCenter = DefinitionConst.REGISTRY_APP_ID.equals(instances.get(0).getApplication())
+        && DefinitionConst.REGISTRY_SERVICE_NAME.equals(instances.get(0).getServiceName());
     // do not load service center schemas, because service center did not provide swagger,but can get schema ids....
     // service center better to resolve the problem.
     if (!isServiceCenter) {
-      for (String schemaId : instance.getSchemas().keySet()) {
+      Map<String, String> schemas = new HashMap<>();
+      for (StatefulDiscoveryInstance instance : instances) {
+        schemas.putAll(instance.getSchemas());
+      }
+      for (Entry<String, String> schema : schemas.entrySet()) {
         OpenAPI swagger = swaggerLoader
-            .loadSwagger(instance.getApplication(), instance.getServiceName(),
-                instance, schemaId);
+            .loadSwagger(instances.get(0).getApplication(), instances.get(0).getServiceName(),
+                schema.getKey(), schema.getValue());
         if (swagger != null) {
-          microserviceMeta.registerSchemaMeta(schemaId, swagger);
+          microserviceMeta.registerSchemaMeta(schema.getKey(), swagger);
           continue;
         }
         throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
@@ -572,8 +577,8 @@ public class SCBEngine {
     }
 
     eventBus.post(new CreateMicroserviceMetaEvent(microserviceMeta));
-    return new MicroserviceReferenceConfig(instance.getApplication(),
-        instance.getServiceName(), microserviceVersionsMeta, microserviceMeta);
+    return new MicroserviceReferenceConfig(instances.get(0).getApplication(),
+        instances.get(0).getServiceName(), microserviceVersionsMeta, microserviceMeta);
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {

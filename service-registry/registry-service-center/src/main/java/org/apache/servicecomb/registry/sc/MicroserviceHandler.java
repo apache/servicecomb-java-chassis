@@ -27,7 +27,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.service.center.client.model.DataCenterInfo;
 import org.apache.servicecomb.service.center.client.model.Framework;
 import org.apache.servicecomb.service.center.client.model.HealthCheck;
@@ -62,11 +61,6 @@ public class MicroserviceHandler {
       MicroserviceProperties microserviceProperties) {
     Microservice microservice = new Microservice();
     microservice.setProperties(microserviceProperties.getProperties());
-
-    if (bootstrapProperties.isAllowCrossApp()) {
-      microservice.setAlias(microserviceProperties.getApplication() +
-          DefinitionConst.APP_SERVICE_SEPARATOR + microserviceProperties.getName());
-    }
     EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
     if (!StringUtils.isEmpty(envConfig.getString(APP_MAPPING)) &&
         !StringUtils.isEmpty(envConfig.getString(envConfig.getString(APP_MAPPING)))) {
@@ -90,10 +84,6 @@ public class MicroserviceHandler {
 
     Framework framework = createFramework();
     microservice.setFramework(framework);
-    if (bootstrapProperties.isAllowCrossApp()) {
-      microservice.getProperties().put(SCConst.SC_ALLOW_CROSS_APP, "true");
-    }
-
     String[] servicePropArray = envConfig.getStringArray(SERVICE_PROPS);
     if (servicePropArray.length != 0) {
       microservice.getProperties().putAll(parseProps(servicePropArray));
@@ -129,7 +119,7 @@ public class MicroserviceHandler {
 
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.push);
-    healthCheck.setInterval(scConfigurationProperties.getHealthCheckInterval());
+    healthCheck.setInterval(scConfigurationProperties.getHealthCheckIntervalInSeconds());
     healthCheck.setTimes(scConfigurationProperties.getHealthCheckTimes());
     microserviceInstance.setHealthCheck(healthCheck);
     String currTime = String.valueOf(System.currentTimeMillis());
