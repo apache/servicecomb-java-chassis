@@ -17,37 +17,22 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.provider.pojo.Invoker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 @Component
 public class TestThirdPartyRegistration implements BootListener, CategorizedTestCase {
+  @Autowired
   private ThirdPartyService thirdPartyService;
 
   @Override
   public void onAfterRegistry(BootEvent event) {
-    List<String> endpoints = new ArrayList<>();
-    if (DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
-      endpoints.add("rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi");
-    } else {
-      endpoints.add("rest://localhost:8080?sslEnabled=false");
-    }
-    // TODO: invoke third party services. should use local discovery.
-//    RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints("testServiceName",
-//        "1.0.1", endpoints, ThirdPartyService.class);
-    thirdPartyService = Invoker.createProxy("testServiceName",
-        "testServiceName", ThirdPartyService.class);
   }
 
   @Override
@@ -55,7 +40,7 @@ public class TestThirdPartyRegistration implements BootListener, CategorizedTest
     Date date = new Date();
     ResponseEntity<Date> responseEntity = thirdPartyService.responseEntity(date);
     TestMgr.check(date, responseEntity.getBody());
-    // Third party invocation do not pass cse-context to the target
+    // Third party invocation will pass cse-context to the target too
     TestMgr.check("h1v null", responseEntity.getHeaders().getFirst("h1"));
     TestMgr.check("h2v null", responseEntity.getHeaders().getFirst("h2"));
 

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.demo.springmvc.client;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -69,5 +70,27 @@ public class ThirdSvc {
   @Bean
   public ThirdSvcClient thirdSvcClient() {
     return Invoker.createProxy("3rd-svc", "schema-1", ThirdSvcClient.class);
+  }
+
+  @Bean
+  public RegistryBean thirdPartyServiceRegistryBean() {
+    List<String> endpoints = new ArrayList<>();
+    if (DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      endpoints.add("rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi");
+    } else {
+      endpoints.add("rest://localhost:8080?sslEnabled=false");
+    }
+
+    return new RegistryBean().addSchemaInterface("testServiceName", ThirdPartyService.class)
+        .setAppId("springmvctest")
+        .setServiceName("testServiceName")
+        .setVersion("0.0.1")
+        .setInstances(new Instances().setInstances(List.of(new Instance().setEndpoints(endpoints))));
+  }
+
+  @Bean
+  public ThirdPartyService thirdPartyService() {
+    return Invoker.createProxy("testServiceName", "testServiceName", ThirdPartyService.class);
   }
 }

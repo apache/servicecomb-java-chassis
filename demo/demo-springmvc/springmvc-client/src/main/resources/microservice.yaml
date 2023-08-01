@@ -34,7 +34,10 @@ servicecomb:
         compression: true
   references:
     version-rule: 0+
-
+  request:
+    clientRequestHeaderFilterEnabled:
+      # Do not copy cse-context to target for microservice(testServiceName)
+      testServiceName: true
   invocation:
     timeout:
       check:

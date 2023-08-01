@@ -47,6 +47,7 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+
 import org.junit.jupiter.api.Assertions;
 
 public class TestInvocation {
@@ -313,19 +314,5 @@ public class TestInvocation {
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
     Assertions.assertEquals("abc-1", invocation.getTraceIdLogger().getName());
-  }
-
-  @Test
-  public void isThirdPartyInvocation(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
-    Assertions.assertFalse(invocation.isThirdPartyInvocation());
-
-    new Expectations() {
-      {
-        referenceConfig.is3rdPartyService();
-        result = true;
-      }
-    };
-    Assertions.assertTrue(invocation.isThirdPartyInvocation());
   }
 }

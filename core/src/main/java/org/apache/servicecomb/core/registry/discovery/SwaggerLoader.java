@@ -81,7 +81,7 @@ public class SwaggerLoader {
   public void registerSwagger(String microserviceName, String schemaId, OpenAPI swagger) {
     MicroserviceNameParser parser = new MicroserviceNameParser(microserviceProperties.getApplication(),
         microserviceName);
-    registerSwagger(parser.getAppId(), parser.getShortName(), schemaId, swagger);
+    registerSwagger(parser.getAppId(), parser.getMicroserviceName(), schemaId, swagger);
   }
 
   public void registerSwagger(String appId, String shortName, String schemaId, Class<?> cls) {

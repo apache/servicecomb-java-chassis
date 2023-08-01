@@ -38,11 +38,6 @@ public class MicroserviceMeta {
 
   private final String appId;
 
-  // always not include appId
-  private final String shortName;
-
-  // inside app: equals to shortName
-  // cross app: appId:shortName
   private final String microserviceName;
 
   // key is schemaId, this is all schemas
@@ -61,7 +56,6 @@ public class MicroserviceMeta {
     this.scbEngine = scbEngine;
     MicroserviceNameParser parser = scbEngine.parseMicroserviceName(microserviceName);
     this.appId = parser.getAppId();
-    this.shortName = parser.getShortName();
     this.microserviceName = parser.getMicroserviceName();
     this.consumer = consumer;
   }
@@ -90,10 +84,6 @@ public class MicroserviceMeta {
     return appId;
   }
 
-  public String getShortName() {
-    return shortName;
-  }
-
   public SchemaMeta registerSchemaMeta(String schemaId, OpenAPI swagger) {
     SchemaMeta schemaMeta = new SchemaMeta(this, schemaId, swagger);
 
@@ -103,7 +93,7 @@ public class MicroserviceMeta {
           appId, microserviceName, schemaMeta.getSchemaId()));
     }
 
-    schemaMeta.getOperations().values().stream()
+    schemaMeta.getOperations().values()
         .forEach(operationMeta -> operationMetas.put(operationMeta.getMicroserviceQualifiedName(), operationMeta));
 
     return schemaMeta;

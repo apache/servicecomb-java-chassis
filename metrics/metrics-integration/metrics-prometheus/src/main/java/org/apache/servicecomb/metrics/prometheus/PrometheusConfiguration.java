@@ -14,22 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.metrics.prometheus;
 
-package org.apache.servicecomb.core.provider.consumer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-// operation level, to keep compatible, not change name
-public class ReferenceConfig {
-  protected String transport;
-
-  public ReferenceConfig(String transport) {
-    this.transport = transport;
-  }
-
-  public String getTransport() {
-    return transport;
-  }
-
-  public void setTransport(String transport) {
-    this.transport = transport;
+@Configuration
+public class PrometheusConfiguration {
+  @Bean
+  public PrometheusPublisher prometheusPublisher() {
+    return new PrometheusPublisher();
   }
 }
