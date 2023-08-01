@@ -16,8 +16,13 @@
  */
 package org.apache.servicecomb.registry.lightweight;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.localregistry.RegistryBean;
+import org.apache.servicecomb.localregistry.RegistryBean.Instance;
+import org.apache.servicecomb.localregistry.RegistryBean.Instances;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +33,9 @@ import com.google.common.eventbus.EventBus;
 @Configuration
 @SuppressWarnings("unused")
 public class LightWeightRegistryConfiguration {
+
+  public static final String ZERO_CONFIG_DISCOVERY_CLIENT = "zero-config-discovery-client";
+
   @Bean
   public Store zeroConfigStore() {
     return new Store();
@@ -56,14 +64,16 @@ public class LightWeightRegistryConfiguration {
   @Bean
   public RegistryBean zeroConfigDiscoveryServer(MicroserviceProperties microserviceProperties) {
     return new RegistryBean().setAppId(microserviceProperties.getApplication())
-        .setServiceName("zero-config-discovery-server")
-        .addSchemaInterface("client", DiscoveryClient.class);
+        .setServiceName(ZERO_CONFIG_DISCOVERY_CLIENT)
+        .addSchemaInterface(ZERO_CONFIG_DISCOVERY_CLIENT, DiscoveryClient.class)
+        // add an empty instance endpoint so that can invoke by endpoint
+        .setInstances(new Instances().setInstances(List.of(new Instance().setEndpoints(Collections.emptyList()))));
   }
 
   @Bean
   public DiscoveryClient zeroConfigDiscoveryClient() {
-    return Invoker.createProxy("zero-config-discovery-server",
-        "client", DiscoveryClient.class);
+    return Invoker.createProxy(ZERO_CONFIG_DISCOVERY_CLIENT,
+        ZERO_CONFIG_DISCOVERY_CLIENT, DiscoveryClient.class);
   }
 }
 

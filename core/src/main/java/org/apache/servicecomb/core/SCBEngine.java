@@ -535,6 +535,9 @@ public class SCBEngine {
         VersionedCache instances = discoveryManager.getOrCreateVersionedCache(parser.getAppId(),
             parser.getMicroserviceName());
         List<StatefulDiscoveryInstance> statefulDiscoveryInstances = instances.data();
+        if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
+          return null;
+        }
         config = buildMicroserviceReferenceConfig(parser.getAppId(), parser.getMicroserviceName(),
             statefulDiscoveryInstances);
         referenceConfigs.put(microserviceName, config);
@@ -552,20 +555,19 @@ public class SCBEngine {
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
     Map<String, String> schemas = new HashMap<>();
-    if(CollectionUtils.isEmpty(instances))
     for (StatefulDiscoveryInstance instance : instances) {
       instance.getSchemas().forEach(schemas::putIfAbsent);
     }
     for (Entry<String, String> schema : schemas.entrySet()) {
       OpenAPI swagger = swaggerLoader
-          .loadSwagger(instances.get(0).getApplication(), instances.get(0).getServiceName(),
-              schema.getKey(), schema.getValue());
+          .loadSwagger(application, microserviceName, schema.getKey(), schema.getValue());
       if (swagger != null) {
         microserviceMeta.registerSchemaMeta(schema.getKey(), swagger);
         continue;
       }
       throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
-          "swagger can not be empty or load swagger failed");
+          String.format("Swagger %s/%s/%s can not be empty or load swagger failed.",
+              application, microserviceName, schema.getKey()));
     }
 
     eventBus.post(new CreateMicroserviceMetaEvent(microserviceMeta));

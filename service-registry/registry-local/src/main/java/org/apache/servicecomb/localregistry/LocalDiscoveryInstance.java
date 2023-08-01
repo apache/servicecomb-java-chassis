@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.localregistry.RegistryBean.Instance;
 import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
@@ -40,17 +39,17 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final LocalRegistrationInstance localRegistrationInstance;
 
-  private final Instance instance;
+  private final List<String> endpoints;
 
   private final String instanceId;
 
   private final Map<String, String> schemas = new HashMap<>();
 
-  public LocalDiscoveryInstance(RegistryBean registryBean, Instance instance,
+  public LocalDiscoveryInstance(RegistryBean registryBean, List<String> endpoints,
       LocalRegistrationInstance localRegistrationInstance) {
     this.registryBean = registryBean;
     this.localRegistrationInstance = localRegistrationInstance;
-    this.instance = instance;
+    this.endpoints = endpoints;
     this.instanceId = System.currentTimeMillis() + "-" +
         ManagementFactory.getRuntimeMXBean().getPid() + "-" + INSTANCE_ID.getAndIncrement();
 
@@ -93,8 +92,7 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
     this.registryBean.setServiceName(registrationInstance.getServiceName());
     this.registryBean.setVersion(registrationInstance.getVersion());
     this.localRegistrationInstance = registrationInstance;
-    this.instance = new Instance();
-    this.instance.setEndpoints(registrationInstance.getEndpoints());
+    this.endpoints = registrationInstance.getEndpoints();
     this.instanceId = registrationInstance.getInstanceId();
     this.schemas.putAll(registrationInstance.getSchemas());
   }
@@ -156,7 +154,7 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public List<String> getEndpoints() {
-    return instance.getEndpoints();
+    return endpoints;
   }
 
   @Override

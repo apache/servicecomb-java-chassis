@@ -179,7 +179,7 @@ public class DiscoveryManager implements LifeCycle {
   public List<? extends DiscoveryInstance> findServiceInstances(String application, String serviceName) {
     List<DiscoveryInstance> result = new ArrayList<>();
     for (Discovery<? extends DiscoveryInstance> discovery : discoveryList) {
-      if (!discovery.enabled(application, serviceName)) {
+      if (!discovery.enabled() || !discovery.enabled(application, serviceName)) {
         continue;
       }
       List<? extends DiscoveryInstance> temp = discovery.findServiceInstances(application, serviceName);
