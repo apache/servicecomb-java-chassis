@@ -17,11 +17,14 @@
 
 package org.apache.servicecomb.core.bootup;
 
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ServiceInformationCollector implements BootUpInformationCollector {
   private RegistrationManager registrationManager;
+
+  private DiscoveryManager discoveryManager;
 
   public ServiceInformationCollector() {
   }
@@ -31,10 +34,14 @@ public class ServiceInformationCollector implements BootUpInformationCollector {
     this.registrationManager = registrationManager;
   }
 
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
+
   @Override
   public String collect() {
-    // TODO: add discovery info
-    return registrationManager.info();
+    return registrationManager.info() + "\n" + discoveryManager.info();
   }
 
   @Override

@@ -38,11 +38,6 @@ public class MulticastServer {
     this.multicast = multicast;
     this.messageExecutor = messageExecutor;
 
-    // delete after support @Conditional
-    if (!config.isMulticast()) {
-      return;
-    }
-
     Executors
         .newSingleThreadExecutor(runnable -> new Thread(runnable, "multicast-server-recv"))
         .execute(this::recv);

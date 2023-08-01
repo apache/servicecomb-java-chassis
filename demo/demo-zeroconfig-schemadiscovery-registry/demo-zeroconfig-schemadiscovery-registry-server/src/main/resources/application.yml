@@ -18,16 +18,12 @@
 server:
   port: 8080
 
-# java-chassis configurations
-
-APPLICATION_ID: demo-zeroconfig-schemadiscovery-registry
-service_description:
-  name: demo-zeroconfig-schemadiscovery-registry-server
-  version: 0.0.2
 servicecomb:
   service:
-    zero-config:
-      mode: multicast
+    application: demo-zeroconfig-schemadiscovery-registry
+    name: demo-zeroconfig-schemadiscovery-registry-server
+    version: 0.0.2
+
   rest:
     address: 0.0.0.0:8080
   filter-chains:

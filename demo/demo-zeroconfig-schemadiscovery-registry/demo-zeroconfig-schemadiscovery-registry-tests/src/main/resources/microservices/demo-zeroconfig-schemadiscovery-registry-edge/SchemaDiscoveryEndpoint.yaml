@@ -15,16 +15,27 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-servicecomb:
-  service:
-    application: demo-zeroconfig-schemadiscovery-registry
-    name: demo-zeroconfig-schemadiscovery-registry-tests
-    version: 0.0.2
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
-  loadbalance:
-    filter:
-      isolation:
-        enabled: false
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.schemadiscovery.SchemaDiscoveryEndpoint
+  version: 1.0.0
+servers:
+- url: /v1/schema/discovery
+paths:
+  /getSchema:
+    get:
+      operationId: getSchema
+      parameters:
+      - name: schemaId
+        in: query
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas: {}

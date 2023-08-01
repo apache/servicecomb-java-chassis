@@ -22,8 +22,6 @@ public interface ZeroConfigConst {
 
   String PREFIX = "servicecomb.registry.zero-config.";
 
-  String CFG_MODE = PREFIX + "mode";
-
   String CFG_ENABLED = PREFIX + "enabled";
 
   String CFG_MULTICAST_GROUP = PREFIX + "multicast.group";
@@ -45,10 +43,6 @@ public interface ZeroConfigConst {
   int DEFAULT_HEARTBEAT_LOST_TIMES = 3;
 
   String DEFAULT_PULL_INTERVAL = "3s";
-
-  String MODE_MULTICAST = "multicast";
-
-  String MODE_LOCAL = "local";
 
   int ORDER = -8000;
 }

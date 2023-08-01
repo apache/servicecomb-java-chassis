@@ -138,6 +138,11 @@ public final class InvokerUtils {
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName);
+    if (microserviceReferenceConfig == null) {
+      throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
+          new CommonExceptionData(String.format("Failed to invoke service %s. Maybe service"
+              + " not registered or no active instance.", microserviceName)));
+    }
     MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);

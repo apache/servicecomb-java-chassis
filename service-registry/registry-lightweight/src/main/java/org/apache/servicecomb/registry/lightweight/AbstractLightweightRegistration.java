@@ -94,7 +94,7 @@ public abstract class AbstractLightweightRegistration implements Registration<Ze
 
   @Override
   public ZeroConfigRegistrationInstance getMicroserviceInstance() {
-    return null;
+    return new ZeroConfigRegistrationInstance(self);
   }
 
   @Override
