@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry.lightweight;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.servicecomb.registry.api.Discovery;
@@ -79,6 +80,9 @@ public abstract class AbstractLightweightDiscovery implements Discovery<ZeroConf
   public List<ZeroConfigDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     MicroserviceInstances microserviceInstances =
         store.findServiceInstances(application, serviceName, "0");
+    if (microserviceInstances.isMicroserviceNotExist() || microserviceInstances.getInstancesResponse() == null) {
+      return Collections.emptyList();
+    }
     List<ZeroConfigDiscoveryInstance> result = new ArrayList<>();
     for (MicroserviceInstance instance : microserviceInstances.getInstancesResponse().getInstances()) {
       result.add(new ZeroConfigDiscoveryInstance(store.getMicroservice(instance.getServiceId()).get(), instance));

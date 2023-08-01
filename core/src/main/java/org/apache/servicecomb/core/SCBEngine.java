@@ -53,7 +53,6 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
@@ -536,10 +535,8 @@ public class SCBEngine {
         VersionedCache instances = discoveryManager.getOrCreateVersionedCache(parser.getAppId(),
             parser.getMicroserviceName());
         List<StatefulDiscoveryInstance> statefulDiscoveryInstances = instances.data();
-        if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
-          return null;
-        }
-        config = buildMicroserviceReferenceConfig(microserviceName, statefulDiscoveryInstances);
+        config = buildMicroserviceReferenceConfig(parser.getAppId(), parser.getMicroserviceName(),
+            statefulDiscoveryInstances);
         referenceConfigs.put(microserviceName, config);
         return config;
       }
@@ -547,38 +544,33 @@ public class SCBEngine {
     return config;
   }
 
-  private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(
+  private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(String application,
       String microserviceName, List<StatefulDiscoveryInstance> instances) {
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, microserviceName, true);
     microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
-    boolean isServiceCenter = DefinitionConst.REGISTRY_APP_ID.equals(instances.get(0).getApplication())
-        && DefinitionConst.REGISTRY_SERVICE_NAME.equals(instances.get(0).getServiceName());
-    // do not load service center schemas, because service center did not provide swagger,but can get schema ids....
-    // service center better to resolve the problem.
-    if (!isServiceCenter) {
-      Map<String, String> schemas = new HashMap<>();
-      for (StatefulDiscoveryInstance instance : instances) {
-        instance.getSchemas().forEach(schemas::putIfAbsent);
+    Map<String, String> schemas = new HashMap<>();
+    if(CollectionUtils.isEmpty(instances))
+    for (StatefulDiscoveryInstance instance : instances) {
+      instance.getSchemas().forEach(schemas::putIfAbsent);
+    }
+    for (Entry<String, String> schema : schemas.entrySet()) {
+      OpenAPI swagger = swaggerLoader
+          .loadSwagger(instances.get(0).getApplication(), instances.get(0).getServiceName(),
+              schema.getKey(), schema.getValue());
+      if (swagger != null) {
+        microserviceMeta.registerSchemaMeta(schema.getKey(), swagger);
+        continue;
       }
-      for (Entry<String, String> schema : schemas.entrySet()) {
-        OpenAPI swagger = swaggerLoader
-            .loadSwagger(instances.get(0).getApplication(), instances.get(0).getServiceName(),
-                schema.getKey(), schema.getValue());
-        if (swagger != null) {
-          microserviceMeta.registerSchemaMeta(schema.getKey(), swagger);
-          continue;
-        }
-        throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
-            "swagger can not be empty or load swagger failed");
-      }
+      throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
+          "swagger can not be empty or load swagger failed");
     }
 
     eventBus.post(new CreateMicroserviceMetaEvent(microserviceMeta));
-    return new MicroserviceReferenceConfig(instances.get(0).getApplication(),
-        instances.get(0).getServiceName(), microserviceVersionsMeta, microserviceMeta);
+    return new MicroserviceReferenceConfig(application,
+        microserviceName, microserviceVersionsMeta, microserviceMeta);
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {

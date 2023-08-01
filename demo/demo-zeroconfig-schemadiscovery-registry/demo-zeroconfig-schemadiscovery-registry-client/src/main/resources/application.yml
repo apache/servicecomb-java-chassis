@@ -18,13 +18,11 @@
 server:
   port: 8082
 
-# java-chassis configurations
-
-APPLICATION_ID: demo-zeroconfig-schemadiscovery-registry
-service_description:
-  name: demo-zeroconfig-schemadiscovery-registry-client
-  version: 0.0.2
 servicecomb:
+  service:
+    application: demo-zeroconfig-schemadiscovery-registry
+    name: demo-zeroconfig-schemadiscovery-registry-client
+    version: 0.0.2
   rest:
     address: 0.0.0.0:8082
   highway:

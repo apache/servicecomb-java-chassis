@@ -1,0 +1,114 @@
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.demo.zeroconfig.client.GovernanceEndpoint
+  version: 1.0.0
+servers:
+- url: /governance
+paths:
+  /bulkhead:
+    get:
+      operationId: bulkhead
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /circuitBreaker:
+    get:
+      operationId: circuitBreaker
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /hello:
+    get:
+      operationId: hello
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /helloRpc:
+    get:
+      operationId: helloRpc
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /noPrefixRetry:
+    get:
+      operationId: noPrefixRetry
+      parameters:
+      - name: invocationID
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /retry:
+    get:
+      operationId: retry
+      parameters:
+      - name: invocationID
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /retryRpc:
+    get:
+      operationId: retryRpc
+      parameters:
+      - name: invocationID
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+components:
+  schemas: {}

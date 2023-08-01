@@ -14,26 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.zeroconfig.multicast;
+package org.apache.servicecomb.zeroconfig;
 
 import java.io.IOException;
 
 import org.apache.servicecomb.registry.lightweight.MessageType;
 import org.apache.servicecomb.registry.lightweight.RegisterInstanceEvent;
-import org.apache.servicecomb.zeroconfig.AbstractZeroConfigRegistration;
+import org.apache.servicecomb.zeroconfig.multicast.Multicast;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.Subscribe;
 
 @SuppressWarnings("UnstableApiUsage")
-public class MulticastRegistration extends AbstractZeroConfigRegistration implements InitializingBean {
-  private static final String NAME = "zero-config-multicast";
+public class ZeroConfigRegistration extends AbstractZeroConfigRegistration implements InitializingBean {
+  private static final String NAME = "zero-config-registration";
 
   protected Multicast multicast;
 
   @Autowired
-  public MulticastRegistration setMulticast(Multicast multicast) {
+  public ZeroConfigRegistration setMulticast(Multicast multicast) {
     this.multicast = multicast;
     return this;
   }
@@ -46,7 +46,7 @@ public class MulticastRegistration extends AbstractZeroConfigRegistration implem
   // delete after support @Conditional
   @Override
   public boolean enabled() {
-    return config.isMulticast();
+    return true;
   }
 
   @Override

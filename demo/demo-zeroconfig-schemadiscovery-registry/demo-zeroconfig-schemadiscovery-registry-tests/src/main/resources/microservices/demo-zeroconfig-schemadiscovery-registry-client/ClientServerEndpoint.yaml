@@ -1,0 +1,155 @@
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.demo.zeroconfig.client.ClientServerEndpoint
+  version: 1.0.0
+servers:
+- url: /register/url/prefix
+paths:
+  /contextMapper:
+    get:
+      operationId: contextMapper
+      parameters:
+      - name: gatewayHeader
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: clientHeader
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: gatewayQuery
+        in: query
+        required: true
+        schema:
+          type: string
+      - name: clientQuery
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /getName:
+    get:
+      operationId: getName
+      parameters:
+      - name: name
+        in: query
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /getRegisteredMicroservice:
+    get:
+      operationId: getRegisteredMicroservice
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                uniqueItems: true
+                type: array
+                items:
+                  type: string
+  /getString:
+    post:
+      operationId: getString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+        x-raw-json: true
+        x-name: jsonString
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /jsonObject:
+    post:
+      operationId: jsonObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JsonObject'
+        required: true
+        x-name: jsonObject
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JsonObject'
+  /postModel:
+    post:
+      operationId: postModel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientModel'
+        required: true
+        x-name: clientModel
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientModel'
+components:
+  schemas:
+    JsonObject:
+      type: object
+      properties:
+        map:
+          type: object
+          additionalProperties:
+            type: object
+        empty:
+          type: boolean
+      x-java-class: io.vertx.core.json.JsonObject
+    ClientModel:
+      type: object
+      properties:
+        updateDate:
+          type: string
+          format: date-time
+      x-java-class: org.apache.servicecomb.demo.zeroconfig.client.ClientModel

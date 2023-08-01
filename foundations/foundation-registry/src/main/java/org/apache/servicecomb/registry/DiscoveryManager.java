@@ -20,6 +20,7 @@ package org.apache.servicecomb.registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -203,5 +204,17 @@ public class DiscoveryManager implements LifeCycle {
   @Override
   public void init() {
     discoveryList.forEach(LifeCycle::init);
+  }
+
+  public String info() {
+    StringBuilder result = new StringBuilder();
+    AtomicBoolean first = new AtomicBoolean(true);
+    discoveryList.forEach(discovery -> {
+      if (first.getAndSet(false)) {
+        result.append("Discovery implementations:\n");
+      }
+      result.append("  name:").append(discovery.name()).append("\n");
+    });
+    return result.toString();
   }
 }

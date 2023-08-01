@@ -119,6 +119,9 @@ public class LocalRegistryStore {
       List<LocalDiscoveryInstance> instances = microserviceInstanceMap.computeIfAbsent(bean.getAppId(), key ->
           new ConcurrentHashMapEx<>()).computeIfAbsent(bean.getServiceName(), key ->
           new ArrayList<>());
+      if (bean.getInstances() == null) {
+        return;
+      }
       for (Instance instance : bean.getInstances().getInstances()) {
         instances.add(new LocalDiscoveryInstance(bean, instance, selfMicroserviceInstance));
       }
