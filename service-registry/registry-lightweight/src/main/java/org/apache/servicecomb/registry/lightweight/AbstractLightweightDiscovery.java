@@ -25,18 +25,28 @@ import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstances;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractLightweightDiscovery implements Discovery<ZeroConfigDiscoveryInstance> {
-  public static final String ZERO_CONFIG_NAME = "zero-discovery";
+  public static final String ZERO_CONFIG_NAME = "zero-config-discovery";
+
+  public static final String ZERO_DISCOVERY_ENABLED = "servicecomb.registry.zero-config.enabled.%s.%s";
 
   protected EventBus eventBus;
 
   protected Store store;
 
   protected String revision;
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Autowired
   public AbstractLightweightDiscovery setEventBus(EventBus eventBus) {
@@ -57,6 +67,12 @@ public abstract class AbstractLightweightDiscovery implements Discovery<ZeroConf
 
   @Override
   public void destroy() {
+  }
+
+  @Override
+  public boolean enabled(String application, String serviceName) {
+    return environment.getProperty(String.format(ZERO_DISCOVERY_ENABLED, application, serviceName),
+        boolean.class, true);
   }
 
   @Override

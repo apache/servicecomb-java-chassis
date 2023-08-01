@@ -20,7 +20,7 @@ package org.apache.servicecomb.zeroconfig;
 public interface ZeroConfigConst {
   int MAX_PACKET_SIZE = 1024;
 
-  String PREFIX = "servicecomb.service.zero-config.";
+  String PREFIX = "servicecomb.registry.zero-config.";
 
   String CFG_MODE = PREFIX + "mode";
 
@@ -50,5 +50,5 @@ public interface ZeroConfigConst {
 
   String MODE_LOCAL = "local";
 
-  int ORDER = -100;
+  int ORDER = -8000;
 }

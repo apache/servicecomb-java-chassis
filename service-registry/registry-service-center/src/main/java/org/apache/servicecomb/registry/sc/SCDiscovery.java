@@ -32,12 +32,15 @@ import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.eventbus.Subscribe;
 
 public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   public static final String SC_DISCOVERY_NAME = "sc-discovery";
+
+  public static final String SC_DISCOVERY_ENABLED = "servicecomb.registry.sc.enabled.%s.%s";
 
   private SCConfigurationProperties configurationProperties;
 
@@ -48,6 +51,13 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   private ServiceCenterDiscovery serviceCenterDiscovery;
 
   private InstanceChangedListener<SCDiscoveryInstance> instanceChangedListener;
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Autowired
   public void setConfigurationProperties(SCConfigurationProperties configurationProperties) {
@@ -67,6 +77,17 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   @Override
   public String name() {
     return SCDiscovery.SC_DISCOVERY_NAME;
+  }
+
+  @Override
+  public int getOrder() {
+    return -9000;
+  }
+
+  @Override
+  public boolean enabled(String application, String serviceName) {
+    return environment.getProperty(String.format(SC_DISCOVERY_ENABLED, application, serviceName),
+        boolean.class, true);
   }
 
   @Override

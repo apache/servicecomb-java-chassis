@@ -122,7 +122,7 @@ public class DiscoveryManager implements LifeCycle {
       rebuildVersionCache(instance.getApplication(), instance.getServiceName());
     }
 
-    LOGGER.warn("isolated instance {}/{}/{}, time {}/{}",
+    LOGGER.warn("Isolated instance {}/{}/{}, time {}/{}",
         instance.getApplication(), instance.getServiceName(), instance.getInstanceId(),
         target.getIsolatedTime(), target.getIsolateDuration());
   }

@@ -561,7 +561,7 @@ public class SCBEngine {
     if (!isServiceCenter) {
       Map<String, String> schemas = new HashMap<>();
       for (StatefulDiscoveryInstance instance : instances) {
-        schemas.putAll(instance.getSchemas());
+        instance.getSchemas().forEach(schemas::putIfAbsent);
       }
       for (Entry<String, String> schema : schemas.entrySet()) {
         OpenAPI swagger = swaggerLoader
