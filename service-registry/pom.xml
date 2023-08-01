@@ -31,9 +31,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <!-- TODO : after model finished, will implement
-<module>registry-schema-discovery</module>
--->
     <module>registry-local</module>
     <module>registry-service-center</module>
     <module>registry-lightweight</module>
