@@ -17,28 +17,32 @@
 
 package org.apache.servicecomb.demo.registry;
 
-import java.util.concurrent.TimeUnit;
-
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.stereotype.Component;
 
 @SpringBootApplication
 @EnableServiceComb
-public class ServerApplication {
-  public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(ServerApplication.class).web(WebApplicationType.SERVLET).build().run(args);
+@Component
+public class MultiRegistriesClientApplication {
 
-    SelfServiceInvoker invoker = BeanUtils.getBean("SelfServiceInvoker");
-    invoker.latch.await(10, TimeUnit.SECONDS);
-    TestMgr.check(invoker.result, "hello");
+  public static void main(final String[] args) throws Exception {
+    new SpringApplicationBuilder().sources(MultiRegistriesClientApplication.class)
+        .web(WebApplicationType.SERVLET).build().run(args);
+
+    runTest();
+  }
+
+  public static void runTest() throws Exception {
+    CategorizedTestCaseRunner.runCategorizedTestCase("demo-multi-registries-server");
 
     TestMgr.summary();
     if (!TestMgr.errors().isEmpty()) {
-      System.exit(1);
+      throw new IllegalStateException("tests failed");
     }
   }
 }

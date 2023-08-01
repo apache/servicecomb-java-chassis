@@ -48,7 +48,7 @@ public class MultiRegistriesServerTestCase implements CategorizedTestCase {
   private void testGetAllMicroservice() {
     List<? extends DiscoveryInstance> microserviceList = discoveryManager
         .findServiceInstances("demo-multi-registries", "demo-multi-registries-client");
-    TestMgr.check(1, microserviceList.size());
+    TestMgr.check(2, microserviceList.size()); // both local and sc has one.
     microserviceList = discoveryManager
         .findServiceInstances("demo-multi-registries", "demo-multi-registries-server");
     TestMgr.check(1, microserviceList.size());

@@ -27,7 +27,7 @@ import org.springframework.core.env.Environment;
 public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
   public static final String LOCAL_DISCOVERY_NAME = "local-discovery";
 
-  public static final String LOCAL_DISCOVERY_ENABLED = "servicecomb.registry.local.enabled.%s.%s";
+  public static final String LOCAL_DISCOVERY_ENABLED = "servicecomb.registry.local.%s.%s.enabled";
 
   private LocalRegistryStore localRegistryStore;
 

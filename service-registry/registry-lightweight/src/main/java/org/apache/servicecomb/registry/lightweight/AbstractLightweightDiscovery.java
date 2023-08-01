@@ -34,7 +34,7 @@ import com.google.common.eventbus.EventBus;
 public abstract class AbstractLightweightDiscovery implements Discovery<ZeroConfigDiscoveryInstance> {
   public static final String ZERO_CONFIG_NAME = "zero-config-discovery";
 
-  public static final String ZERO_DISCOVERY_ENABLED = "servicecomb.registry.zero-config.enabled.%s.%s";
+  public static final String ZERO_DISCOVERY_ENABLED = "servicecomb.registry.zero-config.%s.%s.enabled";
 
   protected EventBus eventBus;
 
