@@ -123,11 +123,10 @@ public class LocalRegistryStore {
         return;
       }
       for (Instance instance : bean.getInstances().getInstances()) {
-        instances.add(new LocalDiscoveryInstance(bean, instance, selfMicroserviceInstance));
+        instances.add(new LocalDiscoveryInstance(bean, instance.getEndpoints(), selfMicroserviceInstance));
       }
     }));
   }
-
 
   public List<LocalDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     Map<String, List<LocalDiscoveryInstance>> app = microserviceInstanceMap.get(application);

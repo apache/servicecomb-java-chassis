@@ -67,7 +67,7 @@ public class ClientServerEndpoint {
     List<? extends DiscoveryInstance> microserviceList = discoveryManager
         .findServiceInstances("demo-zeroconfig-schemadiscovery-registry",
             "demo-zeroconfig-schemadiscovery-registry-client");
-    if (microserviceList.size() != 1) {
+    if (microserviceList.size() != 2) { // local and zero config both have one instance
       result = false;
     }
     microserviceList = discoveryManager
