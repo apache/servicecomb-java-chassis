@@ -35,10 +35,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-schema-discovery</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
     </dependency>
     <dependency>
