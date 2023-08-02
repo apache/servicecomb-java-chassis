@@ -29,5 +29,17 @@ servicecomb:
     chain:
       Consumer:
         default: loadbalance
-  references:
-    version-rule: 1.1.0
+
+# TODO: use router to replace version-rule
+#  routeRule:
+#    business: |
+#      - precedence: 2
+#        match:
+#        headers:
+#          x-url:
+#            prefix: "/business/v1"
+#        route:
+#          - weight: 100
+#            tags:
+#              version: 1.1.0
+

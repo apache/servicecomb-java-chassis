@@ -106,8 +106,13 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   private List<SCDiscoveryInstance> toDiscoveryInstances(List<MicroserviceInstance> instances) {
     Microservice microservice = serviceCenterClient.getMicroserviceByServiceId(instances.get(0).getServiceId());
     List<SchemaInfo> schemas = serviceCenterClient.getServiceSchemasList(instances.get(0).getServiceId(), true);
-    Map<String, String> schemaResult = new HashMap<>(schemas.size());
-    schemas.forEach(info -> schemaResult.put(info.getSchemaId(), info.getSchema()));
+    Map<String, String> schemaResult;
+    if (schemas == null) {
+      schemaResult = Collections.emptyMap();
+    } else {
+      schemaResult = new HashMap<>(schemas.size());
+      schemas.forEach(info -> schemaResult.put(info.getSchemaId(), info.getSchema()));
+    }
     List<SCDiscoveryInstance> result = new ArrayList<>(instances.size());
     instances.forEach(instance -> result.add(new SCDiscoveryInstance(microservice, instance, schemaResult)));
     return result;
@@ -121,7 +126,7 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   @Subscribe
   @SuppressWarnings("unused")
   public void onInstanceChangedEvent(InstanceChangedEvent event) {
-    this.instanceChangedListener.onInstanceChanged(name(), event.getAppName(), event.getAppName(),
+    this.instanceChangedListener.onInstanceChanged(name(), event.getAppName(), event.getServiceName(),
         toDiscoveryInstances(event.getInstances()));
   }
 

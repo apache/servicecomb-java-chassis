@@ -57,12 +57,14 @@ servicecomb:
               prefixSegmentCount: 1
               path: "/url/business/v1/.*"
               microserviceName: business
-              versionRule: 1.0.0-2.0.0
+              # not supported since 3.0.0, use router
+              # versionRule: 1.0.0-2.0.0
             businessV2:
               prefixSegmentCount: 1
               path: "/url/business/v2/.*"
               microserviceName: business
-              versionRule: 2.0.0-3.0.0
+              # not supported since 3.0.0, use router
+              # versionRule: 2.0.0-3.0.0
         http:
           enabled: true
           mappings:
@@ -70,17 +72,20 @@ servicecomb:
               prefixSegmentCount: 1
               path: "/http/business/v2/.*"
               microserviceName: business
-              versionRule: 2.0.0
+              # not supported since 3.0.0, use router
+              # versionRule: 2.0.0
             businessV1:
               prefixSegmentCount: 1
               path: "/http/business/v1/add.*"
               microserviceName: business
-              versionRule: 1.0.0-1.2.0
+              # not supported since 3.0.0, use router
+              # versionRule: 1.0.0-1.2.0
             businessV1_1:
               prefixSegmentCount: 1
               path: "/http/business/v1/dec.*"
               microserviceName: business
-              versionRule: 1.1.0
+              # not supported since 3.0.0, use router
+              # versionRule: 1.1.0
 
 # 服务治理配置
   matchGroup:
