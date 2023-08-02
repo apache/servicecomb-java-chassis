@@ -116,9 +116,8 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
     try {
       ExceptionConverter<Throwable> converter =
           converterCache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped));
-      LOGGER.warn("convert operation {} exception {} using {}.",
+      LOGGER.warn("convert operation {} exception using {}.",
           invocation == null ? genericStatus.getStatusCode() : invocation.getMicroserviceQualifiedName(),
-          throwable.getClass().getSimpleName(),
           converter.getClass().getSimpleName(), throwable);
       return converter.convert(invocation, unwrapped, genericStatus);
     } catch (Exception e) {

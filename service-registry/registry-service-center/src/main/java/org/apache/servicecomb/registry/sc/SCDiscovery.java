@@ -96,14 +96,13 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
     serviceCenterDiscovery.registerIfNotPresent(subscriptionKey);
     List<MicroserviceInstance> instances = serviceCenterDiscovery.getInstanceCache(subscriptionKey);
 
-    if (CollectionUtils.isEmpty(instances)) {
-      return Collections.emptyList();
-    }
-
     return toDiscoveryInstances(instances);
   }
 
   private List<SCDiscoveryInstance> toDiscoveryInstances(List<MicroserviceInstance> instances) {
+    if (CollectionUtils.isEmpty(instances)) {
+      return Collections.emptyList();
+    }
     Microservice microservice = serviceCenterClient.getMicroserviceByServiceId(instances.get(0).getServiceId());
     List<SchemaInfo> schemas = serviceCenterClient.getServiceSchemasList(instances.get(0).getServiceId(), true);
     Map<String, String> schemaResult;

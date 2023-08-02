@@ -49,10 +49,7 @@ public class CategorizedTestCaseRunner {
           LOGGER.error("run categorized test case " +
               testCase.getClass().getName() +
               " failed.", e);
-          TestMgr.failed("run categorized test case " +
-                  testCase.getClass().getName() +
-                  " failed, reason " + e.getMessage(),
-              e);
+          throw e;
         }
       }
     }

@@ -33,8 +33,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import io.vertx.core.json.Json;
@@ -76,30 +74,30 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     try {
       template
           .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
-    } catch (HttpClientErrorException e) {
-      TestMgr.check(e.getStatusCode().value(), 400);
-      TestMgr.check(e.getMessage(),
-          "400 Bad Request: \"{\"message\":\"Parameter is not valid for operation [jaxrs.MultiErrorCodeService.errorCode]."
-              +
-              " Parameter is [request]. Processor is [body].\"}\"");
+      TestMgr.fail("expect failed.");
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
     }
 
     entity = new HttpEntity<>(null, headers);
     try {
-      result = template
+      template
           .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
       TestMgr.check(590, 200);
-    } catch (HttpServerErrorException e) {
-      TestMgr.check(e.getStatusCode().value(), 500);
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
     }
 
-    // not recommend
+    // wrong type
     body = "{\"message\":\"hello\",\"code\":\"200\"}";
     entity = new HttpEntity<>(body, headers);
-    result = template
-        .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
-    TestMgr.check(result.getStatusCode().value(), 200);
-    TestMgr.check(result.getBody().getMessage(), "success result");
+    try {
+      template
+          .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+      TestMgr.check(590, 200);
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+    }
   }
 
   private static void testErrorCode() {
