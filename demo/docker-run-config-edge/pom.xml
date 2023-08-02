@@ -91,6 +91,8 @@
                   </dependsOn>
                 </run>
               </image>
+              <!-- TODO: use router to implement version-rule problems since 3.0.0 removed this -->
+              <!--
               <image>
                 <name>business-1-0-0:${project.version}</name>
                 <alias>business-1-0-0</alias>
@@ -106,11 +108,6 @@
                   </links>
                   <wait>
                     <log>Register microservice instance success</log>
-                    <!--
-                        the log waiting of the plugin has a bug and fails frequently
-                        refer to https://github.com/fabric8io/docker-maven-plugin/issues/767
-                        this http checking is used as a temporary solution
-                    -->
                     <tcp>
                       <ports>
                         <port>8080</port>
@@ -141,11 +138,6 @@
                   </links>
                   <wait>
                     <log>Register microservice instance success</log>
-                    <!--
-                        the log waiting of the plugin has a bug and fails frequently
-                        refer to https://github.com/fabric8io/docker-maven-plugin/issues/767
-                        this http checking is used as a temporary solution
-                    -->
                     <tcp>
                       <ports>
                         <port>8090</port>
@@ -161,6 +153,7 @@
                   </dependsOn>
                 </run>
               </image>
+              -->
               <image>
                 <name>business-2-0-0:${project.version}</name>
                 <alias>business-2-0-0</alias>
@@ -176,11 +169,6 @@
                   </links>
                   <wait>
                     <log>Register microservice instance success</log>
-                    <!--
-                        the log waiting of the plugin has a bug and fails frequently
-                        refer to https://github.com/fabric8io/docker-maven-plugin/issues/767
-                        this http checking is used as a temporary solution
-                    -->
                     <tcp>
                       <ports>
                         <port>8091</port>

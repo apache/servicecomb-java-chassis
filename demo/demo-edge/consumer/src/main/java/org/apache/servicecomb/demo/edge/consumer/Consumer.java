@@ -95,14 +95,14 @@ public class Consumer {
     testDownload();
     testDownloadBigFile();
     testErrorCode();
-
-    invoke("/v1/add", 2, 1, addV1Result);
-    invoke("/v1/add", 3, 1, addV1Result);
-    invoke("/v1/add", 4, 1, addV1Result);
-    invoke("/v1/add", 5, 1, addV1Result);
-
-    invoke("/v1/dec", 2, 1, decV1Result);
-    invoke("/v1/dec", 3, 1, decV1Result);
+    // TODO: we use router to test this feature.
+//    invoke("/v1/add", 2, 1, addV1Result);
+//    invoke("/v1/add", 3, 1, addV1Result);
+//    invoke("/v1/add", 4, 1, addV1Result);
+//    invoke("/v1/add", 5, 1, addV1Result);
+//
+//    invoke("/v1/dec", 2, 1, decV1Result);
+//    invoke("/v1/dec", 3, 1, decV1Result);
 
     invoke("/v2/add", 2, 1, addV2Result);
     invoke("/v2/add", 3, 1, addV2Result);
@@ -110,13 +110,14 @@ public class Consumer {
     invoke("/v2/dec", 2, 1, decV2Result);
     invoke("/v2/dec", 3, 1, decV2Result);
 
-    printResults("v1/add", addV1Result);
-    printResults("v1/dec", decV1Result);
+    // TODO: we use router to test this feature.
+//    printResults("v1/add", addV1Result);
+//    printResults("v1/dec", decV1Result);
     printResults("v2/add", addV2Result);
     printResults("v2/dec", decV2Result);
 
-    checkResult("v1/add", addV1Result, "1.0.0", "1.1.0");
-    checkResult("v1/dec", decV1Result, "1.1.0");
+//    checkResult("v1/add", addV1Result, "1.0.0", "1.1.0");
+//    checkResult("v1/dec", decV1Result, "1.1.0");
     checkResult("v2/add", addV2Result, "2.0.0");
     checkResult("v2/dec", decV2Result, "2.0.0");
   }
@@ -281,16 +282,21 @@ public class Consumer {
   }
 
   protected void invokeBusiness(String urlPrefix, ChannelRequestBase request) {
-    for (int i = 0; i < 3; i++) {
-      String url = urlPrefix + "/channel/news/subscribe";
+    // since 3.0.0, do not support this feature.
+    // after 3.0.0, the client will load schema once after startup and will never change, and there
+    // isn't version rule concept.
 
-      HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_JSON);
-
-      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
-
-      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
-      Assert.isTrue(response.getBody().getRsp().equals("result from 1.1.0"), response.getBody().getRsp());
-    }
+    // TODO: we use router to test this feature.
+//    for (int i = 0; i < 3; i++) {
+//      String url = urlPrefix + "/channel/news/subscribe";
+//
+//      HttpHeaders headers = new HttpHeaders();
+//      headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
+//
+//      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
+//      Assert.isTrue(response.getBody().getRsp().equals("result from 1.1.0"), response.getBody().getRsp());
+//    }
   }
 }

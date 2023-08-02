@@ -167,10 +167,10 @@ public class ServiceCenterDiscovery extends AbstractTask {
         List<MicroserviceInstance> instances = instancesResponse.getMicroserviceInstancesResponse().getInstances()
             == null ? Collections.emptyList() : instancesResponse.getMicroserviceInstancesResponse().getInstances();
         setMicroserviceInfo(instances);
-        LOGGER.info("Instance changed event, "
-                + "current: revision={}, instances={}; "
-                + "origin: revision={}, instances={}; "
-                + "appId={}, serviceName={}",
+        LOGGER.info("Instance changed event. "
+                + "Current: revision={}, instances={}. "
+                + "Origin: revision={}, instances={}. "
+                + "appId={}, serviceName={}.",
             instancesResponse.getRevision(),
             instanceToString(instances),
             v.revision,
@@ -252,10 +252,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
         sb.append(endpoint.length() > 64 ? endpoint.substring(0, 64) : endpoint);
         sb.append("|");
       }
-      sb.append(instance.getServiceName());
-      sb.append("|");
     }
-    sb.append("#");
     return sb.toString();
   }
 }
