@@ -46,7 +46,7 @@ public class TestMetricsBootListener {
   @Test
   public void onBeforeProducerProvider_metrics_endpoint_enabled_by_default() {
     final MetricsBootListener listener = new MetricsBootListener(new MetricsBootstrap());
-
+    listener.setMetricsRestPublisher(new MetricsRestPublisher());
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
     final ProducerMeta producerMeta = new ProducerMeta();

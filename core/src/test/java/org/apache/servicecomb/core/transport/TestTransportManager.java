@@ -68,20 +68,20 @@ public class TestTransportManager {
   public void testGroupByName() {
     Transport t1 = Mockito.mock(Transport.class);
     Mockito.when(t1.getName()).thenReturn("t1");
-    Transport t2_1 = Mockito.mock(Transport.class);
-    Mockito.when(t2_1.getName()).thenReturn("t2");
-    Transport t2_2 = Mockito.mock(Transport.class);
-    Mockito.when(t2_2.getName()).thenReturn("t2");
+    Transport t21 = Mockito.mock(Transport.class);
+    Mockito.when(t21.getName()).thenReturn("t2");
+    Transport t22 = Mockito.mock(Transport.class);
+    Mockito.when(t22.getName()).thenReturn("t2");
     TransportManager manager = new TransportManager();
-    manager.addTransportsBeforeInit(Arrays.asList(t1, t2_1, t2_2));
+    manager.addTransportsBeforeInit(Arrays.asList(t1, t21, t22));
 
     Map<String, List<Transport>> groups = manager.groupByName();
     Assertions.assertEquals(2, groups.size());
     Assertions.assertEquals(1, groups.get("t1").size());
     Assertions.assertEquals(t1, groups.get("t1").get(0));
     Assertions.assertEquals(2, groups.get("t2").size());
-    Assertions.assertEquals(t2_1, groups.get("t2").get(0));
-    Assertions.assertEquals(t2_2, groups.get("t2").get(1));
+    Assertions.assertEquals(t21, groups.get("t2").get(0));
+    Assertions.assertEquals(t22, groups.get("t2").get(1));
   }
 
   @Test

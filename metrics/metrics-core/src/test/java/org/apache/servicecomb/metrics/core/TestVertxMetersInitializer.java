@@ -154,8 +154,6 @@ public class TestVertxMetersInitializer {
     String expect = "vertx:\n"
         + "  instances:\n"
         + "    name       eventLoopContext-created\n"
-        + "    registry   0\n"
-        + "    registry-watch 0\n"
         + "    transport  0\n"
         + "  transport:\n";
 

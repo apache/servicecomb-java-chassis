@@ -21,7 +21,6 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;

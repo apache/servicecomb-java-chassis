@@ -80,8 +80,6 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
   private SCBEngine scbEngine;
 
-  private DiscoveryManager discoveryManager;
-
   @Autowired
   public void setScbEngine(SCBEngine scbEngine) {
     this.scbEngine = scbEngine;
@@ -89,7 +87,6 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
   @Autowired
   public void setDiscoveryManager(DiscoveryManager discoveryManager) {
-    this.discoveryManager = discoveryManager;
     this.discoveryTree = new DiscoveryTree(discoveryManager);
     discoveryTree.setDiscoveryFilters(List.of(new CustomEndpointDiscoveryFilter()));
   }
