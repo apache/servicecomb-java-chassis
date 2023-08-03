@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.config.MicroserviceProperties;
-import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceInstanceRegistrationEvent;
@@ -35,21 +35,26 @@ import org.apache.servicecomb.service.center.client.model.ServiceCenterConfigura
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.base.Charsets;
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.hash.Hashing;
 
 public class SCRegistration implements Registration<SCRegistrationInstance> {
+  public static final String SC_REGISTRATION_NAME = "sc-registration";
+
+  private final EventBus eventBus = new SimpleEventBus();
+
   private Microservice microservice;
 
   private MicroserviceInstance microserviceInstance;
 
   private ServiceCenterRegistration serviceCenterRegistration;
 
-  private ServiceCenterClient serviceCenterClient;
+  private final ServiceCenterClient serviceCenterClient;
 
-  private ServiceCenterWatch serviceCenterWatch;
+  private final ServiceCenterWatch serviceCenterWatch;
 
-  private SCConfigurationProperties configurationProperties;
+  private final SCConfigurationProperties configurationProperties;
 
   private SCRegistrationInstance registrationInstance;
 
@@ -60,18 +65,11 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
   private CountDownLatch readyWaiter = new CountDownLatch(1);
 
   @Autowired
-  public void setServiceCenterClient(ServiceCenterClient serviceCenterClient) {
-    this.serviceCenterClient = serviceCenterClient;
-  }
-
-  @Autowired
-  public void setServiceCenterWatch(ServiceCenterWatch serviceCenterWatch) {
-    this.serviceCenterWatch = serviceCenterWatch;
-  }
-
-  @Autowired
-  public void setConfigurationProperties(SCConfigurationProperties configurationProperties) {
+  public SCRegistration(SCConfigurationProperties configurationProperties,
+      ServiceCenterClient serviceCenterClient, ServiceCenterWatch serviceCenterWatch) {
     this.configurationProperties = configurationProperties;
+    this.serviceCenterClient = serviceCenterClient;
+    this.serviceCenterWatch = serviceCenterWatch;
   }
 
   @Autowired
@@ -95,11 +93,11 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
         new ServiceCenterConfiguration().setCanOverwriteSwagger(
                 this.configurationProperties.isCanOverwriteSwagger())
             .setCanOverwriteSwagger(this.configurationProperties.isCanOverwriteSwagger()),
-        EventManager.getEventBus());
+        eventBus);
     serviceCenterRegistration.setMicroservice(microservice);
     serviceCenterRegistration.setMicroserviceInstance(microserviceInstance);
     registrationInstance = new SCRegistrationInstance(microservice, microserviceInstance, serviceCenterRegistration);
-    EventManager.getEventBus().register(this);
+    eventBus.register(this);
   }
 
   @Override
@@ -136,7 +134,7 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
 
   @Override
   public String name() {
-    return "sc-registration";
+    return SC_REGISTRATION_NAME;
   }
 
   @Override

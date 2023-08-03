@@ -43,7 +43,6 @@ public class Application {
 
   public static void runTest() throws Exception {
     CategorizedTestCaseRunner.runCategorizedTestCase("demo-multi-service-center-serverA");
-    testRegistryThreads();
     testTransportThreads();
     TestMgr.summary();
     if (!TestMgr.errors().isEmpty()) {
@@ -70,36 +69,5 @@ public class Application {
     // transport-vert.x-internal-blocking-0
     // transport-vert.x-internal-blocking-1
     TestMgr.check(6, expectedThread.size());
-  }
-
-  private static void testRegistryThreads() throws Exception {
-    Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-    List<String> expectedThread = new ArrayList<>();
-    threadSet.forEach(thread -> {
-      if (thread.getName().contains("registry-")) {
-        expectedThread.add(thread.getName());
-      }
-    });
-    //registry-watch-vert.x-eventloop-thread-3(option)
-    //registry-watch-vert.x-eventloop-thread-2(option)
-    //registry-watch-vert.x-eventloop-thread-1
-    //registry-watch-vert.x-eventloop-thread-0
-    //registry-watch-serverB-vert.x-eventloop-thread-3(option)
-    //registry-watch-serverB-vert.x-eventloop-thread-2(option)
-    //registry-watch-serverB-vert.x-eventloop-thread-1
-    //registry-watch-serverB-vert.x-eventloop-thread-0
-    //registry-watch-pool-worker-service-center-watch-1
-    //registry-watch-pool-worker-service-center-watch-0
-    //registry-watch-serverB-pool-worker-service-center-watch-1
-    //registry-watch-serverB-pool-worker-service-center-watch-0
-    //registry-vert.x-eventloop-thread-3(option)
-    //registry-vert.x-eventloop-thread-2(option)
-    //registry-vert.x-eventloop-thread-1
-    //registry-vert.x-eventloop-thread-0
-    //registry-serverB-vert.x-eventloop-thread-3(option)
-    //registry-serverB-vert.x-eventloop-thread-2(option)
-    //registry-serverB-vert.x-eventloop-thread-1
-    //registry-serverB-vert.x-eventloop-thread-0
-    TestMgr.check(expectedThread.size() >= 12, expectedThread.size() <= 20);
   }
 }

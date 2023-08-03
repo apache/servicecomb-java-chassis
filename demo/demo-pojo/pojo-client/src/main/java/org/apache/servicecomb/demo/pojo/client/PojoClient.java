@@ -91,6 +91,7 @@ public class PojoClient {
       LOGGER.error("-------------- test failed -------------");
     }
     TestMgr.summary();
+    LOGGER.info("-------------- last time updated checks(maybe more/less): 785 -------------");
   }
 
   private static void testContextClassLoaderIsNull() throws Exception {
@@ -170,14 +171,10 @@ public class PojoClient {
   }
 
   private static void testHttpClientsIsOk() {
-    TestMgr.check(HttpClients.getClient("registry") != null, true);
-    TestMgr.check(HttpClients.getClient("registry-watch") != null, false);
     TestMgr.check(HttpClients.getClient("config-center") != null, false);
     TestMgr.check(HttpClients.getClient("http-transport-client") != null, false);
     TestMgr.check(HttpClients.getClient("http2-transport-client") != null, true);
 
-    TestMgr.check(HttpClients.getClient("registry", false) != null, true);
-    TestMgr.check(HttpClients.getClient("registry-watch", false) != null, false);
     TestMgr.check(HttpClients.getClient("config-center", false) != null, false);
     TestMgr.check(HttpClients.getClient("http-transport-client", false) != null, false);
     TestMgr.check(HttpClients.getClient("http2-transport-client", false) != null, true);

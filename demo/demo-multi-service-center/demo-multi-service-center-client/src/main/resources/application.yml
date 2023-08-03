@@ -23,10 +23,8 @@ servicecomb:
   registry:
     sc:
       address: http://127.0.0.1:30100
-#    registry:
-#      address: http://127.0.0.1:30100
-#    registry-serverB:
-#      address: http://127.0.0.1:40100
+    sc2:
+      address: http://127.0.0.1:40100
 
   transport:
     eventloop:

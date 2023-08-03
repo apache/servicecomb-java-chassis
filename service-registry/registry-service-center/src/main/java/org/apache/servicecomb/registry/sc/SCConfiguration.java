@@ -22,6 +22,7 @@ import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterWatch;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,31 +37,40 @@ public class SCConfiguration {
   }
 
   @Bean
-  public ServiceCenterClient serviceCenterClient(SCConfigurationProperties scConfigurationProperties,
+  public ServiceCenterClient serviceCenterClient(
+      @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
       List<AuthHeaderProvider> authHeaderProviders) {
     return SCClientUtils.serviceCenterClient(scConfigurationProperties, authHeaderProviders);
   }
 
   @Bean
-  public ServiceCenterWatch serviceCenterWatch(SCConfigurationProperties scConfigurationProperties,
+  public ServiceCenterWatch serviceCenterWatch(
+      @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
       List<AuthHeaderProvider> authHeaderProviders) {
     return SCClientUtils.serviceCenterWatch(scConfigurationProperties, authHeaderProviders);
   }
 
   @Bean
-  public SCRegistration scRegistration() {
-    return new SCRegistration();
+  public SCRegistration scRegistration(
+      @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
+      @Qualifier("serviceCenterClient") ServiceCenterClient serviceCenterClient,
+      @Qualifier("serviceCenterWatch") ServiceCenterWatch serviceCenterWatch) {
+    return new SCRegistration(scConfigurationProperties, serviceCenterClient, serviceCenterWatch);
   }
 
   @Bean
-  public SCDiscovery scDiscovery() {
-    return new SCDiscovery();
+  public SCDiscovery scDiscovery(
+      @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
+      @Qualifier("serviceCenterClient") ServiceCenterClient serviceCenterClient) {
+    return new SCDiscovery(scConfigurationProperties, serviceCenterClient);
   }
 
   @Bean
   public SCAddressManager scAddressManager(MicroserviceProperties microserviceProperties,
-      SCConfigurationProperties scConfigurationProperties, SCRegistration scRegistration,
-      ServiceCenterClient serviceCenterClient) {
-    return new SCAddressManager(microserviceProperties, scConfigurationProperties, serviceCenterClient, scRegistration);
+      @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
+      SCRegistration scRegistration,
+      @Qualifier("serviceCenterClient") ServiceCenterClient serviceCenterClient) {
+    return new SCAddressManager(microserviceProperties, scConfigurationProperties,
+        serviceCenterClient, scRegistration);
   }
 }
