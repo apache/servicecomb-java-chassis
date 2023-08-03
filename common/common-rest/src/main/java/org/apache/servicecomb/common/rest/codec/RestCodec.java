@@ -24,15 +24,11 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response.Status;
 
 public final class RestCodec {
-  private static final Logger LOG = LoggerFactory.getLogger(RestCodec.class);
-
   private RestCodec() {
   }
 
