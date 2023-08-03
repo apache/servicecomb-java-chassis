@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
@@ -42,9 +43,11 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
 
   public static final String SC_DISCOVERY_ENABLED = "servicecomb.registry.sc.%s.%s.enabled";
 
-  private SCConfigurationProperties configurationProperties;
+  private final EventBus eventBus = new SimpleEventBus();
 
-  private ServiceCenterClient serviceCenterClient;
+  private final SCConfigurationProperties configurationProperties;
+
+  private final ServiceCenterClient serviceCenterClient;
 
   private SCRegistration scRegistration;
 
@@ -55,18 +58,15 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
   private Environment environment;
 
   @Autowired
+  public SCDiscovery(SCConfigurationProperties configurationProperties,
+      ServiceCenterClient serviceCenterClient) {
+    this.configurationProperties = configurationProperties;
+    this.serviceCenterClient = serviceCenterClient;
+  }
+
+  @Autowired
   public void setEnvironment(Environment environment) {
     this.environment = environment;
-  }
-
-  @Autowired
-  public void setConfigurationProperties(SCConfigurationProperties configurationProperties) {
-    this.configurationProperties = configurationProperties;
-  }
-
-  @Autowired
-  public void setServiceCenterClient(ServiceCenterClient serviceCenterClient) {
-    this.serviceCenterClient = serviceCenterClient;
   }
 
   @Autowired
@@ -131,12 +131,12 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
 
   @Override
   public void init() {
-    serviceCenterDiscovery = new ServiceCenterDiscovery(serviceCenterClient, EventManager.getEventBus());
+    serviceCenterDiscovery = new ServiceCenterDiscovery(serviceCenterClient, eventBus);
     serviceCenterDiscovery.setPollInterval(configurationProperties.getPollIntervalInMillis());
 
     // TODO: add prefetch services
 
-    EventManager.getEventBus().register(this);
+    eventBus.register(this);
   }
 
   @Override

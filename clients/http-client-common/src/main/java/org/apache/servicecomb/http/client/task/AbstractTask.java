@@ -21,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,6 +64,8 @@ public class AbstractTask {
 
   private volatile boolean running = true;
 
+  public static AtomicInteger taskCounter = new AtomicInteger(0);
+
   protected AbstractTask(String taskName) {
     initTaskPool(taskName);
     Runtime.getRuntime().addShutdownHook(new Thread(AbstractTask.this::stop, taskName + "-shutdown-hook"));
@@ -70,7 +73,7 @@ public class AbstractTask {
 
   protected void initTaskPool(String taskName) {
     this.taskPool = Executors.newSingleThreadExecutor((task) ->
-        new Thread(task, taskName));
+        new Thread(task, taskName + "-" + taskCounter.getAndIncrement()));
   }
 
   protected void startTask(Task task) {
