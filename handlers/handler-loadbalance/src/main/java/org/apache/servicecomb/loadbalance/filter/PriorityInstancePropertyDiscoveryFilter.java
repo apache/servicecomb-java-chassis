@@ -53,7 +53,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
   private MicroserviceProperties microserviceProperties;
 
   @Autowired
-  public void setRegistrationManager(MicroserviceProperties microserviceProperties) {
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
     this.microserviceProperties = microserviceProperties;
   }
 

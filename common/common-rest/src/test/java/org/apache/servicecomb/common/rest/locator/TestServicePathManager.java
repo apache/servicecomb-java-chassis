@@ -17,7 +17,12 @@
 
 package org.apache.servicecomb.common.rest.locator;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
@@ -29,6 +34,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class TestServicePathManager {
+  SCBEngine scbEngine;
+
   @BeforeEach
   public void setUp() {
     ConfigUtil.installDynamicConfig();
@@ -36,15 +43,20 @@ public class TestServicePathManager {
 
   @AfterEach
   public void tearDown() {
+    scbEngine.destroy();
     ArchaiusUtils.resetConfig();
     ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 
   @Test
   public void testBuildProducerPathsNoPrefix() {
-    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest()
-        .addProducerMeta("sid1", new TestPathSchema())
+    scbEngine = SCBBootstrap.createSCBEngineForTest();
+    List<BootListener> listeners = new ArrayList<>();
+    listeners.add(new RestEngineSchemaListener());
+    scbEngine.setBootListeners(listeners);
+    scbEngine.addProducerMeta("sid1", new TestPathSchema())
         .run();
+
     ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
 
     Assertions.assertSame(spm.producerPaths, spm.swaggerPaths);
@@ -55,10 +67,13 @@ public class TestServicePathManager {
   @Test
   public void testBuildProducerPathsHasPrefix() {
     ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root/rest");
-
-    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest()
-        .addProducerMeta("sid1", new TestPathSchema())
+    scbEngine = SCBBootstrap.createSCBEngineForTest();
+    List<BootListener> listeners = new ArrayList<>();
+    listeners.add(new RestEngineSchemaListener());
+    scbEngine.setBootListeners(listeners);
+    scbEngine.addProducerMeta("sid1", new TestPathSchema())
         .run();
+
     ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
 
     // all locate should be success

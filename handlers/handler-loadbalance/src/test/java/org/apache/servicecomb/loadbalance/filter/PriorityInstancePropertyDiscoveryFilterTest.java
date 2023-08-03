@@ -27,8 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
@@ -41,7 +41,6 @@ import org.mockito.Mockito;
 
 import com.google.common.collect.Sets;
 
-import mockit.Deencapsulation;
 import mockit.Injectable;
 
 /**
@@ -69,7 +68,7 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
     filter = new PriorityInstancePropertyDiscoveryFilter();
     instances = new ArrayList<>();
     self = new MicroserviceProperties();
-//    self.setInstanceId("self");
+    filter.setMicroserviceProperties(self);
     DiscoveryInstance discoveryInstance1 = Mockito.mock(DiscoveryInstance.class);
     instance1 = new StatefulDiscoveryInstance(discoveryInstance1);
     Mockito.when(discoveryInstance1.getInstanceId()).thenReturn("instance.empty");
@@ -99,14 +98,10 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
     instances.add(instance2);
     instances.add(instance3);
     instances.add(instance4);
-
-    original = Deencapsulation.getField(RegistrationManager.class, "INSTANCE");
-    Deencapsulation.setField(RegistrationManager.class, "INSTANCE", registrationManager);
   }
 
   @After
   public void cleanup() {
-    Deencapsulation.setField(RegistrationManager.class, "INSTANCE", original);
   }
 
   @Test

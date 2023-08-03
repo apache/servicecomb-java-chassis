@@ -20,11 +20,15 @@ package org.apache.servicecomb.common.rest.definition;
 import static org.hamcrest.core.Is.is;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -163,7 +167,11 @@ public class TestRestOperationMeta {
   @BeforeAll
   public static void classSetup() {
     ConfigUtil.installDynamicConfig();
-    scbEngine = SCBBootstrap.createSCBEngineForTest()
+    scbEngine = SCBBootstrap.createSCBEngineForTest();
+    List<BootListener> listeners = new ArrayList<>();
+    listeners.add(new RestEngineSchemaListener());
+    scbEngine.setBootListeners(listeners);
+    scbEngine
         .addProducerMeta("sid1", new RestOperationMetaSchema())
         .run();
     swagger = Mockito.spy(scbEngine.getProducerMicroserviceMeta().ensureFindSchemaMeta("sid1").getSwagger());

@@ -20,6 +20,7 @@ package org.apache.servicecomb.loadbalance;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +39,8 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
@@ -52,6 +55,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestLoadBalanceFilter2 {
   private static SCBEngine scbEngine;
@@ -93,7 +97,6 @@ public class TestLoadBalanceFilter2 {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
     DataCenterProperties myself = new DataCenterProperties();
@@ -126,7 +129,7 @@ public class TestLoadBalanceFilter2 {
     Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
     DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(noneMatchDiscoveryInstance);
     DataCenterInfo noneMatchInfo = new DataCenterInfo();
     noneMatchInfo.setName("test");
     noneMatchInfo.setRegion("test-Region2");
@@ -146,7 +149,18 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("testApp", "testMicroserviceName"))
+        .thenReturn(parent);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
+    Environment environment = Mockito.mock(Environment.class);
+    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+        Boolean.class, true)).thenReturn(true);
+    discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
+        new ServerDiscoveryFilter()));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
         discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
@@ -188,11 +202,8 @@ public class TestLoadBalanceFilter2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
-    //TODO: mock
-//    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
     DataCenterProperties myself = new DataCenterProperties();
@@ -222,7 +233,18 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("testApp", "testMicroserviceName"))
+        .thenReturn(parent);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
+    Environment environment = Mockito.mock(Environment.class);
+    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+        Boolean.class, true)).thenReturn(true);
+    discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
+        new ServerDiscoveryFilter()));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
         discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
@@ -287,7 +309,7 @@ public class TestLoadBalanceFilter2 {
     Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
     DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(noneMatchDiscoveryInstance);
     DataCenterInfo noneMatchInfo = new DataCenterInfo();
     noneMatchInfo.setName("test");
     noneMatchInfo.setRegion("test-Region2");
@@ -308,7 +330,18 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("testApp", "testMicroserviceName"))
+        .thenReturn(parent);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
+    Environment environment = Mockito.mock(Environment.class);
+    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+        Boolean.class, true)).thenReturn(true);
+    discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
+        new ServerDiscoveryFilter()));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
@@ -374,7 +407,7 @@ public class TestLoadBalanceFilter2 {
     Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
     DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(noneMatchDiscoveryInstance);
     DataCenterInfo noneMatchInfo = new DataCenterInfo();
     noneMatchInfo.setName("test");
     noneMatchInfo.setRegion("test-Region2");
@@ -396,7 +429,18 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("testApp", "testMicroserviceName"))
+        .thenReturn(parent);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
+    Environment environment = Mockito.mock(Environment.class);
+    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+        Boolean.class, true)).thenReturn(true);
+    discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
+        new ServerDiscoveryFilter()));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
@@ -465,7 +509,7 @@ public class TestLoadBalanceFilter2 {
     Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
 
     DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(noneMatchDiscoveryInstance);
     DataCenterInfo noneMatchInfo = new DataCenterInfo();
     noneMatchInfo.setName("test");
     noneMatchInfo.setRegion("test-Region2");
@@ -486,7 +530,18 @@ public class TestLoadBalanceFilter2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
 
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("testApp", "testMicroserviceName"))
+        .thenReturn(parent);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
+    Environment environment = Mockito.mock(Environment.class);
+    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+        Boolean.class, true)).thenReturn(true);
+    discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
+        new ServerDiscoveryFilter()));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);

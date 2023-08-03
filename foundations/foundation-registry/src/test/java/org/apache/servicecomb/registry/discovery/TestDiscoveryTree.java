@@ -19,23 +19,25 @@ package org.apache.servicecomb.registry.discovery;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-
 public class TestDiscoveryTree {
+  DiscoveryContext context = new DiscoveryContext();
+
+  DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent");
+
+  DiscoveryTreeNode result;
+
   @BeforeEach
   public void before() {
     ConfigUtil.installDynamicConfig();
@@ -46,65 +48,42 @@ public class TestDiscoveryTree {
     ArchaiusUtils.resetConfig();
   }
 
-  DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
-
-  List<DiscoveryFilter> filters = discoveryTree.getFilters();
-
-  DiscoveryContext context = new DiscoveryContext();
-
-  DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent");
-
-  DiscoveryTreeNode result;
-
-
-  @Test
-  public void sort() {
-    DiscoveryFilter f1 = Mockito.mock(DiscoveryFilter.class);
-    DiscoveryFilter f2 = Mockito.mock(DiscoveryFilter.class);
-    DiscoveryFilter f3 = Mockito.mock(DiscoveryFilter.class);
-    Mockito.when(f1.getOrder()).thenReturn(-1);
-    Mockito.when(f1.enabled()).thenReturn(true);
-    Mockito.when(f2.getOrder()).thenReturn(0);
-    Mockito.when(f2.enabled()).thenReturn(true);
-    Mockito.when(f3.getOrder()).thenReturn(0);
-    Mockito.when(f3.enabled()).thenReturn(false);
-
-    discoveryTree.setDiscoveryFilters(Arrays.asList(f1, f2, f3));
-
-    MatcherAssert.assertThat(filters, Matchers.contains(f1, f2));
-  }
-
-
   @Test
   public void isMatch_existingNull() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     Assertions.assertFalse(discoveryTree.isMatch(null, null));
   }
 
   @Test
   public void isMatch_yes() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     parent.cacheVersion(1);
     Assertions.assertTrue(discoveryTree.isMatch(new DiscoveryTreeNode().cacheVersion(1), parent));
   }
 
   @Test
   public void isMatch_no() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     parent.cacheVersion(0);
     Assertions.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(1), parent));
   }
 
   @Test
   public void isExpired_existingNull() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     Assertions.assertTrue(discoveryTree.isExpired(null, null));
   }
 
   @Test
   public void isExpired_yes() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     parent.cacheVersion(1);
     Assertions.assertTrue(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
   }
 
   @Test
   public void isExpired_no() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     parent.cacheVersion(0);
     Assertions.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
   }
@@ -138,6 +117,7 @@ public class TestDiscoveryTree {
 
   @Test
   public void filterNormal() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     parent.name("1.0.0-2.0.0");
 
     discoveryTree.setDiscoveryFilters(Arrays.asList(new DiscoveryFilterForTest("g1"),
@@ -151,9 +131,10 @@ public class TestDiscoveryTree {
   @Test
   public void easyDiscovery() {
     DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
-    Mockito.when(discoveryManager.getOrCreateVersionedCache(null, null)).thenReturn(parent);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("app", "svc")).thenReturn(parent);
 
-    result = discoveryTree.discovery(context, null, null);
+    result = discoveryTree.discovery(context, "app", "svc");
     Assertions.assertEquals(parent.name(), result.name());
     Assertions.assertEquals(parent.cacheVersion(), result.cacheVersion());
   }
@@ -162,6 +143,7 @@ public class TestDiscoveryTree {
   public void discovery_filterReturnNull() {
     DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
     Mockito.when(discoveryManager.getOrCreateVersionedCache(null, null)).thenReturn(parent);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     DiscoveryFilter filter = new DiscoveryFilter() {
       @Override
       public int getOrder() {
@@ -206,7 +188,7 @@ public class TestDiscoveryTree {
         return new DiscoveryTreeNode().data(parent.data());
       }
     };
-
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     discoveryTree.setDiscoveryFilters(Arrays.asList(f1, f2));
     result = discoveryTree.discovery(context, parent);
 
@@ -215,6 +197,7 @@ public class TestDiscoveryTree {
 
   @Test
   public void avoidConcurrentProblem() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     discoveryTree.setRoot(parent.cacheVersion(1));
     Assertions.assertTrue(parent.children().isEmpty());
 
@@ -224,6 +207,7 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_match() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     discoveryTree.setRoot(parent);
 
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(parent);
@@ -233,6 +217,7 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_expired() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     discoveryTree.setRoot(parent);
 
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() + 1);
@@ -244,6 +229,7 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_tempRoot() {
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
     discoveryTree.setRoot(parent);
 
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() - 1);

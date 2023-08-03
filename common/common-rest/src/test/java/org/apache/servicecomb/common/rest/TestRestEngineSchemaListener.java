@@ -17,10 +17,14 @@
 
 package org.apache.servicecomb.common.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.common.rest.locator.TestPathSchema;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -38,8 +42,11 @@ public class TestRestEngineSchemaListener {
   @BeforeAll
   public static void setup() {
     ConfigUtil.installDynamicConfig();
-    scbEngine = SCBBootstrap.createSCBEngineForTest()
-        .addProducerMeta("sid1", new TestPathSchema())
+    scbEngine = SCBBootstrap.createSCBEngineForTest();
+    List<BootListener> listeners = new ArrayList<>();
+    listeners.add(new RestEngineSchemaListener());
+    scbEngine.setBootListeners(listeners);
+    scbEngine.addProducerMeta("sid1", new TestPathSchema())
         .run();
     spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
   }
@@ -53,29 +60,33 @@ public class TestRestEngineSchemaListener {
   @Test
   public void testLocateNotFound() {
     InvocationException exception = Assertions.assertThrows(InvocationException.class,
-            () -> spm.producerLocateOperation("/notExist", "GET"));
-    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]", exception.getMessage());
+        () -> spm.producerLocateOperation("/notExist", "GET"));
+    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]",
+        exception.getMessage());
   }
 
   @Test
   public void testLocateNotFoundDynamicRemained() {
     InvocationException exception = Assertions.assertThrows(InvocationException.class,
-            () -> spm.producerLocateOperation("/dynamic/1/2", "GET"));
-    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]", exception.getMessage());
+        () -> spm.producerLocateOperation("/dynamic/1/2", "GET"));
+    Assertions.assertEquals("InvocationException: code=404;msg=CommonExceptionData [message=Not Found]",
+        exception.getMessage());
   }
 
   @Test
   public void testLocateStaticMethodNotAllowed() {
     InvocationException exception = Assertions.assertThrows(InvocationException.class,
-            () -> spm.producerLocateOperation("/staticEx", "POST"));
-    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]", exception.getMessage());
+        () -> spm.producerLocateOperation("/staticEx", "POST"));
+    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]",
+        exception.getMessage());
   }
 
   @Test
   public void testLocateDynamicMethodNotAllowed() {
     InvocationException exception = Assertions.assertThrows(InvocationException.class,
-            () -> spm.producerLocateOperation("/dynamic/1", "POST"));
-    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]", exception.getMessage());
+        () -> spm.producerLocateOperation("/dynamic/1", "POST"));
+    Assertions.assertEquals("InvocationException: code=405;msg=CommonExceptionData [message=Method Not Allowed]",
+        exception.getMessage());
   }
 
   @Test

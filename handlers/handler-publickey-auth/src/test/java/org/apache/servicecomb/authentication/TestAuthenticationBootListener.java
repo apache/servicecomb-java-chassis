@@ -17,6 +17,7 @@
 package org.apache.servicecomb.authentication;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
 import org.apache.servicecomb.config.ConfigUtil;
@@ -51,7 +52,9 @@ public class TestAuthenticationBootListener {
 
   @Test
   public void testGenerateRSAKey() {
+    RegistrationManager registrationManager = Mockito.mock(RegistrationManager.class);
     AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
+    authenticationBootListener.setRegistrationManager(registrationManager);
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
     authenticationBootListener.onBootEvent(bootEvent);
@@ -61,14 +64,15 @@ public class TestAuthenticationBootListener {
 
   @Test
   public void testMicroserviceInstancePublicKey() {
+    RegistrationManager registrationManager = Mockito.mock(RegistrationManager.class);
     AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
+    authenticationBootListener.setRegistrationManager(registrationManager);
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
 
-    RegistrationManager registrationManager = Mockito.mock(RegistrationManager.class);
     authenticationBootListener.onBootEvent(bootEvent);
 
     Mockito.verify(registrationManager, times(1))
-        .addProperty(DefinitionConst.INSTANCE_PUBKEY_PRO, any(String.class));
+        .addProperty(eq(DefinitionConst.INSTANCE_PUBKEY_PRO), any(String.class));
   }
 }

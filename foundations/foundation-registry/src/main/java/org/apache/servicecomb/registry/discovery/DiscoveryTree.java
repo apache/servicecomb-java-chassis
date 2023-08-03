@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -77,7 +77,7 @@ public class DiscoveryTree {
 
   private final Object lock = new Object();
 
-  private List<DiscoveryFilter> filters;
+  private List<DiscoveryFilter> filters = Collections.emptyList();
 
   private final DiscoveryManager discoveryManager;
 
@@ -103,19 +103,13 @@ public class DiscoveryTree {
   @Autowired
   public void setDiscoveryFilters(List<DiscoveryFilter> filters) {
     this.filters = filters;
-    sort();
+    log();
   }
 
-  // group name are qualifiedName
-  // all leaf group will create a loadbalancer instance, groupName is loadBalancer key
-  private void sort() {
-    Iterator<DiscoveryFilter> iterator = filters.iterator();
-    while (iterator.hasNext()) {
-      DiscoveryFilter filter = iterator.next();
-      if (!filter.enabled()) {
-        iterator.remove();
-      }
-      LOGGER.info("DiscoveryFilter {}, enabled {}.", filter.getClass().getName(), filter.enabled());
+  private void log() {
+    for (DiscoveryFilter filter : filters) {
+      LOGGER.info("DiscoveryFilter {}, enabled {}, order {}.",
+          filter.getClass().getName(), filter.enabled(), filter.getOrder());
     }
   }
 
@@ -171,6 +165,10 @@ public class DiscoveryTree {
   protected DiscoveryTreeNode doDiscovery(DiscoveryContext context, DiscoveryTreeNode parent) {
     for (int idx = 0; idx < filters.size(); ) {
       DiscoveryFilter filter = filters.get(idx);
+      if (!filter.enabled()) {
+        idx++;
+        continue;
+      }
       context.setCurrentNode(parent);
 
       DiscoveryTreeNode child = filter.discovery(context, parent);

@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.core;
 
-public interface BootListener {
+import org.springframework.core.Ordered;
+
+public interface BootListener extends Ordered {
   enum EventType {
     BEFORE_FILTER,
     AFTER_FILTER,
@@ -65,6 +67,7 @@ public interface BootListener {
     }
   }
 
+  @Override
   default int getOrder() {
     return 0;
   }
