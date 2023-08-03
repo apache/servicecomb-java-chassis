@@ -79,7 +79,7 @@ public class TestPrometheusPublisher {
   @Test
   public void collect() throws IllegalAccessException, IOException {
     MicroserviceProperties microserviceProperties = Mockito.mock(MicroserviceProperties.class);
-    Mockito.doReturn("testAppId").when(microserviceProperties.getApplication());
+    Mockito.when(microserviceProperties.getApplication()).thenReturn("testAppId");
     ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:0");
     publisher.setMicroserviceProperties(microserviceProperties);
     publisher.init(globalRegistry, null, null);

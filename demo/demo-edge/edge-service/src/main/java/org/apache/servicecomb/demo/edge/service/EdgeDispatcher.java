@@ -48,7 +48,6 @@ public class EdgeDispatcher extends AbstractEdgeDispatcher {
   protected void onRequest(RoutingContext context) {
     Map<String, String> pathParams = context.pathParams();
     String microserviceName = pathParams.get("param0");
-    String pathVersion = pathParams.get("param1");
     String path = context.request().path().substring(4);
 
     requestByFilter(context, microserviceName, path);

@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.config.MicroserviceProperties;
-import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
 import org.apache.servicecomb.demo.edge.model.DependTypeB;
@@ -42,7 +41,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -57,9 +55,9 @@ public class Consumer {
 
   String edgePrefix;
 
-  List<ResultWithInstance> addV1Result = new ArrayList<>();
+//  List<ResultWithInstance> addV1Result = new ArrayList<>();
 
-  List<ResultWithInstance> decV1Result = new ArrayList<>();
+//  List<ResultWithInstance> decV1Result = new ArrayList<>();
 
   List<ResultWithInstance> addV2Result = new ArrayList<>();
 
@@ -176,7 +174,7 @@ public class Consumer {
     try {
       Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
     } catch (HttpServerErrorException e) {
-      Assert.isTrue(e.getRawStatusCode() == 500, "x99");
+      Assert.isTrue(e.getStatusCode().value() == 500, "x99");
       Assert.isTrue(e.getResponseBodyAsString().contains("un expected NPE test."), "x99");
     }
 
@@ -184,14 +182,14 @@ public class Consumer {
       template.getForObject(url + "?x=88&y=3", Map.class);
       Assert.isTrue(false, "x88");
     } catch (HttpClientErrorException e) {
-      Assert.isTrue(e.getRawStatusCode() == 403, "x88");
+      Assert.isTrue(e.getStatusCode().value() == 403, "x88");
       Assert.isTrue(e.getResponseBodyAsString().equals("{\"id\":12,\"message\":\"not allowed id.\"}"), "x88");
     }
     try {
       template.getForObject(url + "?x=77&y=3", Map.class);
       Assert.isTrue(false, "x77");
     } catch (HttpServerErrorException e) {
-      Assert.isTrue(e.getRawStatusCode() == 500, "x77");
+      Assert.isTrue(e.getStatusCode().value() == 500, "x77");
       Assert.isTrue(e.getResponseBodyAsString().equals("{\"id\":500,\"message\":\"77\",\"state\":\"77\"}"), "x77");
     }
   }

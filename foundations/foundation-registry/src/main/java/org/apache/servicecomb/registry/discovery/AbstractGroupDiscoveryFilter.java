@@ -6,11 +6,11 @@ public abstract class AbstractGroupDiscoveryFilter extends AbstractDiscoveryFilt
     return true;
   }
 
-  abstract protected String groupsSizeParameter();
+  protected abstract String groupsSizeParameter();
 
-  abstract protected String contextParameter();
+  protected abstract String contextParameter();
 
-  abstract protected String groupPrefix();
+  protected abstract String groupPrefix();
 
   @Override
   protected String findChildName(DiscoveryContext context, DiscoveryTreeNode parent) {
