@@ -48,7 +48,7 @@ public class ProviderTokenManager {
   private MicroserviceInstanceCache microserviceInstanceCache;
 
   @Autowired
-  public void setDiscoveryManager(MicroserviceInstanceCache microserviceInstanceCache) {
+  public void setMicroserviceInstanceCache(MicroserviceInstanceCache microserviceInstanceCache) {
     this.microserviceInstanceCache = microserviceInstanceCache;
   }
 

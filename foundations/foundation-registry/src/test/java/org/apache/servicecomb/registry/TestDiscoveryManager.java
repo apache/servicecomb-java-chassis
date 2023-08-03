@@ -36,7 +36,7 @@ public class TestDiscoveryManager {
 
   @Test
   public void test_initial_service_list_correct() {
-    MyDiscovery discovery1 = Mockito.mock(MyDiscovery.class);
+    MyDiscovery discovery1 = Mockito.spy(new MyDiscovery());
     MyDiscoveryInstance instance1 = Mockito.mock(MyDiscoveryInstance.class);
     DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1));
     Mockito.when(discovery1.findServiceInstances("app", "service"))
@@ -58,7 +58,7 @@ public class TestDiscoveryManager {
 
   @Test
   public void test_initial_empty_service_list_correct() {
-    MyDiscovery discovery1 = Mockito.mock(MyDiscovery.class);
+    MyDiscovery discovery1 = Mockito.spy(new MyDiscovery());
     DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1));
     Mockito.when(discovery1.findServiceInstances("app", "service"))
         .thenReturn(Collections.emptyList());
@@ -74,7 +74,7 @@ public class TestDiscoveryManager {
 
   @Test
   public void test_isolate_service_instance_correct() {
-    MyDiscovery discovery1 = Mockito.mock(MyDiscovery.class);
+    MyDiscovery discovery1 = Mockito.spy(new MyDiscovery());
     MyDiscoveryInstance instance1 = Mockito.mock(MyDiscoveryInstance.class);
     DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1));
     Mockito.when(discovery1.findServiceInstances("app", "service"))
@@ -103,7 +103,7 @@ public class TestDiscoveryManager {
 
     @Override
     public boolean enabled(String application, String serviceName) {
-      return false;
+      return true;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class TestDiscoveryManager {
 
     @Override
     public boolean enabled() {
-      return false;
+      return true;
     }
   }
 

@@ -100,13 +100,6 @@ public class TestLoadBalanceFilter {
       }
     };
 
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getSortedService(DiscoveryFilter.class);
-        result = Collections.emptyList();
-      }
-    };
-
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
     ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);

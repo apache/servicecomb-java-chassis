@@ -30,7 +30,6 @@ public class TestTransport {
 
   @AfterAll
   public static void classTeardown() {
-    SCBEngine.getInstance().destroy();
   }
 
   @Test

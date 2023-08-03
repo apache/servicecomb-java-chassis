@@ -16,12 +16,15 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.utils.KeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -77,7 +80,14 @@ public class TestProviderTokenManager {
         return 500;
       }
     });
-
+    MicroserviceInstanceCache microserviceInstanceCache = Mockito.mock(MicroserviceInstanceCache.class);
+    DiscoveryInstance microserviceInstance = Mockito.mock(DiscoveryInstance.class);
+    Mockito.when(microserviceInstance.getInstanceId()).thenReturn("");
+    Map<String, String> properties = new HashMap<>();
+    Mockito.when(microserviceInstance.getProperties()).thenReturn(properties);
+    Mockito.when(microserviceInstanceCache.getOrCreate(any(String.class), any(String.class)))
+        .thenReturn(microserviceInstance);
+    tokenManager.setMicroserviceInstanceCache(microserviceInstanceCache);
     try (MockedStatic<RSAAuthenticationToken> rsaAuthenticationTokenMockedStatic = Mockito.mockStatic(
         RSAAuthenticationToken.class)) {
       rsaAuthenticationTokenMockedStatic.when(() -> RSAAuthenticationToken.fromStr(tokenStr)).thenReturn(token);
@@ -100,9 +110,13 @@ public class TestProviderTokenManager {
     Keypair4Auth.INSTANCE.setPrivateKey(keyPairEntry.getPrivateKey());
     Keypair4Auth.INSTANCE.setPublicKey(keyPairEntry.getPublicKey());
     Keypair4Auth.INSTANCE.setPublicKeyEncoded(keyPairEntry.getPublicKeyEncoded());
-    String serviceId = "c8636e5acf1f11e7b701286ed488fc20";
-    String instanceId = "e8a04b54cf2711e7b701286ed488fc20";
+    String serviceId = "test";
+    String instanceId = "test";
     ConsumerTokenManager consumerTokenManager = new ConsumerTokenManager();
+    MicroserviceProperties microserviceProperties = Mockito.mock(MicroserviceProperties.class);
+    Mockito.when(microserviceProperties.getName()).thenReturn("test");
+    Mockito.when(microserviceProperties.getApplication()).thenReturn("test");
+    consumerTokenManager.setMicroserviceProperties(microserviceProperties);
     DiscoveryInstance microserviceInstance = Mockito.mock(DiscoveryInstance.class);
     Mockito.when(microserviceInstance.getInstanceId()).thenReturn(instanceId);
     Map<String, String> properties = new HashMap<>();
@@ -110,13 +124,13 @@ public class TestProviderTokenManager {
     properties.put(DefinitionConst.INSTANCE_PUBKEY_PRO, keyPairEntry.getPublicKeyEncoded());
     MicroserviceInstanceCache microserviceInstanceCache = Mockito.mock(MicroserviceInstanceCache.class);
     Mockito.when(microserviceInstanceCache.getOrCreate(serviceId, instanceId)).thenReturn(microserviceInstance);
-
     //Test Consumer first create token
     String token = consumerTokenManager.getToken();
     Assertions.assertNotNull(token);
     // use cache token
     Assertions.assertEquals(token, consumerTokenManager.getToken());
     ProviderTokenManager rsaProviderTokenManager = new ProviderTokenManager();
+    rsaProviderTokenManager.setMicroserviceInstanceCache(microserviceInstanceCache);
     //first validate need to verify use RSA
     Assertions.assertTrue(rsaProviderTokenManager.valid(token));
     // second validate use validated pool

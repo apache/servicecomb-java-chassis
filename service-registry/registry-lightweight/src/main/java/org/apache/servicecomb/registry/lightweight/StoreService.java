@@ -95,7 +95,9 @@ public class StoreService {
       return addMicroserviceAndInstance(endpoint, request);
     }
 
-    return CompletableFuture.completedFuture(null);
+    return CompletableFuture.completedFuture(null).thenCompose(v ->
+            discoveryClient.getInstanceAsync(endpoint, request.getServiceId()))
+        .thenApply(instance -> addInstance(microserviceStore, instance));
   }
 
   private CompletableFuture<InstanceStore> addMicroserviceAndInstance(Endpoint endpoint, RegisterRequest request) {

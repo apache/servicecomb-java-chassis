@@ -87,7 +87,7 @@ public class TestAbstractTransportDiscoveryFilter {
   @Test
   public void discoveryNotExist() {
     transportName = "notExist";
-    parent.data(Collections.emptyMap());
+    parent.data(Collections.emptyList());
     result = filter.discovery(context, parent);
 
     Assertions.assertTrue(result.isEmpty());

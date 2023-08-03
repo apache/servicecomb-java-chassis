@@ -61,24 +61,24 @@ public class TestInstanceStatusDiscoveryFilter {
     filter.init(new DiscoveryContext(), parent);
 
     List<StatefulDiscoveryInstance> level0 = parent
-        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 0)
+        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 1)
         .data();
     Assertions.assertEquals(1, level0.size());
     List<StatefulDiscoveryInstance> level1 = parent
-        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 1)
+        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 2)
         .data();
     Assertions.assertEquals(1, level1.size());
     Assertions.assertEquals(1, level1.size());
     List<StatefulDiscoveryInstance> level2 = parent
-        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 2)
+        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 3)
         .data();
     Assertions.assertEquals(1, level2.size());
     List<StatefulDiscoveryInstance> level3 = parent
-        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 3)
+        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 4)
         .data();
     Assertions.assertEquals(1, level3.size());
 
     Assertions.assertEquals(null, parent
-        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 4));
+        .child(InstanceStatusDiscoveryFilter.GROUP_PREFIX + 5));
   }
 }

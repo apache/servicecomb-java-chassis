@@ -148,24 +148,28 @@ public class TestLoadBalanceCreator {
     List<ServiceCombServer> servers = new ArrayList<>();
 
     DiscoveryInstance discoveryInstance1 = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance1);
+//    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance1);
     Mockito.when(discoveryInstance1.getInstanceId()).thenReturn("ii01");
 
     DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
     StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
     Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("ii02");
 
-    ServiceCombServer server = new ServiceCombServer(null, endpoint1);
-    ServiceCombServer server2 = new ServiceCombServer(null, endpoint2);
-
     new Expectations() {
       {
         endpoint1.getEndpoint();
         result = "host1";
+//        endpoint1.getMicroserviceInstance();
+//        result = instance1;
         endpoint2.getEndpoint();
         result = "host2";
+        endpoint2.getMicroserviceInstance();
+        result = instance2;
       }
     };
+
+    ServiceCombServer server = new ServiceCombServer(null, endpoint1);
+    ServiceCombServer server2 = new ServiceCombServer(null, endpoint2);
 
     servers.add(server);
     servers.add(server2);

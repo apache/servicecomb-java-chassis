@@ -18,6 +18,7 @@ package org.apache.servicecomb.core.bootstrap;
 
 import java.util.Collections;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
@@ -28,10 +29,17 @@ public class SCBBootstrap {
     DiscoveryManager discoveryManager = new DiscoveryManager(Collections.emptyList());
     registrationManager.init();
     discoveryManager.init();
+    MicroserviceProperties microserviceProperties = new MicroserviceProperties();
+    microserviceProperties.setApplication("test");
+    microserviceProperties.setName("test");
+    microserviceProperties.setVersion("0.0.1");
 
     SCBEngine result = new SCBEngineForTest();
     result.setDiscoveryManager(discoveryManager);
     result.setRegistrationManager(registrationManager);
+    result.setBootListeners(Collections.emptyList());
+    result.setMicroserviceProperties(microserviceProperties);
+    result.setBootUpInformationCollectors(Collections.emptyList());
     return result;
   }
 }

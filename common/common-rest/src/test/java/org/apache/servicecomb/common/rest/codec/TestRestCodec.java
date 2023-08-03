@@ -132,7 +132,7 @@ public class TestRestCodec {
       success = true;
     } catch (InvocationException e) {
       Assertions.assertEquals(400, e.getStatusCode());
-      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is not valid"));
     }
     Assertions.assertFalse(success);
   }

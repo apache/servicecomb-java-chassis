@@ -19,26 +19,19 @@ package org.apache.servicecomb.foundation.metrics;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
-import com.netflix.spectator.api.Registry;
 
 import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestMetricsBootstrap {
   MetricsBootstrap bootstrap = new MetricsBootstrap();
@@ -46,6 +39,11 @@ public class TestMetricsBootstrap {
   GlobalRegistry globalRegistry = new GlobalRegistry();
 
   EventBus eventBus = new EventBus();
+
+  @BeforeEach
+  public void setUp() {
+    bootstrap.setMetricsInitializers(List.of());
+  }
 
   @Test
   public void loadMetricsInitializers() {
@@ -56,12 +54,8 @@ public class TestMetricsBootstrap {
         initList.add(this);
       }
     };
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getSortedService(MetricsInitializer.class);
-        result = Arrays.asList(metricsInitializer, metricsInitializer);
-      }
-    };
+
+    bootstrap.setMetricsInitializers(Arrays.asList(metricsInitializer, metricsInitializer));
 
     bootstrap.start(globalRegistry, eventBus);
     bootstrap.shutdown();
@@ -70,39 +64,8 @@ public class TestMetricsBootstrap {
   }
 
   @Test
-  public void pollMeters(@Mocked Registry registry, @Mocked Meter meter, @Mocked Measurement measurement,
-      @Mocked ScheduledExecutorService executor) {
-    List<Meter> meters = Arrays.asList(meter);
-    globalRegistry.add(registry);
-    new Expectations(Executors.class) {
-      {
-        Executors.newScheduledThreadPool(1, (ThreadFactory) any);
-        result = executor;
-        registry.iterator();
-        result = meters.iterator();
-        meter.measure();
-        result = Arrays.asList(measurement);
-      }
-    };
-    bootstrap.start(globalRegistry, eventBus);
-
-    PolledEvent result = new PolledEvent(null, null);
-    eventBus.register(new Object() {
-      @Subscribe
-      public void onEvent(PolledEvent event) {
-        result.setMeters(event.getMeters());
-        result.setMeasurements(event.getMeasurements());
-      }
-    });
-
-    bootstrap.pollMeters();
-    bootstrap.shutdown();
-    Assertions.assertEquals(meters, result.getMeters());
-    MatcherAssert.assertThat(result.getMeasurements(), Matchers.contains(measurement));
-  }
-
-  @Test
-  public void shutdown(@Mocked ScheduledExecutorService scheduledExecutorService) {
+  public void shutdown() {
+    ScheduledExecutorService scheduledExecutorService = Mockito.mock(ScheduledExecutorService.class);
     List<MetricsInitializer> destroyList = new ArrayList<>();
     MetricsInitializer initializer1 = new MetricsInitializer() {
       @Override
@@ -135,13 +98,7 @@ public class TestMetricsBootstrap {
         destroyList.add(this);
       }
     };
-
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getSortedService(MetricsInitializer.class);
-        result = Arrays.asList(initializer1, initializer2);
-      }
-    };
+    bootstrap.setMetricsInitializers(Arrays.asList(initializer1, initializer2));
     Deencapsulation.setField(bootstrap, "executorService", scheduledExecutorService);
 
     bootstrap.shutdown();

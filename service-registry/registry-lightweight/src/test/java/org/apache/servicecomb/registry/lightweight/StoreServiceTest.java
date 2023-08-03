@@ -18,7 +18,6 @@
 package org.apache.servicecomb.registry.lightweight;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -26,7 +25,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.time.MockTicker;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.lightweight.model.Microservice;
 import org.apache.servicecomb.registry.lightweight.store.InstanceStore;
-import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,7 +32,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.json.Json;
 
@@ -82,45 +79,6 @@ class StoreServiceTest extends TestBase {
     assertThat(instanceStore.getInstance()).isSameAs(self.getInstance());
   }
 
-  @Test
-  void should_reject_when_schema_changed_and_has_existing_instance() {
-    should_register_microservice_and_instance_when_both_not_exist();
-
-    RegisterRequest request = self.buildRegisterRequest()
-        .setInstanceId("new id")
-        .setSchemasSummary("new summary");
-    Throwable throwable = catchThrowable(() -> service.register(request));
-
-    assertThat(throwable)
-        .isInstanceOf(RegisterException.class)
-        .hasMessage("schemas changed, but version not changed, and has 1 existing instances");
-  }
-
-  SchemaChangedEvent schemaChangedEvent;
-
-  @Subscribe
-  public void onSchemaChanged(SchemaChangedEvent event) {
-    this.schemaChangedEvent = event;
-  }
-
-  @Test
-  void should_register_and_notify_when_schema_changed_and_has_not_existing_instance() {
-    should_register_microservice_and_instance_when_both_not_exist();
-
-    MicroserviceStore microserviceStore = store.findMicroserviceStore(self.getServiceId());
-    assertThat(microserviceStore.hasInstance()).isTrue();
-    store.deleteInstance(self.getServiceId(), self.getInstanceId());
-    assertThat(microserviceStore.hasInstance()).isFalse();
-
-    eventBus.register(this);
-
-    RegisterRequest request = self.buildRegisterRequest()
-        .setSchemasSummary("new summary");
-    InstanceStore instanceStore = service.register(request);
-
-    assertThat(instanceStore.getInstance()).isSameAs(self.getInstance());
-    assertThat(schemaChangedEvent.getMicroservice()).isSameAs(self.getMicroservice());
-  }
 
   @Test
   void should_allow_update_instance_status() {

@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.core;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -360,8 +359,6 @@ public class SCBEngine {
 
   private void doRun() throws Exception {
     status = SCBStatus.STARTING;
-
-    bootListeners.sort(Comparator.comparingInt(BootListener::getOrder));
 
     triggerEvent(EventType.BEFORE_FILTER);
     filterChainsManager.init();
