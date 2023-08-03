@@ -28,6 +28,6 @@ servicecomb:
   registry:
     sc:
       address: http://127.0.0.1:30100
-      registerUrlPrefix: true
+    registerUrlPrefix: true
   rest:
     address: 0.0.0.0:8080

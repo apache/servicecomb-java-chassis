@@ -58,10 +58,10 @@ public class InspectorBootListener implements BootListener {
     // will not register this schemas to service registry
     InspectorImpl inspector = new InspectorImpl()
         .setPropertyFactory(propertyFactory)
-        .setServiceName(microserviceProperties.getName())
+        .setServiceName(microserviceProperties.getName());
         // TODO: inspector get schemas
 //        .setSchemas(RegistrationManager.INSTANCE.getMicroservice().getSchemaMap())
-        .correctBasePathForOnlineTest(event.getScbEngine());
+//        .correctBasePathForOnlineTest(event.getScbEngine());
     event.getScbEngine().getProducerProviderManager().registerSchema("inspector", inspector);
   }
 }

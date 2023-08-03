@@ -33,13 +33,7 @@ public interface DefinitionConst {
 
   String INSTANCE_PUBKEY_PRO = "publickey";
 
-  String REGISTER_URL_PREFIX = "servicecomb.service.registry.registerUrlPrefix";
-
-  String REGISTER_SERVICE_PATH = "servicecomb.service.registry.registerPath";
-
-  String REGISTRY_APP_ID = "default";
-
-  String REGISTRY_SERVICE_NAME = "SERVICECENTER";
+  String REGISTER_URL_PREFIX = "servicecomb.registry.registerUrlPrefix";
 
   String SWAGGER_EXPORT_ENABLED = "servicecomb.swagger.export.enabled";
 
