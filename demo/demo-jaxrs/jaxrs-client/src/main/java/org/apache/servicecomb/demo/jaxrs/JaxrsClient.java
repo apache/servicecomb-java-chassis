@@ -78,6 +78,7 @@ public class JaxrsClient {
     }
 
     TestMgr.summary();
+    LOGGER.info("-------------- last time updated checks(maybe more/less): 540 -------------");
   }
 
   public static void init() throws Exception {
