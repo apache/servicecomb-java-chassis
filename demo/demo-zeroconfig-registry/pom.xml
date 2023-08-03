@@ -24,14 +24,14 @@
     <artifactId>demo-parent</artifactId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
-  <artifactId>demo-zeroconfig-schemadiscovery-registry</artifactId>
-  <name>Java Chassis::Demo::ZeroConfig-SchemaDiscovery Registry</name>
+  <artifactId>demo-zeroconfig-registry</artifactId>
+  <name>Java Chassis::Demo::ZeroConfig Registry</name>
   <packaging>pom</packaging>
   <modules>
-    <module>demo-zeroconfig-schemadiscovery-registry-server</module>
-    <module>demo-zeroconfig-schemadiscovery-registry-edge</module>
-    <module>demo-zeroconfig-schemadiscovery-registry-client</module>
-    <module>demo-zeroconfig-schemadiscovery-registry-tests</module>
+    <module>demo-zeroconfig-registry-server</module>
+    <module>demo-zeroconfig-registry-edge</module>
+    <module>demo-zeroconfig-registry-client</module>
+    <module>demo-zeroconfig-registry-tests</module>
   </modules>
 
   <dependencies>
