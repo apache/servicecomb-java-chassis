@@ -20,11 +20,11 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>demo-zeroconfig-schemadiscovery-registry-server</artifactId>
-  <name>Java Chassis::Demo::ZeroConfig-SchemaDiscovery Registry Server</name>
+  <artifactId>demo-zeroconfig--registry-server</artifactId>
+  <name>Java Chassis::Demo::ZeroConfig Registry Server</name>
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
-    <artifactId>demo-zeroconfig-schemadiscovery-registry</artifactId>
+    <artifactId>demo-zeroconfig-registry</artifactId>
     <version>3.0.0-SNAPSHOT</version>
   </parent>
 
