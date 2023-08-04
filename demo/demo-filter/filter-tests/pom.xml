@@ -96,7 +96,7 @@
                         <link>service30100:service30100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>8080</port>
@@ -124,7 +124,7 @@
                         <link>service30100:service30100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>8082</port>
@@ -152,7 +152,7 @@
                         <link>service30100:service30100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>9090</port>
