@@ -106,7 +106,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://service30100:30100
+                          -Dservicecomb.registry.sc.address=http://service30100:30100
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/demo-multi-service-center-servera-${project.version}.jar</JAR_PATH>
                       </env>
@@ -134,7 +134,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://service40100:30100
+                          -Dservicecomb.registry.sc.address=http://service40100:30100
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/demo-multi-service-center-serverb-${project.version}.jar</JAR_PATH>
                       </env>

@@ -62,7 +62,7 @@
                 <run>
                   <env>
                     <JAVA_OPTS>
-                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100
+                      -Dservicecomb.registry.sc.address=http://sc.servicecomb.io:30100
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
                   </env>
