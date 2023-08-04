@@ -17,16 +17,19 @@
 package org.apache.servicecomb.core.bootstrap;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
 
 public class SCBBootstrap {
   public static SCBEngine createSCBEngineForTest() {
     RegistrationManager registrationManager = new RegistrationManager(Collections.emptyList());
-    DiscoveryManager discoveryManager = new DiscoveryManager(Collections.emptyList());
+    DiscoveryManager discoveryManager = new DiscoveryManager(Collections.emptyList(),
+        List.of(new TelnetInstancePing()));
     registrationManager.init();
     discoveryManager.init();
     MicroserviceProperties microserviceProperties = new MicroserviceProperties();

@@ -28,6 +28,7 @@ import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.HistoryStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.IsolationStatus;
+import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -38,7 +39,7 @@ public class TestDiscoveryManager {
   public void test_initial_service_list_correct() {
     MyDiscovery discovery1 = Mockito.spy(new MyDiscovery());
     MyDiscoveryInstance instance1 = Mockito.mock(MyDiscoveryInstance.class);
-    DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1));
+    DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1), List.of(new TelnetInstancePing()));
     Mockito.when(discovery1.findServiceInstances("app", "service"))
         .thenReturn(List.of(instance1));
     Mockito.when(instance1.getInstanceId()).thenReturn("instance1");
@@ -59,7 +60,7 @@ public class TestDiscoveryManager {
   @Test
   public void test_initial_empty_service_list_correct() {
     MyDiscovery discovery1 = Mockito.spy(new MyDiscovery());
-    DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1));
+    DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1), List.of(new TelnetInstancePing()));
     Mockito.when(discovery1.findServiceInstances("app", "service"))
         .thenReturn(Collections.emptyList());
     //first read
@@ -76,7 +77,7 @@ public class TestDiscoveryManager {
   public void test_isolate_service_instance_correct() {
     MyDiscovery discovery1 = Mockito.spy(new MyDiscovery());
     MyDiscoveryInstance instance1 = Mockito.mock(MyDiscoveryInstance.class);
-    DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1));
+    DiscoveryManager discoveryManager = new DiscoveryManager(List.of(discovery1), List.of(new TelnetInstancePing()));
     Mockito.when(discovery1.findServiceInstances("app", "service"))
         .thenReturn(List.of(instance1));
     Mockito.when(instance1.getInstanceId()).thenReturn("instance1");

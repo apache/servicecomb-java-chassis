@@ -18,8 +18,13 @@
 package org.apache.servicecomb.registry;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +34,7 @@ import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.discovery.InstancePing;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.HistoryStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.IsolationStatus;
@@ -40,8 +46,11 @@ import org.springframework.util.CollectionUtils;
 public class DiscoveryManager implements LifeCycle {
   private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryManager.class);
 
-  // TODO: 1. ping status;
+  private final ScheduledExecutorService task;
+
   private final List<Discovery<? extends DiscoveryInstance>> discoveryList;
+
+  private final InstancePing ping;
 
   // application:serviceName:instanceId
   private final Map<String, Map<String, Map<String, StatefulDiscoveryInstance>>>
@@ -53,10 +62,77 @@ public class DiscoveryManager implements LifeCycle {
 
   private final Object cacheLock = new Object();
 
-  public DiscoveryManager(List<Discovery<? extends DiscoveryInstance>> discoveryList) {
+  public DiscoveryManager(List<Discovery<? extends DiscoveryInstance>> discoveryList,
+      List<InstancePing> pings) {
     this.discoveryList = discoveryList;
     for (Discovery<? extends DiscoveryInstance> discovery : this.discoveryList) {
       discovery.setInstanceChangedListener(this::onInstancesChanged);
+    }
+    this.ping = pings.get(0);
+    task = Executors.newScheduledThreadPool(1, (runnable) -> {
+      Thread thread = new Thread(runnable, "discovery-manager-task") {
+        @Override
+        public void run() {
+          try {
+            runnable.run();
+          } catch (Throwable e) {
+            LOGGER.error("discovery manager task error, not allowed please fix. ", e);
+          }
+        }
+      };
+      thread.setPriority(Thread.MIN_PRIORITY);
+      return thread;
+    });
+  }
+
+  private void doTask() {
+    Map<String, Map<String, List<String>>> removed = new HashMap<>();
+    for (Entry<String, Map<String, Map<String, StatefulDiscoveryInstance>>> apps : allInstances.entrySet()) {
+      for (Entry<String, Map<String, StatefulDiscoveryInstance>> services : apps.getValue().entrySet()) {
+        boolean changed = false;
+        for (StatefulDiscoveryInstance instance : services.getValue().values()) {
+          // check isolated time
+          if (instance.getIsolationStatus() == IsolationStatus.ISOLATED &&
+              instance.getIsolatedTime() + instance.getIsolateDuration() < System.currentTimeMillis()) {
+            instance.setIsolationStatus(IsolationStatus.NORMAL);
+            changed = true;
+          }
+          // check ping status
+          boolean pingResult = ping.ping(instance);
+          if (pingResult && instance.getPingStatus() != PingStatus.OK) {
+            instance.setPingStatus(PingStatus.OK);
+            changed = true;
+          } else if (!pingResult && instance.getPingStatus() != PingStatus.FAIL) {
+            instance.setPingStatus(PingStatus.FAIL);
+            changed = true;
+          }
+          // check unused
+          if (instance.getHistoryStatus() == HistoryStatus.HISTORY) {
+            if (instance.getStatus() != MicroserviceInstanceStatus.UP ||
+                instance.getPingStatus() == PingStatus.FAIL ||
+                instance.getIsolationStatus() == IsolationStatus.ISOLATED) {
+              removed.computeIfAbsent(apps.getKey(), k -> new HashMap<>())
+                  .computeIfAbsent(services.getKey(), k -> new ArrayList<>()).add(instance.getInstanceId());
+            }
+          }
+        }
+        if (changed) {
+          rebuildVersionCache(apps.getKey(), apps.getKey());
+        }
+      }
+    }
+    // remove unused
+    for (Entry<String, Map<String, List<String>>> apps : removed.entrySet()) {
+      for (Entry<String, List<String>> services : apps.getValue().entrySet()) {
+        for (String instance : services.getValue()) {
+          StatefulDiscoveryInstance removedInstance =
+              allInstances.get(apps.getKey()).get(services.getKey()).remove(instance);
+          LOGGER.info("Remove instance {}/{}/{}/{}/{}/{}/{}/{}",
+              apps.getKey(), services.getKey(), removedInstance.getDiscoveryName(),
+              instance, removedInstance.getHistoryStatus(),
+              removedInstance.getStatus(), removedInstance.getPingStatus(), removedInstance.getIsolationStatus());
+        }
+      }
     }
   }
 
@@ -194,11 +270,13 @@ public class DiscoveryManager implements LifeCycle {
   @Override
   public void destroy() {
     discoveryList.forEach(LifeCycle::destroy);
+    task.shutdownNow();
   }
 
   @Override
   public void run() {
     discoveryList.forEach(LifeCycle::run);
+    task.scheduleWithFixedDelay(this::doTask, 3, 3, TimeUnit.SECONDS);
   }
 
   @Override

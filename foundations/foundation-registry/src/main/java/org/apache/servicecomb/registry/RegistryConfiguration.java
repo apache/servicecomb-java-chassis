@@ -24,8 +24,10 @@ import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
+import org.apache.servicecomb.registry.discovery.InstancePing;
 import org.apache.servicecomb.registry.discovery.InstanceStatusDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.MicroserviceInstanceCache;
+import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,9 +41,15 @@ public class RegistryConfiguration {
   }
 
   @Bean
+  public TelnetInstancePing telnetInstancePing() {
+    return new TelnetInstancePing();
+  }
+
+  @Bean
   public DiscoveryManager discoveryManager(
-      List<Discovery<? extends DiscoveryInstance>> discoveryList) {
-    return new DiscoveryManager(discoveryList);
+      List<Discovery<? extends DiscoveryInstance>> discoveryList,
+      List<InstancePing> pingList) {
+    return new DiscoveryManager(discoveryList, pingList);
   }
 
   @Bean
