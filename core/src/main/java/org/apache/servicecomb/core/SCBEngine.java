@@ -398,7 +398,8 @@ public class SCBEngine {
 
   private void createProducerMicroserviceMeta() {
     String microserviceName = this.microserviceProperties.getName();
-    producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
+    producerMicroserviceMeta = new MicroserviceMeta(this,
+        this.microserviceProperties.getApplication(), microserviceName, false);
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
   }
@@ -549,7 +550,7 @@ public class SCBEngine {
   private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(String application,
       String microserviceName, List<? extends DiscoveryInstance> instances) {
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
-    MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, microserviceName, true);
+    MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, application, microserviceName, true);
     microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
