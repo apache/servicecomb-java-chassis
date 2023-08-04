@@ -18,27 +18,15 @@
 package org.apache.servicecomb.core.transport;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.junit.AfterClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.util.ReflectionUtils;
-
-import com.netflix.config.DynamicProperty;
-
-import mockit.Expectations;
-import mockit.Mocked;
+import org.junit.jupiter.api.Test;
 
 public class TestAbstractTransport {
-  private final Method updatePropertyMethod =
-      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
-
   static class MyAbstractTransport extends AbstractTransport {
 
     @Override
@@ -52,19 +40,8 @@ public class TestAbstractTransport {
     }
   }
 
-  @AfterClass
-  public static void classTeardown() {
-    VertxUtils.blockCloseVertxByName("transport");
-  }
-
   @Test
   public void testSetListenAddressWithoutSchemaChineseSpaceNewSC() throws UnsupportedEncodingException {
-    new Expectations() {
-      {
-        AbstractTransport.getPublishAddress("my", "127.0.0.1:9090");
-      }
-    };
-
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
     Assertions.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
@@ -100,10 +77,10 @@ public class TestAbstractTransport {
     Assertions.assertNull(transport.parseAddress(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testMyAbstractTransportException(@Mocked TransportManager manager) {
+  @Test
+  public void testMyAbstractTransportException() {
     MyAbstractTransport transport = new MyAbstractTransport();
-
-    transport.setListenAddressWithoutSchema(":127.0.0.1:9090");
+    Assertions.assertThrows(IllegalArgumentException.class, () ->
+        transport.setListenAddressWithoutSchema(":127.0.0.1:9090"));
   }
 }
