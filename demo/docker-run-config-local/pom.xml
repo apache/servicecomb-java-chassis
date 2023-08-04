@@ -46,7 +46,7 @@
                     <JAR_PATH>/maven/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
                   </env>
                   <wait>
-                    <log>Register microservice instance success</log>
+                    <log>ServiceComb is ready</log>
                     <tcp>
                       <ports>
                         <port>8080</port>

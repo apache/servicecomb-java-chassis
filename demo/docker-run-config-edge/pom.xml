@@ -70,12 +70,7 @@
                     <link>service-center:sc.servicecomb.io</link>
                   </links>
                   <wait>
-                    <log>Register microservice instance success</log>
-                    <!--
-                        the log waiting of the plugin has a bug and fails frequently
-                        refer to https://github.com/fabric8io/docker-maven-plugin/issues/767
-                        this http checking is used as a temporary solution
-                    -->
+                    <log>ServiceComb is ready</log>
                     <tcp>
                       <ports>
                         <port>7070</port>
@@ -107,7 +102,7 @@
                     <link>service-center:sc.servicecomb.io</link>
                   </links>
                   <wait>
-                    <log>Register microservice instance success</log>
+                    <log>ServiceComb is ready</log>
                     <tcp>
                       <ports>
                         <port>8080</port>
@@ -137,7 +132,7 @@
                     <link>service-center:sc.servicecomb.io</link>
                   </links>
                   <wait>
-                    <log>Register microservice instance success</log>
+                    <log>ServiceComb is ready</log>
                     <tcp>
                       <ports>
                         <port>8090</port>
