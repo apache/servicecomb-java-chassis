@@ -44,16 +44,15 @@ import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -138,6 +137,10 @@ public class SCBEngine {
   }
 
   public static SCBEngine getInstance() {
+    if (INSTANCE == null) {
+      throw new InvocationException(Status.SERVICE_UNAVAILABLE,
+          new CommonExceptionData("SCBEngine is not initialized yet."));
+    }
     return INSTANCE;
   }
 
@@ -506,7 +509,6 @@ public class SCBEngine {
     if (!SCBStatus.UP.equals(currentStatus)) {
       String message =
           "The request is rejected. Cannot process the request due to STATUS = " + currentStatus;
-      LOGGER.warn(message);
       throw new InvocationException(Status.SERVICE_UNAVAILABLE, new CommonExceptionData(message));
     }
   }
@@ -529,14 +531,14 @@ public class SCBEngine {
           return config;
         }
         MicroserviceNameParser parser = parseMicroserviceName(microserviceName);
-        VersionedCache instances = discoveryManager.getOrCreateVersionedCache(parser.getAppId(),
+        List<? extends DiscoveryInstance> discoveryInstances = discoveryManager.findServiceInstances(
+            parser.getAppId(),
             parser.getMicroserviceName());
-        List<StatefulDiscoveryInstance> statefulDiscoveryInstances = instances.data();
-        if (CollectionUtils.isEmpty(statefulDiscoveryInstances)) {
+        if (CollectionUtils.isEmpty(discoveryInstances)) {
           return null;
         }
         config = buildMicroserviceReferenceConfig(parser.getAppId(), parser.getMicroserviceName(),
-            statefulDiscoveryInstances);
+            discoveryInstances);
         referenceConfigs.put(microserviceName, config);
         return config;
       }
@@ -545,14 +547,14 @@ public class SCBEngine {
   }
 
   private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(String application,
-      String microserviceName, List<StatefulDiscoveryInstance> instances) {
+      String microserviceName, List<? extends DiscoveryInstance> instances) {
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, microserviceName, true);
     microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
     Map<String, String> schemas = new HashMap<>();
-    for (StatefulDiscoveryInstance instance : instances) {
+    for (DiscoveryInstance instance : instances) {
       instance.getSchemas().forEach(schemas::putIfAbsent);
     }
     for (Entry<String, String> schema : schemas.entrySet()) {
