@@ -19,6 +19,7 @@ package org.apache.servicecomb.registry.discovery;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -50,40 +51,46 @@ public class TestDiscoveryTree {
 
   @Test
   public void isMatch_existingNull() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     Assertions.assertFalse(discoveryTree.isMatch(null, null));
   }
 
   @Test
   public void isMatch_yes() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList(),
+        List.of(new TelnetInstancePing())));
     parent.cacheVersion(1);
     Assertions.assertTrue(discoveryTree.isMatch(new DiscoveryTreeNode().cacheVersion(1), parent));
   }
 
   @Test
   public void isMatch_no() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     parent.cacheVersion(0);
     Assertions.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(1), parent));
   }
 
   @Test
   public void isExpired_existingNull() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     Assertions.assertTrue(discoveryTree.isExpired(null, null));
   }
 
   @Test
   public void isExpired_yes() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     parent.cacheVersion(1);
     Assertions.assertTrue(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
   }
 
   @Test
   public void isExpired_no() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     parent.cacheVersion(0);
     Assertions.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
   }
@@ -117,7 +124,8 @@ public class TestDiscoveryTree {
 
   @Test
   public void filterNormal() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     parent.name("1.0.0-2.0.0");
 
     discoveryTree.setDiscoveryFilters(Arrays.asList(new DiscoveryFilterForTest("g1"),
@@ -188,7 +196,8 @@ public class TestDiscoveryTree {
         return new DiscoveryTreeNode().data(parent.data());
       }
     };
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     discoveryTree.setDiscoveryFilters(Arrays.asList(f1, f2));
     result = discoveryTree.discovery(context, parent);
 
@@ -197,7 +206,8 @@ public class TestDiscoveryTree {
 
   @Test
   public void avoidConcurrentProblem() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     discoveryTree.setRoot(parent.cacheVersion(1));
     Assertions.assertTrue(parent.children().isEmpty());
 
@@ -207,7 +217,8 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_match() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     discoveryTree.setRoot(parent);
 
     DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(parent);
@@ -217,7 +228,8 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_expired() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     discoveryTree.setRoot(parent);
 
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() + 1);
@@ -229,7 +241,8 @@ public class TestDiscoveryTree {
 
   @Test
   public void getOrCreateRoot_tempRoot() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(new DiscoveryManager(Collections.emptyList()));
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     discoveryTree.setRoot(parent);
 
     VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() - 1);
