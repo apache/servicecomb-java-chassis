@@ -15,10 +15,10 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-demo-zeroconfig-schemadiscovery-registry-client:
+demo-zeroconfig-registry-client:
   - id: "001"
     version: "0.0.2"
-    appid: demo-zeroconfig-schemadiscovery-registry
+    appid: demo-zeroconfig-registry
     schemaIds:
       - ClientServerEndpoint
       - SchemaDiscoveryEndpoint
@@ -26,10 +26,10 @@ demo-zeroconfig-schemadiscovery-registry-client:
     instances:
       - endpoints:
           - rest://localhost:8082
-demo-zeroconfig-schemadiscovery-registry-edge:
+demo-zeroconfig-registry-edge:
   - id: "002"
     version: "0.0.2"
-    appid: demo-zeroconfig-schemadiscovery-registry
+    appid: demo-zeroconfig-registry
     schemaIds:
       - ClientServerEndpoint
       - SchemaDiscoveryEndpoint

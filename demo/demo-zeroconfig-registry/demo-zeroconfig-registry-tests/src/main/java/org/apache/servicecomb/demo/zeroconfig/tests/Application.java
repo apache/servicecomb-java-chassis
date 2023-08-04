@@ -48,6 +48,6 @@ public class Application {
 
   private static void runTest() throws Exception {
     CategorizedTestCaseRunner
-        .runCategorizedTestCase("demo-zeroconfig-schemadiscovery-registry-server");
+        .runCategorizedTestCase("demo-zeroconfig-registry-server");
   }
 }

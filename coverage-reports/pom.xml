@@ -506,19 +506,19 @@
     <!-- demo zeroconfig shcema discovery -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-zeroconfig-schemadiscovery-registry-client</artifactId>
+      <artifactId>demo-zeroconfig-registry-client</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-zeroconfig-schemadiscovery-registry-server</artifactId>
+      <artifactId>demo-zeroconfig-registry-server</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-zeroconfig-schemadiscovery-registry-tests</artifactId>
+      <artifactId>demo-zeroconfig-registry-tests</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

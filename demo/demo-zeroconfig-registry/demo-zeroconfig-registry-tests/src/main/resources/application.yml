@@ -17,8 +17,8 @@
 
 servicecomb:
   service:
-    application: demo-zeroconfig-schemadiscovery-registry
-    name: demo-zeroconfig-schemadiscovery-registry-tests
+    application: demo-zeroconfig-registry
+    name: demo-zeroconfig-registry-tests
     version: 0.0.2
   handler:
     chain:

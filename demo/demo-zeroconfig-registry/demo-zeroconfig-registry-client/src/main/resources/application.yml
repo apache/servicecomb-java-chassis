@@ -20,8 +20,8 @@ server:
 
 servicecomb:
   service:
-    application: demo-zeroconfig-schemadiscovery-registry
-    name: demo-zeroconfig-schemadiscovery-registry-client
+    application: demo-zeroconfig-registry
+    name: demo-zeroconfig-registry-client
     version: 0.0.2
   rest:
     address: 0.0.0.0:8082
@@ -37,7 +37,7 @@ servicecomb:
   governance:
     GovernanceEndpoint.helloRpc:
       matchType: rpc
-    demo-zeroconfig-schemadiscovery-registry-server.GovernanceEndpoint.retryRpc:
+    demo-zeroconfig-registry-server.GovernanceEndpoint.retryRpc:
       matchType: rpc
   matchGroup:
     demo-rateLimiting: |
@@ -59,7 +59,7 @@ servicecomb:
     demo-retry-rpc: |
       matches:
         - apiPath:
-            exact: "demo-zeroconfig-schemadiscovery-registry-server.GovernanceEndpoint.retryRpc"
+            exact: "demo-zeroconfig-registry-server.GovernanceEndpoint.retryRpc"
     demo-circuitBreaker: |
       matches:
         - apiPath:
@@ -72,36 +72,36 @@ servicecomb:
     demo-rateLimiting: |
       rate: 10
       ## services is optional in configuration file
-      services: demo-zeroconfig-schemadiscovery-registry-client
+      services: demo-zeroconfig-registry-client
     demo-rateLimiting-rpc: |
       rate: 10
       ## services is optional in configuration file
-      services: demo-zeroconfig-schemadiscovery-registry-client
+      services: demo-zeroconfig-registry-client
   retry:
     demo-retry: |
       maxAttempts: 3
       ## services is optional in configuration file
-      services: demo-zeroconfig-schemadiscovery-registry-client
+      services: demo-zeroconfig-registry-client
     demo-retry-no-prefex: |
       maxAttempts: 3
       ## services is optional in configuration file
-      services: demo-zeroconfig-schemadiscovery-registry-client
+      services: demo-zeroconfig-registry-client
     demo-retry-rpc: |
       maxAttempts: 3
       ## services is optional in configuration file
-      services: demo-zeroconfig-schemadiscovery-registry-client
+      services: demo-zeroconfig-registry-client
   circuitBreaker:
     demo-circuitBreaker: |
       minimumNumberOfCalls: 10
       slidingWindowSize: 10
       failureRateThreshold: 20
       ## services is optional in configuration file
-      services: demo-zeroconfig-schemadiscovery-registry-client
+      services: demo-zeroconfig-registry-client
   bulkhead:
     demo-bulkhead: |
       maxConcurrentCalls: 5
       ## services is optional in configuration file
-      services: demo-zeroconfig-schemadiscovery-registry-client
+      services: demo-zeroconfig-registry-client
   context:
     headerContextMapper: |
       clientHeader: context-client-header

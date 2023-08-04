@@ -30,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
 @RestSchema(schemaId = "GovernanceEndpoint")
 @RequestMapping("/governance")
 public class GovernanceEndpoint {
-  private static final String SERVER = "servicecomb://demo-zeroconfig-schemadiscovery-registry-server";
+  private static final String SERVER = "servicecomb://demo-zeroconfig-registry-server";
 
   private RestTemplate restTemplate = RestTemplateBuilder.create();
 
