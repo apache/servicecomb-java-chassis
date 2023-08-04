@@ -23,7 +23,6 @@ import java.util.Map;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
@@ -52,11 +51,10 @@ public class MicroserviceMeta {
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
-  public MicroserviceMeta(SCBEngine scbEngine, String microserviceName, boolean consumer) {
+  public MicroserviceMeta(SCBEngine scbEngine, String application, String serviceName, boolean consumer) {
     this.scbEngine = scbEngine;
-    MicroserviceNameParser parser = scbEngine.parseMicroserviceName(microserviceName);
-    this.appId = parser.getAppId();
-    this.microserviceName = parser.getMicroserviceName();
+    this.appId = application;
+    this.microserviceName = serviceName;
     this.consumer = consumer;
   }
 

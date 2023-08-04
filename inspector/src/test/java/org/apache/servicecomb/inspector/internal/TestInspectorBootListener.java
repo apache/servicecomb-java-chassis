@@ -51,7 +51,8 @@ public class TestInspectorBootListener {
   @Test
   public void disabled() {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
-    scbEngine.setProducerMicroserviceMeta(new MicroserviceMeta(scbEngine, "ms", false));
+    scbEngine.setProducerMicroserviceMeta(new MicroserviceMeta(scbEngine,
+        "app", "ms", false));
 
     InspectorConfig inspectorConfig = new InspectorConfig()
         .setEnabled(false);
