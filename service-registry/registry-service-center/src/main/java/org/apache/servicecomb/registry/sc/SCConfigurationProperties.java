@@ -16,13 +16,15 @@
  */
 package org.apache.servicecomb.registry.sc;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Configurations for Service Center registration and discovery.
  */
 public class SCConfigurationProperties {
   private boolean enabled = true;
 
-  private String address = "http://localhost:30100";
+  private String address = null;
 
   /**
    * for registration service
@@ -52,6 +54,11 @@ public class SCConfigurationProperties {
   private long registrationWaitTimeInMillis = 30000;
 
   public String getAddress() {
+    if (StringUtils.isEmpty(address)) {
+      throw new IllegalStateException(
+          "Address is required in configuration. NOTICE: since 3.0.0, only support "
+              + SCConst.SC_REGISTRY_PREFIX + ".address to configure service center address.");
+    }
     return address;
   }
 

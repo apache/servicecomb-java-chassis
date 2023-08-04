@@ -12,8 +12,8 @@ servicestage 存在环境、应用、组件等概念，这些内容都是在部�
 
 |概念|环境变量|微服务配置项|
 | :--- | :--- | :--- |
-|服务/配置中心地址（逻辑多租，APIG场景）| PAAS_CSE_ENDPOINT | servicecomb.service.registry.address<br/>servicecomb.config.client.serverUri|
-|服务中心地址 | PAAS_CSE_SC_ENDPOINT | servicecomb.service.registry.address |
+|服务/配置中心地址（逻辑多租，APIG场景）| PAAS_CSE_ENDPOINT | servicecomb.registry.sc.address<br/>servicecomb.config.client.serverUri|
+|服务中心地址 | PAAS_CSE_SC_ENDPOINT | servicecomb.registry.sc.address |
 |配置中心地址 | PAAS_CSE_CC_ENDPOINT | servicecomb.config.client.serverUri |
 |项目（区域） | PAAS_PROJECT_NAME | servicecomb.credentials.project |
 
