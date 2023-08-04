@@ -58,11 +58,11 @@
               <configuration>
                 <images>
                   <image>
-                    <name>demo-zeroconfig-schemadiscovery-registry-server:${project.version}</name>
-                    <alias>demo-zeroconfig-schemadiscovery-registry-server</alias>
+                    <name>demo-zeroconfig-registry-server:${project.version}</name>
+                    <alias>demo-zeroconfig-registry-server</alias>
                     <run>
                       <env>
-                        <JAR_PATH>/maven/maven/demo-zeroconfig-schemadiscovery-registry-server-${project.version}.jar
+                        <JAR_PATH>/maven/maven/demo-zeroconfig-registry-server-${project.version}.jar
                         </JAR_PATH>
                       </env>
                       <wait>
@@ -81,11 +81,11 @@
                   </image>
 
                   <image>
-                    <name>demo-zeroconfig-schemadiscovery-registry-client:${project.version}</name>
-                    <alias>demo-zeroconfig-schemadiscovery-registry-client</alias>
+                    <name>demo-zeroconfig-registry-client:${project.version}</name>
+                    <alias>demo-zeroconfig-registry-client</alias>
                     <run>
                       <env>
-                        <JAR_PATH>/maven/maven/demo-zeroconfig-schemadiscovery-registry-client-${project.version}.jar
+                        <JAR_PATH>/maven/maven/demo-zeroconfig-registry-client-${project.version}.jar
                         </JAR_PATH>
                       </env>
                       <wait>
@@ -104,11 +104,11 @@
                   </image>
 
                   <image>
-                    <name>demo-zeroconfig-schemadiscovery-registry-edge:${project.version}</name>
-                    <alias>demo-zeroconfig-schemadiscovery-registry-edge</alias>
+                    <name>demo-zeroconfig-registry-edge:${project.version}</name>
+                    <alias>demo-zeroconfig-registry-edge</alias>
                     <run>
                       <env>
-                        <JAR_PATH>/maven/maven/demo-zeroconfig-schemadiscovery-registry-edge-${project.version}.jar
+                        <JAR_PATH>/maven/maven/demo-zeroconfig-registry-edge-${project.version}.jar
                         </JAR_PATH>
                       </env>
                       <wait>

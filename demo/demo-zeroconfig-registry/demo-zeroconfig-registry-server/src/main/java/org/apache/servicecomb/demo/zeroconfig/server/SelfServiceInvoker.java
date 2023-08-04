@@ -28,7 +28,7 @@ public class SelfServiceInvoker implements BootListener {
     String getName(String name);
   }
 
-  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
+  @RpcReference(microserviceName = "demo-zeroconfig-registry-server", schemaId = "ServerEndpoint")
   IServerEndpoint endpoint;
 
   public CountDownLatch latch = new CountDownLatch(1);

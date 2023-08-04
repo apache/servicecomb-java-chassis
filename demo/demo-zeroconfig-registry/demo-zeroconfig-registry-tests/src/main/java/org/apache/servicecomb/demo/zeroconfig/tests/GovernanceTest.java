@@ -30,7 +30,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class GovernanceTest implements CategorizedTestCase {
-  String url = "servicecomb://demo-zeroconfig-schemadiscovery-registry-client/governance";
+  String url = "servicecomb://demo-zeroconfig-registry-client/governance";
 
   RestTemplate template = RestTemplateBuilder.create();
 

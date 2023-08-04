@@ -43,10 +43,10 @@ import jakarta.ws.rs.core.MediaType;
 @RestSchema(schemaId = "ClientServerEndpoint")
 @RequestMapping(path = "/register/url/prefix", produces = MediaType.APPLICATION_JSON)
 public class ClientServerEndpoint {
-  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
+  @RpcReference(microserviceName = "demo-zeroconfig-registry-server", schemaId = "ServerEndpoint")
   private IServerEndpoint serverEndpoint;
 
-  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "RpcEndpoint")
+  @RpcReference(microserviceName = "demo-zeroconfig-registry-server", schemaId = "RpcEndpoint")
   private IRpcEndpoint rpcEndpoint;
 
   private DiscoveryManager discoveryManager;
@@ -65,22 +65,22 @@ public class ClientServerEndpoint {
   public Set<String> getRegisteredMicroservice() {
     boolean result = true;
     List<? extends DiscoveryInstance> microserviceList = discoveryManager
-        .findServiceInstances("demo-zeroconfig-schemadiscovery-registry",
-            "demo-zeroconfig-schemadiscovery-registry-client");
+        .findServiceInstances("demo-zeroconfig-registry",
+            "demo-zeroconfig-registry-client");
     if (microserviceList.size() != 2) { // local and zero config both have one instance
       result = false;
     }
     microserviceList = discoveryManager
-        .findServiceInstances("demo-zeroconfig-schemadiscovery-registry",
-            "demo-zeroconfig-schemadiscovery-registry-server");
+        .findServiceInstances("demo-zeroconfig-registry",
+            "demo-zeroconfig-registry-server");
     if (microserviceList.size() != 1) {
       result = false;
     }
 
     if (result) {
       Set<String> names = new HashSet<>();
-      names.add("demo-zeroconfig-schemadiscovery-registry-client");
-      names.add("demo-zeroconfig-schemadiscovery-registry-server");
+      names.add("demo-zeroconfig-registry-client");
+      names.add("demo-zeroconfig-registry-server");
       return names;
     }
 

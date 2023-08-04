@@ -20,8 +20,8 @@ server:
 
 servicecomb:
   service:
-    application: demo-zeroconfig-schemadiscovery-registry
-    name: demo-zeroconfig-schemadiscovery-registry-edge
+    application: demo-zeroconfig-registry
+    name: demo-zeroconfig-registry-edge
     version: 0.0.2
   rest:
     address: 0.0.0.0:8888
@@ -40,11 +40,11 @@ servicecomb:
             client:
               prefixSegmentCount: 0
               path: "/register/url/prefix/.*"
-              microserviceName: demo-zeroconfig-schemadiscovery-registry-client
+              microserviceName: demo-zeroconfig-registry-client
               versionRule: 0+
   references:
     transport:
-      demo-zeroconfig-schemadiscovery-registry-client.ClientServerEndpoint.contextMapper: rest
+      demo-zeroconfig-registry-client.ClientServerEndpoint.contextMapper: rest
 
   context:
     headerContextMapper: |

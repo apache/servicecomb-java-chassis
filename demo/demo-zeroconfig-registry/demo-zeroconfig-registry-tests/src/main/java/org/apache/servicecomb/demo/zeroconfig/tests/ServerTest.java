@@ -58,7 +58,7 @@ public class ServerTest implements CategorizedTestCase {
     headers.add("clientHeader", "v1");
     headers.add("gatewayHeader", "v2");
     RequestEntity<Void> requestEntity = new RequestEntity<>(headers, HttpMethod.GET,
-        new URI("cse://demo-zeroconfig-schemadiscovery-registry-edge/register/url/prefix/contextMapper?clientQuery=v3&"
+        new URI("cse://demo-zeroconfig-registry-edge/register/url/prefix/contextMapper?clientQuery=v3&"
             + "gatewayQuery=v4"));
     // test two times to check different transport(only use rest)
     ResponseEntity<String> response = template.exchange(requestEntity, String.class);
@@ -75,7 +75,7 @@ public class ServerTest implements CategorizedTestCase {
       clientModelReq.setUpdateDate(date);
       Map<String, Object> response = template
           .postForObject(
-              "cse://demo-zeroconfig-schemadiscovery-registry-edge"
+              "cse://demo-zeroconfig-registry-edge"
                   + "/register/url/prefix/postModel", clientModelReq,
               Map.class);
       Object result = response.get("updateDate");
@@ -90,12 +90,12 @@ public class ServerTest implements CategorizedTestCase {
   }
 
   private void testServerGetName() throws Exception {
-    // invoke demo-zeroconfig-schemadiscovery-registry-client
+    // invoke demo-zeroconfig-registry-client
     TestMgr.check("world", template
         .getForObject(
-            "cse://demo-zeroconfig-schemadiscovery-registry-client/register/url/prefix/getName?name=world",
+            "cse://demo-zeroconfig-registry-client/register/url/prefix/getName?name=world",
             String.class));
-    // invoke demo-zeroconfig-schemadiscovery-registry-edge
+    // invoke demo-zeroconfig-registry-edge
     // create many threads to test event-loop not blocking
     int thread = 32;
     CountDownLatch latch = new CountDownLatch(thread);
@@ -105,7 +105,7 @@ public class ServerTest implements CategorizedTestCase {
           try {
             TestMgr.check("world", template
                 .getForObject(
-                    "cse://demo-zeroconfig-schemadiscovery-registry-edge/register/url/prefix/getName?name=world",
+                    "cse://demo-zeroconfig-registry-edge/register/url/prefix/getName?name=world",
                     String.class));
           } catch (Exception e) {
             TestMgr.failed("test failed", e);
@@ -120,18 +120,18 @@ public class ServerTest implements CategorizedTestCase {
 
   @SuppressWarnings("rawTypes")
   private void testGetAllMicroservice() {
-    // invoke demo-zeroconfig-schemadiscovery-registry-client
+    // invoke demo-zeroconfig-registry-client
     TestMgr.check("2", template
         .exchange(
-            "cse://demo-zeroconfig-schemadiscovery-registry-client"
+            "cse://demo-zeroconfig-registry-client"
                 + "/register/url/prefix/getRegisteredMicroservice", HttpMethod.GET, null,
             new ParameterizedTypeReference<Set<String>>() {
 
             }).getBody().size());
-    // invoke demo-zeroconfig-schemadiscovery-registry-edge
+    // invoke demo-zeroconfig-registry-edge
     TestMgr.check("2", template
         .exchange(
-            "cse://demo-zeroconfig-schemadiscovery-registry-edge"
+            "cse://demo-zeroconfig-registry-edge"
                 + "/register/url/prefix/getRegisteredMicroservice", HttpMethod.GET, null,
             new ParameterizedTypeReference<Set<String>>() {
 
@@ -147,7 +147,7 @@ public class ServerTest implements CategorizedTestCase {
 
     JsonObject result = template
         .postForObject(
-            "cse://demo-zeroconfig-schemadiscovery-registry-client"
+            "cse://demo-zeroconfig-registry-client"
                 + "/register/url/prefix/jsonObject", in, JsonObject.class);
     TestMgr.check(inner.toString(), result.toString());
     TestMgr.check(result.getString("hello"), "world");
@@ -157,7 +157,7 @@ public class ServerTest implements CategorizedTestCase {
     String in = "{\"hello\":\"world\"}";
     String result = template
         .postForObject(
-            "cse://demo-zeroconfig-schemadiscovery-registry-client"
+            "cse://demo-zeroconfig-registry-client"
                 + "/register/url/prefix/getString", in, String.class);
     TestMgr.check(in, result);
   }

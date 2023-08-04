@@ -20,8 +20,8 @@ server:
 
 servicecomb:
   service:
-    application: demo-zeroconfig-schemadiscovery-registry
-    name: demo-zeroconfig-schemadiscovery-registry-server
+    application: demo-zeroconfig-registry
+    name: demo-zeroconfig-registry-server
     version: 0.0.2
 
   rest:
