@@ -28,5 +28,5 @@ public interface DiscoveryInstance extends MicroserviceInstance {
   /**
    * This name of Discovery Implementation.
    */
-  String getDiscoveryName();
+  String getRegistryName();
 }

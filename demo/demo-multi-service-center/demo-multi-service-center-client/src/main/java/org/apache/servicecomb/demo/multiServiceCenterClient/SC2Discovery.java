@@ -17,6 +17,7 @@
 package org.apache.servicecomb.demo.multiServiceCenterClient;
 
 import org.apache.servicecomb.registry.sc.SCConfigurationProperties;
+import org.apache.servicecomb.registry.sc.SCConst;
 import org.apache.servicecomb.registry.sc.SCDiscovery;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 
@@ -28,6 +29,6 @@ public class SC2Discovery extends SCDiscovery {
 
   @Override
   public String name() {
-    return SCDiscovery.SC_DISCOVERY_NAME + "2";
+    return SCConst.SC_REGISTRY_NAME + "2";
   }
 }

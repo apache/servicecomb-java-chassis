@@ -19,7 +19,9 @@ package org.apache.servicecomb.registry;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
@@ -41,23 +43,35 @@ public class RegistrationManager {
   }
 
   /**
-   * For internal use. Only choose the first RegistrationInstance id.
+   * For internal use. Get instance id from registry name. If not exists, return empty.
    */
-  public String getInstanceId() {
+  public String getInstanceId(String registryName) {
     if (CollectionUtils.isEmpty(registrationList)) {
       return "";
     }
-    return registrationList.get(0).getMicroserviceInstance().getInstanceId();
+    Optional<Registration<? extends RegistrationInstance>> registration =
+        registrationList.stream().filter(r -> registryName.equals(r.name())).collect(Collectors.toList())
+            .stream().findFirst();
+    if (!registration.isPresent()) {
+      return "";
+    }
+    return registration.get().getMicroserviceInstance().getInstanceId();
   }
 
   /**
-   * For internal use. Only choose the first RegistrationInstance id.
+   * For internal use.  Get service id from registry name. If not exists, return empty.
    */
-  public String getServiceId() {
+  public String getServiceId(String registryName) {
     if (CollectionUtils.isEmpty(registrationList)) {
       return "";
     }
-    return registrationList.get(0).getMicroserviceInstance().getServiceId();
+    Optional<Registration<? extends RegistrationInstance>> registration =
+        registrationList.stream().filter(r -> registryName.equals(r.name())).collect(Collectors.toList())
+            .stream().findFirst();
+    if (!registration.isPresent()) {
+      return "";
+    }
+    return registration.get().getMicroserviceInstance().getServiceId();
   }
 
   public void updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {

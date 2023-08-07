@@ -27,9 +27,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.eventbus.Subscribe;
 
 @SuppressWarnings("UnstableApiUsage")
-public class ZeroConfigRegistration extends AbstractZeroConfigRegistration implements InitializingBean {
-  private static final String NAME = "zero-config-registration";
-
+public class ZeroConfigRegistration extends AbstractZeroConfigRegistration<ZeroConfigRegistrationInstance> implements
+    InitializingBean {
   protected Multicast multicast;
 
   @Autowired
@@ -40,7 +39,7 @@ public class ZeroConfigRegistration extends AbstractZeroConfigRegistration imple
 
   @Override
   public String name() {
-    return NAME;
+    return ZeroConfigConst.ZERO_CONFIG_REGISTRY_NAME;
   }
 
   // delete after support @Conditional
@@ -62,6 +61,11 @@ public class ZeroConfigRegistration extends AbstractZeroConfigRegistration imple
   @Override
   protected void doSendUnregister() throws IOException {
     multicast.send(MessageType.UNREGISTER, self.buildUnregisterRequest());
+  }
+
+  @Override
+  public ZeroConfigRegistrationInstance getMicroserviceInstance() {
+    return new ZeroConfigRegistrationInstance(self);
   }
 
   @SuppressWarnings("unused")

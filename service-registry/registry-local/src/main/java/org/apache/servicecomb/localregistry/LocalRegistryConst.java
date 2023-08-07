@@ -14,16 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry.sc;
 
-public class SCConst {
-  public static final String SC_REGISTRY_NAME = "sc-registry";
+package org.apache.servicecomb.localregistry;
 
-  public static final String SC_REGISTRY_PREFIX = "servicecomb.registry.sc";
+public class LocalRegistryConst {
+  public static final String LOCAL_REGISTRY_ENABLED = "servicecomb.registry.local.enabled";
 
-  public static final String SC_SSL_TAG = "sc.consumer";
-
-  public static final String SC_ALLOW_CROSS_APP = "allowCrossApp";
-
-  public static final String SC_DEFAULT_PROJECT = "default";
+  public static final String LOCAL_REGISTRY_NAME = "local-registry";
 }

@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class AbstractLightweightRegistration implements Registration<ZeroConfigRegistrationInstance> {
+public abstract class AbstractLightweightRegistration<R extends RegistrationInstance> implements Registration<R> {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLightweightRegistration.class);
 
   protected EventBus eventBus;
@@ -39,8 +40,6 @@ public abstract class AbstractLightweightRegistration implements Registration<Ze
   protected StoreService storeService;
 
   protected Self self;
-
-  protected ZeroConfigRegistrationInstance zeroConfigRegistrationInstance;
 
   @Autowired
   public AbstractLightweightRegistration setEventBus(EventBus eventBus) {
@@ -90,11 +89,6 @@ public abstract class AbstractLightweightRegistration implements Registration<Ze
   @Override
   public void addEndpoint(String endpoint) {
     self.getInstance().getEndpoints().add(endpoint);
-  }
-
-  @Override
-  public ZeroConfigRegistrationInstance getMicroserviceInstance() {
-    return new ZeroConfigRegistrationInstance(self);
   }
 
   @Override

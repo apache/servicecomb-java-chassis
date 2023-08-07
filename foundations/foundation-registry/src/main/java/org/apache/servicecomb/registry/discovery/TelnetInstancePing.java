@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.registry.discovery;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -31,21 +30,24 @@ public class TelnetInstancePing implements InstancePing {
 
   @Override
   public boolean ping(StatefulDiscoveryInstance instance) {
-    if (!CollectionUtils.isEmpty(instance.getEndpoints())) {
-      for (String endpoint : instance.getEndpoints()) {
-        IpPort ipPort = NetUtils.parseIpPortFromURI(endpoint);
-        try (Socket s = new Socket()) {
-          s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
-          return true;
-        } catch (IOException e) {
-          LOGGER.warn("ping instance {}/{}/{}/{} endpoint {} failed",
-              instance.getApplication(),
-              instance.getServiceName(),
-              instance.getDiscoveryName(),
-              instance.getInstanceId(), endpoint);
-        }
+    if (CollectionUtils.isEmpty(instance.getEndpoints())) {
+      return false;
+    }
+
+    for (String endpoint : instance.getEndpoints()) {
+      IpPort ipPort = NetUtils.parseIpPortFromURI(endpoint);
+      try (Socket s = new Socket()) {
+        s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
+        return true;
+      } catch (Exception e) {
+        LOGGER.warn("ping instance {}/{}/{}/{} endpoint {} failed",
+            instance.getApplication(),
+            instance.getServiceName(),
+            instance.getRegistryName(),
+            instance.getInstanceId(), endpoint);
       }
     }
+
     return false;
   }
 

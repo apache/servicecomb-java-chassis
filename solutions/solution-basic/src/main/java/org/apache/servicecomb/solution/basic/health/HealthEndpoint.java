@@ -14,16 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry.sc;
+package org.apache.servicecomb.solution.basic.health;
 
-public class SCConst {
-  public static final String SC_REGISTRY_NAME = "sc-registry";
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 
-  public static final String SC_REGISTRY_PREFIX = "servicecomb.registry.sc";
-
-  public static final String SC_SSL_TAG = "sc.consumer";
-
-  public static final String SC_ALLOW_CROSS_APP = "allowCrossApp";
-
-  public static final String SC_DEFAULT_PROJECT = "default";
+@Path("/scb")
+public interface HealthEndpoint {
+  /**
+   * Health of this instance. If the instanceId match this instance, and this service is ready
+   * to service return true. Otherwise, return false.
+   *
+   * This api is for internal instance status usage. Load balancer will call this api to check if
+   * the target instance is alive.
+   */
+  @GET
+  boolean health(@QueryParam("instanceId") String instanceId, @QueryParam("registryName") String registryName);
 }

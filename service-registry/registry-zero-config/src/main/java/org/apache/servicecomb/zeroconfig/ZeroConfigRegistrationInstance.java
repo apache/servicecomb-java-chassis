@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry.lightweight;
+package org.apache.servicecomb.zeroconfig;
 
 import java.util.List;
 import java.util.Map;
@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
+import org.apache.servicecomb.registry.lightweight.Self;
 
 public class ZeroConfigRegistrationInstance implements RegistrationInstance {
   private final Self self;

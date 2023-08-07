@@ -44,11 +44,14 @@ public final class InvocationFactory {
 
   public static Invocation setSrcMicroservice(Invocation invocation) {
     invocation.addContext(Const.SRC_MICROSERVICE, SCBEngine.getInstance().getMicroserviceProperties().getName());
+    // TODO: hard code registry name here. This is an old feature not for all registry implementations.
     if (addSourceServiceId()) {
-      invocation.addContext(Const.SRC_SERVICE_ID, SCBEngine.getInstance().getRegistrationManager().getServiceId());
+      invocation.addContext(Const.SRC_SERVICE_ID,
+          SCBEngine.getInstance().getRegistrationManager().getServiceId("sc-registration"));
     }
     if (addSourceInstanceId()) {
-      invocation.addContext(Const.SRC_INSTANCE_ID, SCBEngine.getInstance().getRegistrationManager().getInstanceId());
+      invocation.addContext(Const.SRC_INSTANCE_ID,
+          SCBEngine.getInstance().getRegistrationManager().getInstanceId("sc-registration"));
     }
     return invocation;
   }

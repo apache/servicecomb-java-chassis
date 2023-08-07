@@ -17,6 +17,7 @@
 package org.apache.servicecomb.demo.multiServiceCenterClient;
 
 import org.apache.servicecomb.registry.sc.SCConfigurationProperties;
+import org.apache.servicecomb.registry.sc.SCConst;
 import org.apache.servicecomb.registry.sc.SCRegistration;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterWatch;
@@ -29,6 +30,6 @@ public class SC2Registration extends SCRegistration {
 
   @Override
   public String name() {
-    return SC_REGISTRATION_NAME + 2;
+    return SCConst.SC_REGISTRY_NAME + 2;
   }
 }

@@ -118,8 +118,8 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
-  public String getDiscoveryName() {
-    return this.discoveryInstance.getDiscoveryName();
+  public String getRegistryName() {
+    return this.discoveryInstance.getRegistryName();
   }
 
   @Override

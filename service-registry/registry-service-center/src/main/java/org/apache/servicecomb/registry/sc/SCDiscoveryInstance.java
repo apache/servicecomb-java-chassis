@@ -46,8 +46,8 @@ public class SCDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
-  public String getDiscoveryName() {
-    return SCDiscovery.SC_DISCOVERY_NAME;
+  public String getRegistryName() {
+    return SCConst.SC_REGISTRY_NAME;
   }
 
   @Override

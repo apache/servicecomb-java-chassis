@@ -145,7 +145,7 @@ public class TestDiscoveryManager {
     }
 
     @Override
-    public String getDiscoveryName() {
+    public String getRegistryName() {
       return null;
     }
 

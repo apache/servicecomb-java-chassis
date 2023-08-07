@@ -103,8 +103,8 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
-  public String getDiscoveryName() {
-    return LocalDiscovery.LOCAL_DISCOVERY_NAME;
+  public String getRegistryName() {
+    return LocalRegistryConst.LOCAL_REGISTRY_NAME;
   }
 
   @Override
