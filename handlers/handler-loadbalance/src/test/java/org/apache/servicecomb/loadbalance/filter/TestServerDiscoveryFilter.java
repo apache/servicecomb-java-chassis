@@ -17,84 +17,57 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
-import org.apache.servicecomb.config.ConfigUtil;
+import static org.mockito.ArgumentMatchers.any;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
-
 public class TestServerDiscoveryFilter {
-  static SCBEngine scbEngine;
-
-  static TransportManager transportManager;
-
   ServerDiscoveryFilter filter = new ServerDiscoveryFilter();
-
-  @Mocked
-  Transport trasport;
-
-  @BeforeClass
-  public static void setup() {
-    ConfigUtil.installDynamicConfig();
-    scbEngine = SCBBootstrap.createSCBEngineForTest().run();
-    transportManager = scbEngine.getTransportManager();
-  }
-
-  @AfterClass
-  public static void teardown() {
-    scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
-  }
 
   @Test
   public void createEndpoint_TransportNotExist() {
-    new Expectations(transportManager) {
-      {
-        transportManager.findTransport(anyString);
-        result = null;
-      }
-    };
-
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    Mockito.when(transportManager.findTransport(any(String.class))).thenReturn(null);
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    filter.setScbEngine(scbEngine);
     ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(null, Const.RESTFUL, null, null);
     Assertions.assertNull(server);
   }
 
   @Test
-  public void createEndpointNormal(@Injectable DiscoveryContext context, @Injectable Invocation invocation) {
-    new Expectations(transportManager) {
-      {
-        transportManager.findTransport(anyString);
-        result = trasport;
-        context.getInputParameters();
-        result = invocation;
-        invocation.getMicroserviceName();
-        result = "test";
-      }
-    };
+  public void createEndpointNormal() {
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    Transport transport = Mockito.mock(Transport.class);
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(transportManager.findTransport(any(String.class))).thenReturn(transport);
+    Mockito.when(invocation.getConfigTransportName()).thenReturn(Const.RESTFUL);
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
+    DiscoveryContext context = new DiscoveryContext();
+    context.setInputParameters(invocation);
+
     DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
     StatefulDiscoveryInstance instance = new StatefulDiscoveryInstance(discoveryInstance);
     Mockito.when(discoveryInstance.getInstanceId()).thenReturn("0000001");
+    filter.setScbEngine(scbEngine);
 
     ServiceCombServer server = (ServiceCombServer) filter
         .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);
     Assertions.assertSame(instance, server.getInstance());
-    Assertions.assertSame(trasport, server.getEndpoint().getTransport());
+    Assertions.assertSame(transport, server.getEndpoint().getTransport());
     Assertions.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
   }
 }
