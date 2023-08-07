@@ -32,8 +32,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EndpointDiscoveryFilter.class);
 
-  @Autowired
+  protected SCBEngine scbEngine;
+
   public EndpointDiscoveryFilter() {
+  }
+
+  @Autowired
+  public void setScbEngine(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
   }
 
   @Override
@@ -50,7 +56,7 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   @Override
   protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
       StatefulDiscoveryInstance instance) {
-    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
+    Transport transport = scbEngine.getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;

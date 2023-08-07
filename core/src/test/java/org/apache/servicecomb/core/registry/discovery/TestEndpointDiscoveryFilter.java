@@ -23,39 +23,31 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-
-import mockit.Expectations;
-import mockit.Mocked;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestEndpointDiscoveryFilter {
   EndpointDiscoveryFilter filter = new EndpointDiscoveryFilter();
 
   DiscoveryContext context = new DiscoveryContext();
 
-  @Mocked
   Invocation invocation;
 
-  SCBEngine scbEngine;
-
-  @Before
+  @BeforeEach
   public void setup() {
     ArchaiusUtils.resetConfig();
     ConfigUtil.installDynamicConfig();
-    context.setInputParameters(invocation);
-    scbEngine = SCBBootstrap.createSCBEngineForTest();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
-    scbEngine.destroy();
     ArchaiusUtils.resetConfig();
   }
 
@@ -66,34 +58,36 @@ public class TestEndpointDiscoveryFilter {
 
   @Test
   public void getTransportName() {
-    new Expectations() {
-      {
-        invocation.getConfigTransportName();
-        result = Const.RESTFUL;
-      }
-    };
-
+    invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getConfigTransportName()).thenReturn(Const.RESTFUL);
+    context.setInputParameters(invocation);
     Assertions.assertEquals(Const.RESTFUL, filter.findTransportName(context, null));
   }
 
   @Test
   public void createEndpointNullTransport() {
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    Mockito.when(transportManager.findTransport(Const.RESTFUL)).thenReturn(null);
+    filter.setScbEngine(scbEngine);
     Assertions.assertNull(filter.createEndpoint(null, Const.RESTFUL, "", null));
   }
 
   @Test
-  public void createEndpointNormal(@Mocked Transport transport, @Mocked StatefulDiscoveryInstance instance) {
+  public void createEndpointNormal() {
+    Transport transport = Mockito.mock(Transport.class);
+    StatefulDiscoveryInstance instance = Mockito.mock(StatefulDiscoveryInstance.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+
     String endpoint = "rest://ip:port";
     Object address = new Object();
 
-    new Expectations(scbEngine.getTransportManager()) {
-      {
-        scbEngine.getTransportManager().findTransport(Const.RESTFUL);
-        result = transport;
-        transport.parseAddress(endpoint);
-        result = address;
-      }
-    };
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    Mockito.when(transportManager.findTransport(Const.RESTFUL)).thenReturn(transport);
+    Mockito.when(transport.parseAddress(endpoint)).thenReturn(address);
+    filter.setScbEngine(scbEngine);
 
     Endpoint ep = (Endpoint) filter.createEndpoint(null, Const.RESTFUL, endpoint, instance);
     Assertions.assertSame(transport, ep.getTransport());
