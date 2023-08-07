@@ -19,8 +19,6 @@ package org.apache.servicecomb.transport.rest.client;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_DECODE_REST_FAIL_RESPONSE;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_DECODE_REST_SUCCESS_RESPONSE;
 
-import jakarta.ws.rs.core.HttpHeaders;
-
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.core.Invocation;
@@ -34,6 +32,7 @@ import com.fasterxml.jackson.databind.JavaType;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
+import jakarta.ws.rs.core.HttpHeaders;
 
 public class RestClientDecoder {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientDecoder.class);
@@ -101,8 +100,9 @@ public class RestClientDecoder {
     RestClientTransportContext transportContext = invocation.getTransportContext();
     HttpClientRequest httpClientRequest = transportContext.getHttpClientRequest();
 
-    LOGGER.warn(
-        "failed to decode response body, operation={}, method={}, endpoint={}, uri={}, statusCode={}, reasonPhrase={}, content-type={}.",
+    LOGGER.warn("failed to decode response body, "
+            + "operation={}, method={}, endpoint={}, uri={}, "
+            + "statusCode={}, reasonPhrase={}, content-type={}.",
         invocation.getMicroserviceQualifiedName(),
         httpClientRequest.getMethod(),
         invocation.getEndpoint().getEndpoint(),
