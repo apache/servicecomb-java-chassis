@@ -29,12 +29,12 @@ public interface Discovery<D extends DiscoveryInstance> extends SPIEnabled, SPIO
   interface InstanceChangedListener<D extends DiscoveryInstance> {
     /**
      * Called by Discovery Implementations when instance list changed.
-     * @param discoveryName Name of the calling discovery implementation
+     * @param registryName Name of the calling discovery implementation
      * @param application Microservice application
      * @param serviceName Microservice name
      * @param updatedInstances The latest updated instances.
      */
-    void onInstanceChanged(String discoveryName, String application, String serviceName, List<D> updatedInstances);
+    void onInstanceChanged(String registryName, String application, String serviceName, List<D> updatedInstances);
   }
 
   String name();

@@ -98,13 +98,18 @@ public class DiscoveryManager implements LifeCycle {
             changed = true;
           }
           // check ping status
-          boolean pingResult = ping.ping(instance);
-          if (pingResult && instance.getPingStatus() != PingStatus.OK) {
-            instance.setPingStatus(PingStatus.OK);
-            changed = true;
-          } else if (!pingResult && instance.getPingStatus() != PingStatus.FAIL) {
-            instance.setPingStatus(PingStatus.FAIL);
-            changed = true;
+          if (System.currentTimeMillis() - instance.getPingSuccessTime() > 180_000L) {
+            boolean pingResult = ping.ping(instance);
+            if (pingResult && instance.getPingStatus() != PingStatus.OK) {
+              instance.setPingStatus(PingStatus.OK);
+              changed = true;
+            } else if (!pingResult && instance.getPingStatus() != PingStatus.FAIL) {
+              instance.setPingStatus(PingStatus.FAIL);
+              changed = true;
+            }
+            if (pingResult) {
+              instance.setPingSuccessTime(System.currentTimeMillis());
+            }
           }
           // check unused
           if (instance.getHistoryStatus() == HistoryStatus.HISTORY) {
@@ -141,17 +146,17 @@ public class DiscoveryManager implements LifeCycle {
     onInstancesChanged(null, application, serviceName, instances);
   }
 
-  private void onInstancesChanged(String discoveryName, String application, String serviceName,
+  private void onInstancesChanged(String registryName, String application, String serviceName,
       List<? extends DiscoveryInstance> instances) {
     Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(application, key ->
         new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, key -> new ConcurrentHashMapEx<>());
 
     for (StatefulDiscoveryInstance statefulInstance : statefulInstances.values()) {
-      if (StringUtils.isEmpty(discoveryName)) {
+      if (StringUtils.isEmpty(registryName)) {
         statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
         continue;
       }
-      if (discoveryName.equals(statefulInstance.getRegistryName())) {
+      if (registryName.equals(statefulInstance.getRegistryName())) {
         statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
       }
     }
