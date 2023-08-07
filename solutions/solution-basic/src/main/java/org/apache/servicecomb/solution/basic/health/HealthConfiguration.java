@@ -14,10 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.solution.basic.health;
 
-package org.apache.servicecomb.localregistry;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class Const {
-  public static final String LOCAL_REGISTRY_ENABLED = "servicecomb.registry.local.enabled";
+@Configuration
+public class HealthConfiguration {
+  @Bean
+  public HealthInstancePing healthInstancePing() {
+    return new HealthInstancePing();
+  }
 
+  @Bean
+  public HealthEndpoint healthEndpoint() {
+    return new HealthEndpointImpl();
+  }
 }

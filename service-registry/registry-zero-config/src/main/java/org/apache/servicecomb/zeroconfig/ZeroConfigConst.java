@@ -18,6 +18,8 @@
 package org.apache.servicecomb.zeroconfig;
 
 public interface ZeroConfigConst {
+  String ZERO_CONFIG_REGISTRY_NAME = "zero-config-registry";
+
   int MAX_PACKET_SIZE = 1024;
 
   String PREFIX = "servicecomb.registry.zero-config.";

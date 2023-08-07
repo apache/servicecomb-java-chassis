@@ -40,8 +40,6 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.hash.Hashing;
 
 public class SCRegistration implements Registration<SCRegistrationInstance> {
-  public static final String SC_REGISTRATION_NAME = "sc-registration";
-
   private final EventBus eventBus = new SimpleEventBus();
 
   private Microservice microservice;
@@ -134,7 +132,7 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
 
   @Override
   public String name() {
-    return SC_REGISTRATION_NAME;
+    return SCConst.SC_REGISTRY_NAME;
   }
 
   @Override

@@ -133,7 +133,7 @@ public final class InvokerUtils {
         schemaId, operationId, swaggerArguments, responseType, asyncResp);
   }
 
-  private static Invocation createInvocation(String microserviceName, String transport,
+  public static Invocation createInvocation(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName);

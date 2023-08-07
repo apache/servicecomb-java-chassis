@@ -18,11 +18,16 @@ package org.apache.servicecomb.zeroconfig;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.servicecomb.registry.lightweight.AbstractLightweightDiscovery;
-import org.apache.servicecomb.registry.lightweight.ZeroConfigDiscoveryInstance;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstances;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
+public class ZeroConfigDiscovery extends AbstractLightweightDiscovery<ZeroConfigDiscoveryInstance> {
   private Config config;
 
   @Autowired
@@ -33,7 +38,7 @@ public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
 
   @Override
   public String name() {
-    return ZERO_CONFIG_NAME;
+    return ZeroConfigConst.ZERO_CONFIG_REGISTRY_NAME;
   }
 
   @Override
@@ -54,5 +59,19 @@ public class ZeroConfigDiscovery extends AbstractLightweightDiscovery {
   @Override
   public void run() {
 
+  }
+
+  @Override
+  public List<ZeroConfigDiscoveryInstance> findServiceInstances(String application, String serviceName) {
+    MicroserviceInstances microserviceInstances =
+        store.findServiceInstances(application, serviceName, "0");
+    if (microserviceInstances.isMicroserviceNotExist() || microserviceInstances.getInstancesResponse() == null) {
+      return Collections.emptyList();
+    }
+    List<ZeroConfigDiscoveryInstance> result = new ArrayList<>();
+    for (MicroserviceInstance instance : microserviceInstances.getInstancesResponse().getInstances()) {
+      result.add(new ZeroConfigDiscoveryInstance(store.getMicroservice(instance.getServiceId()).get(), instance));
+    }
+    return result;
   }
 }

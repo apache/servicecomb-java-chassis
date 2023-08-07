@@ -19,10 +19,12 @@ package org.apache.servicecomb.zeroconfig;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.lightweight.AbstractLightweightRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractZeroConfigRegistration extends AbstractLightweightRegistration {
+public abstract class AbstractZeroConfigRegistration<R extends RegistrationInstance>
+    extends AbstractLightweightRegistration<R> {
   protected Config config;
 
   @Autowired

@@ -128,7 +128,7 @@ public class DiscoveryManager implements LifeCycle {
           StatefulDiscoveryInstance removedInstance =
               allInstances.get(apps.getKey()).get(services.getKey()).remove(instance);
           LOGGER.info("Remove instance {}/{}/{}/{}/{}/{}/{}/{}",
-              apps.getKey(), services.getKey(), removedInstance.getDiscoveryName(),
+              apps.getKey(), services.getKey(), removedInstance.getRegistryName(),
               instance, removedInstance.getHistoryStatus(),
               removedInstance.getStatus(), removedInstance.getPingStatus(), removedInstance.getIsolationStatus());
         }
@@ -151,7 +151,7 @@ public class DiscoveryManager implements LifeCycle {
         statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
         continue;
       }
-      if (discoveryName.equals(statefulInstance.getDiscoveryName())) {
+      if (discoveryName.equals(statefulInstance.getRegistryName())) {
         statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
       }
     }
@@ -174,7 +174,7 @@ public class DiscoveryManager implements LifeCycle {
           .append(instance.getInstanceId()).append(",")
           .append(instance.getStatus()).append(",")
           .append(instance.getEndpoints()).append(",")
-          .append(instance.getDiscoveryName())
+          .append(instance.getRegistryName())
           .append("}");
     }
     LOGGER.info("Applying new instance list for {}/{}/{}. Endpoints {}",

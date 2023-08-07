@@ -1,4 +1,3 @@
-#
 ## ---------------------------------------------------------------------------
 ## Licensed to the Apache Software Foundation (ASF) under one or more
 ## contributor license agreements.  See the NOTICE file distributed with
@@ -16,23 +15,4 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-# order of this configure file
-servicecomb-config-order: -100
-
-servicecomb:
-# metrics and access log
-  accesslog:
-    enabled: true
-  metrics:
-    window_time: 60000
-    invocation:
-      latencyDistribution: 0,1,10,100,1000
-    Consumer.invocation.slow:
-      enabled: true
-      msTime: 1000
-    Provider.invocation.slow:
-      enabled: true
-      msTime: 1000
-    publisher.defaultLog:
-      enabled: true
-      endpoints.client.detail.enabled: true
+org.apache.servicecomb.solution.basic.health.HealthConfiguration

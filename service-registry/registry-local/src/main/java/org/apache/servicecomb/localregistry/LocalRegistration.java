@@ -53,7 +53,7 @@ public class LocalRegistration implements Registration<LocalRegistrationInstance
 
   @Override
   public String name() {
-    return "local-registration";
+    return LocalRegistryConst.LOCAL_REGISTRY_NAME;
   }
 
   @Override
@@ -83,6 +83,6 @@ public class LocalRegistration implements Registration<LocalRegistrationInstance
 
   @Override
   public boolean enabled() {
-    return this.environment.getProperty(Const.LOCAL_REGISTRY_ENABLED, Boolean.class, true);
+    return this.environment.getProperty(LocalRegistryConst.LOCAL_REGISTRY_ENABLED, Boolean.class, true);
   }
 }

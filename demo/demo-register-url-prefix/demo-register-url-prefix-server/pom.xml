@@ -44,11 +44,6 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
-    </dependency>
-
   </dependencies>
   <build>
     <plugins>

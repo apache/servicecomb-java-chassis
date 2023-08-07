@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.registry.lightweight;
+package org.apache.servicecomb.zeroconfig;
 
 import java.util.List;
 import java.util.Map;
@@ -42,8 +42,8 @@ public class ZeroConfigDiscoveryInstance extends AbstractDiscoveryInstance {
   }
 
   @Override
-  public String getDiscoveryName() {
-    return AbstractLightweightDiscovery.ZERO_CONFIG_NAME;
+  public String getRegistryName() {
+    return ZeroConfigConst.ZERO_CONFIG_REGISTRY_NAME;
   }
 
   @Override
