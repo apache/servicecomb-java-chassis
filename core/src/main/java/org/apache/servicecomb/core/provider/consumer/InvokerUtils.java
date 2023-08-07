@@ -126,7 +126,6 @@ public final class InvokerUtils {
         schemaId, operationId, swaggerArguments, responseType);
   }
 
-  @Deprecated
   public static void reactiveInvoke(String microserviceName, String schemaId, String operationId,
       Map<String, Object> swaggerArguments, Type responseType,
       AsyncResponse asyncResp) {
@@ -152,18 +151,6 @@ public final class InvokerUtils {
     invocationRuntimeType.setSuccessResponseType(responseType);
     return InvocationFactory
         .forConsumer(referenceConfig, operationMeta, invocationRuntimeType, swaggerArguments);
-  }
-
-  /**
-   *
-   * use of this method , the response type can not be determined.
-   * use {@link #syncInvoke(String, String, String, Map, Type)} instead.
-   *
-   */
-  @Deprecated
-  public static Object syncInvoke(String microserviceName, String schemaId, String operationId,
-      Map<String, Object> swaggerArguments) {
-    return syncInvoke(microserviceName, null, schemaId, operationId, swaggerArguments);
   }
 
   /**

@@ -269,14 +269,15 @@ public class PojoClient {
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=1]", result);
   }
 
-  @SuppressWarnings({"deprecation"})
+  @SuppressWarnings("rawtypes")
   private static void testCommonInvoke(String transport) {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("index", 2);
     arguments.put("user", new User());
     Map<String, Object> warpArguments = new HashMap<>();
     warpArguments.put("splitParamBody", arguments);
-    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", warpArguments);
+    User result = InvokerUtils.syncInvoke("pojo", "server",
+        "splitParam", warpArguments, User.class);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=2]", result);
 
     arguments = new HashMap<>();
@@ -289,7 +290,7 @@ public class PojoClient {
             transport,
             "server",
             "splitParam",
-            warpArguments);
+            warpArguments, User.class);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=3]", result);
   }
 

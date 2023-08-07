@@ -178,7 +178,6 @@ public class TestWeakPojo implements CategorizedTestCase {
     TestMgr.check("hello", nameListResult.get(0).get(0));
   }
 
-  @SuppressWarnings({"deprecation"})
   private void testDiffName() {
     TestMgr.check(7, diffNames.differentName(2, 3));
     TestMgr.check(8, diffNames2.differentName(2, 3));
@@ -187,6 +186,7 @@ public class TestWeakPojo implements CategorizedTestCase {
     args.put("y", 3);
     Map<String, Object> swaggerArgs = new HashMap<>();
     swaggerArgs.put("differentNameBody", args);
-    TestMgr.check(7, InvokerUtils.syncInvoke("pojo", "WeakPojo", "differentName", swaggerArgs));
+    TestMgr.check(7, InvokerUtils.syncInvoke("pojo", "WeakPojo",
+        "differentName", swaggerArgs, Integer.class));
   }
 }
