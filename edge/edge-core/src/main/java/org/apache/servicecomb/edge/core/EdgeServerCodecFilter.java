@@ -39,18 +39,18 @@ public class EdgeServerCodecFilter extends RestServerCodecFilter {
 
   @Nonnull
   @Override
-  public boolean isEnabledForInvocationType(InvocationType invocationType) {
+  public boolean enabledForInvocationType(InvocationType invocationType) {
     return invocationType == InvocationType.CONSUMER;
   }
 
   @Override
-  public boolean isEnabledForTransport(String transport) {
+  public boolean enabledForTransport(String transport) {
     // For edge service, this filter executed before load balancer and transport is always null.
     return true;
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 2000;
   }
 

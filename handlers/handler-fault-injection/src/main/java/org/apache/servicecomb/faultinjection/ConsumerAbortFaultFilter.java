@@ -39,7 +39,7 @@ public class ConsumerAbortFaultFilter implements ConsumerFilter {
   public static final String ABORTED_ERROR_MSG = "aborted by fault inject";
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1020;
   }
 

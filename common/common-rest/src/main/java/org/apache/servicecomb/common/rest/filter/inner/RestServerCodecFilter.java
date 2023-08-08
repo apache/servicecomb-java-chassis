@@ -64,13 +64,13 @@ public class RestServerCodecFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     // almost time, should be the first filter.
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 2000;
   }
 
   @Override
-  public boolean isEnabledForTransport(String transport) {
+  public boolean enabledForTransport(String transport) {
     return Const.RESTFUL.equals(transport);
   }
 

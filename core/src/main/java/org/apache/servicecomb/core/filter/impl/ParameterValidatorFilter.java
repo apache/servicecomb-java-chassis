@@ -21,12 +21,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.executable.ExecutableValidator;
-import jakarta.validation.groups.Default;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
@@ -46,6 +40,13 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableValidator;
+import jakarta.validation.groups.Default;
+
 public class ParameterValidatorFilter implements ProviderFilter, InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 
@@ -62,7 +63,7 @@ public class ParameterValidatorFilter implements ProviderFilter, InitializingBea
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1000;
   }
 

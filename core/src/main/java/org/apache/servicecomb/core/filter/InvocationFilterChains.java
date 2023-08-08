@@ -48,7 +48,7 @@ public class InvocationFilterChains {
     FilterNode filterNode = microserviceChains.get(serviceName);
     if (filterNode == null) {
       List<Filter> serviceFilters = filters.entrySet().stream()
-          .filter(e -> e.getValue().isEnabledForMicroservice(application, serviceName))
+          .filter(e -> e.getValue().enabledForMicroservice(application, serviceName))
           .map(e -> e.getValue())
           .collect(Collectors.toList());
       serviceFilters.sort(Comparator.comparingInt(a -> a.getOrder(invocationType, application, serviceName)));

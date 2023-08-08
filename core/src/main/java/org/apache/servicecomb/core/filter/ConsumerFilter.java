@@ -23,7 +23,7 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 public interface ConsumerFilter extends Filter {
   @Nonnull
   @Override
-  default boolean isEnabledForInvocationType(InvocationType invocationType) {
+  default boolean enabledForInvocationType(InvocationType invocationType) {
     return invocationType == InvocationType.CONSUMER;
   }
 }

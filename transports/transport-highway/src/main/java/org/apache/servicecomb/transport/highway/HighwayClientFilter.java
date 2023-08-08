@@ -48,12 +48,12 @@ public class HighwayClientFilter implements ConsumerFilter {
   }
 
   @Override
-  public boolean isEnabledForTransport(String transport) {
+  public boolean enabledForTransport(String transport) {
     return Const.HIGHWAY.equals(transport);
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 2000;
   }
 

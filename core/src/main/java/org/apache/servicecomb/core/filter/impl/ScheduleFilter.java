@@ -40,7 +40,7 @@ public class ScheduleFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER;
   }
 

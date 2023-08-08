@@ -104,13 +104,13 @@ public class RouterAddHeaderFilter implements Filter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return ProviderFilter.PROVIDER_SCHEDULE_FILTER_ORDER - 1970;
   }
 
   @Nonnull
   @Override
-  public boolean isEnabledForInvocationType(InvocationType invocationType) {
+  public boolean enabledForInvocationType(InvocationType invocationType) {
     // enable for both edge and producer
     return true;
   }

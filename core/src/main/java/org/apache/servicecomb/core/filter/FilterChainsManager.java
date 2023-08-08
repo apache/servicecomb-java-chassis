@@ -33,11 +33,11 @@ public class FilterChainsManager {
   @Autowired
   public FilterChainsManager addFilters(List<Filter> filters) {
     for (Filter filter : filters) {
-      if (filter.isEnabledForInvocationType(InvocationType.CONSUMER)) {
+      if (filter.enabledForInvocationType(InvocationType.CONSUMER)) {
         consumerChains.addFilter(filter);
       }
 
-      if (filter.isEnabledForInvocationType(InvocationType.PROVIDER)) {
+      if (filter.enabledForInvocationType(InvocationType.PROVIDER)) {
         producerChains.addFilter(filter);
       }
     }
