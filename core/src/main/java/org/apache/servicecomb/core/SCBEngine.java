@@ -400,7 +400,8 @@ public class SCBEngine {
     String microserviceName = this.microserviceProperties.getName();
     producerMicroserviceMeta = new MicroserviceMeta(this,
         this.microserviceProperties.getApplication(), microserviceName, false);
-    producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
+    producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(
+        this.microserviceProperties.getApplication(), microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
   }
 
@@ -551,7 +552,7 @@ public class SCBEngine {
       String microserviceName, List<? extends DiscoveryInstance> instances) {
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, application, microserviceName, true);
-    microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(microserviceName));
+    microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(application, microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
     Map<String, String> schemas = new HashMap<>();

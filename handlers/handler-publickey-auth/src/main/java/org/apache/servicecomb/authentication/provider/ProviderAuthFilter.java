@@ -24,7 +24,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -32,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.ws.rs.core.Response.Status;
 
-public class ProviderAuthFilter implements ProducerFilter {
+public class ProviderAuthFilter implements ProviderFilter {
   private ProviderTokenManager authenticationTokenManager;
 
   @Autowired
@@ -42,7 +42,7 @@ public class ProviderAuthFilter implements ProducerFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 1010;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1010;
   }
 
   @Nonnull

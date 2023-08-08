@@ -44,16 +44,16 @@ public class InvocationFilterChains {
     filters.put(filter.getName(), filter);
   }
 
-  public FilterNode findChain(String microserviceName) {
-    FilterNode filterNode = microserviceChains.get(microserviceName);
+  public FilterNode findChain(String application, String serviceName) {
+    FilterNode filterNode = microserviceChains.get(serviceName);
     if (filterNode == null) {
       List<Filter> serviceFilters = filters.entrySet().stream()
-          .filter(e -> e.getValue().isEnabledForMicroservice(microserviceName))
+          .filter(e -> e.getValue().isEnabledForMicroservice(application, serviceName))
           .map(e -> e.getValue())
           .collect(Collectors.toList());
-      serviceFilters.sort(Comparator.comparingInt(a -> a.getOrder(invocationType, microserviceName)));
+      serviceFilters.sort(Comparator.comparingInt(a -> a.getOrder(invocationType, application, serviceName)));
       filterNode = FilterNode.buildChain(serviceFilters);
-      microserviceChains.put(microserviceName, filterNode);
+      microserviceChains.put(serviceName, filterNode);
     }
     return filterNode;
   }

@@ -31,7 +31,7 @@ import jakarta.validation.groups.Default;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -46,7 +46,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public class ParameterValidatorFilter implements ProducerFilter, InitializingBean {
+public class ParameterValidatorFilter implements ProviderFilter, InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 
   public static final String NAME = "validator";
@@ -63,7 +63,7 @@ public class ParameterValidatorFilter implements ProducerFilter, InitializingBea
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 1000;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1000;
   }
 
   @Override

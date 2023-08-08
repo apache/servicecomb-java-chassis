@@ -44,7 +44,7 @@ public class EdgeSignatureResponseFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EdgeSignatureResponseFilter.class);
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1991;
   }
 

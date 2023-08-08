@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.governance.handler.CircuitBreakerHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
@@ -43,7 +43,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 
-public class ProviderCircuitBreakerFilter implements ProducerFilter {
+public class ProviderCircuitBreakerFilter implements ProviderFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderCircuitBreakerFilter.class);
 
   private final CircuitBreakerHandler circuitBreakerHandler;
@@ -55,7 +55,7 @@ public class ProviderCircuitBreakerFilter implements ProducerFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1890;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1890;
   }
 
   @Nonnull

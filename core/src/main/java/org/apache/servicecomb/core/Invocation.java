@@ -125,7 +125,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public Invocation(Endpoint endpoint, OperationMeta operationMeta, Map<String, Object> swaggerArguments) {
-    this.invocationType = InvocationType.PRODUCER;
+    this.invocationType = InvocationType.PROVIDER;
     this.invocationRuntimeType = operationMeta.buildBaseProviderRuntimeType();
     this.endpoint = endpoint;
     init(operationMeta, swaggerArguments);
@@ -417,7 +417,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public boolean isProducer() {
-    return InvocationType.PRODUCER.equals(invocationType);
+    return InvocationType.PROVIDER.equals(invocationType);
   }
 
   public boolean isEdge() {

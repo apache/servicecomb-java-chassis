@@ -28,7 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class FilterChainsManager {
   private final InvocationFilterChains consumerChains = new InvocationFilterChains(InvocationType.CONSUMER);
 
-  private final InvocationFilterChains producerChains = new InvocationFilterChains(InvocationType.PRODUCER);
+  private final InvocationFilterChains producerChains = new InvocationFilterChains(InvocationType.PROVIDER);
 
   @Autowired
   public FilterChainsManager addFilters(List<Filter> filters) {
@@ -37,7 +37,7 @@ public class FilterChainsManager {
         consumerChains.addFilter(filter);
       }
 
-      if (filter.isEnabledForInvocationType(InvocationType.PRODUCER)) {
+      if (filter.isEnabledForInvocationType(InvocationType.PROVIDER)) {
         producerChains.addFilter(filter);
       }
     }
@@ -49,12 +49,12 @@ public class FilterChainsManager {
     return this;
   }
 
-  public FilterNode findConsumerChain(String microserviceName) {
-    return consumerChains.findChain(microserviceName);
+  public FilterNode findConsumerChain(String application, String serviceName) {
+    return consumerChains.findChain(application, serviceName);
   }
 
-  public FilterNode findProducerChain(String microserviceName) {
-    return producerChains.findChain(microserviceName);
+  public FilterNode findProducerChain(String application, String serviceName) {
+    return producerChains.findChain(application, serviceName);
   }
 
   public String collectResolvedChains() {
@@ -64,14 +64,14 @@ public class FilterChainsManager {
     appendLine(sb, "  filters: %s", collectFilterNames(consumerChains, InvocationType.CONSUMER));
 
     appendLine(sb, "producer: ");
-    appendLine(sb, "  filters: %s", collectFilterNames(producerChains, InvocationType.PRODUCER));
+    appendLine(sb, "  filters: %s", collectFilterNames(producerChains, InvocationType.PROVIDER));
 
     return deleteLast(sb, 1).toString();
   }
 
   private List<String> collectFilterNames(InvocationFilterChains chains, InvocationType invocationType) {
     return chains.getFilters().stream()
-        .map(filter -> filter.getName() + "(" + filter.getOrder(invocationType, null) + ")")
+        .map(filter -> filter.getName() + "(" + filter.getOrder(invocationType, null, null) + ")")
         .collect(Collectors.toList());
   }
 }

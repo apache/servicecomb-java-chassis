@@ -80,7 +80,7 @@ public class TestResponse {
     Assertions.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
     Assertions.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
 
-    ar.fail(InvocationType.PRODUCER, new RuntimeExceptionWithoutStackTrace("abc"));
+    ar.fail(InvocationType.PROVIDER, new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
     Assertions.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
     Assertions.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
@@ -90,7 +90,7 @@ public class TestResponse {
     Assertions.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
     Assertions.assertEquals(500, response.getStatusCode());
 
-    ar.fail(InvocationType.PRODUCER, producerException);
+    ar.fail(InvocationType.PROVIDER, producerException);
     Assertions.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
     Assertions.assertEquals(500, response.getStatusCode());
   }
@@ -121,7 +121,7 @@ public class TestResponse {
         ((InvocationException) r.getResult()).getErrorData().toString());
     Assertions.assertEquals(490, r.getStatusCode());
 
-    r = Response.createFail(InvocationType.PRODUCER, "def");
+    r = Response.createFail(InvocationType.PROVIDER, "def");
     Assertions.assertEquals("CommonExceptionData [message=def]",
         ((InvocationException) r.getResult()).getErrorData().toString());
     Assertions.assertEquals(590, r.getStatusCode());

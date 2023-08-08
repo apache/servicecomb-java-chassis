@@ -61,11 +61,6 @@
     <dependencies>
       <dependency>
         <groupId>org.apache.servicecomb.demo</groupId>
-        <artifactId>demo-signature</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
         <version>${project.version}</version>
       </dependency>

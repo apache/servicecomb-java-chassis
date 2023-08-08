@@ -29,7 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -105,7 +105,7 @@ public class RouterAddHeaderFilter implements Filter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return ProducerFilter.PRODUCER_SCHEDULE_FILTER_ORDER - 1970;
+    return ProviderFilter.PROVIDER_SCHEDULE_FILTER_ORDER - 1970;
   }
 
   @Nonnull

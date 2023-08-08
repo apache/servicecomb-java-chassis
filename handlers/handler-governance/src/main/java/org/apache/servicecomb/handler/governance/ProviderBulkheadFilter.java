@@ -26,7 +26,7 @@ import javax.annotation.Nonnull;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
@@ -43,7 +43,7 @@ import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 
-public class ProviderBulkheadFilter implements ProducerFilter {
+public class ProviderBulkheadFilter implements ProviderFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderBulkheadFilter.class);
 
   private final BulkheadHandler bulkheadHandler;
@@ -55,7 +55,7 @@ public class ProviderBulkheadFilter implements ProducerFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1880;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1880;
   }
 
   @Nonnull

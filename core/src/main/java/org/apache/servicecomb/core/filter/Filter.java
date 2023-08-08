@@ -21,16 +21,12 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 /**
  * <pre>
- * unified extension for replace old version extensions:
- *   1. Handler
- *   2. HttpClientFilter
- *   3. HttpServerFilter
+ *  Filters are the basics of how an invocation is executed.
  *
  * thread rule:
  *   assume a producer filter chains is: f1, f2, schedule, f3, f4
@@ -54,7 +50,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
  * </pre>
  */
 public interface Filter {
-  int PRODUCER_SCHEDULE_FILTER_ORDER = 0;
+  int PROVIDER_SCHEDULE_FILTER_ORDER = 0;
 
   int CONSUMER_LOAD_BALANCE_ORDER = 0;
 
@@ -66,22 +62,17 @@ public interface Filter {
     return true;
   }
 
-  default boolean isEnabledForMicroservice(String microservice) {
-    //TODO read configuration and check if filter enabled.
+  default boolean isEnabledForMicroservice(String application, String serviceName) {
     return true;
   }
 
-  default int getOrder(InvocationType invocationType, String microservice) {
+  default int getOrder(InvocationType invocationType, String application, String serviceName) {
     return 0;
-  }
-
-  default boolean isInEventLoop() {
-    return InvokerUtils.isInEventLoop();
   }
 
   @Nonnull
   default String getName() {
-    throw new IllegalStateException("must provide filter name.");
+    throw new IllegalStateException("must provide unique filter name.");
   }
 
   /**
@@ -94,7 +85,8 @@ public interface Filter {
    *         all fail data can only express by exception<br>
    *         <br>
    *         special for producer:<br>
-   *           if response is failure, then after encode response, response.result will be exception.errorData, not a exception
+   *           if response is failure, then after encode response, response.result will
+   *           be exception.errorData, not a exception
    */
   CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode);
 }

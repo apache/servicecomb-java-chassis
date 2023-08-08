@@ -25,7 +25,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -33,12 +33,12 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class ProviderFlowControlFilter implements ProducerFilter {
+public class ProviderFlowControlFilter implements ProviderFilter {
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1990;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1990;
   }
 
   @Nonnull

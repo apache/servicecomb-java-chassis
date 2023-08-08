@@ -28,7 +28,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -36,7 +36,7 @@ import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 
 import io.vertx.core.buffer.Buffer;
 
-public class HighwayServerCodecFilter implements ProducerFilter {
+public class HighwayServerCodecFilter implements ProviderFilter {
   public static final String NAME = "highway-server-codec";
 
   @Nonnull
@@ -48,7 +48,7 @@ public class HighwayServerCodecFilter implements ProducerFilter {
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
     // almost time, should be the first filter.
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 2000;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 2000;
   }
 
   @Override

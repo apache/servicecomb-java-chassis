@@ -386,7 +386,7 @@ public class TestInvocationPublishModelFactory {
     InvocationFinishEvent finishEvent = new InvocationFinishEvent(invocation, response);
     eventBus.post(finishEvent);
 
-    invocationType = InvocationType.PRODUCER;
+    invocationType = InvocationType.PROVIDER;
     eventBus.post(finishEvent);
   }
 }

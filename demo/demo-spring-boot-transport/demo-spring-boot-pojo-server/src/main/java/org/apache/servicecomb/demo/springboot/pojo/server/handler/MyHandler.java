@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.demo.springboot.pojo.server.schema.server.User;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MyHandler implements ProducerFilter {
+public class MyHandler implements ProviderFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MyHandler.class);
 
@@ -41,7 +41,7 @@ public class MyHandler implements ProducerFilter {
 
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 100;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 100;
   }
 
   @Nonnull
