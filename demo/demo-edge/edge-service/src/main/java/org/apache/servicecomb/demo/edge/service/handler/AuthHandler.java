@@ -52,7 +52,7 @@ public class AuthHandler implements ConsumerFilter {
   }
 
   @Override
-  public boolean isEnabledForMicroservice(String application, String serviceName) {
+  public boolean enabledForMicroservice(String application, String serviceName) {
     if ("auth".equals(serviceName)) {
       return false;
     }

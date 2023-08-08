@@ -81,12 +81,12 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
   }
 
   @Override
-  public boolean isEnabledForTransport(String transport) {
+  public boolean enabledForTransport(String transport) {
     return enabled;
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1991;
   }
 

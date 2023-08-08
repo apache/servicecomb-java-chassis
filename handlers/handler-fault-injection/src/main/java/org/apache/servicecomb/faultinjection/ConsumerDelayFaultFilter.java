@@ -36,7 +36,7 @@ public class ConsumerDelayFaultFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerDelayFaultFilter.class);
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1030;
   }
 

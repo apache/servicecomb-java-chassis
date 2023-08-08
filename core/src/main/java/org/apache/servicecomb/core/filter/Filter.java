@@ -54,15 +54,15 @@ public interface Filter {
 
   int CONSUMER_LOAD_BALANCE_ORDER = 0;
 
-  default boolean isEnabledForInvocationType(InvocationType invocationType) {
+  default boolean enabledForInvocationType(InvocationType invocationType) {
     return true;
   }
 
-  default boolean isEnabledForTransport(String transport) {
+  default boolean enabledForTransport(String transport) {
     return true;
   }
 
-  default boolean isEnabledForMicroservice(String application, String serviceName) {
+  default boolean enabledForMicroservice(String application, String serviceName) {
     return true;
   }
 

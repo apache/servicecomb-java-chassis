@@ -24,13 +24,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CoreFilterConfiguration {
-  //TODO: need remove all component scan or will cause bean conflict with load balance module
-//  @Bean
-//  @ConditionalOnMissingBean(name = "loadBalanceFilter")
-//  public ConsumerFilter loadBalanceFilter() {
-//    return new SimpleLoadBalanceFilter();
-//  }
-
   @Bean
   public ProviderFilter producerOperationFilter() {
     return new ProviderOperationFilter();

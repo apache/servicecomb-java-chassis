@@ -37,7 +37,7 @@ public class ProviderFlowControlFilter implements ProviderFilter {
   private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1990;
   }
 

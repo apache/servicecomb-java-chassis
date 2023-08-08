@@ -42,7 +42,7 @@ public class ProviderOperationFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     // almost time, should be the last filter.
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 2000;
   }
