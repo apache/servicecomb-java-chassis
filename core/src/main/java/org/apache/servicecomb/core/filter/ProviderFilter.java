@@ -20,10 +20,10 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-public interface ProducerFilter extends Filter {
+public interface ProviderFilter extends Filter {
   @Nonnull
   @Override
   default boolean isEnabledForInvocationType(InvocationType invocationType) {
-    return invocationType == InvocationType.PRODUCER;
+    return invocationType == InvocationType.PROVIDER;
   }
 }

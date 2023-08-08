@@ -37,7 +37,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -52,7 +52,7 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 import jakarta.servlet.http.Part;
 
-public class RestServerCodecFilter implements ProducerFilter {
+public class RestServerCodecFilter implements ProviderFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServerCodecFilter.class);
 
   public static final String NAME = "rest-server-codec";
@@ -66,7 +66,7 @@ public class RestServerCodecFilter implements ProducerFilter {
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
     // almost time, should be the first filter.
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 2000;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 2000;
   }
 
   @Override

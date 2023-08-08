@@ -24,16 +24,16 @@ import javax.annotation.Nonnull;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProviderTestFilter implements ProducerFilter {
+public class ProviderTestFilter implements ProviderFilter {
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1800;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1800;
   }
 
   @Nonnull

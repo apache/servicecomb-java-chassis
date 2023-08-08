@@ -25,14 +25,14 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 
-public class ProducerOperationFilter implements ProducerFilter {
+public class ProviderOperationFilter implements ProviderFilter {
   public static final String NAME = "producer-operation";
 
   @Nonnull
@@ -44,7 +44,7 @@ public class ProducerOperationFilter implements ProducerFilter {
   @Override
   public int getOrder(InvocationType invocationType, String microservice) {
     // almost time, should be the last filter.
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 2000;
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 2000;
   }
 
   @Override

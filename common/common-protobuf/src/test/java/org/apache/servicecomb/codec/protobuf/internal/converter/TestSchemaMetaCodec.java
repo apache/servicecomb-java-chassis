@@ -149,7 +149,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationUserImpl() throws IOException {
     Invocation consumerInvocation = mockInvocation("user", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("user", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("user", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -224,7 +224,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationmapUserImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("mapUser", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("mapUser", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("mapUser", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -299,7 +299,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationBaseImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("base", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("base", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("base", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -418,7 +418,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationlistListUserImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("listListUser", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("listListUser", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("listListUser", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -491,7 +491,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationObjImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("obj", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("obj", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("obj", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);

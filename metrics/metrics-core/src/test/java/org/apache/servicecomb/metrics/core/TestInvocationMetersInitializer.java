@@ -249,7 +249,7 @@ public class TestInvocationMetersInitializer {
         invocation.isConsumer();
         result = false;
         invocation.getInvocationType();
-        result = InvocationType.PRODUCER;
+        result = InvocationType.PROVIDER;
         invocation.getRealTransportName();
         result = Const.RESTFUL;
         invocation.getMicroserviceQualifiedName();

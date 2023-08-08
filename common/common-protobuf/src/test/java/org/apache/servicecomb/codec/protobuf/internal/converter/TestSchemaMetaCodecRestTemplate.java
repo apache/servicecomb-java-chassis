@@ -131,7 +131,7 @@ public class TestSchemaMetaCodecRestTemplate {
   @Test
   public void testProtoSchemaOperationUser() throws Exception {
     Invocation consumerInvocation = mockInvocation("user", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("user", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("user", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -180,7 +180,7 @@ public class TestSchemaMetaCodecRestTemplate {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void testProtoSchemaOperationBase() throws Exception {
     Invocation consumerInvocation = mockInvocation("base", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("base", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("base", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);

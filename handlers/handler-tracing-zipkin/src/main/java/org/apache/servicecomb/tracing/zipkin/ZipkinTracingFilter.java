@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
+import static org.apache.servicecomb.swagger.invocation.InvocationType.PROVIDER;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -66,7 +66,7 @@ public class ZipkinTracingFilter implements Filter {
   }
 
   private ZipkinTracingDelegate collectTracing(Invocation invocation) {
-    if (PRODUCER.equals(invocation.getInvocationType())) {
+    if (PROVIDER.equals(invocation.getInvocationType())) {
       return producer;
     }
 

@@ -44,7 +44,7 @@ import mockit.Mocked;
 import mockit.Verifications;
 
 public class ProducerOperationFilterTest {
-  ProducerOperationFilter filter = new ProducerOperationFilter();
+  ProviderOperationFilter filter = new ProviderOperationFilter();
 
   @Injectable
   Invocation invocation;
