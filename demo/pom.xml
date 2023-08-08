@@ -53,7 +53,6 @@
     <module>demo-edge</module>
     <module>demo-multiple</module>
     <module>demo-multi-service-center</module>
-    <module>demo-signature</module>
     <module>demo-cse-v1</module>
     <module>demo-cse-v2</module>
   </modules>
