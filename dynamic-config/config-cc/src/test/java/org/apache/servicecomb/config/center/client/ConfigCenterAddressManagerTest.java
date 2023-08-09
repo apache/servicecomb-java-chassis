@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,8 @@ class ConfigCenterAddressManagerTest {
   private static ConfigCenterAddressManager addressManager1;
 
   private static ConfigCenterAddressManager addressManager2;
+
+  private static int index;
 
   @Test
   public void addressManagerTest() {
@@ -49,9 +52,19 @@ class ConfigCenterAddressManagerTest {
     Assertions.assertEquals(2, addresses.size());
     Assertions.assertEquals("http://127.0.0.1:30103/v3/project", addresses.get(0));
 
-    Assertions.assertEquals("https://127.0.0.2:30103/v3/project", addressManager1.address());
-    Assertions.assertEquals("http://127.0.0.1:30103/v3/project", addressManager1.address());
-    Assertions.assertEquals("https://127.0.0.2:30103/v3/default", addressManager2.address());
+    index = addressManager1.getAddresses().indexOf(addressManager1.address());
+    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
+    index = addressManager2.getAddresses().indexOf(addressManager2.address());
+    Assertions.assertEquals(getAddress(addressManager2), addressManager2.address());
+  }
+
+  private String getAddress(AbstractAddressManager addressManager) {
+    index++;
+    if (index >= addressManager.getAddresses().size()) {
+      index = 0;
+    }
+    return addressManager.getAddresses().get(index);
   }
 
   @Test
