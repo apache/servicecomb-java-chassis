@@ -25,11 +25,13 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.center.client.ConfigCenterAddressManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ConfigCenterConfigurationSourceImplTest {
+  private static int index;
 
   @Test
   void configAddressManagerTest() {
@@ -39,14 +41,24 @@ class ConfigCenterConfigurationSourceImplTest {
     ConfigCenterAddressManager addressManager = new ConfigCenterAddressManager("test", addresses, EventManager.getEventBus());
     Assertions.assertNotNull(addressManager);
 
+    index = addressManager.getAddresses().indexOf(addressManager.address());
     String address = addressManager.address();
-    Assertions.assertEquals("http://127.0.0.2:30103/v3/test", address);
+    Assertions.assertEquals(getAddress(addressManager), address);
     address = addressManager.address();
-    Assertions.assertEquals("http://127.0.0.1:30103/v3/test", address);
+    Assertions.assertEquals(getAddress(addressManager), address);
 
     addressManager = new ConfigCenterAddressManager(null, addresses, EventManager.getEventBus());
+    index = addressManager.getAddresses().indexOf(addressManager.address());
     address = addressManager.address();
-    Assertions.assertEquals("http://127.0.0.2:30103/v3/default", address);
+    Assertions.assertEquals(getAddress(addressManager), address);
+  }
+
+  private String getAddress(AbstractAddressManager addressManager) {
+    index++;
+    if (index >= addressManager.getAddresses().size()) {
+      index = 0;
+    }
+    return addressManager.getAddresses().get(index);
   }
 
   @Test
