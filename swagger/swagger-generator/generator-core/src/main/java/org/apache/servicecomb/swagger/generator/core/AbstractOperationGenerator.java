@@ -181,13 +181,20 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     initParameterGenerators();
 
     Set<String> names = new HashSet<>();
+    int bodyCount = 0;
     for (ParameterGenerator parameterGenerator : parameterGenerators) {
       scanMethodParameter(parameterGenerator);
 
       if (!names.add(parameterGenerator.getParameterGeneratorContext().getParameterName())) {
-        throw new IllegalStateException(
+        throw new IllegalArgumentException(
             String.format("not support duplicated parameter, name=%s.",
                 parameterGenerator.getParameterGeneratorContext().getParameterName()));
+      }
+      if (parameterGenerator.getHttpParameterType() == HttpParameterType.BODY) {
+        if (bodyCount > 0) {
+          throw new IllegalArgumentException(String.format("Defined %d body parameter.", bodyCount));
+        }
+        bodyCount++;
       }
       parameterGenerator.generate();
     }
@@ -203,14 +210,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     // 3.create ParameterGenerators remains method annotations
     initRemainMethodAnnotationsParameterGenerators(methodAnnotationMap);
-
-    // 4.check
-    //   httpParameterType should not be null
-    long bodyCount = parameterGenerators.stream().filter(p -> p.getHttpParameterType().equals(HttpParameterType.BODY))
-        .count();
-    if (bodyCount > 1) {
-      throw new IllegalStateException(String.format("defined %d body parameter.", bodyCount));
-    }
   }
 
   protected void initMethodParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {

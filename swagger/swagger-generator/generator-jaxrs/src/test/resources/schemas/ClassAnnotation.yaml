@@ -15,22 +15,77 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
+---
 openapi: 3.0.1
 info:
   title: swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.ClassAnnotation
   version: 1.0.0
 servers:
-  - url: /class
+- url: /class
 paths:
-  /cookie:
+  /testBean:
     post:
-      operationId: cookie
+      operationId: testBean
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
         x-name: user
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /testForm:
+    post:
+      operationId: testForm
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                param:
+                  type: integer
+                  format: int32
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testString:
+    post:
+      operationId: testString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        x-name: user
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+  /testUpload:
+    post:
+      operationId: testUpload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                part:
+                  type: string
+                  format: binary
       responses:
         "200":
           description: response of 200

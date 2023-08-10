@@ -27,6 +27,8 @@ import org.apache.servicecomb.swagger.generator.ParameterTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.FileSchema;
@@ -38,7 +40,7 @@ import jakarta.ws.rs.core.MediaType;
 public class PartParameterTypeProcessor implements ParameterTypeProcessor {
   @Override
   public Type getProcessType() {
-    return Part.class;
+    return TypeFactory.defaultInstance().constructType(Part.class);
   }
 
   @Override

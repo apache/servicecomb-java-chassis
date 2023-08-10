@@ -18,25 +18,15 @@
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
 
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class FormParamAnnotationProcessor extends JaxrsParameterProcessor<FormParam> {
   @Override
   public Type getProcessType() {
@@ -44,55 +34,11 @@ public class FormParamAnnotationProcessor extends JaxrsParameterProcessor<FormPa
   }
 
   @Override
-  public String getParameterName(FormParam parameterAnnotation) {
-    return parameterAnnotation.value();
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(FormParam parameterAnnotation) {
-    return HttpParameterType.FORM;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
-      FormParam formParam) {
-
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
-      JavaType type, FormParam formParam) {
-    if (requestBody.getContent() == null) {
-      requestBody.setContent(new Content());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, FormParam annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.FORM);
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
     }
-
-    String mediaType = SwaggerConst.FORM_MEDIA_TYPE;
-    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null || isPart(type)) {
-      mediaType = SwaggerConst.FILE_MEDIA_TYPE;
-    }
-
-    if (requestBody.getContent().get(mediaType) == null) {
-      requestBody.getContent().addMediaType(mediaType,
-          new io.swagger.v3.oas.models.media.MediaType());
-    }
-    if (requestBody.getContent().get(mediaType).getSchema() == null) {
-      requestBody.getContent().get(mediaType)
-          .setSchema(new MapSchema());
-    }
-    if (requestBody.getContent().get(mediaType).getSchema().getProperties() == null) {
-      requestBody.getContent().get(mediaType)
-          .getSchema().setProperties(new LinkedHashMap<>());
-    }
-
-    // FormParam used with Part and simple types.
-    // Part is processed by type processor.
-    if (!isPart(type)) {
-      Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-      requestBody.getContent().get(mediaType).getSchema().getProperties().put(parameterName, schema);
-    }
-  }
-
-  private boolean isPart(JavaType type) {
-    return Part.class.equals(type.getRawClass());
   }
 }

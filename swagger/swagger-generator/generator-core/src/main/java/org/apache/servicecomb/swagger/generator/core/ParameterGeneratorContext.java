@@ -16,6 +16,11 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.media.Schema;
@@ -25,9 +30,13 @@ public class ParameterGeneratorContext extends OperationGeneratorContext {
 
   private String parameterName;
 
+  private HttpParameterType httpParameterType;
+
   private Boolean explode;
 
   private Boolean required;
+
+  private Object defaultValue;
 
   private Boolean rawJson;
 
@@ -83,5 +92,43 @@ public class ParameterGeneratorContext extends OperationGeneratorContext {
 
   public void setSchema(Schema<?> schema) {
     this.schema = schema;
+  }
+
+  public HttpParameterType getHttpParameterType() {
+    return httpParameterType;
+  }
+
+  public void setHttpParameterType(HttpParameterType httpParameterType) {
+    this.httpParameterType = httpParameterType;
+  }
+
+  public Object getDefaultValue() {
+    return defaultValue;
+  }
+
+  public void setDefaultValue(Object defaultValue) {
+    this.defaultValue = defaultValue;
+  }
+
+  public void updateConsumes() {
+    List<String> removed = new ArrayList<>();
+    if (httpParameterType == HttpParameterType.BODY) {
+      for (String media : supportedConsumes) {
+        if (SUPPORTED_BODY_CONTENT_TYPE.contains(media)) {
+          continue;
+        }
+        removed.add(media);
+      }
+    } else if (httpParameterType == HttpParameterType.FORM) {
+      for (String media : supportedConsumes) {
+        if (SUPPORTED_FORM_CONTENT_TYPE.contains(media)) {
+          continue;
+        }
+        removed.add(media);
+      }
+    } else {
+      supportedConsumes.clear();
+    }
+    supportedConsumes.removeAll(removed);
   }
 }

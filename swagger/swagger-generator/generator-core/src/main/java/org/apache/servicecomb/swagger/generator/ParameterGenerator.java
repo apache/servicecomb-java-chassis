@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.parameters.CookieParameter;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -42,19 +43,11 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 public class ParameterGenerator {
   private final List<Annotation> annotations;
 
-  /**
-   * when wrap parameters to body, genericType is null
-   */
-  private final JavaType genericType;
-
-  private HttpParameterType httpParameterType;
-
   private final OperationGenerator operationGenerator;
 
   private final ParameterGeneratorContext parameterGeneratorContext;
 
   public ParameterGenerator(OperationGenerator operationGenerator, String parameterName) {
-    this.genericType = null;
     this.operationGenerator = operationGenerator;
     this.parameterGeneratorContext = new ParameterGeneratorContext(operationGenerator.getOperationGeneratorContext());
     this.parameterGeneratorContext.setParameterName(parameterName);
@@ -73,9 +66,10 @@ public class ParameterGenerator {
         parameterName);
     this.parameterGeneratorContext = new ParameterGeneratorContext(operationGenerator.getOperationGeneratorContext());
     this.parameterGeneratorContext.setParameterName(parameterName);
-    this.genericType = TypeFactory.defaultInstance()
-        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, genericType));
-    this.httpParameterType = SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType);
+    this.parameterGeneratorContext.setParameterType(TypeFactory.defaultInstance()
+        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, genericType)));
+    this.parameterGeneratorContext.setHttpParameterType(
+        SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType));
   }
 
   public ParameterGenerator(OperationGenerator operationGenerator, Executable executable,
@@ -93,9 +87,11 @@ public class ParameterGenerator {
     this.parameterGeneratorContext = new ParameterGeneratorContext(operationGenerator.getOperationGeneratorContext());
     this.parameterGeneratorContext.setParameterName(parameterName);
     this.annotations = annotations;
-    this.genericType = TypeFactory.defaultInstance()
-        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, null));
-    this.httpParameterType = SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType);
+    this.parameterGeneratorContext.setParameterType(TypeFactory.defaultInstance()
+        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, null)));
+    this.parameterGeneratorContext.setHttpParameterType(
+        SwaggerGeneratorUtils.collectHttpParameterType(annotations,
+            this.parameterGeneratorContext.getParameterType()));
   }
 
   public ParameterGeneratorContext getParameterGeneratorContext() {
@@ -107,19 +103,25 @@ public class ParameterGenerator {
   }
 
   public JavaType getGenericType() {
-    return genericType;
+    return this.parameterGeneratorContext.getParameterType();
   }
 
   public HttpParameterType getHttpParameterType() {
-    return httpParameterType;
+    return this.parameterGeneratorContext.getHttpParameterType();
   }
 
   public void setHttpParameterType(HttpParameterType httpParameterType) {
-    this.httpParameterType = httpParameterType;
+    this.parameterGeneratorContext.setHttpParameterType(httpParameterType);
   }
 
   public void generate() {
-    if (httpParameterType == HttpParameterType.BODY) {
+    this.parameterGeneratorContext.updateConsumes();
+
+    if (this.parameterGeneratorContext.getHttpParameterType() == HttpParameterType.BODY) {
+      if (parameterGeneratorContext.getSupportedConsumes().size() == 0) {
+        throw new IllegalArgumentException("Consumes not provided for BODY parameter, or is empty "
+            + "by annotations rule.");
+      }
       RequestBody requestBody = new RequestBody();
       Map<String, Object> extensions = new HashMap<>();
       extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGeneratorContext.getParameterName());
@@ -133,7 +135,11 @@ public class ParameterGenerator {
       this.operationGenerator.getOperation().setRequestBody(requestBody);
       return;
     }
-    if (httpParameterType == HttpParameterType.FORM) {
+    if (this.parameterGeneratorContext.getHttpParameterType() == HttpParameterType.FORM) {
+      if (parameterGeneratorContext.getSupportedConsumes().size() == 0) {
+        throw new IllegalArgumentException("Consumes not provided for FORM parameter, or is empty "
+            + "by annotations rule.");
+      }
       RequestBody requestBody = this.operationGenerator.getOperation().getRequestBody();
       if (requestBody == null) {
         requestBody = new RequestBody();
@@ -144,6 +150,7 @@ public class ParameterGenerator {
         MediaType mediaType = requestBody.getContent().get(media);
         if (mediaType == null) {
           mediaType = new MediaType();
+          mediaType.setSchema(new ObjectSchema());
           requestBody.getContent().addMediaType(media, mediaType);
         }
         mediaType.getSchema().addProperty(parameterGeneratorContext.getParameterName(),
@@ -152,17 +159,18 @@ public class ParameterGenerator {
       return;
     }
     Parameter parameter;
-    switch (httpParameterType) {
+    switch (this.parameterGeneratorContext.getHttpParameterType()) {
       case PATH -> parameter = new PathParameter();
       case QUERY -> parameter = new QueryParameter();
       case HEADER -> parameter = new HeaderParameter();
       case COOKIE -> parameter = new CookieParameter();
-      default -> throw new IllegalStateException("not support httpParameterType " + httpParameterType);
+      default -> throw new IllegalStateException("not support httpParameterType "
+          + this.parameterGeneratorContext.getHttpParameterType());
     }
+    parameter.setName(parameterGeneratorContext.getParameterName());
     parameter.setSchema(parameterGeneratorContext.getSchema());
     parameter.setRequired(parameterGeneratorContext.getRequired());
     parameter.setExplode(parameterGeneratorContext.getExplode());
-    parameter.setIn(httpParameterType.name());
     this.operationGenerator.getOperation().addParametersItem(parameter);
 
     // validations and other annotations supported by swagger default

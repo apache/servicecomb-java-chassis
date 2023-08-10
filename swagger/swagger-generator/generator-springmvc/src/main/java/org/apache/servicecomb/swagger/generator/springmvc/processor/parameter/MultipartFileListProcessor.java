@@ -23,11 +23,12 @@ import java.util.List;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayParameterTypeProcessor;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.inject.util.Types;
 
 public class MultipartFileListProcessor extends PartArrayParameterTypeProcessor {
   @Override
   public Type getProcessType() {
-    return Types.newParameterizedType(List.class, MultipartFile.class);
+    return TypeFactory.defaultInstance().constructType(Types.newParameterizedType(List.class, MultipartFile.class));
   }
 }

@@ -19,16 +19,12 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.CookieParam;
 
 public class CookieParamAnnotationProcessor extends
@@ -39,29 +35,11 @@ public class CookieParamAnnotationProcessor extends
   }
 
   @Override
-  public String getParameterName(CookieParam parameterAnnotation) {
-    return parameterAnnotation.value();
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(CookieParam parameterAnnotation) {
-    return HttpParameterType.COOKIE;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter cookieParameter, JavaType type,
-      CookieParam cookieParam) {
-    Schema schema = cookieParameter.getSchema();
-    if (schema == null) {
-      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-      cookieParameter.setSchema(schema);
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, CookieParam annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
     }
-    cookieParameter.setName(cookieParam.value());
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, String parameterName,
-      JavaType type, CookieParam cookieParam) {
-
   }
 }

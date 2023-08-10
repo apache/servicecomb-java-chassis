@@ -20,6 +20,8 @@ import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.FileSchema;
 import jakarta.servlet.http.Part;
@@ -27,7 +29,7 @@ import jakarta.servlet.http.Part;
 public class PartArrayParameterTypeProcessor extends PartParameterTypeProcessor {
   @Override
   public Type getProcessType() {
-    return Part[].class;
+    return TypeFactory.defaultInstance().constructType(Part[].class);
   }
 
   @Override
