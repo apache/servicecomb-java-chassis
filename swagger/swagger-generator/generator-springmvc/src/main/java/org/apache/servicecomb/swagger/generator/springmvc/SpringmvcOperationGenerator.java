@@ -39,10 +39,7 @@ public class SpringmvcOperationGenerator extends RestOperationGenerator {
 
     parameterGenerators.stream()
         .filter(pg -> pg.getHttpParameterType() == null)
-        .forEach(pg -> {
-          pg.setHttpParameterType(HttpParameterType.QUERY);
-          pg.setGeneratedParameter(createParameter(HttpParameterType.QUERY));
-        });
+        .forEach(pg -> pg.setHttpParameterType(HttpParameterType.QUERY));
   }
 
   @Override

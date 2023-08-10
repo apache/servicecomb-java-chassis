@@ -17,22 +17,25 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.Path;
-
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class PathMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Path> {
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HttpMethod;
+
+public class GetMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Annotation> {
   @Override
   public Type getProcessType() {
-    return Path.class;
+    return GET.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Path path) {
-    operationGenerator.setPath(path.value());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Annotation annotation) {
+    HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+
+    operationGenerator.setHttpMethod(httpMethod.value());
   }
 }

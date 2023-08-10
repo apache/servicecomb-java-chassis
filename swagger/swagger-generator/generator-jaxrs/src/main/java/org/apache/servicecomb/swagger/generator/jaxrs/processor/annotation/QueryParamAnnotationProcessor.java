@@ -32,7 +32,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.QueryParam;
 
 @SuppressWarnings("rawtypes")
-public class QueryParamAnnotationProcessor extends AbstractJaxrsParameterProcessor<QueryParam> {
+public class QueryParamAnnotationProcessor extends JaxrsParameterProcessor<QueryParam> {
   @Override
   public Type getProcessType() {
     return QueryParam.class;

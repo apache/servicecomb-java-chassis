@@ -14,25 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
+package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
-import jakarta.ws.rs.Path;
+import com.google.inject.util.Types;
 
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import jakarta.servlet.http.Part;
 
-public class PathMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Path> {
+public class PartListParameterTypeProcessor extends PartArrayParameterTypeProcessor {
   @Override
   public Type getProcessType() {
-    return Path.class;
-  }
-
-  @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Path path) {
-    operationGenerator.setPath(path.value());
+    return Types.newParameterizedType(List.class, Part.class);
   }
 }

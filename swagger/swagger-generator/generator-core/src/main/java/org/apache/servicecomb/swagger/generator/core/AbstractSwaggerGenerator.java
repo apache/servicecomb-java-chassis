@@ -59,6 +59,8 @@ import io.swagger.v3.oas.models.servers.Server;
 public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   protected SwaggerGeneratorFeature swaggerGeneratorFeature = new SwaggerGeneratorFeature();
 
+  protected SwaggerGeneratorContext swaggerGeneratorContext = new SwaggerGeneratorContext();
+
   protected Class<?> cls;
 
   protected OpenAPI openAPI;
@@ -100,8 +102,14 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     this.httpMethod = httpMethod.toUpperCase(Locale.US);
   }
 
+  @Override
   public SwaggerGeneratorFeature getSwaggerGeneratorFeature() {
     return swaggerGeneratorFeature;
+  }
+
+  @Override
+  public SwaggerGeneratorContext getSwaggerGeneratorContext() {
+    return swaggerGeneratorContext;
   }
 
   public OpenAPI generate() {
@@ -143,10 +151,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
    * if can not build default value, then throw exceptions
    */
   protected void correctSwagger() {
-    if (StringUtils.isEmpty(openAPI.getOpenapi())) {
-      openAPI.setOpenapi("3.0.0");
-    }
-
     correctBasePath();
     correctInfo();
   }

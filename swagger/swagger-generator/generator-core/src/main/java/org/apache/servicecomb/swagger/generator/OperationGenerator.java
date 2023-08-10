@@ -17,9 +17,14 @@
 package org.apache.servicecomb.swagger.generator;
 
 
+import org.apache.servicecomb.swagger.generator.core.OperationGeneratorContext;
+
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 
 public interface OperationGenerator {
+  OpenAPI getSwagger();
+
   Operation getOperation();
 
   void setHttpMethod(String httpMethod);
@@ -31,4 +36,6 @@ public interface OperationGenerator {
   void setPath(String value);
 
   void generateResponse();
+
+  OperationGeneratorContext getOperationGeneratorContext();
 }

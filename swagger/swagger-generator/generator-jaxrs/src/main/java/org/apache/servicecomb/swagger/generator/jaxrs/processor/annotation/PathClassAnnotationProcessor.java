@@ -24,7 +24,7 @@ import jakarta.ws.rs.Path;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class PathClassAnnotationProcessor implements ClassAnnotationProcessor<Path> {
+public class PathClassAnnotationProcessor extends JaxrsClassAnnotationProcessor<Path> {
   @Override
   public Type getProcessType() {
     return Path.class;

@@ -14,25 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.jaxrs;
 
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
+import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Type;
-
-import jakarta.ws.rs.Path;
-
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-
-public class PathMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Path> {
-  @Override
-  public Type getProcessType() {
-    return Path.class;
+public class TestClassAnnotation {
+  @Test
+  public void test_generate_swagger_correct() {
+    UnitTestSwaggerUtils.testSwagger("schemas/ClassAnnotation.yaml", ClassAnnotation.class,
+        "testBean", "testString", "testForm", "testUpload");
   }
 
-  @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Path path) {
-    operationGenerator.setPath(path.value());
+  @Test
+  public void test_form_wrong() {
+    UnitTestSwaggerUtils.testException("wrong", ClassAnnotation.class,
+        "testFormWrong");
+  }
+
+  @Test
+  public void test_upload_wrong() {
+    UnitTestSwaggerUtils.testException("wrong", ClassAnnotation.class,
+        "testUploadWrong");
   }
 }

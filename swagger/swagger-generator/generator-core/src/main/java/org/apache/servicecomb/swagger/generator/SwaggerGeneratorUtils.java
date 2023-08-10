@@ -68,6 +68,12 @@ public final class SwaggerGeneratorUtils {
   private static final List<OperationPostProcessor> operationPostProcessors = SPIServiceUtils
       .getOrLoadSortedService(OperationPostProcessor.class);
 
+  private static final List<ParameterAnnotationProcessor> parameterAnnotationProcessors = SPIServiceUtils
+      .getOrLoadSortedService(ParameterAnnotationProcessor.class);
+
+  private static final List<ParameterTypeProcessor> parameterTypeProcessors = SPIServiceUtils
+      .getOrLoadSortedService(ParameterTypeProcessor.class);
+
   static {
     // low order value has high priority
     for (ClassAnnotationProcessor<?> processor : SPIServiceUtils
@@ -131,6 +137,26 @@ public final class SwaggerGeneratorUtils {
   public static <ANNOTATION> ParameterProcessor<ANNOTATION> findParameterProcessors(
       Type type) {
     return findParameterProcessors(TypeFactory.defaultInstance().constructType(type));
+  }
+
+  @SuppressWarnings("unchecked")
+  public static ParameterAnnotationProcessor<Annotation> findParameterAnnotationProcessor(Type type) {
+    for (ParameterAnnotationProcessor<Annotation> processor : parameterAnnotationProcessors) {
+      if (processor.getProcessType() == type) {
+        return processor;
+      }
+    }
+    return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static ParameterTypeProcessor findParameterTypeProcessor(Type type) {
+    for (ParameterTypeProcessor processor : parameterTypeProcessors) {
+      if (processor.getProcessType() == type) {
+        return processor;
+      }
+    }
+    return null;
   }
 
   @SuppressWarnings("unchecked")

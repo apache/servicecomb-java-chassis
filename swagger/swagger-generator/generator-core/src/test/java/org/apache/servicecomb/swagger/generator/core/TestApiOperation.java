@@ -34,7 +34,6 @@ import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.PathItem;
@@ -57,8 +56,6 @@ public class TestApiOperation {
         tags = {"tag1", "tag2"},
         method = "GET",
         operationId = "test",
-        requestBody = @RequestBody(content = @Content(mediaType = MediaType.APPLICATION_JSON,
-            schema = @Schema(implementation = String.class))),
         responses = @ApiResponse(responseCode = "202",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                 schema = @Schema(implementation = String.class)),
@@ -108,8 +105,6 @@ public class TestApiOperation {
     Assertions.assertEquals("summary", operation.getSummary());
     Assertions.assertEquals("notes", operation.getDescription());
     Assertions.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
-    Assertions.assertEquals("application/json",
-        operation.getRequestBody().getContent().keySet().iterator().next());
 
     ApiResponses responseMap = operation.getResponses();
     Assertions.assertEquals(1, responseMap.size());

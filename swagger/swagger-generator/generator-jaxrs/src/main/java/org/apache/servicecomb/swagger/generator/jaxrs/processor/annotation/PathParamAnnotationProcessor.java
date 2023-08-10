@@ -32,7 +32,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.PathParam;
 
 @SuppressWarnings("rawtypes")
-public class PathParamAnnotationProcessor extends AbstractJaxrsParameterProcessor<PathParam> {
+public class PathParamAnnotationProcessor extends JaxrsParameterProcessor<PathParam> {
   @Override
   public Type getProcessType() {
     return PathParam.class;

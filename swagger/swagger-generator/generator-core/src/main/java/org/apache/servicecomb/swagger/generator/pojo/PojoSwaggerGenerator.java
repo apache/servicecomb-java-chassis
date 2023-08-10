@@ -17,13 +17,23 @@
 package org.apache.servicecomb.swagger.generator.pojo;
 
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 
+import jakarta.ws.rs.core.MediaType;
+
 public class PojoSwaggerGenerator extends AbstractSwaggerGenerator {
+  protected static final List<String> SUPPORTED_CONTENT_TYPE
+      = Arrays.asList(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE);
+
   public PojoSwaggerGenerator(Class<?> cls) {
     super(cls);
+    swaggerGeneratorContext.updateConsumes(SUPPORTED_CONTENT_TYPE);
+    swaggerGeneratorContext.updateProduces(SUPPORTED_CONTENT_TYPE);
   }
 
   @SuppressWarnings("unchecked")

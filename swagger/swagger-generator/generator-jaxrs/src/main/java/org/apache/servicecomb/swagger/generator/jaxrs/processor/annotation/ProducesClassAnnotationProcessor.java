@@ -14,18 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.core.processor.parameter;
+package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
-import java.util.List;
+import java.util.Arrays;
 
-import jakarta.servlet.http.Part;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import com.google.inject.util.Types;
+import jakarta.ws.rs.Produces;
 
-public class PartListProcessor extends PartArrayProcessor {
+public class ProducesClassAnnotationProcessor extends JaxrsClassAnnotationProcessor<Produces> {
   @Override
   public Type getProcessType() {
-    return Types.newParameterizedType(List.class, Part.class);
+    return Produces.class;
+  }
+
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, Produces produces) {
+    if (produces.value() != null && produces.value().length > 0) {
+      swaggerGenerator.getSwaggerGeneratorContext().updateProduces(Arrays.asList(produces.value()));
+    }
   }
 }

@@ -14,27 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import jakarta.ws.rs.Consumes;
 
-public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor<Consumes> {
+public class ConsumesClassAnnotationProcessor extends JaxrsClassAnnotationProcessor<Consumes> {
   @Override
   public Type getProcessType() {
     return Consumes.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Consumes consumes) {
-    // TODO: actually is no use to update consumes and produces
-    // Because they are system capabilities.
-//    SwaggerUtils.updateConsumes(operationGenerator.getOperation(), consumes.value());
+  public void process(SwaggerGenerator swaggerGenerator, Consumes consumes) {
+    if (consumes.value() != null && consumes.value().length > 0) {
+      swaggerGenerator.getSwaggerGeneratorContext().updateConsumes(Arrays.asList(consumes.value()));
+    }
   }
 }

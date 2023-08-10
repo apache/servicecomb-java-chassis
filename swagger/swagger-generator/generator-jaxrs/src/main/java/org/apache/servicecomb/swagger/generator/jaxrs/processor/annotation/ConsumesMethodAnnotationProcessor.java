@@ -17,26 +17,24 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.HttpMethod;
-
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class GetAnnotationProcessor implements MethodAnnotationProcessor<Annotation> {
+import jakarta.ws.rs.Consumes;
+
+public class ConsumesMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Consumes> {
   @Override
   public Type getProcessType() {
-    return GET.class;
+    return Consumes.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Annotation annotation) {
-    HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
-
-    operationGenerator.setHttpMethod(httpMethod.value());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Consumes consumes) {
+    if (consumes.value() != null && consumes.value().length > 0) {
+      operationGenerator.getOperationGeneratorContext().updateConsumes(Arrays.asList(consumes.value()));
+    }
   }
 }

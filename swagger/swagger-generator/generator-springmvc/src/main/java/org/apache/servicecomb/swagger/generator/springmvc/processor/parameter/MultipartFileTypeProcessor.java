@@ -19,10 +19,10 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartParameterTypeProcessor;
 import org.springframework.web.multipart.MultipartFile;
 
-public class MultipartFileTypeProcessor extends PartProcessor {
+public class MultipartFileTypeProcessor extends PartParameterTypeProcessor {
   @Override
   public Type getProcessType() {
     return MultipartFile.class;

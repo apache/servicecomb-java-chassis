@@ -14,10 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.core;
 
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
-
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-
-public abstract class AbstractJaxrsParameterProcessor<ANNOTATION> extends AbstractParameterProcessor<ANNOTATION> {
+public class OperationGeneratorContext extends SwaggerGeneratorContext {
+  public OperationGeneratorContext(SwaggerGeneratorContext parent) {
+    super(parent);
+  }
 }
