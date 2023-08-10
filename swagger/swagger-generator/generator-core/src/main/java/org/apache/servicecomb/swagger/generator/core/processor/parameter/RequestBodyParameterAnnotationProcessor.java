@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
+package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-import java.lang.reflect.Type;
-
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerParameterAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
-import jakarta.ws.rs.Produces;
-
-public class ProducesAnnotationProcessor implements MethodAnnotationProcessor<Produces> {
+public class RequestBodyParameterAnnotationProcessor extends
+    SwaggerParameterAnnotationProcessor<io.swagger.v3.oas.annotations.parameters.RequestBody> {
   @Override
-  public Type getProcessType() {
-    return Produces.class;
+  public Class<?> getProcessType() {
+    return io.swagger.v3.oas.annotations.parameters.RequestBody.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Produces produces) {
-    // TODO: actually is no use to update consumes and produces
-    // Because they are system capabilities.
-//    SwaggerUtils.updateProduces(operationGenerator.getOperation(), produces.value());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, io.swagger.v3.oas.annotations.parameters.RequestBody annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
   }
 }

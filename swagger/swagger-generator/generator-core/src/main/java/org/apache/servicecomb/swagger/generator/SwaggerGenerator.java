@@ -20,6 +20,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +46,8 @@ public interface SwaggerGenerator {
   }
 
   SwaggerGeneratorFeature getSwaggerGeneratorFeature();
+
+  SwaggerGeneratorContext getSwaggerGeneratorContext();
 
   /**
    * support placeholder

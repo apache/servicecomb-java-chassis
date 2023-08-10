@@ -14,25 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
-import java.lang.reflect.Type;
+import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 
-import jakarta.ws.rs.Path;
-
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-
-public class PathMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Path> {
-  @Override
-  public Type getProcessType() {
-    return Path.class;
-  }
-
-  @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Path path) {
-    operationGenerator.setPath(path.value());
-  }
+/**
+ * A generic class to help classify implementations.
+ */
+public abstract class JaxrsClassAnnotationProcessor<ANNOTATION>
+    implements ClassAnnotationProcessor<ANNOTATION> {
 }

@@ -15,65 +15,38 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
----
 openapi: 3.0.1
 info:
-  title: swagger definition for org.apache.servicecomb.swagger.generator.core.pojo.PojoExample1
+  title: swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.ClassAnnotation
   version: 1.0.0
 servers:
-- url: /PojoExample1
+  - url: /class
 paths:
-  /testMultiParameter:
+  /cookie:
     post:
-      operationId: testMultiParameter
+      operationId: cookie
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testMultiParameterBody'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/testMultiParameterBody'
-        x-name: testMultiParameterBody
+              $ref: '#/components/schemas/User'
+        x-name: user
       responses:
         "200":
           description: response of 200
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XXX'
-  /testOneParameter:
-    post:
-      operationId: testOneParameter
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/XXX'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/XXX'
-        x-name: testType1
-      responses:
-        "200":
-          description: response of 200
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/XXX'
+                type: string
 components:
   schemas:
-    XXX:
+    User:
       type: object
       properties:
-        val1:
-          type: integer
-          format: int32
-      x-java-class: org.apache.servicecomb.swagger.generator.core.pojo.TestType1
-    testMultiParameterBody:
-      type: object
-      properties:
-        testType1:
-          $ref: '#/components/schemas/XXX'
-        testString:
+        name:
           type: string
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+      x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User

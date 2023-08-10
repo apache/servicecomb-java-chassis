@@ -18,7 +18,6 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
@@ -29,7 +28,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,10 +42,12 @@ import org.apache.servicecomb.config.inject.PlaceholderResolver;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.ParameterTypeProcessor;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
@@ -65,11 +65,6 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.CookieParameter;
-import io.swagger.v3.oas.models.parameters.HeaderParameter;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.PathParameter;
-import io.swagger.v3.oas.models.parameters.QueryParameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -95,6 +90,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected RequestBody bodyParameter;
 
+  protected OperationGeneratorContext operationGeneratorContext;
+
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
     this.swagger = swaggerGenerator.getOpenAPI();
@@ -102,7 +99,13 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     this.method = method;
     this.httpMethod = swaggerGenerator.getHttpMethod();
 
+    operationGeneratorContext = new OperationGeneratorContext(swaggerGenerator.getSwaggerGeneratorContext());
     swaggerOperation = new Operation();
+  }
+
+  @Override
+  public OperationGeneratorContext getOperationGeneratorContext() {
+    return operationGeneratorContext;
   }
 
   @Override
@@ -112,6 +115,11 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
 
     this.httpMethod = httpMethod.toUpperCase(Locale.US);
+  }
+
+  @Override
+  public OpenAPI getSwagger() {
+    return this.swagger;
   }
 
   @Override
@@ -176,20 +184,16 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     for (ParameterGenerator parameterGenerator : parameterGenerators) {
       scanMethodParameter(parameterGenerator);
 
-      if (!names.add(parameterGenerator.getParameterName())) {
+      if (!names.add(parameterGenerator.getParameterGeneratorContext().getParameterName())) {
         throw new IllegalStateException(
-            String.format("not support duplicated parameter, name=%s.", parameterGenerator.getParameterName()));
+            String.format("not support duplicated parameter, name=%s.",
+                parameterGenerator.getParameterGeneratorContext().getParameterName()));
       }
-      if (parameterGenerator.getGeneratedRequestBody() != null) {
-        swaggerOperation.setRequestBody(parameterGenerator.getGeneratedRequestBody());
-      }
-      if (parameterGenerator.getGeneratedParameter() != null) {
-        swaggerOperation.addParametersItem(parameterGenerator.getGeneratedParameter());
-      }
+      parameterGenerator.generate();
     }
   }
 
-  private void initParameterGenerators() {
+  protected void initParameterGenerators() {
     // 1.group method annotations by parameter name
     // key is parameter name
     Map<String, List<Annotation>> methodAnnotationMap = initMethodAnnotationByParameterName();
@@ -214,8 +218,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       Type genericType = TypeToken.of(clazz)
           .resolveType(methodParameter.getParameterizedType())
           .getType();
-      ParameterGenerator parameterGenerator = new ParameterGenerator(method, methodAnnotationMap, methodParameter,
-          genericType);
+      ParameterGenerator parameterGenerator = new ParameterGenerator(
+          this, method, methodAnnotationMap, methodParameter, genericType);
       validateParameter(parameterGenerator.getGenericType());
       if (isContextParameter(parameterGenerator.getGenericType())) {
         continue;
@@ -247,7 +251,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       }
 
       Annotation[] annotations = collectAnnotations(propertyDefinition);
-      ParameterGenerator propertyParameterGenerator = new ParameterGenerator(method,
+      ParameterGenerator propertyParameterGenerator = new ParameterGenerator(this, method,
           methodAnnotationMap,
           propertyDefinition.getName(),
           annotations,
@@ -258,7 +262,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected void initRemainMethodAnnotationsParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {
     for (Entry<String, List<Annotation>> entry : methodAnnotationMap.entrySet()) {
-      ParameterGenerator parameterGenerator = new ParameterGenerator(entry.getKey(), entry.getValue());
+      ParameterGenerator parameterGenerator = new ParameterGenerator(this, entry.getKey(), entry.getValue());
       parameterGenerators.add(parameterGenerator);
     }
   }
@@ -304,138 +308,26 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void scanMethodParameter(ParameterGenerator parameterGenerator) {
-    if (!HttpParameterType.isBodyParameter(parameterGenerator.getHttpParameterType())) {
-      Parameter parameter = createParameter(parameterGenerator);
-
-      try {
-        fillParameter(swagger,
-            parameter,
-            parameterGenerator.getParameterName(),
-            parameterGenerator.getGenericType(),
-            parameterGenerator.getAnnotations());
-      } catch (Throwable e) {
-        throw new IllegalStateException(
-            String.format("failed to fill parameter, parameterName=%s.",
-                parameterGenerator.getParameterName()),
-            e);
-      }
-      return;
-    }
-
-    RequestBody requestBody = createRequestBody(parameterGenerator);
-
-    try {
-      fillRequestBody(swagger,
-          requestBody,
-          parameterGenerator.getParameterName(),
-          parameterGenerator.getGenericType(),
-          parameterGenerator.getAnnotations());
-    } catch (Throwable e) {
-      throw new IllegalStateException(
-          String.format("failed to fill parameter, parameterName=%s.",
-              parameterGenerator.getParameterName()),
-          e);
-    }
-  }
-
-  protected RequestBody createRequestBody(ParameterGenerator parameterGenerator) {
-    switch (parameterGenerator.getHttpParameterType()) {
-      case BODY -> {
-        if (this.bodyParameter != null) {
-          throw new IllegalStateException("Only one body parameter is allowed.");
-        }
-        this.bodyParameter = new RequestBody();
-        Map<String, Object> extensions = new HashMap<>();
-        extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGenerator.getParameterName());
-        this.bodyParameter.setExtensions(extensions);
-        parameterGenerator.setGeneratedRequestBody(this.bodyParameter);
-        return this.bodyParameter;
-      }
-      case FORM -> {
-        if (this.bodyParameter == null) {
-          this.bodyParameter = new RequestBody();
-        }
-        parameterGenerator.setGeneratedRequestBody(this.bodyParameter);
-        return this.bodyParameter;
-      }
-      default -> throw new IllegalStateException(
-          "not support httpParameterType " + parameterGenerator.getHttpParameterType());
-    }
-  }
-
-  protected Parameter createParameter(ParameterGenerator parameterGenerator) {
-    Parameter parameter = createParameter(parameterGenerator.getHttpParameterType());
-    parameterGenerator.setGeneratedParameter(parameter);
-    parameterGenerator.getGeneratedParameter().setName(parameterGenerator.getParameterName());
-    return parameter;
-  }
-
-  protected Parameter createParameter(HttpParameterType httpParameterType) {
-    return switch (httpParameterType) {
-      case PATH -> new PathParameter();
-      case QUERY -> new QueryParameter();
-      case HEADER -> new HeaderParameter();
-      case COOKIE -> new CookieParameter();
-      default -> throw new IllegalStateException("not support httpParameterType " + httpParameterType);
-    };
-  }
-
-  protected void fillParameter(OpenAPI swagger, Parameter parameter, String parameterName, JavaType type,
-      List<Annotation> annotations) {
-    if (type != null) {
-      io.swagger.v3.core.util.ParameterProcessor.applyAnnotations(parameter, type, annotations, swagger.getComponents(),
-          null, null, null);
-    }
-
-    for (Annotation annotation : annotations) {
-      ParameterProcessor<Annotation> processor = findParameterProcessors(annotation.annotationType());
+    for (Annotation annotation : parameterGenerator.getAnnotations()) {
+      ParameterAnnotationProcessor<Annotation> processor = SwaggerGeneratorUtils
+          .findParameterAnnotationProcessor(annotation.annotationType());
       if (processor != null) {
-        processor.fillParameter(swagger, swaggerOperation, parameter, type, annotation);
+        processor.process(this.swaggerGenerator, this, parameterGenerator, annotation);
       }
     }
 
-    if (type == null) {
-      return;
-    }
-
-    ParameterProcessor<Annotation> processor = findParameterProcessors(type);
-    if (processor != null) {
-      processor.fillParameter(swagger, swaggerOperation, parameter, type, null);
-    }
-  }
-
-  protected void fillRequestBody(OpenAPI swagger, RequestBody parameter, String parameterName, JavaType type,
-      List<Annotation> annotations) {
-    for (Annotation annotation : annotations) {
-      ParameterProcessor<Annotation> processor = findParameterProcessors(annotation.annotationType());
+    Schema<?> schema = parameterGenerator.getParameterGeneratorContext().getSchema();
+    if (schema == null) {
+      JavaType parameterType = parameterGenerator.getParameterGeneratorContext().getParameterType();
+      if (parameterType == null) {
+        parameterType = parameterGenerator.getGenericType();
+      }
+      ParameterTypeProcessor processor = SwaggerGeneratorUtils.findParameterTypeProcessor(parameterType);
       if (processor != null) {
-        processor.fillRequestBody(swagger, swaggerOperation, parameter, parameterName, type, annotation);
-      }
-    }
-
-    if (type == null) {
-      return;
-    }
-
-    ParameterProcessor<Annotation> processor = findParameterProcessors(type);
-    if (processor != null) {
-      processor.fillRequestBody(swagger, swaggerOperation, parameter, parameterName, type, null);
-    }
-
-    fillBodyParameter(swagger, parameter, type);
-  }
-
-  private void fillBodyParameter(OpenAPI swagger, RequestBody parameter, Type type) {
-    if (parameter.getContent() == null) {
-      parameter.setContent(new Content());
-    }
-    if (parameter.getContent().size() == 0) {
-      parameter.getContent()
-          .addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE, new io.swagger.v3.oas.models.media.MediaType());
-    }
-    for (io.swagger.v3.oas.models.media.MediaType mediaType : parameter.getContent().values()) {
-      if (mediaType.getSchema() == null) {
-        mediaType.schema(SwaggerUtils.resolveTypeSchemas(swagger, type));
+        processor.process(this.swaggerGenerator, this, parameterGenerator);
+      } else {
+        parameterGenerator.getParameterGeneratorContext().setSchema(SwaggerUtils.resolveTypeSchemas(this.swagger,
+            parameterType));
       }
     }
   }

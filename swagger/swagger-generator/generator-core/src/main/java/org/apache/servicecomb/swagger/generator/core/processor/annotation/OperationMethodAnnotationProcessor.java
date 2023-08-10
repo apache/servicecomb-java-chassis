@@ -39,7 +39,9 @@ public class OperationMethodAnnotationProcessor implements MethodAnnotationProce
     io.swagger.v3.oas.models.Operation specificOperation =
         AnnotationUtils.operationModel(swaggerGenerator.getOpenAPI(), apiOperationAnnotation);
 
-    operationGenerator.setHttpMethod(apiOperationAnnotation.method());
+    if (!StringUtils.isEmpty(apiOperationAnnotation.method())) {
+      operationGenerator.setHttpMethod(apiOperationAnnotation.method());
+    }
 
     if (!StringUtils.isEmpty(specificOperation.getSummary())) {
       operation.setSummary(specificOperation.getSummary());
@@ -55,10 +57,6 @@ public class OperationMethodAnnotationProcessor implements MethodAnnotationProce
 
     if (!CollectionUtils.isEmpty(specificOperation.getExtensions())) {
       operation.setExtensions(specificOperation.getExtensions());
-    }
-
-    if (specificOperation.getRequestBody() != null) {
-      operation.setRequestBody(specificOperation.getRequestBody());
     }
 
     if (!CollectionUtils.isEmpty(specificOperation.getTags())) {

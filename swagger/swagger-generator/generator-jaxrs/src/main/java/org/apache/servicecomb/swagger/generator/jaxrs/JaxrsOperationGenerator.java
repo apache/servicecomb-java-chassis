@@ -27,9 +27,6 @@ import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.rest.RestOperationGenerator;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.ws.rs.BeanParam;
 
 public class JaxrsOperationGenerator extends RestOperationGenerator {
@@ -49,12 +46,5 @@ public class JaxrsOperationGenerator extends RestOperationGenerator {
   @Override
   protected boolean isAggregatedParameter(ParameterGenerator parameterGenerator, Parameter methodParameter) {
     return methodParameter.getAnnotation(BeanParam.class) != null;
-  }
-
-  @Override
-  protected void fillParameter(OpenAPI swagger, io.swagger.v3.oas.models.parameters.Parameter parameter,
-      String parameterName,
-      JavaType type, List<Annotation> annotations) {
-    super.fillParameter(swagger, parameter, parameterName, type, annotations);
   }
 }

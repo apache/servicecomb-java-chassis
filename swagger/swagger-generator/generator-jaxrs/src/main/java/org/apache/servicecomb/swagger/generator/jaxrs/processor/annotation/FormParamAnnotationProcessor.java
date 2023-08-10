@@ -37,7 +37,7 @@ import jakarta.servlet.http.Part;
 import jakarta.ws.rs.FormParam;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class FormParamAnnotationProcessor extends AbstractJaxrsParameterProcessor<FormParam> {
+public class FormParamAnnotationProcessor extends JaxrsParameterProcessor<FormParam> {
   @Override
   public Type getProcessType() {
     return FormParam.class;

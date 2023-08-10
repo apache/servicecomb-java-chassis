@@ -25,9 +25,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.Part;
-
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 
@@ -35,8 +32,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
-
+@SuppressWarnings("all")
 public class Schema {
   @Operation(method = "", hidden = true)
   public void hidden() {
@@ -209,18 +207,6 @@ public class Schema {
       List<User> list,
       Map<String, User> map) {
     return Collections.emptyList();
-  }
-
-  public void part(Part part) {
-
-  }
-
-  public void partArray(Part[] part) {
-
-  }
-
-  public void partList(List<Part> part) {
-
   }
 
   public void wrapToBodyWithDesc(@Parameter(name = "desc") int value) {

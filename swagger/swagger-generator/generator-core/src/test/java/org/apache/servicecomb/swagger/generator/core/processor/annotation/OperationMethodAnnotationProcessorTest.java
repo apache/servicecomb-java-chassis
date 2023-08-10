@@ -21,6 +21,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import java.util.Map;
 
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
@@ -59,9 +60,7 @@ public class OperationMethodAnnotationProcessorTest {
 
     @Operation(summary = "testSingleMediaType",
         responses = {@ApiResponse(responseCode = "200", content = @Content(
-            mediaType = MediaType.APPLICATION_XML, schema = @Schema(implementation = String.class)))},
-        requestBody = @RequestBody(content = @Content(mediaType = MediaType.TEXT_PLAIN,
-            schema = @Schema(implementation = String.class))))
+            mediaType = MediaType.APPLICATION_XML, schema = @Schema(implementation = String.class)))})
     public String testSingleMediaType(String input) {
       return input;
     }
@@ -71,13 +70,7 @@ public class OperationMethodAnnotationProcessorTest {
             @ApiResponse(responseCode = "200", content = {
                 @Content(mediaType = MediaType.APPLICATION_JSON),
                 @Content(mediaType = MediaType.TEXT_PLAIN)
-            })},
-        requestBody = @RequestBody(content = {
-            @Content(mediaType = MediaType.APPLICATION_JSON,
-                schema = @Schema(implementation = String.class)),
-            @Content(mediaType = MediaType.APPLICATION_XML,
-                schema = @Schema(implementation = String.class))
-        }))
+            })})
     public String testMultiMediaType(String input) {
       return input;
     }
@@ -151,7 +144,7 @@ public class OperationMethodAnnotationProcessorTest {
   public void testMultiMediaType() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMultiMediaType");
     MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().keySet(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
+        Matchers.contains(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE));
     MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().get("200").getContent().keySet(),
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
   }
@@ -160,7 +153,7 @@ public class OperationMethodAnnotationProcessorTest {
   public void testSingleMediaType() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingleMediaType");
     MatcherAssert.assertThat(swaggerOperation.getOperation()
-            .getRequestBody().getContent().get(MediaType.TEXT_PLAIN).getSchema().get$ref(),
+            .getRequestBody().getContent().get(MediaType.APPLICATION_JSON).getSchema().get$ref(),
         Matchers.equalTo(Components.COMPONENTS_SCHEMAS_REF + "testSingleMediaTypeBody"));
     MatcherAssert.assertThat(swaggerOperation.getOperation()
             .getResponses().get("200").getContent().get(MediaType.APPLICATION_XML).getSchema().getType(),
@@ -171,7 +164,7 @@ public class OperationMethodAnnotationProcessorTest {
   public void testBlankMediaType() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
     MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().keySet(),
-        Matchers.contains(MediaType.APPLICATION_JSON));
+        Matchers.contains(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE));
     MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().getDefault().getContent().keySet(),
         Matchers.contains(MediaType.APPLICATION_JSON));
   }
@@ -185,11 +178,6 @@ public class OperationMethodAnnotationProcessorTest {
     Assertions.assertEquals(Components.COMPONENTS_SCHEMAS_REF + "TestBodyBean", schema.get$ref());
     schema = swaggerOperation.getSwagger().getComponents().getSchemas().get("TestBodyBean");
     Map<String, io.swagger.v3.oas.models.media.Schema> properties = schema.getProperties();
-
-//    swagger new version do not support primitive types(String, Integer, etc...) to use NotBlank, NotEmpty, ...)
-//    Assertions.assertTrue(properties.get("age").getNullable(), "Support NotBlank annotation");
-//    Assertions.assertTrue(properties.get("sexes").getNullable(), "Support NotEmpty annotation");
-//    Assertions.assertTrue(properties.get("name").getNullable(), "Original support NotNull annotation");
     Assertions.assertEquals(properties.get("age").getType(), "string");
     Assertions.assertEquals(properties.get("sexes").getType(), "string");
     Assertions.assertEquals(properties.get("name").getType(), "string");

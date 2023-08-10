@@ -15,6 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PathClassAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesClassAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesClassAnnotationProcessor
+org.apache.servicecomb.swagger.generator.core.processor.parameter.RequestBodyParameterAnnotationProcessor
+org.apache.servicecomb.swagger.generator.core.processor.parameter.ParameterParameterAnnotationProcessor
+org.apache.servicecomb.swagger.generator.core.processor.parameter.RawJsonRequestBodyProcessor

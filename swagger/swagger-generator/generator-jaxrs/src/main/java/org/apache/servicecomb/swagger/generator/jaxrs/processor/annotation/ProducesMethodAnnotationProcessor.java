@@ -18,21 +18,23 @@
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
-import jakarta.ws.rs.Path;
-
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class PathMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Path> {
+import jakarta.ws.rs.Produces;
+
+public class ProducesMethodAnnotationProcessor extends JaxrsMethodAnnotationProcessor<Produces> {
   @Override
   public Type getProcessType() {
-    return Path.class;
+    return Produces.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Path path) {
-    operationGenerator.setPath(path.value());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Produces produces) {
+    if (produces.value() != null && produces.value().length > 0) {
+      operationGenerator.getOperationGeneratorContext().updateProduces(Arrays.asList(produces.value()));
+    }
   }
 }

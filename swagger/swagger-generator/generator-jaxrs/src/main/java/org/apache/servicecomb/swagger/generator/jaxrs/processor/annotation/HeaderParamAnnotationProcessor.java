@@ -33,7 +33,7 @@ import jakarta.ws.rs.HeaderParam;
 
 @SuppressWarnings("rawtypes")
 public class HeaderParamAnnotationProcessor extends
-    AbstractJaxrsParameterProcessor<HeaderParam> {
+    JaxrsParameterProcessor<HeaderParam> {
   @Override
   public Type getProcessType() {
     return HeaderParam.class;

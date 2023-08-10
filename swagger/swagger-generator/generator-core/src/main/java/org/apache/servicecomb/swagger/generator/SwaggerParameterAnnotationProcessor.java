@@ -14,15 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
+package org.apache.servicecomb.swagger.generator;
 
-import java.lang.reflect.Type;
-
-import jakarta.ws.rs.PATCH;
-
-public class PatchAnnotationProcessor extends GetAnnotationProcessor {
-  @Override
-  public Type getProcessType() {
-    return PATCH.class;
-  }
+/**
+ * A generic class to help classify implementations. Processors of swagger annotations
+ * will implement this class.
+ */
+public abstract class SwaggerParameterAnnotationProcessor<ANNOTATION> implements
+    ParameterAnnotationProcessor<ANNOTATION> {
 }

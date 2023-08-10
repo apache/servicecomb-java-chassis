@@ -32,7 +32,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.CookieParam;
 
 public class CookieParamAnnotationProcessor extends
-    AbstractJaxrsParameterProcessor<CookieParam> {
+    JaxrsParameterProcessor<CookieParam> {
   @Override
   public Type getProcessType() {
     return CookieParam.class;

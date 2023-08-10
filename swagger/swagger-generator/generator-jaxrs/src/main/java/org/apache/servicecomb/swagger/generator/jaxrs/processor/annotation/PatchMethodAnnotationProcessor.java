@@ -18,11 +18,11 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.PATCH;
 
-public class DeleteAnnotationProcessor extends GetAnnotationProcessor {
+public class PatchMethodAnnotationProcessor extends GetMethodAnnotationProcessor {
   @Override
   public Type getProcessType() {
-    return DELETE.class;
+    return PATCH.class;
   }
 }

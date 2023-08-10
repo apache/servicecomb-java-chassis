@@ -14,15 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
+package org.apache.servicecomb.swagger.generator;
 
 import java.lang.reflect.Type;
 
-import jakarta.ws.rs.POST;
+public interface ParameterTypeProcessor {
+  Type getProcessType();
 
-public class PostAnnotationProcessor extends GetAnnotationProcessor {
-  @Override
-  public Type getProcessType() {
-    return POST.class;
-  }
+  void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator);
 }
