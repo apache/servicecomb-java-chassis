@@ -99,14 +99,14 @@ public class AbstractAddressManager {
     this.projectName = DEFAULT_PROJECT;
     this.addresses.addAll(addresses);
     this.defaultAddress.addAll(addresses);
-    this.index = random.nextInt(addresses.size());
+    this.index = addresses.size() > 0 ? random.nextInt(addresses.size()) : 0;
   }
 
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
     this.defaultAddress.addAll(this.addresses);
-    this.index = random.nextInt(addresses.size());
+    this.index = addresses.size() > 0 ? random.nextInt(addresses.size()) : 0;
   }
 
   @VisibleForTesting

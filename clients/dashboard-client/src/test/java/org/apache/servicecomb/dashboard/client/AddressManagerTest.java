@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,8 @@ class AddressManagerTest {
   private static final List<String> addresses = new ArrayList<>();
 
   private static DashboardAddressManager addressManager1;
+
+  private static int index;
 
   @Test
   public void kieAddressManagerTest() {
@@ -46,10 +49,18 @@ class AddressManagerTest {
     Assertions.assertEquals(2, addresses.size());
     Assertions.assertEquals("http://127.0.0.1:30103", addresses.get(0));
 
-    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
-    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
+    index = addressManager1.getAddresses().indexOf(addressManager1.address());
+    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
   }
 
+  private String getAddress(AbstractAddressManager addressManager) {
+    index++;
+    if (index >= addressManager.getAddresses().size()) {
+      index = 0;
+    }
+    return addressManager.getAddresses().get(index);
+  }
 
   @Test
   public void onRefreshEndpointEvent() {
