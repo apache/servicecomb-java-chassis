@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.dashboard.client;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -38,10 +38,13 @@ class AddressManagerTest {
   private static int index;
 
   @Test
-  public void kieAddressManagerTest() {
+  public void kieAddressManagerTest() throws IllegalAccessException, NoSuchFieldException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
     addressManager1 = new DashboardAddressManager(addresses, new EventBus());
+    Field addressManagerField = addressManager1.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager1, 0);
 
     Assertions.assertNotNull(addressManager1);
 
@@ -49,17 +52,8 @@ class AddressManagerTest {
     Assertions.assertEquals(2, addresses.size());
     Assertions.assertEquals("http://127.0.0.1:30103", addresses.get(0));
 
-    index = addressManager1.getAddresses().indexOf(addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-  }
-
-  private String getAddress(AbstractAddressManager addressManager) {
-    index++;
-    if (index >= addressManager.getAddresses().size()) {
-      index = 0;
-    }
-    return addressManager.getAddresses().get(index);
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
   }
 
   @Test

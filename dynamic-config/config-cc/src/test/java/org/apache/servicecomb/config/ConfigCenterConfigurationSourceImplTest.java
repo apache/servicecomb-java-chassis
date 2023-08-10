@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config;
 
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,40 +26,33 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.center.client.ConfigCenterAddressManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.http.client.common.AbstractAddressManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ConfigCenterConfigurationSourceImplTest {
-  private static int index;
-
   @Test
-  void configAddressManagerTest() {
+  void configAddressManagerTest() throws IllegalAccessException, NoSuchFieldException {
     List<String> addresses = new ArrayList<>();
     addresses.add("http://127.0.0.1:30103");
     addresses.add("http://127.0.0.2:30103");
     ConfigCenterAddressManager addressManager = new ConfigCenterAddressManager("test", addresses, EventManager.getEventBus());
+    Field addressManagerField = addressManager.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager, 0);
     Assertions.assertNotNull(addressManager);
 
-    index = addressManager.getAddresses().indexOf(addressManager.address());
     String address = addressManager.address();
-    Assertions.assertEquals(getAddress(addressManager), address);
+    Assertions.assertEquals("http://127.0.0.2:30103/v3/test", address);
     address = addressManager.address();
-    Assertions.assertEquals(getAddress(addressManager), address);
+    Assertions.assertEquals("http://127.0.0.1:30103/v3/test", address);
 
     addressManager = new ConfigCenterAddressManager(null, addresses, EventManager.getEventBus());
-    index = addressManager.getAddresses().indexOf(addressManager.address());
+    addressManagerField = addressManager.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager, 0);
     address = addressManager.address();
-    Assertions.assertEquals(getAddress(addressManager), address);
-  }
-
-  private String getAddress(AbstractAddressManager addressManager) {
-    index++;
-    if (index >= addressManager.getAddresses().size()) {
-      index = 0;
-    }
-    return addressManager.getAddresses().get(index);
+    Assertions.assertEquals("http://127.0.0.2:30103/v3/default", address);
   }
 
   @Test
