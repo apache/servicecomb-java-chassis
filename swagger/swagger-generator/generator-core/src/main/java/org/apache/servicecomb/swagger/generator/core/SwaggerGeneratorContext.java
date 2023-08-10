@@ -28,10 +28,15 @@ import jakarta.ws.rs.core.MediaType;
  * Context information to help generate specific open api parts.
  */
 public class SwaggerGeneratorContext {
-  // TODO: may initialized by different codec implementations
   protected static final List<String> SUPPORTED_CONTENT_TYPE
       = Arrays.asList(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN,
       MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_FORM_URLENCODED);
+
+  protected static final List<String> SUPPORTED_BODY_CONTENT_TYPE
+      = Arrays.asList(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN);
+
+  protected static final List<String> SUPPORTED_FORM_CONTENT_TYPE
+      = Arrays.asList(MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_FORM_URLENCODED);
 
   protected List<String> supportedConsumes;
 

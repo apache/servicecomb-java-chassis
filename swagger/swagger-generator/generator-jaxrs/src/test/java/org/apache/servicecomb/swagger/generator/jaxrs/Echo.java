@@ -41,7 +41,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.ws.rs.BeanParam;
-import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.CookieParam;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.GET;
@@ -50,7 +49,6 @@ import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.Response;
 
@@ -70,8 +68,6 @@ public class Echo {
   }
 
   @POST
-  @Produces("")
-  @Consumes("")
   @Operation(summary = "")
   @Path("emptyPath")
   public void emptyPath() {
@@ -79,8 +75,6 @@ public class Echo {
   }
 
   @Path(value = "echo/{targetName}")
-  @Consumes(value = {"json", "xml"})
-  @Produces(value = {"json", "xml"})
   @POST
   public String echo(User srcUser, @HeaderParam(value = "header") String header,
       @PathParam(value = "targetName") String targetName,

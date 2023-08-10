@@ -19,19 +19,14 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.ws.rs.HeaderParam;
 
-@SuppressWarnings("rawtypes")
 public class HeaderParamAnnotationProcessor extends
     JaxrsParameterProcessor<HeaderParam> {
   @Override
@@ -40,29 +35,11 @@ public class HeaderParamAnnotationProcessor extends
   }
 
   @Override
-  public String getParameterName(HeaderParam annotation) {
-    return annotation.value();
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(HeaderParam parameterAnnotation) {
-    return HttpParameterType.HEADER;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter headerParameter, JavaType type,
-      HeaderParam headerParam) {
-    Schema schema = headerParameter.getSchema();
-    if (schema == null) {
-      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-      headerParameter.setSchema(schema);
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, HeaderParam annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.HEADER);
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
     }
-    headerParameter.setName(headerParam.value());
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter,
-      String parameterName, JavaType type, HeaderParam headerParam) {
-
   }
 }

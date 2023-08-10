@@ -49,7 +49,23 @@ public class TestJaxrs {
   }
 
   @Test
-  public void consumesAndProduces() {
-    UnitTestSwaggerUtils.testSwagger("schemas/consumes.yaml", ConsumesAndProduces.class);
+  public void consumesAndProduces_exception_testSingleMediaType() {
+    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
+            + "method=org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces:testSingleMediaType.",
+        ConsumesAndProduces.class, "testSingleMediaType");
+  }
+
+  @Test
+  public void consumesAndProduces_exception_testMultipleMediaType() {
+    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
+            + "method=org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces:testMultipleMediaType.",
+        ConsumesAndProduces.class, "testMultipleMediaType");
+  }
+
+  @Test
+  public void consumesAndProduces_exception_testBlankMediaType() {
+    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
+            + "method=org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces:testBlankMediaType.",
+        ConsumesAndProduces.class, "testBlankMediaType");
   }
 }

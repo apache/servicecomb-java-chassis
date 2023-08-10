@@ -28,13 +28,17 @@ public class TestClassAnnotation {
 
   @Test
   public void test_form_wrong() {
-    UnitTestSwaggerUtils.testException("wrong", ClassAnnotation.class,
+    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
+            + "method=org.apache.servicecomb.swagger.generator.jaxrs.ClassAnnotation:testFormWrong.",
+        ClassAnnotation.class,
         "testFormWrong");
   }
 
   @Test
   public void test_upload_wrong() {
-    UnitTestSwaggerUtils.testException("wrong", ClassAnnotation.class,
+    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
+            + "method=org.apache.servicecomb.swagger.generator.jaxrs.ClassAnnotation:testUploadWrong.",
+        ClassAnnotation.class,
         "testUploadWrong");
   }
 }
