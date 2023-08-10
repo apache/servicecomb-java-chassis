@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.http.client.common;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,15 +45,22 @@ public class AbstractAddressManagerTest {
 
   private static AbstractAddressManager addressManager3;
 
-  private static int index;
-
   @BeforeEach
-  public void setUp() {
+  public void setUp() throws NoSuchFieldException, IllegalAccessException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
     addressManager1 = new AbstractAddressManager(addresses);
     addressManager2 = new AbstractAddressManager("project", addresses);
     addressManager3 = new AbstractAddressManager(null, addresses);
+    Field addressManagerField = addressManager1.getClass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager1, 0);
+    addressManagerField = addressManager2.getClass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager2, 0);
+    addressManagerField = addressManager3.getClass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager3, 0);
   }
 
   @AfterEach
@@ -69,9 +77,8 @@ public class AbstractAddressManagerTest {
     Assertions.assertNotNull(addressManager2);
     Assertions.assertNotNull(addressManager3);
 
-    index = addressManager1.getAddresses().indexOf(addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
   }
 
   @Test
@@ -155,25 +162,14 @@ public class AbstractAddressManagerTest {
 
   @Test
   public void addressForOnlyDefaultTest() {
-    index = addressManager1.getAddresses().indexOf(addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
 
-    index = addressManager2.getAddresses().indexOf(addressManager2.address());
-    Assertions.assertEquals(getAddress(addressManager2), addressManager2.address());
-    Assertions.assertEquals(getAddress(addressManager2), addressManager2.address());
+    Assertions.assertEquals("https://127.0.0.2:30103/v3/project", addressManager2.address());
+    Assertions.assertEquals("http://127.0.0.1:30103/v3/project", addressManager2.address());
 
-    index = addressManager3.getAddresses().indexOf(addressManager3.address());
-    Assertions.assertEquals(getAddress(addressManager3), addressManager3.address());
-    Assertions.assertEquals(getAddress(addressManager3), addressManager3.address());
-  }
-
-  private String getAddress(AbstractAddressManager addressManager) {
-    index++;
-    if (index >= addressManager.getAddresses().size()) {
-      index = 0;
-    }
-    return addressManager.getAddresses().get(index);
+    Assertions.assertEquals("https://127.0.0.2:30103/v3/default", addressManager3.address());
+    Assertions.assertEquals("http://127.0.0.1:30103/v3/default", addressManager3.address());
   }
 
   @Test
@@ -189,20 +185,12 @@ public class AbstractAddressManagerTest {
     zoneAndRegion.put("sameRegion", new ArrayList<>());
     RefreshEndpointEvent event1 = new RefreshEndpointEvent(zoneAndRegion, "TEST");
     addressManager1.refreshEndpoint(event1, "TEST");
-    index = addressManager1.getAvailableZone().indexOf(addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
-  }
 
-  private String getAvailableZoneAddress(AbstractAddressManager addressManager) {
-    index++;
-    if (index >= addressManager.getAvailableZone().size()) {
-      index = 0;
-    }
-    return addressManager.getAvailableZone().get(index);
+    Assertions.assertEquals("https://127.0.0.2:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.1:30100", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.2:30100", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30100", addressManager1.address());
   }
 
   @Test
@@ -217,20 +205,12 @@ public class AbstractAddressManagerTest {
     zoneAndRegion.put("sameRegion", addressRG);
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
     addressManager1.refreshEndpoint(event, "TEST");
-    index = addressManager1.getAvailableRegion().indexOf(addressManager1.address());
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
-  }
 
-  private String getAvailableRegionAddress(AbstractAddressManager addressManager) {
-    index++;
-    if (index >= addressManager.getAvailableRegion().size()) {
-      index = 0;
-    }
-    return addressManager.getAvailableRegion().get(index);
+    Assertions.assertEquals("http://127.0.0.6:30100", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.7:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.8:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.5:30100", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.6:30100", addressManager1.address());
   }
 
   @Test
@@ -247,45 +227,32 @@ public class AbstractAddressManagerTest {
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
     addressManager1.refreshEndpoint(event, "TEST");
 
-    index = addressManager1.getAvailableZone().indexOf(addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableZoneAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.1:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30100", addressManager1.address());
 
     addressManager1.removeAddress("https://127.0.0.2:30100");
     addressManager1.removeAddress("https://127.0.0.1:30100");
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAvailableRegionAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.3:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.4:30100", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.3:30100", addressManager1.address());
 
     addressManager1.removeAddress("https://127.0.0.4:30100");
     addressManager1.removeAddress("https://127.0.0.3:30100");
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
   }
 
   @Test
   public void sslEnabledTest() {
-    if (addressManager1.address().startsWith("https://")) {
-      Assertions.assertFalse(addressManager1.sslEnabled());
-      Assertions.assertTrue(addressManager1.sslEnabled());
-      Assertions.assertFalse(addressManager1.sslEnabled());
-    } else {
-      Assertions.assertTrue(addressManager1.sslEnabled());
-      Assertions.assertFalse(addressManager1.sslEnabled());
-      Assertions.assertTrue(addressManager1.sslEnabled());
-    }
+    Assertions.assertTrue(addressManager1.sslEnabled());
+    Assertions.assertFalse(addressManager1.sslEnabled());
+    Assertions.assertTrue(addressManager1.sslEnabled());
 
-    if (addressManager2.address().startsWith("https://")) {
-      Assertions.assertFalse(addressManager2.sslEnabled());
-      Assertions.assertTrue(addressManager2.sslEnabled());
-      Assertions.assertFalse(addressManager2.sslEnabled());
-    } else {
-      Assertions.assertTrue(addressManager2.sslEnabled());
-      Assertions.assertFalse(addressManager2.sslEnabled());
-      Assertions.assertTrue(addressManager2.sslEnabled());
-    }
+    Assertions.assertTrue(addressManager2.sslEnabled());
+    Assertions.assertFalse(addressManager2.sslEnabled());
+    Assertions.assertTrue(addressManager2.sslEnabled());
   }
 
   @Test
@@ -326,10 +293,9 @@ public class AbstractAddressManagerTest {
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
 
     addressManager1.refreshEndpoint(event, "KIE");
-    index = addressManager1.getAddresses().indexOf(addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
-    Assertions.assertEquals(getAddress(addressManager1), addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
+    Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
+    Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
 
     addressManager2.refreshEndpoint(event, "TEST");
     Assertions.assertEquals("http://127.0.0.1:30100", addressManager2.address());
