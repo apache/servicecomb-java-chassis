@@ -19,54 +19,31 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-
-@SuppressWarnings("rawtypes")
 public class PathVariableAnnotationProcessor extends
-    AbstractSpringmvcParameterProcessor<PathVariable> {
+    SpringmvcParameterAnnotationsProcessor<PathVariable> {
   @Override
   public Type getProcessType() {
     return PathVariable.class;
   }
 
   @Override
-  public String getParameterName(PathVariable annotation) {
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, PathVariable annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.PATH);
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(PathVariable parameterAnnotation) {
-    return HttpParameterType.PATH;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter pathParameter, JavaType type,
-      PathVariable pathVariable) {
-    Schema schema = pathParameter.getSchema();
-    if (schema == null) {
-      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-      pathParameter.setSchema(schema);
+    if (StringUtils.isNotEmpty(value)) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
     }
-    pathParameter.setRequired(pathVariable.required());
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
-      JavaType type, PathVariable pathVariable) {
-
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }

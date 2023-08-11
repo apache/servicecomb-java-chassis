@@ -19,42 +19,24 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.parameters.Parameter;
-
-public class RequestBodyAnnotationProcessor implements ParameterProcessor<RequestBody> {
+public class RequestBodyAnnotationProcessor extends
+    SpringmvcParameterAnnotationsProcessor<RequestBody> {
   @Override
   public Type getProcessType() {
     return RequestBody.class;
   }
 
-  @Override
-  public String getParameterName(RequestBody parameterAnnotation) {
-    return null;
-  }
 
   @Override
-  public HttpParameterType getHttpParameterType(RequestBody parameterAnnotation) {
-    return HttpParameterType.BODY;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
-      RequestBody requestBody) {
-
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation,
-      io.swagger.v3.oas.models.parameters.RequestBody bodyParameter, String parameterName, JavaType type,
-      RequestBody requestBody) {
-    bodyParameter.setRequired(requestBody.required());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestBody annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }

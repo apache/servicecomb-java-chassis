@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-package org.apache.servicecomb.swagger.generator.core.processor.parameter;
+import org.apache.servicecomb.swagger.generator.ParameterAnnotationProcessor;
 
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
-
-public abstract class AbstractParameterProcessor<ANNOTATION> implements
-    ParameterProcessor<ANNOTATION> {
+/**
+ * A generic class to help classify implementations.
+ */
+public abstract class SpringmvcParameterAnnotationsProcessor<ANNOTATION> implements
+    ParameterAnnotationProcessor<ANNOTATION> {
 }
+
