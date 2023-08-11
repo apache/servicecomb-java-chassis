@@ -18,87 +18,32 @@
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
-import java.util.List;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-
-@SuppressWarnings({"rawtypes", "unchecked"})
 public class RequestPartAnnotationProcessor extends
-    AbstractSpringmvcParameterProcessor<RequestPart> {
+    SpringmvcParameterAnnotationsProcessor<RequestPart> {
   @Override
   public Type getProcessType() {
     return RequestPart.class;
   }
 
   @Override
-  public String getParameterName(RequestPart annotation) {
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestPart annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(RequestPart parameterAnnotation) {
-    return HttpParameterType.FORM;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
-      RequestPart requestPart) {
-
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
-      JavaType type, RequestPart requestPart) {
-    if (requestBody.getContent() == null) {
-      requestBody.setContent(new Content());
+    if (StringUtils.isNotEmpty(value)) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
     }
-    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) == null) {
-      requestBody.getContent().addMediaType(SwaggerConst.FILE_MEDIA_TYPE,
-          new io.swagger.v3.oas.models.media.MediaType());
-    }
-    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema() == null) {
-      requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
-          .setSchema(new Schema<>());
-    }
-    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties() == null) {
-      requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
-          .getSchema().setProperties(new LinkedHashMap<>());
-    }
-    // RequestPart used with MultipartFile and simple types.
-    // MultipartFile is processed by type processor.
-    if (isPart(type)) {
-      return;
-    }
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getProperties().put(parameterName, schema);
-  }
-
-  private boolean isPart(JavaType type) {
-    if (MultipartFile.class.equals(type.getRawClass())) {
-      return true;
-    }
-    if (MultipartFile[].class.equals(type.getRawClass())) {
-      return true;
-    }
-    return type.getContentType() != null &&
-        List.class.equals(type.getRawClass()) && MultipartFile.class.equals(type.getContentType().getRawClass());
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }

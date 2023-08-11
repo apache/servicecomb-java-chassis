@@ -19,59 +19,38 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ValueConstants;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.RequestBody;
-
-@SuppressWarnings("rawtypes")
 public class CookieValueAnnotationProcessor extends
-    AbstractSpringmvcParameterProcessor<CookieValue> {
+    SpringmvcParameterAnnotationsProcessor<CookieValue> {
   @Override
   public Type getProcessType() {
     return CookieValue.class;
   }
 
   @Override
-  public String getParameterName(CookieValue annotation) {
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, CookieValue annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(CookieValue parameterAnnotation) {
-    return HttpParameterType.COOKIE;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation,
-      io.swagger.v3.oas.models.parameters.Parameter parameter, JavaType type, CookieValue cookieValue) {
-    Schema schema = parameter.getSchema();
-    if (schema == null) {
-      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-      parameter.setSchema(schema);
+    if (StringUtils.isNotEmpty(value)) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
     }
-    parameter.setRequired(cookieValue.required());
-    if (!ValueConstants.DEFAULT_NONE.equals(cookieValue.defaultValue())) {
-      schema.setDefault(cookieValue.defaultValue());
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
+    if (!ValueConstants.DEFAULT_NONE.equals(annotation.defaultValue())) {
+      parameterGenerator.getParameterGeneratorContext()
+          .setDefaultValue(annotation.defaultValue());
       // if default value is set, must be required false.
-      parameter.setRequired(false);
+      parameterGenerator.getParameterGeneratorContext().setRequired(false);
     }
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody parameter, String parameterName,
-      JavaType type, CookieValue cookieValue) {
-
   }
 }

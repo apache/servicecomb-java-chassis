@@ -19,18 +19,13 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
-
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 
 /**
  * Use RequestParam to annotate a Query parameter.
@@ -39,47 +34,30 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
  * This is implementation based. We can't use RequestParam to express
  * both query and form in OpenAPI 3.0.
  */
-@SuppressWarnings("rawtypes")
 public class RequestParamParameterProcessor extends
-    AbstractSpringmvcParameterProcessor<RequestParam> {
+    SpringmvcParameterAnnotationsProcessor<RequestParam> {
   @Override
   public Type getProcessType() {
     return RequestParam.class;
   }
 
   @Override
-  public String getParameterName(RequestParam annotation) {
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestParam annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(RequestParam parameterAnnotation) {
-    return HttpParameterType.QUERY;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter queryParameter, JavaType type,
-      RequestParam requestParam) {
-    Schema schema = queryParameter.getSchema();
-    if (schema == null) {
-      schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-      queryParameter.setSchema(schema);
+    if (StringUtils.isNotEmpty(value)) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
     }
-    queryParameter.setRequired(requestParam.required());
-    if (!ValueConstants.DEFAULT_NONE.equals(requestParam.defaultValue())) {
-      schema.setDefault(requestParam.defaultValue());
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
+    if (!ValueConstants.DEFAULT_NONE.equals(annotation.defaultValue())) {
+      parameterGenerator.getParameterGeneratorContext()
+          .setDefaultValue(annotation.defaultValue());
       // if default value is set, must be required false.
-      queryParameter.setRequired(false);
+      parameterGenerator.getParameterGeneratorContext().setRequired(false);
     }
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
-      JavaType type, RequestParam requestParam) {
-
   }
 }

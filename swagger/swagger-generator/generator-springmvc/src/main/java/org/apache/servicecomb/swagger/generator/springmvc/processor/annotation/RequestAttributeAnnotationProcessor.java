@@ -19,20 +19,12 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestAttribute;
-
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Content;
-import io.swagger.v3.oas.models.media.MapSchema;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 
 /**
  * Use RequestAttribute to annotate a Form parameter.
@@ -41,55 +33,24 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
  * to annotate query param and form param. This is implementation based. We can't use RequestParam to express
  * both query and form in OpenAPI 3.0. And there is no request attribute.
  */
-@SuppressWarnings("rawtypes")
 public class RequestAttributeAnnotationProcessor extends
-    AbstractSpringmvcParameterProcessor<RequestAttribute> {
+    SpringmvcParameterAnnotationsProcessor<RequestAttribute> {
   @Override
   public Type getProcessType() {
     return RequestAttribute.class;
   }
 
   @Override
-  public String getParameterName(RequestAttribute annotation) {
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestAttribute annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(RequestAttribute parameterAnnotation) {
-    return HttpParameterType.FORM;
-  }
-
-  @Override
-  public void fillParameter(OpenAPI swagger, Operation operation, Parameter parameter, JavaType type,
-      RequestAttribute requestAttribute) {
-  }
-
-  @Override
-  public void fillRequestBody(OpenAPI swagger, Operation operation, RequestBody requestBody, String parameterName,
-      JavaType type, RequestAttribute requestAttribute) {
-    Schema schema = SwaggerUtils.resolveTypeSchemas(swagger, type);
-    if (requestBody.getContent() == null) {
-      requestBody.setContent(new Content());
+    if (StringUtils.isNotEmpty(value)) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
     }
-
-    String mediaType = SwaggerConst.FORM_MEDIA_TYPE;
-    if (requestBody.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null) {
-      mediaType = SwaggerConst.FILE_MEDIA_TYPE;
-    }
-
-    if (requestBody.getContent().get(mediaType) == null) {
-      requestBody.getContent().addMediaType(mediaType,
-          new io.swagger.v3.oas.models.media.MediaType());
-    }
-    if (requestBody.getContent().get(mediaType).getSchema() == null) {
-      requestBody.getContent().get(mediaType)
-          .setSchema(new MapSchema());
-    }
-    requestBody.getContent().get(mediaType)
-        .getSchema().addProperty(getParameterName(requestAttribute), schema);
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }
