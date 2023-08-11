@@ -15,8 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PathParamParameterAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.QueryParamParameterAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.HeaderParamParameterAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.CookieParamParameterAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.FormParamParameterAnnotationProcessor
+org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileTypeProcessor
+org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileArrayProcessor
+org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileListProcessor

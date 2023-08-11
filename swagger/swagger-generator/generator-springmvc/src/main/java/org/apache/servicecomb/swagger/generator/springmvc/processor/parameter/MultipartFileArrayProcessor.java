@@ -17,16 +17,15 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
-import java.lang.reflect.Type;
-
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayParameterTypeProcessor;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class MultipartFileArrayProcessor extends PartArrayParameterTypeProcessor {
   @Override
-  public Type getProcessType() {
+  public JavaType getProcessType() {
     return TypeFactory.defaultInstance().constructType(MultipartFile[].class);
   }
 }

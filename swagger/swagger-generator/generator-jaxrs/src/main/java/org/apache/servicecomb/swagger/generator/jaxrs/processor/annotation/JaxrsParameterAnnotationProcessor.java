@@ -19,6 +19,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import org.apache.servicecomb.swagger.generator.ParameterAnnotationProcessor;
 
-public abstract class JaxrsParameterProcessor<ANNOTATION> implements
+public abstract class JaxrsParameterAnnotationProcessor<ANNOTATION> implements
     ParameterAnnotationProcessor<ANNOTATION> {
 }

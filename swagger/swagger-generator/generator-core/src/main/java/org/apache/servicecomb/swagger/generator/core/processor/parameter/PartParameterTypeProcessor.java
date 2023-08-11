@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-import java.lang.reflect.Type;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,19 +25,16 @@ import org.apache.servicecomb.swagger.generator.ParameterTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.FileSchema;
-import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.MediaType;
 
 public class PartParameterTypeProcessor implements ParameterTypeProcessor {
   @Override
-  public Type getProcessType() {
+  public JavaType getProcessType() {
     return TypeFactory.defaultInstance().constructType(Part.class);
   }
 

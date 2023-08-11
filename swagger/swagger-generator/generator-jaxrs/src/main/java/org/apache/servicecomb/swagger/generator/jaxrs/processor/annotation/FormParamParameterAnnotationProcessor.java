@@ -25,19 +25,18 @@ import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
-import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.FormParam;
 
-public class CookieParamAnnotationProcessor extends
-    JaxrsParameterProcessor<CookieParam> {
+public class FormParamParameterAnnotationProcessor extends JaxrsParameterAnnotationProcessor<FormParam> {
   @Override
   public Type getProcessType() {
-    return CookieParam.class;
+    return FormParam.class;
   }
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
-      ParameterGenerator parameterGenerator, CookieParam annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+      ParameterGenerator parameterGenerator, FormParam annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.FORM);
     if (StringUtils.isNotEmpty(annotation.value())) {
       parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
     }
