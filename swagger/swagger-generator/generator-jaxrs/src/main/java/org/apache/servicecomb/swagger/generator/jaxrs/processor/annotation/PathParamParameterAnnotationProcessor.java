@@ -25,18 +25,19 @@ import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
-import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.PathParam;
 
-public class QueryParamAnnotationProcessor extends JaxrsParameterProcessor<QueryParam> {
+public class PathParamParameterAnnotationProcessor extends JaxrsParameterAnnotationProcessor<PathParam> {
   @Override
   public Type getProcessType() {
-    return QueryParam.class;
+    return PathParam.class;
   }
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
-      ParameterGenerator parameterGenerator, QueryParam annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.QUERY);
+      ParameterGenerator parameterGenerator, PathParam annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.PATH);
+    parameterGenerator.getParameterGeneratorContext().setRequired(true);
     if (StringUtils.isNotEmpty(annotation.value())) {
       parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
     }

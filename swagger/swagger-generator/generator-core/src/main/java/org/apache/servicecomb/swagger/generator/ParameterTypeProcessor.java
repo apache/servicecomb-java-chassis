@@ -16,10 +16,10 @@
  */
 package org.apache.servicecomb.swagger.generator;
 
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.databind.JavaType;
 
 public interface ParameterTypeProcessor {
-  Type getProcessType();
+  JavaType getProcessType();
 
   void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator);

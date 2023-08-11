@@ -15,9 +15,6 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileTypeProcessor
-org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileArrayProcessor
-org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileListProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.CookieValueAnnotationProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.PathVariableAnnotationProcessor
 org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestBodyAnnotationProcessor
