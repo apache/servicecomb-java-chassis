@@ -24,6 +24,7 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.v3.oas.models.media.Schema;
+import jakarta.ws.rs.core.MediaType;
 
 public class ParameterGeneratorContext extends OperationGeneratorContext {
   private JavaType parameterType;
@@ -110,9 +111,12 @@ public class ParameterGeneratorContext extends OperationGeneratorContext {
     this.defaultValue = defaultValue;
   }
 
-  public void updateConsumes() {
+  public void updateConsumes(boolean isForm, boolean isBinary) {
     List<String> removed = new ArrayList<>();
     if (httpParameterType == HttpParameterType.BODY) {
+      if (isForm) {
+        throw new IllegalArgumentException("Both form and body parameter not allowed.");
+      }
       for (String media : supportedConsumes) {
         if (SUPPORTED_BODY_CONTENT_TYPE.contains(media)) {
           continue;
@@ -121,14 +125,38 @@ public class ParameterGeneratorContext extends OperationGeneratorContext {
       }
     } else if (httpParameterType == HttpParameterType.FORM) {
       for (String media : supportedConsumes) {
-        if (SUPPORTED_FORM_CONTENT_TYPE.contains(media)) {
+        if (!SUPPORTED_FORM_CONTENT_TYPE.contains(media)) {
+          removed.add(media);
           continue;
         }
-        removed.add(media);
+        if (isBinary && supportedConsumes.contains(MediaType.APPLICATION_FORM_URLENCODED)) {
+          removed.add(MediaType.APPLICATION_FORM_URLENCODED);
+        }
+        if (!isBinary && supportedConsumes.contains(MediaType.MULTIPART_FORM_DATA)) {
+          removed.add(MediaType.MULTIPART_FORM_DATA);
+        }
       }
     } else {
       supportedConsumes.clear();
     }
     supportedConsumes.removeAll(removed);
+  }
+
+  public boolean isForm() {
+    return httpParameterType == HttpParameterType.FORM;
+  }
+
+  public boolean isBinary() {
+    if ("string".equals(this.schema.getType()) && "binary".equals(this.schema.getFormat())) {
+      return true;
+    }
+
+    return "array".equals(this.schema.getType()) &&
+        "string".equals(this.schema.getItems().getType()) &&
+        "binary".equals(this.schema.getItems().getFormat());
+  }
+
+  public boolean isObject() {
+    return "object".equals(this.schema.getType());
   }
 }

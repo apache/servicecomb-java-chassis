@@ -114,8 +114,17 @@ public class ParameterGenerator {
     this.parameterGeneratorContext.setHttpParameterType(httpParameterType);
   }
 
+  public boolean isForm() {
+    return parameterGeneratorContext.isForm();
+  }
+
+  public boolean isBinary() {
+    return parameterGeneratorContext.isBinary();
+  }
+
   public void generate() {
-    this.parameterGeneratorContext.updateConsumes();
+    this.parameterGeneratorContext.updateConsumes(
+        this.operationGenerator.isForm(), this.operationGenerator.isBinary());
 
     if (this.parameterGeneratorContext.getHttpParameterType() == HttpParameterType.BODY) {
       if (parameterGeneratorContext.getSupportedConsumes().size() == 0) {
@@ -125,6 +134,9 @@ public class ParameterGenerator {
       RequestBody requestBody = new RequestBody();
       Map<String, Object> extensions = new HashMap<>();
       extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGeneratorContext.getParameterName());
+      if (parameterGeneratorContext.getRawJson() != null) {
+        extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, parameterGeneratorContext.getRawJson());
+      }
       requestBody.setExtensions(extensions);
       requestBody.setContent(new Content());
       for (String media : parameterGeneratorContext.getSupportedConsumes()) {

@@ -38,4 +38,14 @@ public interface OperationGenerator {
   void generateResponse();
 
   OperationGeneratorContext getOperationGeneratorContext();
+
+  /**
+   * Used to check if one of operation has form parameter
+   */
+  boolean isForm();
+
+  /**
+   * Used to check if one of operation form parameter is binary
+   */
+  boolean isBinary();
 }

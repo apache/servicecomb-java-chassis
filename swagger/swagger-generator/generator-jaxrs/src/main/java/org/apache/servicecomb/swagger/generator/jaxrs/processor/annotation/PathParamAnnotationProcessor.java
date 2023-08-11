@@ -37,6 +37,7 @@ public class PathParamAnnotationProcessor extends JaxrsParameterProcessor<PathPa
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, PathParam annotation) {
     parameterGenerator.setHttpParameterType(HttpParameterType.PATH);
+    parameterGenerator.getParameterGeneratorContext().setRequired(true);
     if (StringUtils.isNotEmpty(annotation.value())) {
       parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
     }
