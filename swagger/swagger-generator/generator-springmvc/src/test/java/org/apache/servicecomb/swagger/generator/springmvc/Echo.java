@@ -31,11 +31,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.ws.rs.core.MediaType;
+
 @RequestMapping(
     path = "Echo",
     method = {RequestMethod.PUT},
-    consumes = {"a", "b"},
-    produces = {"a", "b"})
+    consumes = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN},
+    produces = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 public class Echo {
 
   @RequestMapping("emptyPath")
@@ -73,18 +75,19 @@ public class Echo {
     return null;
   }
 
-  @RequestMapping("part")
-  public void part(MultipartFile part) {
+  @RequestMapping(value = "part", consumes = MediaType.MULTIPART_FORM_DATA)
+  public void part(@RequestPart MultipartFile part) {
 
   }
 
+  // TODO: this should fail. RequestMapping not parse consumes and produces.
   @RequestMapping("partArray")
-  public void partArray(MultipartFile[] part) {
+  public void partArray(@RequestPart MultipartFile[] part) {
 
   }
 
   @RequestMapping("partList")
-  public void partList(List<MultipartFile> part) {
+  public void partList(@RequestPart List<MultipartFile> part) {
 
   }
 

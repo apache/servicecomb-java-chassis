@@ -46,10 +46,12 @@ public class PartParameterTypeProcessor implements ParameterTypeProcessor {
       throw new IllegalArgumentException("Part type must declare consumes " + MediaType.MULTIPART_FORM_DATA);
     }
     if (parameterGenerator.getHttpParameterType() != HttpParameterType.FORM) {
-      throw new IllegalArgumentException("Part type must declare as form parameter.");
+      throw new IllegalArgumentException(
+          getProcessType().getRawClass().getSimpleName() + " type must declare as form parameter.");
     }
     if (StringUtils.isEmpty(parameterGenerator.getParameterGeneratorContext().getParameterName())) {
-      throw new IllegalArgumentException("Name is required for Part parameter.");
+      throw new IllegalArgumentException(
+          "Name is required for parameter " + getProcessType().getRawClass().getSimpleName());
     }
     parameterGenerator.getParameterGeneratorContext().updateConsumes(List.of(MediaType.MULTIPART_FORM_DATA));
 

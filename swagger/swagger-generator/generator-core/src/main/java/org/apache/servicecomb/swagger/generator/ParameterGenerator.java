@@ -134,6 +134,7 @@ public class ParameterGenerator {
             + "by annotations rule.");
       }
       RequestBody requestBody = new RequestBody();
+      requestBody.setRequired(parameterGeneratorContext.getRequired());
       Map<String, Object> extensions = new HashMap<>();
       extensions.put(SwaggerConst.EXT_BODY_NAME, parameterGeneratorContext.getParameterName());
       if (parameterGeneratorContext.getRawJson() != null) {

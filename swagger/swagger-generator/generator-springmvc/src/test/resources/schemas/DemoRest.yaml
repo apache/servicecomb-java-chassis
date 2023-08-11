@@ -21,7 +21,7 @@ info:
   title: swagger definition for org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestPartAnnotationProcessorTest$DemoRest
   version: 1.0.0
 servers:
-- url: /DemoRest
+- url: /
 paths:
   /fun:
     post:
@@ -30,6 +30,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 stringParam:
                   type: string

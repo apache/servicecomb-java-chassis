@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,7 +32,9 @@ public class RequestPartAnnotationProcessorTest {
     UnitTestSwaggerUtils.testSwagger("schemas/DemoRest.yaml", DemoRest.class);
   }
 
+  @RequestMapping("/")
   public static class DemoRest {
+    @RequestMapping(method = RequestMethod.POST, path = "/fun")
     public void fun(@RequestPart("stringParam") String stringParam,
         @RequestPart(name = "intParam") int intParam,
         @RequestPart("stringParamArray") String[] stringParamArray,
