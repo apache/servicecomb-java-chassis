@@ -55,8 +55,8 @@ public class TestSpringmvc {
   @Test
   public void testClassMethodNoPath() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.ClassMethodNoPath:noPath.",
-        "Path must not both be empty in class and method",
+        "Generate swagger operation failed, method=ClassMethodNoPath:noPath, "
+            + "cause=Path must not both be empty in class and method",
         ClassMethodNoPath.class,
         "noPath");
   }
@@ -78,8 +78,7 @@ public class TestSpringmvc {
   @Test
   public void testMethodMultiPathUsingRequestMapping() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.MethodMultiPath:usingRequestMapping.",
-        "not allowed multi path.",
+        "Generate swagger operation failed, method=MethodMultiPath:usingRequestMapping, cause=not allowed multi path.",
         MethodMultiPath.class,
         "usingRequestMapping");
   }
@@ -87,8 +86,7 @@ public class TestSpringmvc {
   @Test
   public void testMethodMultiPathUsingGetMapping() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.MethodMultiPath:usingGetMapping.",
-        "not allowed multi path.",
+        "Generate swagger operation failed, method=MethodMultiPath:usingGetMapping, cause=not allowed multi path.",
         MethodMultiPath.class,
         "usingGetMapping");
   }
@@ -96,8 +94,7 @@ public class TestSpringmvc {
   @Test
   public void testMethodMultiPathUsingPutMapping() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.MethodMultiPath:usingPutMapping.",
-        "not allowed multi path.",
+        "Generate swagger operation failed, method=MethodMultiPath:usingPutMapping, cause=not allowed multi path.",
         MethodMultiPath.class,
         "usingPutMapping");
   }
@@ -105,8 +102,7 @@ public class TestSpringmvc {
   @Test
   public void testMethodMultiPathUsingPostMapping() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.MethodMultiPath:usingPostMapping.",
-        "not allowed multi path.",
+        "Generate swagger operation failed, method=MethodMultiPath:usingPostMapping, cause=not allowed multi path.",
         MethodMultiPath.class,
         "usingPostMapping");
   }
@@ -114,8 +110,7 @@ public class TestSpringmvc {
   @Test
   public void testMethodMultiPathUsingPatchMapping() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.MethodMultiPath:usingPatchMapping.",
-        "not allowed multi path.",
+        "Generate swagger operation failed, method=MethodMultiPath:usingPatchMapping, cause=not allowed multi path.",
         MethodMultiPath.class,
         "usingPatchMapping");
   }
@@ -123,8 +118,7 @@ public class TestSpringmvc {
   @Test
   public void testMethodMultiPathUsingDeleteMapping() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.springmvc.MethodMultiPath:usingDeleteMapping.",
-        "not allowed multi path.",
+        "Generate swagger operation failed, method=MethodMultiPath:usingDeleteMapping, cause=not allowed multi path.",
         MethodMultiPath.class,
         "usingDeleteMapping");
   }

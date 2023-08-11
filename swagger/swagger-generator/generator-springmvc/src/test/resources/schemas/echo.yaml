@@ -66,6 +66,20 @@ paths:
               - RED
               - YELLOW
               - BLUE
+          application/protobuf:
+            schema:
+              type: string
+              enum:
+              - RED
+              - YELLOW
+              - BLUE
+          text/plain:
+            schema:
+              type: string
+              enum:
+              - RED
+              - YELLOW
+              - BLUE
         required: true
         x-name: color
       responses:
@@ -95,6 +109,20 @@ paths:
                 type: array
                 items:
                   type: string
+          application/protobuf:
+            schema:
+              type: array
+              items:
+                type: array
+                items:
+                  type: string
+          text/plain:
+            schema:
+              type: array
+              items:
+                type: array
+                items:
+                  type: string
         required: true
         x-name: param
       responses:
@@ -115,6 +143,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 part:
                   type: string
@@ -129,6 +158,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 part:
                   type: string
@@ -143,6 +173,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 part:
                   type: array
@@ -159,6 +190,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 part:
                   type: array
@@ -175,6 +207,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 part:
                   type: array
@@ -191,6 +224,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 part:
                   type: array
@@ -206,6 +240,12 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              type: string
+          application/protobuf:
+            schema:
+              type: string
+          text/plain:
             schema:
               type: string
         required: true

@@ -235,8 +235,8 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       try {
         operationGenerator.generate();
       } catch (Throwable e) {
-        String msg = String.format("generate swagger operation failed, method=%s:%s.",
-            this.cls.getName(), method.getName());
+        String msg = String.format("Generate swagger operation failed, method=%s:%s, cause=%s",
+            this.cls.getSimpleName(), method.getName(), e.getMessage());
         throw new IllegalStateException(msg, e);
       }
 

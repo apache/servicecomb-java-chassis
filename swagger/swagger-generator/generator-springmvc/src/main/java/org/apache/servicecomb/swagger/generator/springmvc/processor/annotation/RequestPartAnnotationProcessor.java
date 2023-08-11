@@ -48,7 +48,7 @@ public class RequestPartAnnotationProcessor extends
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, RequestPart annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    parameterGenerator.setHttpParameterType(HttpParameterType.FORM);
     if (StringUtils.isNotEmpty(getParameterName(annotation))) {
       parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
