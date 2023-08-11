@@ -35,11 +35,19 @@ public class CookieParamParameterAnnotationProcessor extends
   }
 
   @Override
+  public String getParameterName(CookieParam annotation) {
+    if (StringUtils.isEmpty(annotation.value())) {
+      return null;
+    }
+    return annotation.value();
+  }
+
+  @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, CookieParam annotation) {
     parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
-    if (StringUtils.isNotEmpty(annotation.value())) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
   }
 }

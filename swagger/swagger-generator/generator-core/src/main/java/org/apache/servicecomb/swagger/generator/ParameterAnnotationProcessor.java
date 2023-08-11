@@ -21,6 +21,13 @@ import java.lang.reflect.Type;
 public interface ParameterAnnotationProcessor<ANNOTATION> {
   Type getProcessType();
 
+  /**
+   * Get parameter name from annotation. This method is used in both
+   * swagger generation and invocation. In invocation, need to find the
+   * swagger parameter name of the method parameter.
+   */
+  String getParameterName(ANNOTATION annotation);
+
   void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, ANNOTATION annotation);
 }

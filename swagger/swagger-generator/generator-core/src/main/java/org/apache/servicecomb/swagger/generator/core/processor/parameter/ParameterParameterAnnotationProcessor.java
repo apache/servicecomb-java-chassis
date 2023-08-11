@@ -25,6 +25,7 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.Explode;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 
@@ -33,6 +34,14 @@ public class ParameterParameterAnnotationProcessor
   @Override
   public Class<?> getProcessType() {
     return io.swagger.v3.oas.annotations.Parameter.class;
+  }
+
+  @Override
+  public String getParameterName(Parameter annotation) {
+    if (StringUtils.isNotEmpty(annotation.name())) {
+      return annotation.name();
+    }
+    return null;
   }
 
   @Override
@@ -45,8 +54,8 @@ public class ParameterParameterAnnotationProcessor
           .setParameterType(TypeFactory.defaultInstance().constructType(annotation.schema().implementation()));
     }
 
-    if (StringUtils.isNotEmpty(annotation.name())) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.name());
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
 
     if (annotation.in() != null && annotation.in() != ParameterIn.DEFAULT) {

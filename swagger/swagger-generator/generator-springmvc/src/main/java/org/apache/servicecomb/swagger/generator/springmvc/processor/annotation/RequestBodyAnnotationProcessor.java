@@ -32,6 +32,10 @@ public class RequestBodyAnnotationProcessor extends
     return RequestBody.class;
   }
 
+  @Override
+  public String getParameterName(RequestBody annotation) {
+    return null;
+  }
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,

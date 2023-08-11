@@ -34,11 +34,19 @@ public class FormParamParameterAnnotationProcessor extends JaxrsParameterAnnotat
   }
 
   @Override
+  public String getParameterName(FormParam annotation) {
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      return annotation.value();
+    }
+    return null;
+  }
+
+  @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, FormParam annotation) {
     parameterGenerator.setHttpParameterType(HttpParameterType.FORM);
-    if (StringUtils.isNotEmpty(annotation.value())) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
   }
 }

@@ -33,14 +33,22 @@ public class RawJsonRequestBodyProcessor extends
   }
 
   @Override
+  public String getParameterName(RawJsonRequestBody annotation) {
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      return annotation.value();
+    } else if (StringUtils.isNotEmpty(annotation.name())) {
+      return annotation.name();
+    }
+    return null;
+  }
+
+  @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, RawJsonRequestBody annotation) {
     parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
 
-    if (StringUtils.isNotEmpty(annotation.value())) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
-    } else if (StringUtils.isNotEmpty(annotation.name())) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.name());
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
 
     parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());

@@ -32,6 +32,7 @@ import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
 
 import io.swagger.v3.oas.models.Components;
@@ -52,7 +53,8 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
           .resolveType(methodParameter.getParameterizedType())
           .getType();
       ParameterGenerator parameterGenerator = new ParameterGenerator(
-          this, method, Collections.emptyMap(), methodParameter, type);
+          this, Collections.emptyMap(), methodParameter,
+          TypeFactory.defaultInstance().constructType(type));
       validateParameter(parameterGenerator.getGenericType());
       if (isContextParameter(parameterGenerator.getGenericType())) {
         continue;
@@ -88,15 +90,12 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
           SwaggerUtils.resolveTypeSchemas(swagger, parameterGenerator.getGenericType()));
     }
 
-    ParameterGenerator newParameterGenerator = new ParameterGenerator(this, simpleRef);
-    newParameterGenerator.getParameterGeneratorContext().setParameterName(simpleRef);
-    newParameterGenerator.setHttpParameterType(HttpParameterType.BODY);
-    parameterGenerators.add(newParameterGenerator);
-
     swagger.getComponents().addSchemas(simpleRef, bodyModel);
     Schema<?> bodyModelNew = new Schema<>();
     bodyModelNew.set$ref(Components.COMPONENTS_SCHEMAS_REF + simpleRef);
-    newParameterGenerator.getParameterGeneratorContext().setSchema(bodyModelNew);
+    ParameterGenerator newParameterGenerator = new ParameterGenerator(this, simpleRef, bodyModelNew);
+    newParameterGenerator.setHttpParameterType(HttpParameterType.BODY);
+    parameterGenerators.add(newParameterGenerator);
   }
 
   @Override

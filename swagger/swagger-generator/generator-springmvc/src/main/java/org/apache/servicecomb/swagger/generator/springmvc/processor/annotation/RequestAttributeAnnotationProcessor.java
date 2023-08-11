@@ -41,15 +41,23 @@ public class RequestAttributeAnnotationProcessor extends
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
-      ParameterGenerator parameterGenerator, RequestAttribute annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+  public String getParameterName(RequestAttribute annotation) {
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
     if (StringUtils.isNotEmpty(value)) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
+      return value;
+    }
+    return null;
+  }
+
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestAttribute annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
     parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }

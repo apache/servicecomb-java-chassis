@@ -23,11 +23,18 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 public class RequestBodyParameterAnnotationProcessor extends
     SwaggerParameterAnnotationProcessor<io.swagger.v3.oas.annotations.parameters.RequestBody> {
   @Override
   public Class<?> getProcessType() {
     return io.swagger.v3.oas.annotations.parameters.RequestBody.class;
+  }
+
+  @Override
+  public String getParameterName(RequestBody requestBody) {
+    return null;
   }
 
   @Override
