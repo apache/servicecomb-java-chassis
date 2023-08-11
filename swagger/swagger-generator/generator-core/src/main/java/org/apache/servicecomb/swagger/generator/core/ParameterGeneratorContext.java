@@ -27,6 +27,10 @@ import io.swagger.v3.oas.models.media.Schema;
 import jakarta.ws.rs.core.MediaType;
 
 public class ParameterGeneratorContext extends OperationGeneratorContext {
+  /**
+   * Parameter type. Maybe override by annotations. And for pojo wrapped parameter,
+   * this is null.
+   */
   private JavaType parameterType;
 
   private String parameterName;

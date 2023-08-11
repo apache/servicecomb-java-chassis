@@ -35,15 +35,23 @@ public class CookieValueAnnotationProcessor extends
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
-      ParameterGenerator parameterGenerator, CookieValue annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+  public String getParameterName(CookieValue annotation) {
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
     if (StringUtils.isNotEmpty(value)) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
+      return value;
+    }
+    return null;
+  }
+
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, CookieValue annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
     parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
     if (!ValueConstants.DEFAULT_NONE.equals(annotation.defaultValue())) {

@@ -17,8 +17,6 @@
 package org.apache.servicecomb.swagger.generator;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -28,11 +26,11 @@ import org.apache.servicecomb.swagger.generator.core.ParameterGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.ObjectSchema;
+import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.CookieParameter;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -47,51 +45,55 @@ public class ParameterGenerator {
 
   private final ParameterGeneratorContext parameterGeneratorContext;
 
-  public ParameterGenerator(OperationGenerator operationGenerator, String parameterName) {
+  /**
+   * Used for pojo wrap parameter, while parameter type is null.
+   */
+  public ParameterGenerator(OperationGenerator operationGenerator, String parameterName, Schema<?> schema) {
     this.operationGenerator = operationGenerator;
     this.parameterGeneratorContext = new ParameterGeneratorContext(operationGenerator.getOperationGeneratorContext());
     this.parameterGeneratorContext.setParameterName(parameterName);
+    this.parameterGeneratorContext.setSchema(schema);
     this.annotations = Collections.emptyList();
   }
 
-  public ParameterGenerator(OperationGenerator operationGenerator, Executable executable,
+  /**
+   * Used for @BeanParam like parameters, while extract JavaType of the bean parameter type.
+   */
+  public ParameterGenerator(OperationGenerator operationGenerator,
       Map<String, List<Annotation>> methodAnnotationMap,
-      String defaultName,
-      Annotation[] parameterAnnotations, Type genericType) {
+      String parameterName,
+      Annotation[] parameterAnnotations, JavaType genericType) {
     this.operationGenerator = operationGenerator;
-    String parameterName = SwaggerGeneratorUtils.collectParameterName(executable, parameterAnnotations,
-        defaultName);
     this.annotations = SwaggerGeneratorUtils.collectParameterAnnotations(parameterAnnotations,
         methodAnnotationMap,
         parameterName);
     this.parameterGeneratorContext = new ParameterGeneratorContext(operationGenerator.getOperationGeneratorContext());
     this.parameterGeneratorContext.setParameterName(parameterName);
-    this.parameterGeneratorContext.setParameterType(TypeFactory.defaultInstance()
-        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, genericType)));
-    this.parameterGeneratorContext.setHttpParameterType(
-        SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType));
+    this.parameterGeneratorContext.setParameterType(genericType);
   }
 
-  public ParameterGenerator(OperationGenerator operationGenerator, Executable executable,
+  /**
+   * Used for normal method parameter initialization, while extract JavaType from method parameter.
+   */
+  public ParameterGenerator(OperationGenerator operationGenerator,
       Map<String, List<Annotation>> methodAnnotationMap,
-      java.lang.reflect.Parameter methodParameter, Type genericType) {
-    this(operationGenerator, executable,
+      java.lang.reflect.Parameter methodParameter, JavaType genericType) {
+    this(operationGenerator,
         methodAnnotationMap,
         methodParameter.isNamePresent() ? methodParameter.getName() : null,
         methodParameter.getAnnotations(),
         genericType);
   }
 
+  /**
+   * Used for annotation defined parameter, while initial parameter type is null
+   * and will extract JavaType annotation processors.
+   */
   public ParameterGenerator(OperationGenerator operationGenerator, String parameterName, List<Annotation> annotations) {
     this.operationGenerator = operationGenerator;
     this.parameterGeneratorContext = new ParameterGeneratorContext(operationGenerator.getOperationGeneratorContext());
     this.parameterGeneratorContext.setParameterName(parameterName);
     this.annotations = annotations;
-    this.parameterGeneratorContext.setParameterType(TypeFactory.defaultInstance()
-        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, null)));
-    this.parameterGeneratorContext.setHttpParameterType(
-        SwaggerGeneratorUtils.collectHttpParameterType(annotations,
-            this.parameterGeneratorContext.getParameterType()));
   }
 
   public ParameterGeneratorContext getParameterGeneratorContext() {

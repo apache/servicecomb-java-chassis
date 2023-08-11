@@ -34,15 +34,23 @@ public class PathVariableAnnotationProcessor extends
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
-      ParameterGenerator parameterGenerator, PathVariable annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.PATH);
+  public String getParameterName(PathVariable annotation) {
     String value = annotation.value();
     if (value.isEmpty()) {
       value = annotation.name();
     }
     if (StringUtils.isNotEmpty(value)) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(value);
+      return value;
+    }
+    return null;
+  }
+
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, PathVariable annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.PATH);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
     parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }

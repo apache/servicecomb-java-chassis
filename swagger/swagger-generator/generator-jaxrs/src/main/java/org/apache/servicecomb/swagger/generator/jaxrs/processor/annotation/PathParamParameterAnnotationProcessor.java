@@ -34,12 +34,20 @@ public class PathParamParameterAnnotationProcessor extends JaxrsParameterAnnotat
   }
 
   @Override
+  public String getParameterName(PathParam annotation) {
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      return annotation.value();
+    }
+    return null;
+  }
+
+  @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, PathParam annotation) {
     parameterGenerator.setHttpParameterType(HttpParameterType.PATH);
     parameterGenerator.getParameterGeneratorContext().setRequired(true);
-    if (StringUtils.isNotEmpty(annotation.value())) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
   }
 }

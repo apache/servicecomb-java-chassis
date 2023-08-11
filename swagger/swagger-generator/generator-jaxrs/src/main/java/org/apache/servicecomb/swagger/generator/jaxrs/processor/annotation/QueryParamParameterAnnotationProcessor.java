@@ -34,11 +34,19 @@ public class QueryParamParameterAnnotationProcessor extends JaxrsParameterAnnota
   }
 
   @Override
+  public String getParameterName(QueryParam annotation) {
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      return annotation.value();
+    }
+    return null;
+  }
+
+  @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, QueryParam annotation) {
     parameterGenerator.setHttpParameterType(HttpParameterType.QUERY);
-    if (StringUtils.isNotEmpty(annotation.value())) {
-      parameterGenerator.getParameterGeneratorContext().setParameterName(annotation.value());
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }
   }
 }

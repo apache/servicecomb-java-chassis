@@ -221,7 +221,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
           .resolveType(methodParameter.getParameterizedType())
           .getType();
       ParameterGenerator parameterGenerator = new ParameterGenerator(
-          this, method, methodAnnotationMap, methodParameter, genericType);
+          this, methodAnnotationMap, methodParameter,
+          TypeFactory.defaultInstance().constructType(genericType));
       validateParameter(parameterGenerator.getGenericType());
       if (isContextParameter(parameterGenerator.getGenericType())) {
         continue;
@@ -253,7 +254,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       }
 
       Annotation[] annotations = collectAnnotations(propertyDefinition);
-      ParameterGenerator propertyParameterGenerator = new ParameterGenerator(this, method,
+      ParameterGenerator propertyParameterGenerator = new ParameterGenerator(this,
           methodAnnotationMap,
           propertyDefinition.getName(),
           annotations,
