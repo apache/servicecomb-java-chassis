@@ -20,7 +20,6 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.col
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -157,8 +156,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     scanMethodParameters();
     scanResponse();
     correctOperation();
-
-    postProcessOperation(swaggerGenerator, this);
   }
 
   protected void scanMethodAnnotation() {
@@ -178,8 +175,10 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void scanMethodParameters() {
+    // init generators
     initParameterGenerators();
 
+    // scan annotations and types
     Set<String> names = new HashSet<>();
     int bodyCount = 0;
     for (ParameterGenerator parameterGenerator : parameterGenerators) {
@@ -196,6 +195,10 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
         }
         bodyCount++;
       }
+    }
+
+    // generate
+    for (ParameterGenerator parameterGenerator : parameterGenerators) {
       parameterGenerator.generate();
     }
   }
@@ -317,10 +320,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     Schema<?> schema = parameterGenerator.getParameterGeneratorContext().getSchema();
     if (schema == null) {
-      JavaType parameterType = parameterGenerator.getParameterGeneratorContext().getParameterType();
-      if (parameterType == null) {
-        parameterType = parameterGenerator.getGenericType();
-      }
+      JavaType parameterType = parameterGenerator.getGenericType();
       ParameterTypeProcessor processor = SwaggerGeneratorUtils.findParameterTypeProcessor(parameterType);
       if (processor != null) {
         processor.process(this.swaggerGenerator, this, parameterGenerator);
@@ -329,6 +329,26 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
             parameterType));
       }
     }
+  }
+
+  @Override
+  public boolean isForm() {
+    for (ParameterGenerator parameterGenerator : parameterGenerators) {
+      if (parameterGenerator.isForm()) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
+  public boolean isBinary() {
+    for (ParameterGenerator parameterGenerator : parameterGenerators) {
+      if (parameterGenerator.isBinary()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override

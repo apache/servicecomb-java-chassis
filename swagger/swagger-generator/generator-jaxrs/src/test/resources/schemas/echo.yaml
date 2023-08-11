@@ -101,6 +101,12 @@ paths:
           application/json:
             schema:
               type: string
+          application/protobuf:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
         x-name: name
       responses:
         "200":
@@ -160,29 +166,27 @@ paths:
       parameters:
       - name: status-aggr
         in: query
-        description: |
-          dynamic desc aggr
-          - 400: dynamic bad request
-          - 404: dynamic not found
+        description: dynamic desc aggr
         required: false
-        explode: false
         schema:
           type: integer
           format: int32
       - name: status
         in: query
-        description: |
-          dynamic desc direct
-          - 400: dynamic bad request
-          - 404: dynamic not found
+        description: dynamic desc direct
         required: false
-        explode: false
         schema:
           type: integer
           format: int32
       requestBody:
         content:
           application/json:
+            schema:
+              $ref: '#/components/schemas/DynamicStatusModel'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/DynamicStatusModel'
+          text/plain:
             schema:
               $ref: '#/components/schemas/DynamicStatusModel'
         x-name: model
@@ -193,9 +197,6 @@ paths:
             application/json:
               schema:
                 type: integer
-                description: |
-                  - 400: dynamic bad request
-                  - 404: dynamic not found
                 format: int32
   /echo/{targetName}:
     post:
@@ -219,6 +220,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
         x-name: srcUser
       responses:
         "200":
@@ -239,6 +246,20 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              type: string
+              enum:
+              - RED
+              - YELLOW
+              - BLUE
+          application/protobuf:
+            schema:
+              type: string
+              enum:
+              - RED
+              - YELLOW
+              - BLUE
+          text/plain:
             schema:
               type: string
               enum:
@@ -273,12 +294,8 @@ paths:
       parameters:
       - name: status-aggr
         in: query
-        description: |
-          jdk desc aggr
-          - BAD_REQUEST: jdk bad request
-          - NOT_FOUND: jdk not found
+        description: jdk desc aggr
         required: false
-        explode: false
         schema:
           type: string
           enum:
@@ -286,12 +303,8 @@ paths:
           - NOT_FOUND
       - name: status
         in: query
-        description: |
-          jdk desc direct
-          - BAD_REQUEST: jdk bad request
-          - NOT_FOUND: jdk not found
+        description: jdk desc direct
         required: false
-        explode: false
         schema:
           type: string
           enum:
@@ -302,6 +315,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/JdkStatusModel'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/JdkStatusModel'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/JdkStatusModel'
         x-name: model
       responses:
         "200":
@@ -310,9 +329,6 @@ paths:
             application/json:
               schema:
                 type: string
-                description: |
-                  - BAD_REQUEST: jdk bad request
-                  - NOT_FOUND: jdk not found
                 enum:
                 - BAD_REQUEST
                 - NOT_FOUND
@@ -322,6 +338,20 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              type: array
+              items:
+                type: array
+                items:
+                  type: string
+          application/protobuf:
+            schema:
+              type: array
+              items:
+                type: array
+                items:
+                  type: string
+          text/plain:
             schema:
               type: array
               items:
@@ -386,7 +416,12 @@ paths:
           application/json:
             schema:
               type: string
-        required: true
+          application/protobuf:
+            schema:
+              type: string
+          text/plain:
+            schema:
+              type: string
         x-raw-json: true
         x-name: jsonInput
       responses:
