@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config.kie.client.model;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,10 +37,13 @@ class KieAddressManagerTest {
   private static KieAddressManager addressManager1;
 
   @Test
-  public void kieAddressManagerTest() {
+  public void kieAddressManagerTest() throws NoSuchFieldException, IllegalAccessException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
     addressManager1 = new KieAddressManager(addresses, new EventBus());
+    Field addressManagerField = addressManager1.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager1, 0);
 
     Assertions.assertNotNull(addressManager1);
 
@@ -50,7 +54,6 @@ class KieAddressManagerTest {
     Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
     Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
   }
-
 
   @Test
   public void onRefreshEndpointEvent() {

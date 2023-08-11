@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -58,7 +59,7 @@ public class AbstractAddressManager {
 
   private List<String> addresses = new ArrayList<>();
 
-  private int index = 0;
+  private int index;
 
   private String projectName;
 
@@ -87,6 +88,8 @@ public class AbstractAddressManager {
 
   private final Object lock = new Object();
 
+  private Random random = new Random();
+
   private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
       new ThreadFactoryBuilder()
           .setNameFormat("check-available-address-%d")
@@ -96,12 +99,14 @@ public class AbstractAddressManager {
     this.projectName = DEFAULT_PROJECT;
     this.addresses.addAll(addresses);
     this.defaultAddress.addAll(addresses);
+    this.index = addresses.size() > 0 ? random.nextInt(addresses.size()) : 0;
   }
 
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
     this.defaultAddress.addAll(this.addresses);
+    this.index = addresses.size() > 0 ? random.nextInt(addresses.size()) : 0;
   }
 
   @VisibleForTesting
