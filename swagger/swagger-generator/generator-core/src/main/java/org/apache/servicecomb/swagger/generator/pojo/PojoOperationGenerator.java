@@ -82,12 +82,17 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   }
 
   private void wrapParametersToBody(List<ParameterGenerator> bodyFields) {
+    // process annotations like parameter name
+    for (ParameterGenerator parameterGenerator : bodyFields) {
+      scanMethodParameter(parameterGenerator);
+    }
+
     String simpleRef = MethodUtils.findSwaggerMethodName(method) + "Body";
 
     Schema<?> bodyModel = new ObjectSchema();
     for (ParameterGenerator parameterGenerator : bodyFields) {
       bodyModel.addProperty(parameterGenerator.getParameterGeneratorContext().getParameterName(),
-          SwaggerUtils.resolveTypeSchemas(swagger, parameterGenerator.getGenericType()));
+          parameterGenerator.getParameterGeneratorContext().getSchema());
     }
 
     swagger.getComponents().addSchemas(simpleRef, bodyModel);

@@ -14,36 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator;
+package org.apache.servicecomb.swagger.generator.core;
 
+import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
+import org.junit.jupiter.api.Test;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGeneratorContext;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.Operation;
+public class TestPojo {
+  @SuppressWarnings("unused")
+  public static class ParameterAnnotation {
+    @Operation(summary = "differentName", operationId = "differentName")
+    public int operationIdAndParameter(@Parameter(name = "x") int a, @Parameter(name = "y") int b) {
+      return a * 2 + b;
+    }
+  }
 
-public interface OperationGenerator {
-  OpenAPI getSwagger();
-
-  Operation getOperation();
-
-  void setHttpMethod(String httpMethod);
-
-  String getHttpMethod();
-
-  void addOperationToSwagger();
-
-  void setPath(String value);
-
-  OperationGeneratorContext getOperationGeneratorContext();
-
-  /**
-   * Used to check if one of operation has form parameter
-   */
-  boolean isForm();
-
-  /**
-   * Used to check if one of operation form parameter is binary
-   */
-  boolean isBinary();
+  @Test
+  public void testResponseEntity() {
+    UnitTestSwaggerUtils.testSwagger("schemas/ParameterAnnotation.yaml", ParameterAnnotation.class);
+  }
 }

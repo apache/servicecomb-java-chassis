@@ -870,6 +870,6 @@ components:
     wrapToBodyWithDescBody:
       type: object
       properties:
-        value:
+        desc:
           type: integer
           format: int32

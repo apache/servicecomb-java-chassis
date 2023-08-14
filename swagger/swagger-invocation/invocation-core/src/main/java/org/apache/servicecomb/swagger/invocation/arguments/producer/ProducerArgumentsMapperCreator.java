@@ -70,7 +70,7 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
       String parameterName) {
     throw new IllegalStateException(String
         .format("failed to find producer parameter in contract, method=%s:%s, parameter name=%s.",
-            providerMethod.getDeclaringClass().getName(), providerMethod.getName(), parameterName));
+            providerMethod.getDeclaringClass().getSimpleName(), providerMethod.getName(), parameterName));
   }
 
   @Override
