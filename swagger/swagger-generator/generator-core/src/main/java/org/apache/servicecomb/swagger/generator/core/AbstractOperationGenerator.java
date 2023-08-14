@@ -64,7 +64,6 @@ import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.Schema;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletResponse;
@@ -86,8 +85,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected String path;
 
   protected Operation swaggerOperation;
-
-  protected RequestBody bodyParameter;
 
   protected OperationGeneratorContext operationGeneratorContext;
 
@@ -142,13 +139,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       path = "/" + path;
     }
     this.path = path;
-  }
-
-  @Override
-  public void generateResponse() {
-    scanMethodAnnotation();
-    scanResponse();
-    correctOperation();
   }
 
   public void generate() {

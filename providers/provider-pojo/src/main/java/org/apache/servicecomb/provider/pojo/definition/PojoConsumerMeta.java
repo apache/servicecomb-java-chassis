@@ -28,8 +28,6 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import jakarta.ws.rs.core.Response.Status;
@@ -46,16 +44,10 @@ public class PojoConsumerMeta {
     this.microserviceReferenceConfig = microserviceReferenceConfig;
     this.schemaMeta = schemaMeta;
 
-    SwaggerGenerator intfSwaggerGenerator = SwaggerGenerator.create(swaggerConsumer.getConsumerIntf());
-    intfSwaggerGenerator.scanClassAnnotation();
     for (SwaggerConsumerOperation swaggerConsumerOperation : swaggerConsumer.getOperations().values()) {
       String operationId = swaggerConsumerOperation.getSwaggerOperation().getOperationId();
       // SwaggerConsumer has make sure can find operationMeta
       OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
-
-      OperationGenerator intfOperationGenerator = intfSwaggerGenerator
-          .createOperationGenerator(swaggerConsumerOperation.getConsumerMethod());
-      intfOperationGenerator.generateResponse();
       PojoConsumerOperationMeta pojoConsumerOperationMeta = new PojoConsumerOperationMeta(this, operationMeta,
           swaggerConsumerOperation);
 
