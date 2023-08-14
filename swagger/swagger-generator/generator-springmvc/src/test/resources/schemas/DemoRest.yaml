@@ -61,5 +61,4 @@ paths:
       responses:
         "200":
           description: response of 200
-components:
-  schemas: {}
+components: {}

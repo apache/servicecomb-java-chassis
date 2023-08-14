@@ -49,7 +49,7 @@ public class RequestHeaderAnnotationProcessor extends
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, RequestHeader annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    parameterGenerator.setHttpParameterType(HttpParameterType.HEADER);
     if (StringUtils.isNotEmpty(getParameterName(annotation))) {
       parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }

@@ -38,8 +38,8 @@ public class TestJaxrs {
   @Test
   public void testClassMethodNoPath() {
     UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1.",
-        "Path must not both be empty in class and method",
+        "Generate swagger operation failed, "
+            + "method=ClassMethodNoPath:p1, cause=Path must not both be empty in class and method",
         ClassMethodNoPath.class);
   }
 
@@ -50,22 +50,24 @@ public class TestJaxrs {
 
   @Test
   public void consumesAndProduces_exception_testSingleMediaType() {
-    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
-            + "method=org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces:testSingleMediaType.",
+    UnitTestSwaggerUtils.testException("Generate swagger operation failed, "
+            + "method=ConsumesAndProduces:testSingleMediaType, "
+            + "cause=Not support media type application/xml",
         ConsumesAndProduces.class, "testSingleMediaType");
   }
 
   @Test
   public void consumesAndProduces_exception_testMultipleMediaType() {
-    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
-            + "method=org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces:testMultipleMediaType.",
+    UnitTestSwaggerUtils.testException("Generate swagger operation failed, "
+            + "method=ConsumesAndProduces:testMultipleMediaType, "
+            + "cause=Not support media type application/xml",
         ConsumesAndProduces.class, "testMultipleMediaType");
   }
 
   @Test
   public void consumesAndProduces_exception_testBlankMediaType() {
-    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
-            + "method=org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces:testBlankMediaType.",
+    UnitTestSwaggerUtils.testException("Generate swagger operation failed, "
+            + "method=ConsumesAndProduces:testBlankMediaType, cause=Not support media type ",
         ConsumesAndProduces.class, "testBlankMediaType");
   }
 }

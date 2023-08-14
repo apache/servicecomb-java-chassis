@@ -56,7 +56,7 @@ public class RequestParamParameterProcessor extends
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, RequestParam annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    parameterGenerator.setHttpParameterType(HttpParameterType.QUERY);
     if (StringUtils.isNotEmpty(getParameterName(annotation))) {
       parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }

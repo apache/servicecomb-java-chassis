@@ -422,6 +422,7 @@ paths:
           text/plain:
             schema:
               type: string
+        required: true
         x-raw-json: true
         x-name: jsonInput
       responses:

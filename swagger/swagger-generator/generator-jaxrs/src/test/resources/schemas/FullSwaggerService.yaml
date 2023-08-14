@@ -105,5 +105,4 @@ paths:
             application/json:
               schema:
                 type: string
-components:
-  schemas: {}
+components: {}

@@ -37,6 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -228,7 +229,7 @@ public final class SwaggerUtils {
     }
 
     Map<String, Schema> schemaMap = resolvedSchema.referencedSchemas;
-    if (schemaMap != null) {
+    if (!CollectionUtils.isEmpty(schemaMap)) {
       Map<String, Schema> componentSchemas = swagger.getComponents().getSchemas();
       if (componentSchemas == null) {
         componentSchemas = new LinkedHashMap<>(schemaMap);

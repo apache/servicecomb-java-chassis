@@ -27,6 +27,7 @@ import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.rest.RestOperationGenerator;
+import org.springframework.web.bind.annotation.RequestBody;
 
 public class SpringmvcOperationGenerator extends RestOperationGenerator {
   public SpringmvcOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
@@ -44,7 +45,16 @@ public class SpringmvcOperationGenerator extends RestOperationGenerator {
 
   @Override
   protected boolean isAggregatedParameter(ParameterGenerator parameterGenerator, Parameter methodParameter) {
-    return parameterGenerator.getHttpParameterType() == null
+    return !isRequestBody(parameterGenerator)
         && SwaggerUtils.isBean(methodParameter.getParameterizedType());
+  }
+
+  private boolean isRequestBody(ParameterGenerator parameterGenerator) {
+    for (Annotation annotation : parameterGenerator.getAnnotations()) {
+      if (annotation.annotationType() == RequestBody.class) {
+        return true;
+      }
+    }
+    return false;
   }
 }
