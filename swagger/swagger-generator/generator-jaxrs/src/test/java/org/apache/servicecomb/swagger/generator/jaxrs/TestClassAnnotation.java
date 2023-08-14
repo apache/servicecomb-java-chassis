@@ -28,16 +28,18 @@ public class TestClassAnnotation {
 
   @Test
   public void test_form_wrong() {
-    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
-            + "method=org.apache.servicecomb.swagger.generator.jaxrs.ClassAnnotation:testFormWrong.",
+    UnitTestSwaggerUtils.testException("Generate swagger operation failed, "
+            + "method=ClassAnnotation:testFormWrong, cause=Consumes not provided for FORM parameter, "
+            + "or is empty by annotations rule.",
         ClassAnnotation.class,
         "testFormWrong");
   }
 
   @Test
   public void test_upload_wrong() {
-    UnitTestSwaggerUtils.testException("generate swagger operation failed, "
-            + "method=org.apache.servicecomb.swagger.generator.jaxrs.ClassAnnotation:testUploadWrong.",
+    UnitTestSwaggerUtils.testException("Generate swagger operation failed, "
+            + "method=ClassAnnotation:testUploadWrong, "
+            + "cause=Part type must declare consumes multipart/form-data",
         ClassAnnotation.class,
         "testUploadWrong");
   }

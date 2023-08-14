@@ -32,6 +32,14 @@ paths:
             schema:
               type: string
               format: byte
+          application/protobuf:
+            schema:
+              type: string
+              format: byte
+          text/plain:
+            schema:
+              type: string
+              format: byte
         required: true
         x-name: value
       responses:
@@ -53,6 +61,12 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -96,6 +110,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 file1:
                   type: string
@@ -123,7 +138,6 @@ paths:
       - name: a
         in: query
         required: false
-        explode: false
         schema:
           type: string
       responses:
@@ -211,6 +225,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 file:
                   type: string
@@ -231,6 +246,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 files:
                   type: array
@@ -270,6 +286,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
         required: true
         x-name: srcUser
       responses:
@@ -301,6 +323,12 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -336,6 +364,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
         required: true
         x-name: srcUser
       responses:
@@ -367,6 +401,12 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -402,6 +442,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
         required: true
         x-name: srcUser
       responses:
@@ -433,6 +479,12 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/User'
+          text/plain:
             schema:
               $ref: '#/components/schemas/User'
         required: true

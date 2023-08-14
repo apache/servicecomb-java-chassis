@@ -195,5 +195,9 @@ public class ParameterGenerator {
           annotations, operationGenerator.getSwagger().getComponents(),
           null, null, null);
     }
+    // spring mvc DefaultValue annotation not processed by swagger api.
+    if (parameterGeneratorContext.getDefaultValue() != null) {
+      parameter.getSchema().setDefault(parameterGeneratorContext.getDefaultValue());
+    }
   }
 }
