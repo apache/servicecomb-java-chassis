@@ -69,7 +69,7 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
           public void run() {
             try {
               String result = template.getForObject(url + "?name={1}", String.class, "hello");
-              if (!"\"hello\"".equals(result)) {
+              if (!"hello".equals(result)) {
                 notExpectedFailed.set(true);
               }
             } catch (Exception e) {
@@ -108,7 +108,7 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
           public void run() {
             try {
               String result = template.getForObject(url + "?name={1}", String.class, "hello");
-              if (!"\"hello\"".equals(result)) {
+              if (!"hello".equals(result)) {
                 notExpectedFailed.set(true);
               }
             } catch (Exception e) {

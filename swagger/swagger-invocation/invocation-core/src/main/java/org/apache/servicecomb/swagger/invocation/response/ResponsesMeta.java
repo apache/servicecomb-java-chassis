@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
@@ -81,16 +80,15 @@ public class ResponsesMeta {
     }
 
     for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
-      if (entry.getValue().getContent() == null) {
-        continue;
-      }
-      if (entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) == null) {
+      if (entry.getValue().getContent() == null || entry.getValue().getContent().size() == 0) {
         continue;
       }
 
+      String mediaType = entry.getValue().getContent().keySet().iterator().next();
+
       JavaType javaType = ConverterMgr.findJavaType(swagger,
           SwaggerUtils.getSchema(swagger,
-              entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema()));
+              entry.getValue().getContent().get(mediaType).getSchema()));
 
       if ("default".equals(entry.getKey())) {
         defaultResponse = javaType;
@@ -128,10 +126,6 @@ public class ResponsesMeta {
         responseMap.putAll(mappers);
       }
     }
-  }
-
-  public Map<Integer, JavaType> getResponseMap() {
-    return responseMap;
   }
 
   public JavaType findResponseType(int statusCode) {

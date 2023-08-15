@@ -33,7 +33,7 @@ import io.swagger.v3.oas.models.Operation;
 public class TestResponsesMeta {
   static class ResponseMetaImpl {
     @ApiResponses({@ApiResponse(responseCode = "400", description = "",
-        content = {@Content(schema = @Schema(type = "string"))}),
+        content = {@Content(schema = @Schema(implementation = String.class))}),
         @ApiResponse(responseCode = "401", description = "",
             content = {@Content(schema = @Schema(implementation = String.class))},
             headers = {@Header(name = "h1", schema = @Schema(implementation = String.class))})

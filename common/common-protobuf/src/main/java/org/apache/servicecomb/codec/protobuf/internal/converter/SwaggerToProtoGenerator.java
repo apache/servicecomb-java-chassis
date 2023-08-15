@@ -372,14 +372,15 @@ public class SwaggerToProtoGenerator {
       }
     }
     if (operation.getRequestBody() != null
-        && operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
-      properties.put((String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME),
-          operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema());
-    }
-    if (operation.getRequestBody() != null
-        && operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
-      operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties()
-          .forEach((k, v) -> properties.put((String) k, (Schema) v));
+        && operation.getRequestBody().getContent().size() != 0) {
+      if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+        operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties()
+            .forEach((k, v) -> properties.put((String) k, (Schema) v));
+      } else {
+        properties.put((String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME),
+            operation.getRequestBody().getContent().get(
+                operation.getRequestBody().getContent().keySet().iterator().next()).getSchema());
+      }
     }
     return properties;
   }
@@ -388,22 +389,23 @@ public class SwaggerToProtoGenerator {
     if (operation.getParameters() != null && operation.getParameters().size() == 1) {
       return operation.getParameters().get(0).getSchema();
     }
-    if (operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
-      return operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema();
+    if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      return (Schema) operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema()
+          .getProperties()
+          .values().iterator().next();
     }
-    return (Schema) operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema()
-        .getProperties()
-        .values().iterator().next();
+    return operation.getRequestBody().getContent().get(
+        operation.getRequestBody().getContent().keySet().iterator().next()).getSchema();
   }
 
   private int parametersCount(Operation operation) {
     int parameters = operation.getParameters() == null ? 0 : operation.getParameters().size();
     if (operation.getRequestBody() != null) {
-      if (operation.getRequestBody().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
-        parameters = parameters + 1;
-      } else if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
         parameters = parameters + operation.getRequestBody()
             .getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().size();
+      } else if (operation.getRequestBody().getContent().size() != 0) {
+        parameters = parameters + 1;
       }
     }
     return parameters;
@@ -413,8 +415,9 @@ public class SwaggerToProtoGenerator {
     for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
       Schema schema = null;
       if (entry.getValue().getContent() != null &&
-          entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null) {
-        schema = entry.getValue().getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).getSchema();
+          entry.getValue().getContent().size() != 0) {
+        schema = entry.getValue().getContent().get(
+            entry.getValue().getContent().keySet().iterator().next()).getSchema();
       }
       String type = convertSwaggerType(schema);
       boolean wrapped = !messages.contains(type);

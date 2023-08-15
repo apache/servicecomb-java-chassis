@@ -25,6 +25,7 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -332,6 +333,7 @@ public final class SwaggerUtils {
     return (cls != String.class
         && cls != Date.class
         && cls != LocalDate.class
+        && cls != LocalDateTime.class
         && cls != byte[].class
         && cls != File.class
         && !cls.getName().equals("org.springframework.web.multipart.MultipartFile")

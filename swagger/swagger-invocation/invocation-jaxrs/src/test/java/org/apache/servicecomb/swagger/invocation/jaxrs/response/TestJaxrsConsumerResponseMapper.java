@@ -37,7 +37,8 @@ import jakarta.ws.rs.core.Response;
 public class TestJaxrsConsumerResponseMapper {
   @Path("/")
   interface ConsumerResponseForTest {
-    @ApiResponse(responseCode = "200", description = "", content = @Content(schema = @Schema(type = "string")))
+    @ApiResponse(responseCode = "200", description = "", content = @Content(schema =
+    @Schema(implementation = String.class)))
     @Path("/jaxrsResponse")
     @GET
     jakarta.ws.rs.core.Response jaxrsResponse();

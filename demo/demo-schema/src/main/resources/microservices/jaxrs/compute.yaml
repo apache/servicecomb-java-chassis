@@ -59,7 +59,7 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
+            text/plain:
               schema:
                 type: string
   /istrue:
@@ -79,14 +79,12 @@ paths:
       - name: a
         in: query
         required: false
-        explode: false
         schema:
           type: integer
           format: int32
       - name: b
         in: query
         required: false
-        explode: false
         schema:
           type: integer
           format: int32
@@ -115,6 +113,12 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/Person'
+          text/plain:
             schema:
               $ref: '#/components/schemas/Person'
         x-name: user
@@ -162,6 +166,12 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/Person'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/Person'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/Person'
         x-name: user
       responses:
         "200":
@@ -176,6 +186,12 @@ paths:
       requestBody:
         content:
           application/json:
+            schema:
+              type: string
+          application/protobuf:
+            schema:
+              type: string
+          text/plain:
             schema:
               type: string
         x-name: jsonInput
