@@ -35,12 +35,23 @@ paths:
           application/protobuf:
             schema:
               $ref: '#/components/schemas/differentNameBody'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/differentNameBody'
         x-name: differentNameBody
       responses:
         "200":
           description: response of 200
           content:
             application/json:
+              schema:
+                type: integer
+                format: int32
+            application/protobuf:
+              schema:
+                type: integer
+                format: int32
+            text/plain:
               schema:
                 type: integer
                 format: int32

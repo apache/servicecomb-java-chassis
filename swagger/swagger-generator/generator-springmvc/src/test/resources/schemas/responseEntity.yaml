@@ -35,6 +35,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+            application/protobuf:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
   /usingGetMapping:
     get:
       operationId: usingGetMapping
@@ -43,6 +53,16 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            application/protobuf:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            text/plain:
               schema:
                 type: array
                 items:
@@ -59,6 +79,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+            application/protobuf:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
   /usingPostMapping:
     post:
       operationId: usingPostMapping
@@ -67,6 +97,16 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            application/protobuf:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            text/plain:
               schema:
                 type: array
                 items:
@@ -83,6 +123,16 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+            application/protobuf:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            text/plain:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
   /usingRequestMapping:
     put:
       operationId: usingRequestMapping
@@ -91,6 +141,16 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            application/protobuf:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+            text/plain:
               schema:
                 type: array
                 items:

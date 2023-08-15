@@ -45,7 +45,6 @@ import org.apache.servicecomb.swagger.generator.ParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.ParameterTypeProcessor;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
@@ -62,7 +61,9 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 import io.swagger.v3.oas.models.PathItem;
 import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.headers.Header;
 import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
@@ -370,26 +371,43 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   public void scanResponse() {
-    if (swaggerOperation.getResponses() == null) {
-      swaggerOperation.setResponses(new ApiResponses());
-    }
+    operationGeneratorContext.updateProduces();
+    swaggerOperation.setResponses(new ApiResponses());
+    for (Entry<String, Schema<?>> response : operationGeneratorContext.getResponses().entrySet()) {
+      ApiResponse apiResponse = new ApiResponse();
+      if (StringUtils.isNotEmpty(operationGeneratorContext.getResponseDescriptions().get(response.getKey()))) {
+        apiResponse.setDescription(operationGeneratorContext.getResponseDescriptions().get(response.getKey()));
+      }
+      if (operationGeneratorContext.getResponseHeaders().get(response.getKey()) != null) {
+        operationGeneratorContext.getResponseHeaders().get(response.getKey()).forEach((k, v) -> {
+          Header header = new Header();
+          header.setSchema(v);
+          apiResponse.addHeaderObject(k, header);
+        });
+      }
+      Schema<?> schema = response.getValue() != null ? response.getValue() :
+          createResponseModel();
 
-    // If annotations contains ApiResponse, schema must be defined.
-    if (swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY) != null) {
-      return;
-    }
+      if (schema == null) {
+        swaggerOperation.getResponses().addApiResponse(response.getKey(), apiResponse);
+        continue;
+      }
 
-    Schema model = createResponseModel();
-    if (model == null) {
-      return;
+      apiResponse.setContent(new Content());
+      // file download using WILDCARD content-type
+      if ("string".equals(schema.getType()) && "binary".equals(schema.getFormat())) {
+        MediaType mediaType = new MediaType();
+        mediaType.setSchema(schema);
+        apiResponse.getContent().addMediaType(jakarta.ws.rs.core.MediaType.WILDCARD, mediaType);
+      } else {
+        for (String produce : operationGeneratorContext.getSupportedProduces()) {
+          MediaType mediaType = new MediaType();
+          mediaType.setSchema(schema);
+          apiResponse.getContent().addMediaType(produce, mediaType);
+        }
+      }
+      swaggerOperation.getResponses().addApiResponse(response.getKey(), apiResponse);
     }
-    swaggerOperation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
-    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).setContent(new Content());
-    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent()
-        .addMediaType(SwaggerConst.DEFAULT_MEDIA_TYPE, new io.swagger.v3.oas.models.media.MediaType());
-    swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent()
-        .get(SwaggerConst.DEFAULT_MEDIA_TYPE)
-        .setSchema(model);
   }
 
   protected Schema createResponseModel() {

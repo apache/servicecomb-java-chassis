@@ -50,6 +50,14 @@ paths:
               schema:
                 type: string
                 format: byte
+            application/protobuf:
+              schema:
+                type: string
+                format: byte
+            text/plain:
+              schema:
+                type: string
+                format: byte
   /defaultQueryParam:
     post:
       operationId: defaultQueryParam
@@ -78,6 +86,12 @@ paths:
             application/json:
               schema:
                 type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /diffNames:
     get:
       summary: differentName
@@ -103,6 +117,14 @@ paths:
               schema:
                 type: integer
                 format: int32
+            application/protobuf:
+              schema:
+                type: integer
+                format: int32
+            text/plain:
+              schema:
+                type: integer
+                format: int32
   /upload:
     post:
       operationId: fileUpload
@@ -125,6 +147,12 @@ paths:
             application/json:
               schema:
                 type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /reduce:
     get:
       operationId: reduce
@@ -145,6 +173,14 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: integer
+                format: int32
+            application/protobuf:
+              schema:
+                type: integer
+                format: int32
+            text/plain:
               schema:
                 type: integer
                 format: int32
@@ -193,6 +229,12 @@ paths:
             application/json:
               schema:
                 type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /testImplicitForm:
     post:
       operationId: testImplicitForm
@@ -218,6 +260,12 @@ paths:
             application/json:
               schema:
                 type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /uploadFileAndAttribute:
     post:
       operationId: uploadFileAndAttribute
@@ -237,6 +285,12 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
               schema:
                 type: string
   /uploadFilesAndAttribute:
@@ -260,6 +314,12 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
               schema:
                 type: string
   /usingDeleteMapping/{targetName}:
@@ -301,6 +361,12 @@ paths:
             application/json:
               schema:
                 type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /usingGetMapping/{targetName}:
     get:
       operationId: usingGetMapping
@@ -338,6 +404,12 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
               schema:
                 type: string
   /usingPatchMapping/{targetName}:
@@ -379,6 +451,12 @@ paths:
             application/json:
               schema:
                 type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /usingPostMapping/{targetName}:
     post:
       operationId: usingPostMapping
@@ -416,6 +494,12 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
               schema:
                 type: string
   /usingPutMapping/{targetName}:
@@ -457,6 +541,12 @@ paths:
             application/json:
               schema:
                 type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
   /usingRequestMapping/{targetName}:
     post:
       operationId: usingRequestMapping
@@ -494,6 +584,12 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
               schema:
                 type: string
 components:

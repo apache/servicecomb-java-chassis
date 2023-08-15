@@ -16,8 +16,73 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+
+import com.fasterxml.jackson.databind.JavaType;
+
+import io.swagger.v3.oas.models.media.Schema;
+
 public class OperationGeneratorContext extends SwaggerGeneratorContext {
+  private final Map<String, Schema<?>> responses = new HashMap<>();
+
+  private JavaType responseType;
+
+  private final Map<String, String> responseDescriptions = new HashMap<>();
+
+  // statusCode:headerName:headerSchema
+  private final Map<String, Map<String, Schema<?>>> responseHeaders = new HashMap<>();
+
   public OperationGeneratorContext(SwaggerGeneratorContext parent) {
     super(parent);
+    updateResponse(SwaggerConst.SUCCESS_KEY, null);
+  }
+
+  public Map<String, Schema<?>> getResponses() {
+    return responses;
+  }
+
+  public void updateResponse(String code, Schema<?> schema) {
+    this.responses.put(code, schema);
+  }
+
+  public JavaType getResponseType() {
+    return responseType;
+  }
+
+  public void setResponseType(JavaType responseType) {
+    this.responseType = responseType;
+  }
+
+  public Map<String, String> getResponseDescriptions() {
+    return responseDescriptions;
+  }
+
+  public void updateResponseDescription(String code, String description) {
+    this.responseDescriptions.put(code, description);
+  }
+
+  public Map<String, Map<String, Schema<?>>> getResponseHeaders() {
+    return responseHeaders;
+  }
+
+  public void updateResponseHeader(String code, String header, Schema<?> schema) {
+    this.responseHeaders.computeIfAbsent(code, key -> new HashMap<>());
+    this.responseHeaders.get(code).put(header, schema);
+  }
+
+  public void updateProduces() {
+    List<String> removed = new ArrayList<>();
+    for (String media : supportedProduces) {
+      if (SUPPORTED_BODY_CONTENT_TYPE.contains(media)) {
+        continue;
+      }
+      removed.add(media);
+    }
+    supportedProduces.removeAll(removed);
   }
 }

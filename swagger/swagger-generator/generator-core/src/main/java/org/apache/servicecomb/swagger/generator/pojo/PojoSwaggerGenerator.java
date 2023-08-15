@@ -28,7 +28,7 @@ import jakarta.ws.rs.core.MediaType;
 
 public class PojoSwaggerGenerator extends AbstractSwaggerGenerator {
   protected static final List<String> SUPPORTED_CONTENT_TYPE
-      = Arrays.asList(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE);
+      = Arrays.asList(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN);
 
   public PojoSwaggerGenerator(Class<?> cls) {
     super(cls);

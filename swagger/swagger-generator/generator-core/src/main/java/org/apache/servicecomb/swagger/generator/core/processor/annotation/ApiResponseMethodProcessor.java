@@ -17,13 +17,20 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.springframework.util.CollectionUtils;
 
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.models.responses.ApiResponses;
 
 public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<ApiResponse> {
   @Override
@@ -34,11 +41,38 @@ public class ApiResponseMethodProcessor implements MethodAnnotationProcessor<Api
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ApiResponse apiResponse) {
-    if (operationGenerator.getOperation().getResponses() == null) {
-      operationGenerator.getOperation().setResponses(new ApiResponses());
+    List<String> produces = new ArrayList<>();
+    String responseCode = apiResponse.responseCode();
+    if (StringUtils.isEmpty(responseCode) || "default".equals(responseCode)) {
+      responseCode = SwaggerConst.SUCCESS_KEY;
     }
-    operationGenerator.getOperation().getResponses().addApiResponse(
-        AnnotationUtils.responseCodeModel(apiResponse),
-        AnnotationUtils.apiResponseModel(swaggerGenerator.getOpenAPI(), apiResponse));
+    Class<?> type = null;
+    for (Content content : apiResponse.content()) {
+      if (StringUtils.isNotEmpty(content.mediaType())) {
+        produces.add(content.mediaType());
+      }
+      if (content.schema() != null && content.schema().implementation() != Void.class) {
+        type = content.schema().implementation();
+      }
+    }
+    operationGenerator.getOperationGeneratorContext().updateResponse(responseCode,
+        type == null ? null : SwaggerUtils.resolveTypeSchemas(swaggerGenerator.getOpenAPI(), type));
+    if (StringUtils.isNotEmpty(apiResponse.description())) {
+      operationGenerator.getOperationGeneratorContext().updateResponseDescription(responseCode,
+          apiResponse.description());
+    }
+    for (Header header : apiResponse.headers()) {
+      if (header.schema() == null || header.schema().implementation() == Void.class) {
+        throw new IllegalArgumentException("@ApiResponse header schema implementation must be defined.");
+      }
+      if (StringUtils.isEmpty(header.name())) {
+        throw new IllegalArgumentException("@ApiResponse header name must be defined.");
+      }
+      operationGenerator.getOperationGeneratorContext().updateResponseHeader(responseCode,
+          header.name(), AnnotationUtils.schemaModel(swaggerGenerator.getOpenAPI(), header.schema()));
+    }
+    if (!CollectionUtils.isEmpty(produces)) {
+      operationGenerator.getOperationGeneratorContext().updateProduces(produces);
+    }
   }
 }
