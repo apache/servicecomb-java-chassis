@@ -45,13 +45,13 @@ public class TestProducerResponseMapperFactorys {
     }
 
     @ApiResponse(responseCode = "200", description = "",
-        content = {@Content(schema = @Schema(type = "string"))})
+        content = {@Content(schema = @Schema(implementation = String.class))})
     public Response scbResponse() {
       return Response.ok("scb");
     }
 
     @ApiResponse(responseCode = "200", description = "",
-        content = {@Content(schema = @Schema(type = "string"))})
+        content = {@Content(schema = @Schema(implementation = String.class))})
     public jakarta.ws.rs.core.Response jaxrsResponse() {
       return jakarta.ws.rs.core.Response.ok("jaxrs").build();
     }

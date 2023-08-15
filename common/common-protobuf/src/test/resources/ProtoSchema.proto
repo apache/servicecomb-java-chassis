@@ -65,13 +65,13 @@ message BaseRequestWrap {
 }
 
 //@WrapProperty
-message BaseResponseWrap444 {
-  Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 value = 1;
+message BaseResponseWrap200 {
+  int32 value = 1;
 }
 
 //@WrapProperty
-message BaseResponseWrap200 {
-  int32 value = 1;
+message BaseResponseWrap444 {
+  Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 value = 1;
 }
 
 //@WrapArguments
@@ -275,6 +275,16 @@ message MapUserResponseWrap200 {
 }
 
 //@WrapArguments
+message TestTextPlainRequestWrap {
+  string fieldNeedWrap = 1;
+}
+
+//@WrapProperty
+message TestTextPlainResponseWrap200 {
+  string value = 1;
+}
+
+//@WrapArguments
 message UserWrapInProtobufRequestWrap {
   int32 ivalue = 1;
   User user = 2;
@@ -421,6 +431,9 @@ service MainService {
 
   //@Rpc{"argTypeName":"Ref1","responses":{"200":{"typeName":"Ref2"}}}
   rpc ref (Ref1) returns (Ref2);
+
+  //@Rpc{"argTypeName":"TestTextPlainRequestWrap","responses":{"200":{"typeName":"TestTextPlainResponseWrap200"}}}
+  rpc testTextPlain (TestTextPlainRequestWrap) returns (TestTextPlainResponseWrap200);
 
   //@Rpc{"argTypeName":"User","responses":{"200":{"typeName":"User"}}}
   rpc user (User) returns (User);

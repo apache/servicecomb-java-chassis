@@ -41,10 +41,12 @@ public class TestConsumerResponseMapperFactorys {
 
     CompletableFuture<String> async();
 
-    @ApiResponse(responseCode = "200", description = "", content = {@Content(schema = @Schema(type = "string"))})
+    @ApiResponse(responseCode = "200", description = "", content =
+        {@Content(schema = @Schema(implementation = String.class))})
     Response scbResponse();
 
-    @ApiResponse(responseCode = "200", description = "", content = {@Content(schema = @Schema(type = "string"))})
+    @ApiResponse(responseCode = "200", description = "", content =
+        {@Content(schema = @Schema(implementation = String.class))})
     jakarta.ws.rs.core.Response jaxrsResponse();
 
     Optional<String> optional();

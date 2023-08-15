@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc;
 
+import java.time.LocalDateTime;
+
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.springframework.http.MediaType;
@@ -46,7 +48,6 @@ import jakarta.servlet.http.Part;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
-// TODO: Now not support consumes User as text/plain. This test case should fail.
 @SuppressWarnings("unused")
 @RequestMapping(path = "MethodMixupAnnotations")
 public class MethodMixupAnnotations {
@@ -164,5 +165,10 @@ public class MethodMixupAnnotations {
       @RequestParam(name = "c", defaultValue = "40") Integer c,
       @Min(value = 20) @Max(value = 30) @RequestParam(name = "d", required = false) int d) {
     return "Hello " + a + b + c + d + e;
+  }
+
+  @GetMapping(path = "/testLocalDateTime")
+  public LocalDateTime testLocalDateTime(@RequestParam("date") LocalDateTime date) {
+    return date;
   }
 }

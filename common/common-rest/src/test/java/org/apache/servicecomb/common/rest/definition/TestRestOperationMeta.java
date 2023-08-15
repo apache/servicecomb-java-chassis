@@ -57,14 +57,14 @@ public class TestRestOperationMeta {
   static class RestOperationMetaSchema {
     @Path("/emptyProduces")
     @GET
-    @Produces("")
+    @Produces(value = MediaType.APPLICATION_JSON)
     public String emptyProduces() {
       return null;
     }
 
     @Path("/emptyProducesWithView")
     @GET
-    @Produces("")
+    @Produces(value = MediaType.APPLICATION_JSON)
     @JsonView(Object.class)
     public String emptyProducesWithView() {
       return null;
@@ -72,14 +72,14 @@ public class TestRestOperationMeta {
 
     @Path("/notSupport")
     @GET
-    @Produces("notSupport")
+    @Produces(value = MediaType.APPLICATION_JSON)
     public void notSupport() {
 
     }
 
     @Path("/notSupportWithView")
     @GET
-    @Produces("notSupport")
+    @Produces(value = MediaType.APPLICATION_JSON)
     @JsonView(Object.class)
     public void notSupportWithView() {
 
@@ -117,14 +117,14 @@ public class TestRestOperationMeta {
 
     @Path("/textCharJsonChar")
     @GET
-    @Produces({MediaType.APPLICATION_JSON + ";charset=UTF-8", MediaType.TEXT_PLAIN + ";charset=UTF-8"})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     public void textCharJsonChar() {
 
     }
 
     @Path("/textCharJsonCharWithView")
     @GET
-    @Produces({MediaType.APPLICATION_JSON + ";charset=UTF-8", MediaType.TEXT_PLAIN + ";charset=UTF-8"})
+    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
     @JsonView(Object.class)
     public void textCharJsonCharWithView() {
 
@@ -297,7 +297,6 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsNotSupported() {
     findOperation("notSupport");
 
-    // TODO: should produces text/plain for string
     Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
     Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
@@ -306,14 +305,13 @@ public class TestRestOperationMeta {
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
-//    Assertions.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertNotNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
 
   @Test
   public void testCreateProduceProcessorsNotSupportedWithView() {
     findOperation("notSupportWithView");
 
-    // TODO: should produces text/plain for string
     Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
         operationMeta.ensureFindProduceProcessor((String) null));
     Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
@@ -322,37 +320,35 @@ public class TestRestOperationMeta {
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
-//    Assertions.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertNotNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
 
   @Test
   public void testCreateProduceProcessorsTextAndWildcard() {
     findOperation("textPlain");
 
-    // TODO: should produces text/plain for string
-//    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
-//        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
-//    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
-//        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
-//    Assertions.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
-//    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
-//        operationMeta.ensureFindProduceProcessor(
-//            MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
+        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
+        operationMeta.ensureFindProduceProcessor(
+            MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
   }
 
   @Test
   public void testCreateProduceProcessorsTextAndWildcardWithView() {
     findOperation("textPlainWithView");
 
-    // TODO: should produces text/plain for string
-//    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
-//        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
-//    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
-//        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
-//    Assertions.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
-//    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
-//        operationMeta.ensureFindProduceProcessor(
-//            MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assertions.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
+    Assertions.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(
+            MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
   }
 
   @Test

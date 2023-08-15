@@ -266,6 +266,32 @@ paths:
             text/plain:
               schema:
                 type: string
+  /testLocalDateTime:
+    get:
+      operationId: testLocalDateTime
+      parameters:
+      - name: date
+        in: query
+        required: true
+        schema:
+          type: string
+          format: date-time
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+                format: date-time
+            application/protobuf:
+              schema:
+                type: string
+                format: date-time
+            text/plain:
+              schema:
+                type: string
+                format: date-time
   /uploadFileAndAttribute:
     post:
       operationId: uploadFileAndAttribute

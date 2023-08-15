@@ -52,16 +52,15 @@ public class TestFileUploadSchema implements CategorizedTestCase {
 
   private void testFileUpload(RestTemplate template, String cseUrlPrefix, File file1, String file1Content)
       throws IOException {
+    String result1 = template.postForObject(cseUrlPrefix + "/upload1", new HttpEntity<>(new HashMap<>()), String.class);
+    TestMgr.check("null file", result1);
+
     Map<String, Object> map = new HashMap<>();
     map.put("file1", new FileSystemResource(file1));
     String file2Content = "Hello EveryOne";
     File file2 = File.createTempFile("测试2", ".txt");
     FileUtils.writeStringToFile(file2, file2Content, StandardCharsets.UTF_8, false);
     map.put("file2", new FileSystemResource(file2));
-
-    String result1 = template.postForObject(cseUrlPrefix + "/upload1", new HttpEntity<>(new HashMap<>()), String.class);
-    TestMgr.check("null file", result1);
-
     String expect = String.format("%s:%s:%s\n" + "%s:%s:%s",
         file1.getName(),
         MediaType.TEXT_PLAIN,

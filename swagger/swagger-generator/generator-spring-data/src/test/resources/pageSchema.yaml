@@ -31,12 +31,24 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/PageString'
+          application/protobuf:
+            schema:
+              $ref: '#/components/schemas/PageString'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/PageString'
         x-name: page
       responses:
         "200":
           description: response of 200
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/PageString'
+            application/protobuf:
+              schema:
+                $ref: '#/components/schemas/PageString'
+            text/plain:
               schema:
                 $ref: '#/components/schemas/PageString'
 components:

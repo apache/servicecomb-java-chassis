@@ -116,7 +116,7 @@ public class RestServerCodecFilter implements ProviderFilter {
       return CompletableFuture.completedFuture(response);
     }
 
-    responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
+    responseEx.setContentType(produceProcessor.getName());
     try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
       produceProcessor.encodeResponse(output, response.getResult());
 

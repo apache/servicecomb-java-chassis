@@ -55,7 +55,7 @@ public class RequestAttributeAnnotationProcessor extends
   @Override
   public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       ParameterGenerator parameterGenerator, RequestAttribute annotation) {
-    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    parameterGenerator.setHttpParameterType(HttpParameterType.FORM);
     if (StringUtils.isNotEmpty(getParameterName(annotation))) {
       parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
     }

@@ -34,6 +34,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 
 @RequestMapping(path = "/")
 public class ProtoSchema implements ProtoSchemaIntf {
@@ -176,5 +177,10 @@ public class ProtoSchema implements ProtoSchemaIntf {
   @PostMapping(path = "/fieldNeedWrap")
   public FieldNeedWrap fieldNeedWrap(@RequestBody FieldNeedWrap fieldNeedWrap) {
     return fieldNeedWrap;
+  }
+
+  @PostMapping(path = "/testTextPlain", consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
+  public String testTextPlain(@RequestBody String fieldNeedWrap) {
+    return null;
   }
 }

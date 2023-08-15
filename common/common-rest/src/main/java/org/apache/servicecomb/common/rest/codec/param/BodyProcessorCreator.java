@@ -237,7 +237,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
   @Override
   public ParamValueProcessor create(String parameterName, RequestBody parameter, Type genericParamType) {
-    Schema model = parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema();
+    String mediaType = parameter.getContent().keySet().iterator().next();
+    Schema model = parameter.getContent().get(mediaType).getSchema();
     JavaType swaggerType = ConverterMgr.findJavaType(model.getType(), model.getFormat());
     boolean isString = swaggerType != null && swaggerType.getRawClass().equals(String.class);
 

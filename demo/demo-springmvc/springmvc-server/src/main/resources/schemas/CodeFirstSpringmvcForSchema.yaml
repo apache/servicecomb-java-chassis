@@ -41,6 +41,7 @@ paths:
         content:
           multipart/form-data:
             schema:
+              type: object
               properties:
                 file:
                   type: string
@@ -52,5 +53,10 @@ paths:
             application/json:
               schema:
                 type: boolean
-components:
-  schemas: {}
+            application/protobuf:
+              schema:
+                type: boolean
+            text/plain:
+              schema:
+                type: boolean
+components: {}
