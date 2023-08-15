@@ -59,7 +59,7 @@ public class TestApiOperation {
         responses = @ApiResponse(responseCode = "202",
             content = @Content(mediaType = MediaType.APPLICATION_JSON,
                 schema = @Schema(implementation = String.class)),
-            headers = @Header(name = "h1", schema = @Schema(type = "integer"))),
+            headers = @Header(name = "h1", schema = @Schema(implementation = Integer.class))),
         extensions = {@Extension(
             name = "x-tagA",
             properties = {@ExtensionProperty(name = "x-tagAExt", value = "value of tagAExt")})})
@@ -107,7 +107,7 @@ public class TestApiOperation {
     Assertions.assertEquals(Arrays.asList("tag1", "tag2"), operation.getTags());
 
     ApiResponses responseMap = operation.getResponses();
-    Assertions.assertEquals(1, responseMap.size());
+    Assertions.assertEquals(2, responseMap.size());
 
     io.swagger.v3.oas.models.responses.ApiResponse response = responseMap.get("202");
     Assertions.assertNotNull(response);

@@ -16,4 +16,3 @@
 #
 
 org.apache.servicecomb.swagger.generator.core.processor.annotation.OpenAPIDefinitionProcessor
-org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiResponsesClassProcessor

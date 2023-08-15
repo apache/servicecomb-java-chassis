@@ -51,12 +51,12 @@ public class TestOperationGenerator {
   private static class TestClass {
     @ApiResponse(responseCode = "200", description = "200 is ok............",
         content = @Content(mediaType = "application/json", schema = @Schema(name = "String")),
-        headers = @Header(name = "x-user-domain", schema = @Schema(name = "String")))
+        headers = @Header(name = "x-user-domain", schema = @Schema(implementation = String.class)))
     @Operation(summary = "value1", tags = {"tag1", "tag2"},
         responses = {
             @ApiResponse(responseCode = "200", headers =
-                {@Header(name = "x-user-name", schema = @Schema(name = "String")),
-                    @Header(name = "x-user-id", schema = @Schema(name = "String"))})},
+                {@Header(name = "x-user-name", schema = @Schema(implementation = String.class)),
+                    @Header(name = "x-user-id", schema = @Schema(implementation = String.class))})},
         extensions = {
             @Extension(name = "x-class-name", properties = @ExtensionProperty(value = "value", name = "key"))})
     public void responseThenApiOperation() {
@@ -64,14 +64,14 @@ public class TestOperationGenerator {
 
     @Operation(summary = "value1", tags = {"tag1", "tag2"},
         responses = {@ApiResponse(responseCode = "200", headers = {
-            @Header(name = "x-user-name", schema = @Schema(name = "String")),
-            @Header(name = "x-user-id", schema = @Schema(name = "String"))})},
+            @Header(name = "x-user-name", schema = @Schema(implementation = String.class)),
+            @Header(name = "x-user-id", schema = @Schema(implementation = String.class))})},
         extensions = {
             @Extension(name = "x-class-name", properties = {
                 @ExtensionProperty(value = "value", name = "key")})})
     @ApiResponse(responseCode = "200", description = "200 is ok............",
-        content = @Content(mediaType = "application/json", schema = @Schema(name = "String")),
-        headers = @Header(name = "x-user-domain", schema = @Schema(name = "String")))
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
+        headers = @Header(name = "x-user-domain", schema = @Schema(implementation = String.class)))
     public void apiOperationThenResponse() {
     }
 
@@ -106,10 +106,11 @@ public class TestOperationGenerator {
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
-    Assertions.assertEquals("response of 200", response.getDescription());
-    Assertions.assertNull(response.getHeaders().get("x-user-domain"));
+    Assertions.assertEquals("200 is ok............", response.getDescription());
+    Assertions.assertNotNull(response.getHeaders().get("x-user-domain"));
     Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
     Assertions.assertNotNull(swaggerOperation.getOperation().getExtensions().get("x-class-name"));
+    Assertions.assertNull(swaggerOperation.getOperation().getExtensions().get("x-not-exists"));
   }
 
   @Test
@@ -119,8 +120,8 @@ public class TestOperationGenerator {
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
     io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
-    Assertions.assertEquals("response of 200", response.getDescription());
-    Assertions.assertNull(response.getHeaders().get("x-user-domain"));
+    Assertions.assertEquals("200 is ok............", response.getDescription());
+    Assertions.assertNotNull(response.getHeaders().get("x-user-domain"));
     Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
     Assertions.assertNotNull(swaggerOperation.getOperation().getExtensions().get("x-class-name"));
   }

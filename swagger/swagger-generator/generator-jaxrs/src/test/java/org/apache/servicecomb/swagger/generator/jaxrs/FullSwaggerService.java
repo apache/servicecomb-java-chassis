@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -60,11 +61,16 @@ public class FullSwaggerService {
     return "Hello " + a + b + c + d + e;
   }
 
-  // TODO: should produces text/plain for string
-//  @Path("/textPlain")
-//  @GET
-//  @Produces(MediaType.TEXT_PLAIN)
-//  public String textPlain() {
-//    return null;
-//  }
+  @Path("/textPlain")
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
+  public String textPlain() {
+    return null;
+  }
+
+  @Path("/fileDownload")
+  @GET
+  public File fileDownload() {
+    return null;
+  }
 }

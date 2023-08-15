@@ -61,7 +61,7 @@ public class Echo {
 
   @POST
   @ApiResponse(content = {
-      @Content(schema = @Schema(type = "number", format = "int32"))}, responseCode = "200", description = "")
+      @Content(schema = @Schema(implementation = Integer.class))}, responseCode = "200", description = "")
   @Path("response")
   public Response response() {
     return null;

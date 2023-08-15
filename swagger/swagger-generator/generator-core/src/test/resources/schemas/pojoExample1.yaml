@@ -34,12 +34,21 @@ paths:
           application/protobuf:
             schema:
               $ref: '#/components/schemas/testMultiParameterBody'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/testMultiParameterBody'
         x-name: testMultiParameterBody
       responses:
         "200":
           description: response of 200
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/XXX'
+            application/protobuf:
+              schema:
+                $ref: '#/components/schemas/XXX'
+            text/plain:
               schema:
                 $ref: '#/components/schemas/XXX'
   /testOneParameter:
@@ -53,12 +62,21 @@ paths:
           application/protobuf:
             schema:
               $ref: '#/components/schemas/XXX'
+          text/plain:
+            schema:
+              $ref: '#/components/schemas/XXX'
         x-name: testType1
       responses:
         "200":
           description: response of 200
           content:
             application/json:
+              schema:
+                $ref: '#/components/schemas/XXX'
+            application/protobuf:
+              schema:
+                $ref: '#/components/schemas/XXX'
+            text/plain:
               schema:
                 $ref: '#/components/schemas/XXX'
 components:

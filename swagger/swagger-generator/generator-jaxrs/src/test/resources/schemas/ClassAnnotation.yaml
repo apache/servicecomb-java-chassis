@@ -39,6 +39,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/User'
   /testForm:
     post:
       operationId: testForm
@@ -58,6 +61,9 @@ paths:
             application/json:
               schema:
                 type: string
+            text/plain:
+              schema:
+                type: string
   /testString:
     post:
       operationId: testString
@@ -72,6 +78,9 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: string
+            text/plain:
               schema:
                 type: string
   /testUpload:
@@ -91,6 +100,9 @@ paths:
           description: response of 200
           content:
             application/json:
+              schema:
+                type: string
+            text/plain:
               schema:
                 type: string
 components:

@@ -40,25 +40,25 @@ public class TestApiResponse {
 
   interface ApiResponseAnnotation {
     @ApiResponse(
-        headers = {@Header(name = "k1", schema = @Schema(type = "integer", format = "int32")),
-            @Header(name = "k2", schema = @Schema(type = "string"))},
+        headers = {@Header(name = "k1", schema = @Schema(implementation = Integer.class)),
+            @Header(name = "k2", schema = @Schema(implementation = String.class))},
         responseCode = "200",
         description = "")
     void testApiResponseHeader();
 
     @ApiResponse(responseCode = "200",
-        headers = {@Header(name = "k1", schema = @Schema(type = "integer", format = "int32"))})
+        headers = {@Header(name = "k1", schema = @Schema(implementation = Integer.class))})
     void testResponseHeader();
 
     @ApiResponse(
-        content = @Content(schema = @Schema(type = "integer", format = "int32")),
+        content = @Content(schema = @Schema(implementation = Integer.class)),
         responseCode = "200",
         description = "msg")
     void testSingle();
 
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(type = "integer", format = "int32")), description = "msg1"),
-        @ApiResponse(responseCode = "301", content = @Content(schema = @Schema(type = "string")), description = "msg2")})
+        @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Integer.class)), description = "msg1"),
+        @ApiResponse(responseCode = "301", content = @Content(schema = @Schema(implementation = String.class)), description = "msg2")})
     void testMulti();
   }
 
@@ -98,7 +98,7 @@ public class TestApiResponse {
 
     property = response.getHeaders().get("k2");
     Assertions.assertEquals("string", property.getSchema().getType());
-    Assertions.assertEquals("", property.getSchema().getFormat());
+    Assertions.assertEquals(null, property.getSchema().getFormat());
   }
 
   @Test
@@ -122,6 +122,6 @@ public class TestApiResponse {
 
     response = swaggerOperation.getOperation().getResponses().get("301");
     Assertions.assertEquals("string", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getType());
-    Assertions.assertEquals("", response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getFormat());
+    Assertions.assertEquals(null, response.getContent().get(MediaType.APPLICATION_JSON).getSchema().getFormat());
   }
 }

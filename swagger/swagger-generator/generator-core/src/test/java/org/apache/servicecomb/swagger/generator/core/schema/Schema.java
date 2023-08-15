@@ -42,19 +42,19 @@ public class Schema {
   }
 
   @ApiResponse(headers = {@Header(name = "h",
-      schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string"))}, responseCode = "200", description = "")
+      schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = String.class))}, responseCode = "200", description = "")
   public void testApiResponse() {
 
   }
 
   @ApiResponse(headers = {@Header(name = "h",
-      schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string"))}, description = "")
+      schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = String.class))}, description = "")
   public void testApiOperation() {
 
   }
 
   @ApiResponse(headers = {@Header(name = "h",
-      schema = @io.swagger.v3.oas.annotations.media.Schema(type = "string"))})
+      schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = String.class))})
   public void testResponseHeader() {
 
   }

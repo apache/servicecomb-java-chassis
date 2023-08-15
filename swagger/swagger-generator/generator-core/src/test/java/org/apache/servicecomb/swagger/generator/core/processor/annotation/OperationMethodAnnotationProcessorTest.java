@@ -58,9 +58,10 @@ public class OperationMethodAnnotationProcessorTest {
     public void functionWithNoTag() {
     }
 
+    // mediaType will be ignored
     @Operation(summary = "testSingleMediaType",
         responses = {@ApiResponse(responseCode = "200", content = @Content(
-            mediaType = MediaType.APPLICATION_XML, schema = @Schema(implementation = String.class)))})
+            mediaType = MediaType.TEXT_PLAIN, schema = @Schema(implementation = String.class)))})
     public String testSingleMediaType(String input) {
       return input;
     }
@@ -76,7 +77,7 @@ public class OperationMethodAnnotationProcessorTest {
     }
 
     @Operation(summary = "testBlankMediaType",
-        responses = {@ApiResponse(content = @Content(mediaType = ""))},
+        responses = {@ApiResponse(responseCode = "200", content = @Content(mediaType = ""))},
         requestBody = @RequestBody(content = @Content(mediaType = "",
             schema = @Schema(implementation = String.class))))
     public String testBlankMediaType(String input) {
@@ -144,7 +145,7 @@ public class OperationMethodAnnotationProcessorTest {
   public void testMultiMediaType() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testMultiMediaType");
     MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().keySet(),
-        Matchers.contains(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE));
+        Matchers.contains(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN));
     MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().get("200").getContent().keySet(),
         Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
   }
@@ -156,7 +157,7 @@ public class OperationMethodAnnotationProcessorTest {
             .getRequestBody().getContent().get(MediaType.APPLICATION_JSON).getSchema().get$ref(),
         Matchers.equalTo(Components.COMPONENTS_SCHEMAS_REF + "testSingleMediaTypeBody"));
     MatcherAssert.assertThat(swaggerOperation.getOperation()
-            .getResponses().get("200").getContent().get(MediaType.APPLICATION_XML).getSchema().getType(),
+            .getResponses().get("200").getContent().get(MediaType.TEXT_PLAIN).getSchema().getType(),
         Matchers.equalTo("string"));
   }
 
@@ -164,9 +165,10 @@ public class OperationMethodAnnotationProcessorTest {
   public void testBlankMediaType() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
     MatcherAssert.assertThat(swaggerOperation.getOperation().getRequestBody().getContent().keySet(),
-        Matchers.contains(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE));
-    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses().getDefault().getContent().keySet(),
-        Matchers.contains(MediaType.APPLICATION_JSON));
+        Matchers.contains(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN));
+    MatcherAssert.assertThat(swaggerOperation.getOperation().getResponses()
+            .get(SwaggerConst.SUCCESS_KEY).getContent().keySet(),
+        Matchers.contains(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN));
   }
 
   @Test
