@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.http.client.common;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,13 +45,24 @@ public class AbstractAddressManagerTest {
 
   private static AbstractAddressManager addressManager3;
 
+  private static int index;
+
   @BeforeEach
-  public void setUp() {
+  public void setUp() throws NoSuchFieldException, IllegalAccessException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
     addressManager1 = new AbstractAddressManager(addresses);
     addressManager2 = new AbstractAddressManager("project", addresses);
     addressManager3 = new AbstractAddressManager(null, addresses);
+    Field addressManagerField = addressManager1.getClass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager1, 0);
+    addressManagerField = addressManager2.getClass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager2, 0);
+    addressManagerField = addressManager3.getClass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager3, 0);
   }
 
   @AfterEach

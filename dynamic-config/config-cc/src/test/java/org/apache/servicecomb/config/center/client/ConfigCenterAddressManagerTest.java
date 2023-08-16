@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config.center.client;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +37,17 @@ class ConfigCenterAddressManagerTest {
   private static ConfigCenterAddressManager addressManager2;
 
   @Test
-  public void addressManagerTest() {
+  public void addressManagerTest() throws NoSuchFieldException, IllegalAccessException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
     addressManager1 = new ConfigCenterAddressManager("project", addresses, new EventBus());
     addressManager2 = new ConfigCenterAddressManager(null, addresses, new EventBus());
+    Field addressManagerField = addressManager1.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager1, 0);
+    addressManagerField = addressManager2.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager2, 0);
 
     Assertions.assertNotNull(addressManager1);
     Assertions.assertNotNull(addressManager2);

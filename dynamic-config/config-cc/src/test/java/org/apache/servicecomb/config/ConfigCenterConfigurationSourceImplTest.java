@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config;
 
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,13 +31,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class ConfigCenterConfigurationSourceImplTest {
-
   @Test
-  void configAddressManagerTest() {
+  void configAddressManagerTest() throws IllegalAccessException, NoSuchFieldException {
     List<String> addresses = new ArrayList<>();
     addresses.add("http://127.0.0.1:30103");
     addresses.add("http://127.0.0.2:30103");
     ConfigCenterAddressManager addressManager = new ConfigCenterAddressManager("test", addresses, EventManager.getEventBus());
+    Field addressManagerField = addressManager.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager, 0);
     Assertions.assertNotNull(addressManager);
 
     String address = addressManager.address();
@@ -45,6 +48,9 @@ class ConfigCenterConfigurationSourceImplTest {
     Assertions.assertEquals("http://127.0.0.1:30103/v3/test", address);
 
     addressManager = new ConfigCenterAddressManager(null, addresses, EventManager.getEventBus());
+    addressManagerField = addressManager.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager, 0);
     address = addressManager.address();
     Assertions.assertEquals("http://127.0.0.2:30103/v3/default", address);
   }
