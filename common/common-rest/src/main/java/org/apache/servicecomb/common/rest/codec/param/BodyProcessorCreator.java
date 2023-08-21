@@ -79,6 +79,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
   private static final Object LOCK = new Object();
 
   public static class BodyProcessor implements ParamValueProcessor {
+    // Producer target type. For consumer, is null.
     protected JavaType targetType;
 
     protected Class<?> serialViewClass;
@@ -95,11 +96,12 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
     protected RequestBody requestBody;
 
-    public BodyProcessor(OperationMeta operationMeta, JavaType targetType, RequestBody parameter) {
-      if (!StringUtils.isEmpty((String) parameter.getExtensions()
+    public BodyProcessor(OperationMeta operationMeta, JavaType targetType, RequestBody requestBody) {
+      this.requestBody = requestBody;
+      if (!StringUtils.isEmpty((String) this.requestBody.getExtensions()
           .get(SwaggerConst.EXT_JSON_VIEW))) {
         try {
-          this.serialViewClass = Class.forName((String) parameter.getExtensions()
+          this.serialViewClass = Class.forName((String) this.requestBody.getExtensions()
               .get(SwaggerConst.EXT_JSON_VIEW));
         } catch (Throwable e) {
           //ignore
@@ -107,11 +109,10 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         }
       }
 
-      this.requestBody = new RequestBody();
       this.targetType = targetType;
-      this.isRequired = parameter.getRequired() != null && parameter.getRequired();
-      if (parameter.getContent() != null) {
-        supportedContentTypes.addAll(parameter.getContent().keySet());
+      this.isRequired = this.requestBody.getRequired() != null && this.requestBody.getRequired();
+      if (this.requestBody.getContent() != null) {
+        supportedContentTypes.addAll(this.requestBody.getContent().keySet());
       }
 
       if (operationMeta != null) {
@@ -179,7 +180,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
       }
 
       if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
-        String messageName = (String) requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getExtensions()
+        String messageName = (String) requestBody.getExtensions()
             .get(SwaggerConst.EXT_BODY_NAME);
         ProtoMapper protoMapper = scopedProtobufSchemaManager
             .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
@@ -240,7 +241,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
      */
     private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
       if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
-        String messageName = (String) requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getExtensions()
+        String messageName = (String) requestBody.getExtensions()
             .get(SwaggerConst.EXT_BODY_NAME);
         ProtoMapper protoMapper = scopedProtobufSchemaManager
             .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
@@ -248,7 +249,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
                 requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getSchema());
         RootSerializer serializer = protoMapper.getSerializerSchemaManager()
             .createRootSerializer(protoMapper.getProto().getMessage(messageName),
-                targetType);
+                Object.class);
         Map<String, Object> bodyArg = new HashMap<>(1);
         bodyArg.put("value", arg);
         return new BufferImpl().appendBytes(serializer.serialize(bodyArg));
