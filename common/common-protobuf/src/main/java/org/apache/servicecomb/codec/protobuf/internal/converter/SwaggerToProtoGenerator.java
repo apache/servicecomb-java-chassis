@@ -79,22 +79,19 @@ public class SwaggerToProtoGenerator {
   public Proto convert() {
     convertDefinitions();
     convertOperations();
-    for (; ; ) {
+    do {
       List<Runnable> oldPending = pending;
       pending = new ArrayList<>();
       for (Runnable runnable : oldPending) {
         runnable.run();
       }
-      if (pending.isEmpty()) {
-        break;
-      }
-    }
+    } while (!pending.isEmpty());
 
     return createProto();
   }
 
   public static String escapePackageName(String name) {
-    return name.replaceAll("[\\-\\:]", "_");
+    return name.replaceAll("[\\-:]", "_");
   }
 
   public static String escapeMessageName(String name) {
@@ -102,10 +99,7 @@ public class SwaggerToProtoGenerator {
   }
 
   public static boolean isValidEnum(String name) {
-    if (name.contains(".") || name.contains("-")) {
-      return false;
-    }
-    return true;
+    return !name.contains(".") && !name.contains("-");
   }
 
   private void convertDefinitions() {
@@ -272,18 +266,14 @@ public class SwaggerToProtoGenerator {
     String key = swaggerType + ":" + swaggerFmt;
     return switch (key) {
       case "boolean:null" -> "bool";
-      // there is no int8/int16 in protobuf
-      case "integer:null" -> "int64";
-      case "integer:int8", "integer:int16", "integer:int32" -> "int32";
-      case "integer:int64" -> "int64";
-      case "number:null" -> "double";
+      case "integer:null", "integer:int64" -> "int64";
+      case "integer:int32" -> "int32";
+      case "number:null", "number:double" -> "double";
       case "number:float" -> "float";
-      case "number:double" -> "double";
       case "string:null" -> "string";
-      case "string:byte" -> "bytes"; // LocalDate
-      case "string:date", "string:date-time" -> // Date
-          "int64";
-      case "file:null" -> throw new IllegalStateException("not support swagger type: " + swaggerType);
+      case "string:byte" -> "bytes";
+      case "string:date", "string:date-time" -> "int64";
+      case "string:binary" -> throw new IllegalArgumentException("proto buffer not support file upload/download");
       default -> null;
     };
   }

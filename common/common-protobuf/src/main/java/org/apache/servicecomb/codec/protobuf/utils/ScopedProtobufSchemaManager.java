@@ -19,14 +19,18 @@ package org.apache.servicecomb.codec.protobuf.utils;
 
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.SwaggerToProtoGenerator;
+import org.apache.servicecomb.codec.protobuf.schema.SchemaToProtoGenerator;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 
 import io.protostuff.compiler.model.Proto;
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
 /**
  * Manage swagger -> protoBuffer mappings.
@@ -35,8 +39,45 @@ import io.swagger.v3.oas.models.OpenAPI;
  * for each MicroserviceMeta.
  */
 public class ScopedProtobufSchemaManager {
+  static class SchemaKey {
+    String schemaId;
+
+    Schema<?> schema;
+
+    int hashCode = -1;
+
+    SchemaKey(String schemaId, Schema<?> schema) {
+      this.schemaId = schemaId;
+      this.schema = schema;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      SchemaKey other = (SchemaKey) o;
+      return StringUtils.equals(schemaId, other.schemaId)
+          && SwaggerUtils.schemaEquals(schema, other.schema);
+    }
+
+    @Override
+    public int hashCode() {
+      if (hashCode != -1) {
+        return hashCode;
+      }
+      hashCode = schemaId.hashCode() ^ SwaggerUtils.schemaHashCode(schema);
+      return hashCode;
+    }
+  }
+
   // Because this class belongs to each SchemaMeta, the key is the schema id.
   private final Map<String, ProtoMapper> mapperCache = new ConcurrentHashMapEx<>();
+
+  private final Map<SchemaKey, ProtoMapper> schemaMapperCache = new ConcurrentHashMapEx<>();
 
   public ScopedProtobufSchemaManager() {
 
@@ -50,6 +91,20 @@ public class ScopedProtobufSchemaManager {
       OpenAPI swagger = schemaMeta.getSwagger();
       SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator(schemaMeta.getMicroserviceQualifiedName(),
           swagger);
+      Proto proto = generator.convert();
+      ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
+      return protoMapperFactory.create(proto);
+    });
+  }
+
+  /**
+   * get the ProtoMapper from Schema
+   */
+  public ProtoMapper getOrCreateProtoMapper(OpenAPI openAPI, String schemaId, String name, Schema<?> schema) {
+    SchemaKey schemaKey = new SchemaKey(schemaId, schema);
+    return schemaMapperCache.computeIfAbsent(schemaKey, key -> {
+      SchemaToProtoGenerator generator = new SchemaToProtoGenerator("scb.schema", openAPI,
+          key.schema, name);
       Proto proto = generator.convert();
       ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
       return protoMapperFactory.create(proto);

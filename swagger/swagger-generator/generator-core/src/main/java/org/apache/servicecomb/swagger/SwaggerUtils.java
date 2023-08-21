@@ -239,7 +239,7 @@ public final class SwaggerUtils {
           if (!componentSchemas.containsKey(entry.getKey())) {
             componentSchemas.put(entry.getKey(), entry.getValue());
           } else {
-            if (!entry.getValue().equals(componentSchemas.get(entry.getKey()))) {
+            if (!schemaEquals(entry.getValue(), componentSchemas.get(entry.getKey()))) {
               throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
             }
           }
@@ -248,6 +248,65 @@ public final class SwaggerUtils {
       swagger.getComponents().setSchemas(componentSchemas);
     }
     return resolvedSchema.schema;
+  }
+
+  // swagger api equals method will compare Map address(extensions)
+  // and is not applicable for usage.
+  public static int schemaHashCode(Schema<?> schema) {
+    int result = schema.getType() != null ? schema.getType().hashCode() : 0;
+    result = result ^ (schema.getFormat() != null ? schema.getFormat().hashCode() : 0);
+    result = result ^ (schema.getName() != null ? schema.getName().hashCode() : 0);
+    result = result ^ (schema.get$ref() != null ? schema.get$ref().hashCode() : 0);
+    result = result ^ (schema.getItems() != null ? schemaHashCode(schema.getItems()) : 0);
+    result = result ^ (schema.getAdditionalItems() != null ? schemaHashCode(schema.getAdditionalItems()) : 0);
+    result = result ^ (schema.getProperties() != null ? propertiesHashCode(schema.getProperties()) : 0);
+    return result;
+  }
+
+  private static int propertiesHashCode(Map<String, Schema> properties) {
+    int result = 0;
+    for (Entry<String, Schema> entry : properties.entrySet()) {
+      result = result ^ (entry.getKey().hashCode() ^ schemaHashCode(entry.getValue()));
+    }
+    return result;
+  }
+
+  // swagger api equals method will compare Map address(extensions)
+  // and is not applicable for usage.
+  public static boolean schemaEquals(Schema<?> schema1, Schema<?> schema2) {
+    if (schema1 == null && schema2 == null) {
+      return true;
+    }
+    if (schema1 == null || schema2 == null) {
+      return false;
+    }
+    return StringUtils.equals(schema1.getType(), schema2.getType())
+        && StringUtils.equals(schema1.getFormat(), schema2.getFormat())
+        && StringUtils.equals(schema1.getName(), schema2.getName())
+        && StringUtils.equals(schema1.get$ref(), schema2.get$ref())
+        && schemaEquals(schema1.getItems(), schema2.getItems())
+        && schemaEquals(schema1.getAdditionalItems(), schema2.getAdditionalItems())
+        && propertiesEquals(schema1.getProperties(), schema2.getProperties());
+  }
+
+  public static boolean propertiesEquals(Map<String, Schema> properties1, Map<String, Schema> properties2) {
+    if (properties1 == null && properties2 == null) {
+      return true;
+    }
+    if (properties1 == null || properties2 == null) {
+      return false;
+    }
+    if (properties1.size() != properties2.size()) {
+      return false;
+    }
+    boolean result = true;
+    for (String key : properties1.keySet()) {
+      if (!schemaEquals(properties1.get(key), properties2.get(key))) {
+        result = false;
+        break;
+      }
+    }
+    return result;
   }
 
   public static Schema getSchema(OpenAPI swagger, String ref) {
@@ -310,11 +369,6 @@ public final class SwaggerUtils {
     return (T) vendorExtensions.get(key);
   }
 
-  public static boolean isBean(RequestBody body) {
-    MediaType type = body.getContent().values().iterator().next();
-    return type.getSchema().get$ref() != null;
-  }
-
   public static boolean isBean(Type type) {
     if (type == null) {
       return false;
@@ -359,23 +413,6 @@ public final class SwaggerUtils {
           v.getContent().addMediaType(produce, new MediaType());
         }
       });
-    }
-  }
-
-  public static void updateConsumes(Operation operation, String[] consumes) {
-    if (consumes == null || consumes.length == 0) {
-      return;
-    }
-    if (operation.getRequestBody() == null) {
-      operation.setRequestBody(new RequestBody());
-    }
-    if (operation.getRequestBody().getContent() == null) {
-      operation.getRequestBody().setContent(new Content());
-    }
-    for (String consume : consumes) {
-      if (operation.getRequestBody().getContent().get(consume) == null) {
-        operation.getRequestBody().getContent().addMediaType(consume, new MediaType());
-      }
     }
   }
 
