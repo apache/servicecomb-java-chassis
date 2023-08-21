@@ -119,7 +119,7 @@ public class URLPathBuilderTest {
     Parameter parameter = constructor.construct();
     parameter.setName(paramName);
     parameter.setSchema(new Schema());
-    paramMap.put(paramName, new RestParam(parameter, paramType));
+    paramMap.put(paramName, new RestParam(null, parameter, paramType));
   }
 
   interface ParameterConstructor {

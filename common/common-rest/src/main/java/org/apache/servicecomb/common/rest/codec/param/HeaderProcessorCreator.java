@@ -23,6 +23,7 @@ import java.util.Enumeration;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +104,8 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parame
   }
 
   @Override
-  public ParamValueProcessor create(String parameterName, Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(OperationMeta operationMeta,
+      String parameterName, Parameter parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new HeaderProcessor((HeaderParameter) parameter, targetType);

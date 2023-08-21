@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
@@ -100,7 +101,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
   }
 
   @Override
-  public ParamValueProcessor create(String paramName, RequestBody parameter, Type genericParamType) {
+  public ParamValueProcessor create(OperationMeta operationMeta,
+      String paramName, RequestBody parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
 

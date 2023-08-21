@@ -101,13 +101,13 @@ public class TestPath {
     Parameter pathParameter = new PathParameter();
     pathParameter.setName("id");
     pathParameter.setSchema(new Schema<>());
-    RestParam oRestParam = new RestParam(pathParameter, int.class);
+    RestParam oRestParam = new RestParam(null, pathParameter, int.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     Parameter queryParameter = new QueryParameter();
     queryParameter.setName("q");
     queryParameter.setSchema(new Schema<>());
-    oRestParam = new RestParam(queryParameter, String.class);
+    oRestParam = new RestParam(null, queryParameter, String.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     URLPathBuilder oURLPathBuilder = new URLPathBuilder("/root/{id}", paramMap);
@@ -124,7 +124,7 @@ public class TestPath {
 
     Parameter parameter = new QueryParameter();
     parameter.setSchema(new Schema<>());
-    RestParam restParam = new RestParam(parameter, String.class);
+    RestParam restParam = new RestParam(null, parameter, String.class);
     RestParam spy = Mockito.spy(restParam);
     Mockito.when(spy.getParamName()).thenReturn("queryVar");
     QueryVarParamWriter writer = new QueryVarParamWriter(spy);

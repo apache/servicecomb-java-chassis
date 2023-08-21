@@ -41,7 +41,7 @@ public class TestFormProcessorCreator {
     p.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).setSchema(new Schema());
     p.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().setProperties(new HashMap<>());
 
-    ParamValueProcessor processor = creator.create("p1", p, String.class);
+    ParamValueProcessor processor = creator.create(null, "p1", p, String.class);
 
     Assertions.assertEquals(FormProcessor.class, processor.getClass());
   }

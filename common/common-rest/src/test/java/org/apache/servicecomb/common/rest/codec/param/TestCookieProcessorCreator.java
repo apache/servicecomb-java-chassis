@@ -32,7 +32,7 @@ public class TestCookieProcessorCreator {
     CookieParameter p = new CookieParameter();
     p.setName("p1");
     p.setSchema(new Schema());
-    ParamValueProcessor processor = creator.create(p.getName(), p, String.class);
+    ParamValueProcessor processor = creator.create(null, p.getName(), p, String.class);
 
     Assertions.assertEquals(CookieProcessor.class, processor.getClass());
   }

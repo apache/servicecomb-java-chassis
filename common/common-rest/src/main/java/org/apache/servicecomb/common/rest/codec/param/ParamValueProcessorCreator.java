@@ -19,8 +19,11 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
 
+import org.apache.servicecomb.core.definition.OperationMeta;
+
 public interface ParamValueProcessorCreator<T> {
-  default ParamValueProcessor create(String paramName, T parameter, Type genericParamType) {
+  default ParamValueProcessor create(OperationMeta operationMeta, String paramName, T parameter,
+      Type genericParamType) {
     throw new IllegalStateException("not implemented");
   }
 }

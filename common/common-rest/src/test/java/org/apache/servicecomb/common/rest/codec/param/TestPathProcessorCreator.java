@@ -34,7 +34,7 @@ public class TestPathProcessorCreator {
     parameter.setName("path");
     parameter.setSchema(new Schema());
 
-    ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
+    ParamValueProcessor processor = creator.create(null, parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(PathProcessor.class, processor.getClass());
   }

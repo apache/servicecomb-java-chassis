@@ -42,7 +42,7 @@ public class TestBodyProcessorCreator {
     param.getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).setSchema(new Schema());
     param.setExtensions(new HashMap<>());
 
-    ParamValueProcessor processor = creator.create(null, param, String.class);
+    ParamValueProcessor processor = creator.create(null, null, param, String.class);
 
     Assertions.assertEquals(BodyProcessor.class, processor.getClass());
   }
@@ -57,7 +57,7 @@ public class TestBodyProcessorCreator {
     param.getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE).setSchema(new Schema());
     param.addExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
 
-    ParamValueProcessor processor = creator.create(null, param, String.class);
+    ParamValueProcessor processor = creator.create(null, null, param, String.class);
 
     Assertions.assertEquals(RawJsonBodyProcessor.class, processor.getClass());
   }

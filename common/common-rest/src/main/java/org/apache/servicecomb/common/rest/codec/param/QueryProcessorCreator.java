@@ -24,6 +24,7 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecsUtils;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -129,7 +130,8 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator<Paramet
   }
 
   @Override
-  public ParamValueProcessor create(String parameterName, Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(OperationMeta operationMeta,
+      String parameterName, Parameter parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new QueryProcessor((QueryParameter) parameter, targetType);

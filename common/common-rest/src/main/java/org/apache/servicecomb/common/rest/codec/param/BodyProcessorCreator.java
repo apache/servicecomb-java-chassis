@@ -21,16 +21,26 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.entity.ContentType;
+import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -43,7 +53,7 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
@@ -56,6 +66,8 @@ import jakarta.ws.rs.core.Response.Status;
 public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestBody> {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
 
+  public static final String EXT_ID = "protobuf";
+
   public static final String PARAM_TYPE = "body";
 
   private static final JavaType OBJECT_TYPE = SimpleType.constructUnsafe(Object.class);
@@ -64,6 +76,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
   private static final boolean decodeAsObject = DynamicPropertyFactory.getInstance()
       .getBooleanProperty("servicecomb.rest.parameter.decodeAsObject", false).get();
 
+  private static final Object LOCK = new Object();
+
   public static class BodyProcessor implements ParamValueProcessor {
     protected JavaType targetType;
 
@@ -71,21 +85,57 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
     protected boolean isRequired;
 
-    public BodyProcessor(JavaType targetType, boolean isString, boolean isRequired) {
-      this(targetType, null, isString, isRequired);
-    }
+    protected OpenAPI openAPI;
 
-    public BodyProcessor(JavaType targetType, String serialViewClass, boolean isString, boolean isRequired) {
-      if (!StringUtils.isEmpty(serialViewClass)) {
+    protected ScopedProtobufSchemaManager scopedProtobufSchemaManager;
+
+    protected List<String> supportedContentTypes = new ArrayList<>();
+
+    protected OperationMeta operationMeta;
+
+    protected RequestBody requestBody;
+
+    public BodyProcessor(OperationMeta operationMeta, JavaType targetType, RequestBody parameter) {
+      if (!StringUtils.isEmpty((String) parameter.getExtensions()
+          .get(SwaggerConst.EXT_JSON_VIEW))) {
         try {
-          this.serialViewClass = Class.forName(serialViewClass);
+          this.serialViewClass = Class.forName((String) parameter.getExtensions()
+              .get(SwaggerConst.EXT_JSON_VIEW));
         } catch (Throwable e) {
           //ignore
           LOGGER.warn("Failed to create body processor {}, annotation @JsonView may be invalid", serialViewClass, e);
         }
       }
+
+      this.requestBody = new RequestBody();
       this.targetType = targetType;
-      this.isRequired = isRequired;
+      this.isRequired = parameter.getRequired() != null && parameter.getRequired();
+      if (parameter.getContent() != null) {
+        supportedContentTypes.addAll(parameter.getContent().keySet());
+      }
+
+      if (operationMeta != null) {
+        this.operationMeta = operationMeta;
+        this.openAPI = operationMeta.getSchemaMeta().getSwagger();
+        if (supportedContentTypes.contains(SwaggerConst.PROTOBUF_TYPE)) {
+          this.scopedProtobufSchemaManager = getOrCreateScopedProtobufSchemaManager(
+              operationMeta.getMicroserviceMeta());
+        }
+      }
+    }
+
+    private ScopedProtobufSchemaManager getOrCreateScopedProtobufSchemaManager(MicroserviceMeta microserviceMeta) {
+      ScopedProtobufSchemaManager scopedProtobufSchemaManager = microserviceMeta.getExtData(EXT_ID);
+      if (scopedProtobufSchemaManager == null) {
+        synchronized (LOCK) {
+          scopedProtobufSchemaManager = microserviceMeta.getExtData(EXT_ID);
+          if (scopedProtobufSchemaManager == null) {
+            scopedProtobufSchemaManager = new ScopedProtobufSchemaManager();
+            microserviceMeta.putExtData(EXT_ID, scopedProtobufSchemaManager);
+          }
+        }
+      }
+      return scopedProtobufSchemaManager;
     }
 
     @Override
@@ -109,10 +159,9 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
       }
 
       // edge support convert from form-data or x-www-form-urlencoded to json automatically
-      String contentType = request.getContentType();
-      contentType = contentType == null ? "" : contentType.toLowerCase(Locale.US);
-      if (contentType.startsWith(MediaType.MULTIPART_FORM_DATA)
-          || contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED)) {
+      String contentType = parseContentType(request);
+      if (contentType.equals(MediaType.MULTIPART_FORM_DATA)
+          || contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
         return convertValue(request.getParameterMap(), targetType);
       }
 
@@ -124,10 +173,25 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return null;
       }
 
-      if (!contentType.isEmpty() && !contentType.startsWith(MediaType.APPLICATION_JSON)) {
-        // TODO: we should consider body encoding
-        return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+      if (!supportedContentTypes.contains(contentType)) {
+        throw new IllegalArgumentException(String.format("operation %s not support content-type %s",
+            operationMeta.getSchemaQualifiedName(), contentType));
       }
+
+      if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
+        String messageName = (String) requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getExtensions()
+            .get(SwaggerConst.EXT_BODY_NAME);
+        ProtoMapper protoMapper = scopedProtobufSchemaManager
+            .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
+                messageName,
+                requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getSchema());
+        RootDeserializer<PropertyWrapper<Object>> deserializer = protoMapper.getDeserializerSchemaManager()
+            .createRootDeserializer(protoMapper.getProto().getMessage(messageName), targetType);
+        PropertyWrapper<Object> result = deserializer.deserialize(inputStream.readAllBytes());
+        return result.getValue();
+      }
+
+      // For application/json and text/plain
       try {
         ObjectReader reader = serialViewClass != null
             ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
@@ -147,6 +211,21 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
       }
     }
 
+    private String parseContentType(HttpServletRequest request) {
+      String type = request.getContentType();
+      if (StringUtils.isEmpty(type)) {
+        if (supportedContentTypes.size() == 0) {
+          throw new IllegalArgumentException("operation do not have any content type support.");
+        }
+        if (supportedContentTypes.contains(MediaType.APPLICATION_JSON)) {
+          return MediaType.APPLICATION_JSON;
+        }
+        return supportedContentTypes.get(0);
+      }
+      ContentType contentType = ContentType.parse(type);
+      return contentType.getMimeType();
+    }
+
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       ensureContentType(clientRequest);
@@ -160,13 +239,22 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
      * Deserialize body object into body buffer, according to the Content-Type.
      */
     private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
-      if (MediaType.TEXT_PLAIN.equals(contentType)) {
-        if (!(arg instanceof String)) {
-          throw new IllegalArgumentException("Content-Type is text/plain while arg type is not String");
-        }
-        return new BufferImpl().appendBytes(((String) arg).getBytes(StandardCharsets.UTF_8));
+      if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
+        String messageName = (String) requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getExtensions()
+            .get(SwaggerConst.EXT_BODY_NAME);
+        ProtoMapper protoMapper = scopedProtobufSchemaManager
+            .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
+                messageName,
+                requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getSchema());
+        RootSerializer serializer = protoMapper.getSerializerSchemaManager()
+            .createRootSerializer(protoMapper.getProto().getMessage(messageName),
+                targetType);
+        Map<String, Object> bodyArg = new HashMap<>(1);
+        bodyArg.put("value", arg);
+        return new BufferImpl().appendBytes(serializer.serialize(bodyArg));
       }
 
+      // For application/json and text/plain
       try (BufferOutputStream output = new BufferOutputStream()) {
         RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
         return output.getBuffer();
@@ -194,13 +282,28 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
     }
   }
 
-  public static class RawJsonBodyProcessor extends BodyProcessor {
-    public RawJsonBodyProcessor(JavaType targetType, boolean isString, boolean isRequired) {
-      this(targetType, null, isString, isRequired);
+  public static class RawJsonBodyProcessor implements ParamValueProcessor {
+    protected JavaType targetType;
+
+    protected Class<?> serialViewClass;
+
+    protected boolean isRequired;
+
+    public RawJsonBodyProcessor(JavaType targetType, boolean isRequired) {
+      this(targetType, null, isRequired);
     }
 
-    public RawJsonBodyProcessor(JavaType targetType, String serialViewClass, boolean isString, boolean isRequired) {
-      super(targetType, serialViewClass, isString, isRequired);
+    public RawJsonBodyProcessor(JavaType targetType, String serialViewClass, boolean isRequired) {
+      if (!StringUtils.isEmpty(serialViewClass)) {
+        try {
+          this.serialViewClass = Class.forName(serialViewClass);
+        } catch (Throwable e) {
+          //ignore
+          LOGGER.warn("Failed to create body processor {}, annotation @JsonView may be invalid", serialViewClass, e);
+        }
+      }
+      this.targetType = targetType;
+      this.isRequired = isRequired;
     }
 
     @Override
@@ -215,7 +318,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return null;
       }
 
-      // TODO: we should consider body encoding
       return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 
@@ -227,7 +329,17 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return;
       }
 
-      super.setValue(clientRequest, arg);
+      throw new IllegalArgumentException("@RawJsonRequestBody only supports string type.");
+    }
+
+    @Override
+    public String getParameterPath() {
+      return "";
+    }
+
+    @Override
+    public String getProcessorType() {
+      return PARAM_TYPE;
     }
   }
 
@@ -236,23 +348,17 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
   }
 
   @Override
-  public ParamValueProcessor create(String parameterName, RequestBody parameter, Type genericParamType) {
-    String mediaType = parameter.getContent().keySet().iterator().next();
-    Schema model = parameter.getContent().get(mediaType).getSchema();
-    JavaType swaggerType = ConverterMgr.findJavaType(model.getType(), model.getFormat());
-    boolean isString = swaggerType != null && swaggerType.getRawClass().equals(String.class);
-
+  public ParamValueProcessor create(OperationMeta operationMeta, String parameterName,
+      RequestBody parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     boolean rawJson = SwaggerUtils.isRawJsonType(parameter);
     if (rawJson) {
       return new RawJsonBodyProcessor(targetType, (String) parameter.getExtensions()
-          .get(SwaggerConst.EXT_JSON_VIEW), isString,
+          .get(SwaggerConst.EXT_JSON_VIEW),
           parameter.getRequired() != null && parameter.getRequired());
     }
 
-    return new BodyProcessor(targetType, (String) parameter.getExtensions()
-        .get(SwaggerConst.EXT_JSON_VIEW), isString,
-        parameter.getRequired() != null && parameter.getRequired());
+    return new BodyProcessor(operationMeta, targetType, parameter);
   }
 }
