@@ -34,7 +34,7 @@
     <activation.version>1.2.2</activation.version>
     <archaius.version>0.7.7</archaius.version>
     <asciidoctorj.version>2.5.3</asciidoctorj.version>
-    <aspectj.version>1.9.19</aspectj.version>
+    <aspectj.version>1.9.20</aspectj.version>
     <assertj.version>3.24.2</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <brave.version>5.16.0</brave.version>
