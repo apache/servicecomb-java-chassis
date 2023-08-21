@@ -60,7 +60,7 @@ public final class RestCodec {
                 param.getParamName(),
                 param.getParamProcessor().getProcessorType(),
                 e.getMessage());
-        throw new InvocationException(Status.BAD_REQUEST, message);
+        throw new InvocationException(Status.BAD_REQUEST, message, e);
       }
     }
 

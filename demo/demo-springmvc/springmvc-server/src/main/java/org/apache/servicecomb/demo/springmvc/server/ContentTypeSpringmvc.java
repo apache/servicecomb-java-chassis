@@ -17,7 +17,11 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
+import java.util.Arrays;
+
+import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -42,5 +46,14 @@ public class ContentTypeSpringmvc {
       consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
   public String testRequestMapping(@RequestBody String name, HttpServletRequest request) {
     return String.format("testRequestMapping: name=[%s], request content-type=[%s]", name, request.getContentType());
+  }
+
+  // TODO: 注册中心不会覆盖契约
+  @RequestMapping(path = "/testProtoBuffer", method = RequestMethod.POST,
+      consumes = SwaggerConst.PROTOBUF_TYPE, produces = MediaType.APPLICATION_JSON)
+  public String testProtoBuffer(@RequestBody User user, HttpServletRequest request) {
+    return String.format("testRequestMapping: name=[%s], request content-type=[%s]",
+        user.getName() + ":" + user.getIndex() + ":" +
+            Arrays.toString(user.getNames()), request.getContentType());
   }
 }
