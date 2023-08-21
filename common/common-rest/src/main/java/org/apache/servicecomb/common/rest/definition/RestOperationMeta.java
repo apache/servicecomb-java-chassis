@@ -108,7 +108,7 @@ public class RestOperationMeta {
         Parameter parameter = operation.getParameters().get(swaggerParameterIdx);
         Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
             .getSwaggerParameterTypes().get(parameter.getName()) : null;
-        RestParam param = new RestParam(parameter, type);
+        RestParam param = new RestParam(operationMeta, parameter, type);
         addParam(param);
       }
     }
@@ -135,7 +135,7 @@ public class RestOperationMeta {
     Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
         .getSwaggerParameterTypes().get(name) : null;
     type = correctFormBodyType(operation.getRequestBody(), type);
-    RestParam param = new RestParam(name, operation.getRequestBody(), formData, type);
+    RestParam param = new RestParam(operationMeta, name, operation.getRequestBody(), formData, type);
     addParam(param);
   }
 

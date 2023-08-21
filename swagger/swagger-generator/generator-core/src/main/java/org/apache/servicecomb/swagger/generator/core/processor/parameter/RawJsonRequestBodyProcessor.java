@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
@@ -24,6 +26,8 @@ import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+
+import jakarta.ws.rs.core.MediaType;
 
 public class RawJsonRequestBodyProcessor extends
     SwaggerParameterAnnotationProcessor<RawJsonRequestBody> {
@@ -53,5 +57,7 @@ public class RawJsonRequestBodyProcessor extends
 
     parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
     parameterGenerator.getParameterGeneratorContext().setRawJson(true);
+    parameterGenerator.getParameterGeneratorContext().updateConsumes(Arrays.asList(MediaType.APPLICATION_JSON,
+        MediaType.TEXT_PLAIN));
   }
 }

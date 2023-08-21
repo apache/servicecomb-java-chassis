@@ -49,7 +49,7 @@ public class QueryVarParamWriterTest {
     parameter.setStyle(StyleEnum.FORM);
     parameter.setExplode(false);
     queryVarParamWriterCsv = new QueryVarParamWriter(
-        new RestParam(parameter, String[].class));
+        new RestParam(null, parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
@@ -57,13 +57,13 @@ public class QueryVarParamWriterTest {
     parameter.setStyle(StyleEnum.FORM);
     parameter.setExplode(true);
     queryVarParamWriterMulti = new QueryVarParamWriter(
-        new RestParam(parameter, String[].class));
+        new RestParam(null, parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
     parameter.setSchema(new Schema());
     queryVarParamWriterDefault = new QueryVarParamWriter(
-        new RestParam(parameter, String[].class));
+        new RestParam(null, parameter, String[].class));
   }
 
   @Test

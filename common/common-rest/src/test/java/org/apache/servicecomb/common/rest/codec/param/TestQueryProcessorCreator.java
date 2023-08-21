@@ -38,7 +38,7 @@ public class TestQueryProcessorCreator {
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
     parameter.setSchema(new Schema());
-    ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
+    ParamValueProcessor processor = creator.create(null, parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 
@@ -63,7 +63,7 @@ public class TestQueryProcessorCreator {
     parameter.setName("query");
     parameter.setSchema(new Schema());
 
-    ParamValueProcessor processor = creator.create(parameter.getName(), parameter, String.class);
+    ParamValueProcessor processor = creator.create(null, parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 

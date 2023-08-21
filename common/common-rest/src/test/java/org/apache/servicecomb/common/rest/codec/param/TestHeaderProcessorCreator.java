@@ -33,7 +33,7 @@ public class TestHeaderProcessorCreator {
     hp.setName("h1");
     hp.setSchema(new Schema());
 
-    ParamValueProcessor processor = creator.create(hp.getName(), hp, String.class);
+    ParamValueProcessor processor = creator.create(null, hp.getName(), hp, String.class);
 
     Assertions.assertEquals(HeaderProcessor.class, processor.getClass());
   }

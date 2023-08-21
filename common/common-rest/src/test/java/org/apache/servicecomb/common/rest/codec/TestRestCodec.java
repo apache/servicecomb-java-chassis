@@ -60,7 +60,7 @@ public class TestRestCodec {
     Parameter hp = new HeaderParameter();
     hp.setName("header");
     hp.setSchema(new Schema());
-    RestParam restParam = new RestParam(hp, int.class);
+    RestParam restParam = new RestParam(null, hp, int.class);
 
     restOperation = Mockito.mock(RestOperationMeta.class);
     paramList = new ArrayList<>();

@@ -26,6 +26,7 @@ import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessorCreator;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
+import org.apache.servicecomb.core.definition.OperationMeta;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -41,16 +42,17 @@ public class RestParam {
 
   protected String paramName;
 
-  public RestParam(Parameter parameter, Type genericParamType) {
+  public RestParam(OperationMeta operationMeta, Parameter parameter, Type genericParamType) {
     this.paramName = parameter.getName();
 
-    init(parameter, genericParamType);
+    init(operationMeta, parameter, genericParamType);
   }
 
-  public RestParam(String paramName, RequestBody parameter, boolean isForm, Type genericParamType) {
+  public RestParam(OperationMeta operationMeta,
+      String paramName, RequestBody parameter, boolean isForm, Type genericParamType) {
     this.paramName = paramName;
 
-    init(parameter, isForm, genericParamType);
+    init(operationMeta, parameter, isForm, genericParamType);
   }
 
 
@@ -66,15 +68,15 @@ public class RestParam {
     return paramName;
   }
 
-  protected void init(Parameter parameter, Type genericParamType) {
+  protected void init(OperationMeta operationMeta, Parameter parameter, Type genericParamType) {
     String paramType = parameter.getIn();
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(paramType);
 
-    this.setParamProcessor(creator.create(parameter.getName(), parameter, genericParamType));
+    this.setParamProcessor(creator.create(operationMeta, parameter.getName(), parameter, genericParamType));
   }
 
-  protected void init(RequestBody parameter, boolean isForm, Type genericParamType) {
+  protected void init(OperationMeta operationMeta, RequestBody parameter, boolean isForm, Type genericParamType) {
     ParamValueProcessorCreator creator;
     if (isForm) {
       creator =
@@ -84,7 +86,7 @@ public class RestParam {
           ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(BodyProcessorCreator.PARAM_TYPE);
     }
 
-    this.setParamProcessor(creator.create(this.paramName,
+    this.setParamProcessor(creator.create(operationMeta, this.paramName,
         parameter, genericParamType));
   }
 

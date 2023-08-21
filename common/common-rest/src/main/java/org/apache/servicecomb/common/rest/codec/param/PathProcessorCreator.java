@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -70,7 +71,8 @@ public class PathProcessorCreator implements ParamValueProcessorCreator<Paramete
   }
 
   @Override
-  public ParamValueProcessor create(String parameterName, Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(OperationMeta operationMeta,
+      String parameterName, Parameter parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new PathProcessor(parameterName, targetType, parameter.getSchema().getDefault(), true);
