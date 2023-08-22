@@ -144,12 +144,6 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
-              schema:
-                type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
               schema:
                 type: string
@@ -369,13 +363,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/User'
           text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -384,13 +375,10 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
-              schema:
-                type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
+              schema:
+                type: string
+            application/json:
               schema:
                 type: string
   /usingGetMapping/{targetName}:
@@ -414,13 +402,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/User'
           text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -429,13 +414,10 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
-              schema:
-                type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
+              schema:
+                type: string
+            application/json:
               schema:
                 type: string
   /usingPatchMapping/{targetName}:
@@ -459,13 +441,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/User'
           text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -474,13 +453,10 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
-              schema:
-                type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
+              schema:
+                type: string
+            application/json:
               schema:
                 type: string
   /usingPostMapping/{targetName}:
@@ -504,13 +480,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/User'
           text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -519,13 +492,10 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
-              schema:
-                type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
+              schema:
+                type: string
+            application/json:
               schema:
                 type: string
   /usingPutMapping/{targetName}:
@@ -549,13 +519,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/User'
           text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -564,13 +531,10 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
-              schema:
-                type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
+              schema:
+                type: string
+            application/json:
               schema:
                 type: string
   /usingRequestMapping/{targetName}:
@@ -594,13 +558,10 @@ paths:
           type: string
       requestBody:
         content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/protobuf:
-            schema:
-              $ref: '#/components/schemas/User'
           text/plain:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/json:
             schema:
               $ref: '#/components/schemas/User'
         required: true
@@ -609,13 +570,10 @@ paths:
         "200":
           description: response of 200
           content:
-            application/json:
-              schema:
-                type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
+              schema:
+                type: string
+            application/json:
               schema:
                 type: string
 components:

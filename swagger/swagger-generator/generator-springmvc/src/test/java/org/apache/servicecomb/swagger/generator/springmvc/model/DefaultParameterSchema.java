@@ -43,7 +43,7 @@ public class DefaultParameterSchema {
     return null;
   }
 
-  @RequestMapping(path = "testSingleMediaType", method = RequestMethod.POST, consumes = MediaType.APPLICATION_XML, produces = MediaType.APPLICATION_XML)
+  @RequestMapping(path = "testSingleMediaType", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
   public String testSingleMediaType(String input) {
     return input;
   }
@@ -55,7 +55,7 @@ public class DefaultParameterSchema {
     return input;
   }
 
-  @RequestMapping(path = "testBlankMediaType", method = RequestMethod.POST, consumes = "", produces = "")
+  @RequestMapping(path = "testBlankMediaType", method = RequestMethod.POST)
   public String testBlankMediaType(String input) {
     return input;
   }
