@@ -38,8 +38,7 @@ public class RestVertxProducerInvocationCreator extends RestProducerInvocationCr
 
   @Override
   protected void initTransportContext(Invocation invocation) {
-    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx,
-        produceProcessor);
+    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx);
     invocation.setTransportContext(transportContext);
     routingContext.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
   }

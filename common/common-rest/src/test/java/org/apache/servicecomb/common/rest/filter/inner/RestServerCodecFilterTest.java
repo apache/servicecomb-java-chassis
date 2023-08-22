@@ -20,14 +20,12 @@ package org.apache.servicecomb.common.rest.filter.inner;
 import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
 import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Endpoint;
@@ -43,9 +41,11 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,9 +54,14 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
 import io.vertx.core.MultiMap;
-import io.vertx.core.json.Json;
 import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.MediaType;
 
 public class RestServerCodecFilterTest {
   final RestServerCodecFilter codecFilter = new RestServerCodecFilter();
@@ -109,7 +114,6 @@ public class RestServerCodecFilterTest {
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
-    Mockito.when(transportContext.getProduceProcessor()).thenReturn(Mockito.mock(ProduceJsonProcessor.class));
     invocation = Mockito.spy(InvocationFactory.forProvider(endpoint, operationMeta, null));
   }
 
@@ -137,16 +141,25 @@ public class RestServerCodecFilterTest {
     Mockito.when(invocation.findResponseType(INTERNAL_SERVER_ERROR.getStatusCode()))
         .thenReturn(TypeFactory.defaultInstance().constructType(String.class));
 
-    Response response = codecFilter.onFilter(invocation, nextNode).get();
-
-    assertThat(response.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-    assertThat(Json.encode(response.getResult())).
-        isIn("{\"code\":\"SCB.50000000\",\"message\":\"Unexpected "
-            + "exception when processing null. mock encode request failed\"}");
+    Assertions.assertThrows(ExecutionException.class,
+        () -> codecFilter.onFilter(invocation, nextNode).get());
   }
 
   private void success_invocation() throws InterruptedException, ExecutionException {
     Mockito.when(invocation.getTransportContext()).thenReturn(transportContext);
+    HttpServletRequestEx requestExt = Mockito.mock(HttpServletRequestEx.class);
+    Mockito.when(invocation.getRequestEx()).thenReturn(requestExt);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Operation swaggerOperation = Mockito.mock(Operation.class);
+    Mockito.when(operationMeta.getSwaggerOperation()).thenReturn(swaggerOperation);
+    ApiResponses apiResponses = Mockito.mock(ApiResponses.class);
+    Mockito.when(swaggerOperation.getResponses()).thenReturn(apiResponses);
+    ApiResponse apiResponse = Mockito.mock(ApiResponse.class);
+    Mockito.when(apiResponses.get("200")).thenReturn(apiResponse);
+    Content content = new Content();
+    content.addMediaType(MediaType.APPLICATION_JSON, new io.swagger.v3.oas.models.media.MediaType());
+    content.get(MediaType.APPLICATION_JSON).setSchema(new StringSchema());
+    Mockito.when(apiResponse.getContent()).thenReturn(content);
     Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
     Mockito.when(invocation.findResponseType(INTERNAL_SERVER_ERROR.getStatusCode()))
         .thenReturn(TypeFactory.defaultInstance().constructType(String.class));

@@ -62,14 +62,15 @@ public class RestClientDecoder {
   }
 
   private ProduceProcessor safeFindProduceProcessor(Invocation invocation, Response response) {
-    RestClientTransportContext transportContext = invocation.getTransportContext();
-
     String contentType = extractContentType(response);
-    ProduceProcessor produceProcessor = transportContext.getRestOperationMeta().findProduceProcessor(contentType);
+    ProduceProcessor produceProcessor =
+        ProduceProcessorManager.INSTANCE.createProduceProcessor(invocation.getOperationMeta(), response.getStatusCode(),
+            contentType, null);
     if (produceProcessor != null) {
       return produceProcessor;
     }
 
+    RestClientTransportContext transportContext = invocation.getTransportContext();
     HttpClientRequest httpClientRequest = transportContext.getHttpClientRequest();
     LOGGER.warn(
         "operation={}, method={}, endpoint={}, uri={}, statusCode={}, reasonPhrase={}, response content-type={} is not supported in operation.",

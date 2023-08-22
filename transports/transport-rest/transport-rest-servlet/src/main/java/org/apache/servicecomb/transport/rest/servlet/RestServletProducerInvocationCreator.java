@@ -34,7 +34,7 @@ public class RestServletProducerInvocationCreator extends RestProducerInvocation
 
   @Override
   protected void initTransportContext(Invocation invocation) {
-    HttpTransportContext transportContext = new HttpTransportContext(requestEx, responseEx, produceProcessor);
+    HttpTransportContext transportContext = new HttpTransportContext(requestEx, responseEx);
     invocation.setTransportContext(transportContext);
   }
 }

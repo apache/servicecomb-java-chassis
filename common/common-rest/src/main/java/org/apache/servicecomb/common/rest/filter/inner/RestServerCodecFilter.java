@@ -31,6 +31,7 @@ import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
@@ -51,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
 import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
 
 public class RestServerCodecFilter implements ProviderFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServerCodecFilter.class);
@@ -100,7 +102,11 @@ public class RestServerCodecFilter implements ProviderFilter {
     invocation.onEncodeResponseStart(response);
 
     HttpTransportContext transportContext = invocation.getTransportContext();
-    ProduceProcessor produceProcessor = transportContext.getProduceProcessor();
+
+    // TODO: response support JsonView
+    ProduceProcessor produceProcessor = ProduceProcessorManager.INSTANCE
+        .createProduceProcessor(invocation.getOperationMeta(), response.getStatusCode(),
+            invocation.getRequestEx().getHeader(HttpHeaders.ACCEPT), null);
     HttpServletResponseEx responseEx = transportContext.getResponseEx();
     boolean download = isDownloadFileResponseType(invocation, response);
 

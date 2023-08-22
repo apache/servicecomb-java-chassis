@@ -22,8 +22,6 @@ import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import jakarta.ws.rs.core.HttpHeaders;
-
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
@@ -52,6 +50,7 @@ import org.mockito.Mockito;
 
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
+import jakarta.ws.rs.core.HttpHeaders;
 
 public class RestProducerInvocationCreatorTest {
 
@@ -113,43 +112,21 @@ public class RestProducerInvocationCreatorTest {
 
       assertThat(throwable.getStatusCode()).isEqualTo(NOT_FOUND.getStatusCode());
       assertThat(Json.encode(data)).isIn("{\"code\":\"SCB.00000002\",\"message\":\"Not Found\"}",
-              "{\"message\":\"Not Found\",\"code\":\"SCB.00000002\"}");
-    }
-  }
-
-  @Test
-  public void should_failed_when_accept_is_not_support() {
-    try (MockedStatic<ServicePathManager> mockedStatic = Mockito.mockStatic(ServicePathManager.class)) {
-      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(servicePathManager);
-      Mockito.when(requestEx.getHeader(HttpHeaders.ACCEPT)).thenReturn("test-type");
-      Mockito.when(restOperationMeta.ensureFindProduceProcessor(requestEx)).thenReturn(null);
-      Mockito.when(creator.locateOperation(microserviceMeta)).thenReturn(locator);
-      Mockito.when(locator.getOperation()).thenReturn(restOperationMeta);
-      Mockito.when(restOperationMeta.getOperationMeta()).thenReturn(operationMeta);
-      Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
-      Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
-      Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-
-      InvocationException throwable = (InvocationException) catchThrowable(() -> creator.createAsync().join());
-      CommonExceptionData data = (CommonExceptionData) throwable.getErrorData();
-
-      assertThat(throwable.getStatusCode()).isEqualTo(NOT_ACCEPTABLE.getStatusCode());
-      assertThat(Json.encode(data)).isIn("{\"code\":\"SCB.00000000\",\"message\":\"Accept test-type is not supported\"}",
-              "{\"message\":\"Accept test-type is not supported\",\"code\":\"SCB.00000000\"}");
+          "{\"message\":\"Not Found\",\"code\":\"SCB.00000002\"}");
     }
   }
 
   @Test
   public void should_save_requestEx_in_invocation_context() {
     try (MockedStatic<ServicePathManager> mockedStatic = Mockito.mockStatic(ServicePathManager.class)) {
-      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(servicePathManager);
+      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta))
+          .thenReturn(servicePathManager);
       Mockito.when(creator.locateOperation(microserviceMeta)).thenReturn(locator);
       Mockito.when(locator.getOperation()).thenReturn(restOperationMeta);
       Mockito.when(restOperationMeta.getOperationMeta()).thenReturn(operationMeta);
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.doNothing().when(creator).initProduceProcessor();
 
       Invocation invocation = creator.createAsync().join();
 
@@ -161,14 +138,14 @@ public class RestProducerInvocationCreatorTest {
   @Test
   public void should_save_path_var_map_in_requestEx() {
     try (MockedStatic<ServicePathManager> mockedStatic = Mockito.mockStatic(ServicePathManager.class)) {
-      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(servicePathManager);
+      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta))
+          .thenReturn(servicePathManager);
       Mockito.when(creator.locateOperation(microserviceMeta)).thenReturn(locator);
       Mockito.when(locator.getOperation()).thenReturn(restOperationMeta);
       Mockito.when(restOperationMeta.getOperationMeta()).thenReturn(operationMeta);
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.doNothing().when(creator).initProduceProcessor();
 
       creator.createAsync().join();
 
@@ -179,14 +156,14 @@ public class RestProducerInvocationCreatorTest {
   @Test
   public void should_merge_invocation_context_from_request() {
     try (MockedStatic<ServicePathManager> mockedStatic = Mockito.mockStatic(ServicePathManager.class)) {
-      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta)).thenReturn(servicePathManager);
+      mockedStatic.when(() -> ServicePathManager.getServicePathManager(microserviceMeta))
+          .thenReturn(servicePathManager);
       Mockito.when(creator.locateOperation(microserviceMeta)).thenReturn(locator);
       Mockito.when(locator.getOperation()).thenReturn(restOperationMeta);
       Mockito.when(restOperationMeta.getOperationMeta()).thenReturn(operationMeta);
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.doNothing().when(creator).initProduceProcessor();
       Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn("{\"k\":\"v\"}");
 
       Invocation invocation = creator.createAsync().join();
