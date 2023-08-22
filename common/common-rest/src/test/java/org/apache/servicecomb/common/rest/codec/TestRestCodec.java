@@ -27,6 +27,7 @@ import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -159,7 +160,7 @@ public class TestRestCodec {
       success = true;
     } catch (InvocationException e) {
       Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
-      Assertions.assertTrue(((String) e.getErrorData())
+      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage()
           .contains("Parameter is not valid for operation"));
     }
     Assertions.assertFalse(success);

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,7 +61,7 @@ public final class RestCodec {
                 param.getParamName(),
                 param.getParamProcessor().getProcessorType(),
                 e.getMessage());
-        throw new InvocationException(Status.BAD_REQUEST, message, e);
+        throw new InvocationException(Status.BAD_REQUEST, new CommonExceptionData(message), e);
       }
     }
 

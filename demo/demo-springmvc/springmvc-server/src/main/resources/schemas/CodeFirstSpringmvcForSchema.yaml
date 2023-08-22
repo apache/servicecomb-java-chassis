@@ -53,10 +53,4 @@ paths:
             application/json:
               schema:
                 type: boolean
-            application/protobuf:
-              schema:
-                type: boolean
-            text/plain:
-              schema:
-                type: boolean
 components: {}

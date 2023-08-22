@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
+import java.util.Arrays;
+
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -33,11 +35,12 @@ abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implemen
     if (requestMethod != null) {
       operationGenerator.setHttpMethod(requestMethod.name());
     }
-    // TODO: actually is no use to update consumes and produces
-    // Because they are system capabilities.
-//    Operation operation = operationGenerator.getOperation();
-//    SwaggerUtils.updateConsumes(operation, consumes);
-//    SwaggerUtils.updateProduces(operation, produces);
+    if (consumes.length > 0) {
+      operationGenerator.getOperationGeneratorContext().updateConsumes(Arrays.asList(consumes));
+    }
+    if (produces.length > 0) {
+      operationGenerator.getOperationGeneratorContext().updateProduces(Arrays.asList(produces));
+    }
   }
 
   protected void processPath(OperationGenerator operationGenerator, String[] paths) {

@@ -51,22 +51,20 @@ public class TestContentType {
     TestMgr.check(
         "testGlobalSetting: name=[from testGlobalSetting], request content-type=[" + MediaType.TEXT_PLAIN + "]",
         responseEntity.getBody());
-    // TODO: ContentTypeSpringmvc should generate consumes and produces TEXT_PLAIN, but now is JSON
-    // will fix later.
-//    TestMgr.check(MediaType.TEXT_PLAIN, extractContentType(responseEntity.getHeaders().getContentType()));
+    TestMgr.check(MediaType.TEXT_PLAIN, extractContentType(responseEntity.getHeaders().getContentType()));
   }
 
   private void testApiOperation() {
     HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    requestHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
     CseHttpEntity<String> requestEntity = new CseHttpEntity<>("from testApiOperation", requestHeaders);
     ResponseEntity<String> responseEntity = restTemplate
         .exchange("cse://springmvc/contentTypeSpringmvc/testApiOperation", HttpMethod.POST,
             requestEntity, String.class);
     TestMgr.check(
-        "testApiOperation: name=[from testApiOperation], request content-type=[" + MediaType.APPLICATION_JSON + "]",
+        "testApiOperation: name=[from testApiOperation], request content-type=[" + MediaType.TEXT_PLAIN + "]",
         responseEntity.getBody());
-    TestMgr.check(MediaType.APPLICATION_JSON, extractContentType(responseEntity.getHeaders().getContentType()));
+    TestMgr.check(MediaType.TEXT_PLAIN, extractContentType(responseEntity.getHeaders().getContentType()));
   }
 
   private void testRequestMapping() {
@@ -97,16 +95,14 @@ public class TestContentType {
     TestMgr.check(
         "testRequestMapping: name=[hello:100:[a1, a2]], request content-type=[application/protobuf]",
         responseEntity.getBody());
-    TestMgr.check(MediaType.APPLICATION_JSON, extractContentType(responseEntity.getHeaders().getContentType()));
+    TestMgr.check(SwaggerConst.PROTOBUF_TYPE, extractContentType(responseEntity.getHeaders().getContentType()));
   }
 
   private void testResponseTypeOverwrite() {
     ResponseEntity<String> responseEntity = restTemplate
         .getForEntity("cse://springmvc/contentTypeSpringmvcOverwrite/testResponseTypeOverwrite", String.class);
     TestMgr.check("testResponseTypeOverwrite: OK", responseEntity.getBody());
-    // TODO: ContentTypeSpringmvc should generate consumes and produces TEXT_PLAIN, but now is JSON
-    // will fix later.
-//    TestMgr.check(MediaType.TEXT_PLAIN, extractContentType(responseEntity.getHeaders().getContentType()));
+    TestMgr.check(MediaType.TEXT_PLAIN, extractContentType(responseEntity.getHeaders().getContentType()));
   }
 
   private String extractContentType(org.springframework.http.MediaType mediaType) {

@@ -36,7 +36,6 @@ import org.apache.servicecomb.demo.compute.GenericParamWithJsonIgnore;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
-import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
 import org.apache.servicecomb.foundation.common.Holder;
@@ -200,11 +199,6 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/textPlain", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
   public String textPlain(@RequestBody String body) {
     return body;
-  }
-
-  @RequestMapping(path = "/appXml", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
-  public JAXBPerson appXml(@RequestBody JAXBPerson person) {
-    return person;
   }
 
   @RequestMapping(path = "/bytes", method = RequestMethod.POST)
