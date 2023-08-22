@@ -17,32 +17,23 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
-import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
-import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.common.utils.MimeTypesUtils;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -54,7 +45,6 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 
 @SuppressWarnings("rawtypes")
@@ -62,8 +52,6 @@ public class RestOperationMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
 
   protected OperationMeta operationMeta;
-
-  protected List<String> produces;
 
   protected boolean formData;
 
@@ -77,12 +65,6 @@ public class RestOperationMeta {
 
   protected List<String> fileKeys = new ArrayList<>();
 
-  // key为数据类型，比如json之类
-  private final Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
-
-  // 不一定等于mgr中的default，因为本operation可能不支持mgr中的default
-  private ProduceProcessor defaultProcessor;
-
   protected String absolutePath;
 
   protected PathRegExp absolutePathRegExp;
@@ -95,13 +77,8 @@ public class RestOperationMeta {
 
     OpenAPI swagger = operationMeta.getSchemaMeta().getSwagger();
     Operation operation = operationMeta.getSwaggerOperation();
-    this.produces =
-        (operation.getResponses().get(SwaggerConst.SUCCESS_KEY) == null ||
-            operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() == null) ?
-            null : operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().keySet().stream().toList();
 
     this.downloadFile = checkDownloadFileFlag();
-    this.createProduceProcessors();
 
     if (operation.getParameters() != null) {
       for (int swaggerParameterIdx = 0; swaggerParameterIdx < operation.getParameters().size(); swaggerParameterIdx++) {
@@ -259,74 +236,8 @@ public class RestOperationMeta {
     return paramMap.get(name);
   }
 
-  public RestParam getParamByIndex(int index) {
-    return paramList.get(index);
-  }
-
   public OperationMeta getOperationMeta() {
     return operationMeta;
-  }
-
-  protected void createProduceProcessors() {
-    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
-    if (producerOperation != null && producerOperation.getProducerMethod() != null) {
-      createProduceProcessors(producerOperation.getProducerMethod().getDeclaredAnnotations());
-      return;
-    }
-    createProduceProcessors(null);
-  }
-
-  // serialViewClass is deterministic for each operation
-  protected void createProduceProcessors(Annotation[] annotations) {
-    if (annotations == null || annotations.length < 1) {
-      doCreateProduceProcessors(null);
-      return;
-    }
-    for (Annotation annotation : annotations) {
-      if (annotation.annotationType() == JsonView.class) {
-        Class<?>[] value = ((JsonView) annotation).value();
-        if (value.length != 1) {
-          throw new IllegalArgumentException(
-              "@JsonView only supported for exactly 1 class argument ");
-        }
-        doCreateProduceProcessors(value[0]);
-        return;
-      }
-    }
-    doCreateProduceProcessors(null);
-  }
-
-  // 为operation创建支持的多种produce processor
-  protected void doCreateProduceProcessors(Class<?> serialViewClass) {
-    if (null == produces || produces.isEmpty()) {
-      produceProcessorMap.putAll(
-          ProduceProcessorManager.INSTANCE.getOrCreateAcceptMap(serialViewClass));
-    } else {
-      for (String produce : produces) {
-        if (produce.contains(";")) {
-          produce = produce.substring(0, produce.indexOf(";"));
-        }
-        ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findProcessor(produce, serialViewClass);
-        if (processor == null) {
-          LOGGER.error("produce {} is not supported, operation={}.", produce,
-              operationMeta.getMicroserviceQualifiedName());
-          continue;
-        }
-        this.produceProcessorMap.put(produce, processor);
-      }
-
-      if (produceProcessorMap.isEmpty()) {
-        produceProcessorMap.put(ProduceProcessorManager.DEFAULT_TYPE,
-            ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(serialViewClass));
-      }
-    }
-
-    if (produceProcessorMap.get(ProduceProcessorManager.DEFAULT_TYPE) != null) {
-      defaultProcessor = produceProcessorMap.get(ProduceProcessorManager.DEFAULT_TYPE);
-    } else {
-      defaultProcessor = produceProcessorMap.values().stream().findFirst().get();
-    }
-    produceProcessorMap.putIfAbsent(MediaType.WILDCARD, defaultProcessor);
   }
 
   public URLPathBuilder getPathBuilder() {
@@ -345,46 +256,11 @@ public class RestOperationMeta {
     paramMap.put(param.getParamName(), param);
   }
 
-  public ProduceProcessor findProduceProcessor(String type) {
-    return this.produceProcessorMap.get(type);
-  }
-
-  // 选择与accept匹配的produce processor或者缺省的
-  public ProduceProcessor ensureFindProduceProcessor(HttpServletRequestEx requestEx) {
-    String acceptType = requestEx.getHeader(HttpHeaders.ACCEPT);
-    return ensureFindProduceProcessor(acceptType);
-  }
-
-  public ProduceProcessor ensureFindProduceProcessor(String acceptType) {
-    if (downloadFile) {
-      //do not check accept type, when the produces of provider is text/plain there will return text/plain processor
-      //when the produces of provider is application/json there will return the application/json processor
-      //so do not care what accept type the consumer will set.
-      return this.produceProcessorMap.get(MediaType.WILDCARD);
-    }
-    if (StringUtils.isEmpty(acceptType)) {
-      return defaultProcessor;
-    }
-    List<String> mimeTypes = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
-    for (String mime : mimeTypes) {
-      ProduceProcessor processor = this.produceProcessorMap.get(mime);
-      if (null != processor) {
-        return processor;
-      }
-    }
-
-    return null;
-  }
-
   public String getHttpMethod() {
     return operationMeta.getHttpMethod();
   }
 
   public List<String> getFileKeys() {
     return fileKeys;
-  }
-
-  public List<String> getProduces() {
-    return produces;
   }
 }

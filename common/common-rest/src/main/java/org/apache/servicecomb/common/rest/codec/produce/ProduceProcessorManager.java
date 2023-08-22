@@ -21,13 +21,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.ws.rs.core.MediaType;
-
+import org.apache.http.entity.ContentType;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.RegisterManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
+
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 
 public final class ProduceProcessorManager extends RegisterManager<String, Map<String, ProduceProcessor>> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProduceProcessorManager.class);
@@ -37,13 +41,9 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
 
   private static final String NAME = "produce processor mgr";
 
-  public static final String DEFAULT_TYPE = MediaType.APPLICATION_JSON;
-
   public static final String DEFAULT_SERIAL_CLASS = "servicecomb_default_class";
 
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
-
-  private final Map<String, ProduceProcessor> nonSerialViewMap = new HashMap<>();
 
   private final Map<String, ProduceProcessor> jsonProcessorMap;
 
@@ -54,7 +54,6 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
   private ProduceProcessorManager() {
     super(NAME);
     produceProcessor.forEach(processor -> {
-      nonSerialViewMap.put(processor.getName(), processor);
       Map<String, ProduceProcessor> prodProcessorMap = getObjMap()
           .computeIfAbsent(processor.getName(), key -> new HashMap<>());
       prodProcessorMap.putIfAbsent(processor.getSerializationView(), processor);
@@ -78,46 +77,12 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
     return produceViewMap.get(DEFAULT_SERIAL_CLASS);
   }
 
-  // key -> accept type
-  public Map<String, ProduceProcessor> getOrCreateAcceptMap(Class<?> serialViewClass) {
-    if (serialViewClass == null) {
-      return nonSerialViewMap;
-    }
-    Map<String, ProduceProcessor> result = new HashMap<>();
-    getObjMap().forEach((acceptKey, viewMap) -> {
-      ProduceProcessor produceProcessor = viewMap.computeIfAbsent(serialViewClass.getName(),
-          viewKey -> cloneNewProduceProcessor(serialViewClass, viewMap));
-      result.put(acceptKey, produceProcessor);
-    });
-    return result;
-  }
-
-  public ProduceProcessor findProcessor(String acceptType, Class<?> serialViewClass) {
-    Map<String, ProduceProcessor> viewMap = findValue(acceptType);
-    if (CollectionUtils.isEmpty(viewMap)) {
-      return null;
-    }
-    if (serialViewClass == null) {
-      return viewMap.get(DEFAULT_SERIAL_CLASS);
-    }
-    return viewMap.computeIfAbsent(serialViewClass.getName(),
-        viewKey -> cloneNewProduceProcessor(serialViewClass, viewMap));
-  }
-
   public ProduceProcessor findJsonProcessorByViewClass(Class<?> serialViewClass) {
     if (serialViewClass == null) {
       return jsonProcessorMap.get(DEFAULT_SERIAL_CLASS);
     }
     return jsonProcessorMap.computeIfAbsent(serialViewClass.getName(),
         viewKey -> cloneNewProduceProcessor(serialViewClass, jsonProcessorMap));
-  }
-
-  public ProduceProcessor findDefaultProcessorByViewClass(Class<?> serialViewClass) {
-    if (serialViewClass == null) {
-      return defaultProcessorMap.get(DEFAULT_SERIAL_CLASS);
-    }
-    return defaultProcessorMap.computeIfAbsent(serialViewClass.getName(),
-        viewKey -> cloneNewProduceProcessor(serialViewClass, defaultProcessorMap));
   }
 
   public ProduceProcessor findPlainProcessorByViewClass(Class<?> serialViewClass) {
@@ -138,5 +103,46 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
 
   public ProduceProcessor findDefaultPlainProcessor() {
     return plainProcessorMap.get(DEFAULT_SERIAL_CLASS);
+  }
+
+  public ProduceProcessor createProduceProcessor(OperationMeta operationMeta,
+      int statusCode, String accept, Class<?> serialViewClass) {
+    ApiResponses responses = operationMeta.getSwaggerOperation().getResponses();
+    ApiResponse response = responses.get(String.valueOf(statusCode));
+    if (response == null || response.getContent() == null ||
+        response.getContent().size() == 0) {
+      return findDefaultProcessor();
+    }
+    String actualAccept = accept;
+    if (actualAccept == null) {
+      if (response.getContent().get(MediaType.APPLICATION_JSON) != null) {
+        actualAccept = MediaType.APPLICATION_JSON;
+      } else {
+        actualAccept = response.getContent().keySet().iterator().next();
+      }
+    }
+    ContentType contentType = ContentType.parse(actualAccept);
+    actualAccept = contentType.getMimeType();
+    if (MediaType.WILDCARD.equals(contentType.getMimeType()) ||
+        MediaType.MEDIA_TYPE_WILDCARD.equals(contentType.getMimeType())) {
+      if (response.getContent().get(MediaType.APPLICATION_JSON) != null) {
+        actualAccept = MediaType.APPLICATION_JSON;
+      } else {
+        actualAccept = response.getContent().keySet().iterator().next();
+      }
+    }
+    if (response.getContent().get(actualAccept) == null) {
+      LOGGER.warn("Operation do not support accept type {}/{}", accept, actualAccept);
+      return findDefaultProcessor();
+    }
+    if (SwaggerConst.PROTOBUF_TYPE.equals(actualAccept)) {
+      return new ProduceProtoBufferProcessor(operationMeta,
+          operationMeta.getSchemaMeta().getSwagger(), response.getContent().get(accept).getSchema());
+    }
+    if (MediaType.TEXT_PLAIN.equals(actualAccept)) {
+      return findPlainProcessorByViewClass(serialViewClass);
+    }
+    // json
+    return findJsonProcessorByViewClass(serialViewClass);
   }
 }

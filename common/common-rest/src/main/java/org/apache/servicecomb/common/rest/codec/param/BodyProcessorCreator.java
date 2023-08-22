@@ -194,6 +194,10 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
       // For application/json and text/plain
       try {
+        if (MediaType.TEXT_PLAIN.equals(contentType) &&
+            targetType != null && String.class.equals(targetType.getRawClass())) {
+          return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        }
         ObjectReader reader = serialViewClass != null
             ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
             : RestObjectMapperFactory.getRestObjectMapper().reader();
@@ -257,7 +261,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
       // For application/json and text/plain
       try (BufferOutputStream output = new BufferOutputStream()) {
-        RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
+        if (MediaType.TEXT_PLAIN.equals(contentType) && (arg instanceof String)) {
+          output.write(((String) arg).getBytes(StandardCharsets.UTF_8));
+        } else {
+          RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
+        }
         return output.getBuffer();
       }
     }
