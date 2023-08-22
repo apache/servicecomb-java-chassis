@@ -160,7 +160,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
       }
 
       // edge support convert from form-data or x-www-form-urlencoded to json automatically
-      String contentType = parseContentType(request);
+      String contentType = validContentType(request.getContentType());
       if (contentType.equals(MediaType.MULTIPART_FORM_DATA)
           || contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
         return convertValue(request.getParameterMap(), targetType);
@@ -216,8 +216,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
       }
     }
 
-    private String parseContentType(HttpServletRequest request) {
-      String type = request.getContentType();
+    private String validContentType(String type) {
       if (StringUtils.isEmpty(type)) {
         if (supportedContentTypes.size() == 0) {
           throw new IllegalArgumentException("operation do not have any content type support.");
@@ -233,9 +232,13 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      ensureContentType(clientRequest);
+      String userContentType = clientRequest.getHeaders().get(HttpHeaders.CONTENT_TYPE);
+      String contentType = validContentType(userContentType);
+      if (StringUtils.isEmpty(userContentType)) {
+        clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, contentType);
+      }
       if (arg != null) {
-        Buffer buffer = createBodyBuffer(clientRequest.getHeaders().get(HttpHeaders.CONTENT_TYPE), arg);
+        Buffer buffer = createBodyBuffer(contentType, arg);
         clientRequest.write(buffer);
       }
     }
@@ -267,16 +270,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
           RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
         }
         return output.getBuffer();
-      }
-    }
-
-    /**
-     * If the Content-Type has not been set yet, set application/json as default value.
-     */
-    private void ensureContentType(RestClientRequest clientRequest) {
-      if (null == clientRequest.getHeaders()
-          || StringUtils.isEmpty(clientRequest.getHeaders().get(HttpHeaders.CONTENT_TYPE))) {
-        clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
       }
     }
 

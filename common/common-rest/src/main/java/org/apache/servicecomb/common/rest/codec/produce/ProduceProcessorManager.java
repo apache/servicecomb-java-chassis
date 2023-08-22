@@ -137,7 +137,7 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
     }
     if (SwaggerConst.PROTOBUF_TYPE.equals(actualAccept)) {
       return new ProduceProtoBufferProcessor(operationMeta,
-          operationMeta.getSchemaMeta().getSwagger(), response.getContent().get(accept).getSchema());
+          operationMeta.getSchemaMeta().getSwagger(), response.getContent().get(actualAccept).getSchema());
     }
     if (MediaType.TEXT_PLAIN.equals(actualAccept)) {
       return findPlainProcessorByViewClass(serialViewClass);

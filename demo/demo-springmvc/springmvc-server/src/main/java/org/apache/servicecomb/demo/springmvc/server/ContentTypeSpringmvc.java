@@ -50,7 +50,7 @@ public class ContentTypeSpringmvc {
 
   // TODO: 注册中心不会覆盖契约
   @RequestMapping(path = "/testProtoBuffer", method = RequestMethod.POST,
-      consumes = SwaggerConst.PROTOBUF_TYPE, produces = MediaType.APPLICATION_JSON)
+      consumes = SwaggerConst.PROTOBUF_TYPE, produces = SwaggerConst.PROTOBUF_TYPE)
   public String testProtoBuffer(@RequestBody User user, HttpServletRequest request) {
     return String.format("testRequestMapping: name=[%s], request content-type=[%s]",
         user.getName() + ":" + user.getIndex() + ":" +

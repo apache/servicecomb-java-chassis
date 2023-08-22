@@ -18,6 +18,7 @@
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
@@ -37,6 +38,13 @@ public class RequestMappingClassAnnotationProcessor implements ClassAnnotationPr
     // path/value是等同的
     this.processPath(requestMapping.path(), swaggerGenerator);
     this.processPath(requestMapping.value(), swaggerGenerator);
+
+    if (requestMapping.consumes().length > 0) {
+      swaggerGenerator.getSwaggerGeneratorContext().updateConsumes(Arrays.asList(requestMapping.consumes()));
+    }
+    if (requestMapping.produces().length > 0) {
+      swaggerGenerator.getSwaggerGeneratorContext().updateProduces(Arrays.asList(requestMapping.produces()));
+    }
   }
 
   protected void processPath(String[] paths, SwaggerGenerator swaggerGenerator) {

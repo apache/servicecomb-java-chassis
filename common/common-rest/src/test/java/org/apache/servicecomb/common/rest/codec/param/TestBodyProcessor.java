@@ -136,7 +136,7 @@ public class TestBodyProcessor {
   @Test
   public void testGetValueTextPlain() throws Exception {
     setupGetValue(String.class);
-    inputBodyByteBuf.writeCharSequence("\"abc\"", StandardCharsets.UTF_8);
+    inputBodyByteBuf.writeCharSequence("abc", StandardCharsets.UTF_8);
 
     Mockito.when(request.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
 
