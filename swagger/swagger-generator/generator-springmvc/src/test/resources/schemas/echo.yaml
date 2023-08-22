@@ -35,11 +35,6 @@ paths:
                 type: array
                 items:
                   type: string
-            application/protobuf:
-              schema:
-                type: array
-                items:
-                  type: string
             text/plain:
               schema:
                 type: array
@@ -70,13 +65,6 @@ paths:
       requestBody:
         content:
           application/json:
-            schema:
-              type: string
-              enum:
-              - RED
-              - YELLOW
-              - BLUE
-          application/protobuf:
             schema:
               type: string
               enum:
@@ -119,13 +107,6 @@ paths:
                 type: array
                 items:
                   type: string
-          application/protobuf:
-            schema:
-              type: array
-              items:
-                type: array
-                items:
-                  type: string
           text/plain:
             schema:
               type: array
@@ -140,13 +121,6 @@ paths:
           description: response of 200
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  type: array
-                  items:
-                    type: string
-            application/protobuf:
               schema:
                 type: array
                 items:
@@ -285,9 +259,6 @@ paths:
             application/json:
               schema:
                 type: string
-            application/protobuf:
-              schema:
-                type: string
             text/plain:
               schema:
                 type: string
@@ -299,9 +270,6 @@ paths:
           description: response of 200
           content:
             application/json:
-              schema:
-                type: string
-            application/protobuf:
               schema:
                 type: string
             text/plain:

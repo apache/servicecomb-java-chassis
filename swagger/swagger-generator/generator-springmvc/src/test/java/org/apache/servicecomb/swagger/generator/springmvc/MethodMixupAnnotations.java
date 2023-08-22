@@ -54,8 +54,8 @@ public class MethodMixupAnnotations {
   @RequestMapping(
       path = "usingRequestMapping/{targetName}",
       method = {RequestMethod.POST},
-      consumes = {"text/plain", "application/*"},
-      produces = {"text/plain", "application/*"})
+      consumes = {"text/plain", "application/json"},
+      produces = {"text/plain", "application/json"})
   public String usingRequestMapping(@RequestBody User srcUser, @RequestHeader String header,
       @PathVariable String targetName, @RequestParam(name = "word") String word) {
     return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
@@ -63,8 +63,8 @@ public class MethodMixupAnnotations {
 
   @GetMapping(
       path = "usingGetMapping/{targetName}",
-      consumes = {"text/plain", "application/*"},
-      produces = {"text/plain", "application/*"})
+      consumes = {"text/plain", "application/json"},
+      produces = {"text/plain", "application/json"})
   public String usingGetMapping(@RequestBody User srcUser, @RequestHeader String header,
       @PathVariable String targetName, @RequestParam(name = "word") String word) {
     return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
@@ -72,8 +72,8 @@ public class MethodMixupAnnotations {
 
   @PutMapping(
       path = "usingPutMapping/{targetName}",
-      consumes = {"text/plain", "application/*"},
-      produces = {"text/plain", "application/*"})
+      consumes = {"text/plain", "application/json"},
+      produces = {"text/plain", "application/json"})
   public String usingPutMapping(@RequestBody User srcUser, @RequestHeader String header,
       @PathVariable String targetName, @RequestParam(name = "word") String word) {
     return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
@@ -81,8 +81,8 @@ public class MethodMixupAnnotations {
 
   @PostMapping(
       path = "usingPostMapping/{targetName}",
-      consumes = {"text/plain", "application/*"},
-      produces = {"text/plain", "application/*"})
+      consumes = {"text/plain", "application/json"},
+      produces = {"text/plain", "application/json"})
   public String usingPostMapping(@RequestBody User srcUser, @RequestHeader String header,
       @PathVariable String targetName, @RequestParam(name = "word") String word) {
     return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
@@ -90,8 +90,8 @@ public class MethodMixupAnnotations {
 
   @PatchMapping(
       path = "usingPatchMapping/{targetName}",
-      consumes = {"text/plain", "application/*"},
-      produces = {"text/plain", "application/*"})
+      consumes = {"text/plain", "application/json"},
+      produces = {"text/plain", "application/json"})
   public String usingPatchMapping(@RequestBody User srcUser, @RequestHeader String header,
       @PathVariable String targetName, @RequestParam(name = "word") String word) {
     return String.format("%s %s %s %s", srcUser.name, header, targetName, word);
@@ -99,8 +99,8 @@ public class MethodMixupAnnotations {
 
   @DeleteMapping(
       path = "usingDeleteMapping/{targetName}",
-      consumes = {"text/plain", "application/*"},
-      produces = {"text/plain", "application/*"})
+      consumes = {"text/plain", "application/json"},
+      produces = {"text/plain", "application/json"})
   public String usingDeleteMapping(@RequestBody User srcUser, @RequestHeader String header,
       @PathVariable String targetName, @RequestParam(name = "word") String word) {
     return String.format("%s %s %s %s", srcUser.name, header, targetName, word);

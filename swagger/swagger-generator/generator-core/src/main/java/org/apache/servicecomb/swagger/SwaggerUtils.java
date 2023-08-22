@@ -300,8 +300,8 @@ public final class SwaggerUtils {
       return false;
     }
     boolean result = true;
-    for (String key : properties1.keySet()) {
-      if (!schemaEquals(properties1.get(key), properties2.get(key))) {
+    for (Entry<String, Schema> item : properties1.entrySet()) {
+      if (!schemaEquals(item.getValue(), properties2.get(item.getKey()))) {
         result = false;
         break;
       }

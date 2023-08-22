@@ -31,6 +31,7 @@ import io.swagger.v3.oas.models.media.ObjectSchema;
 import io.swagger.v3.oas.models.media.StringSchema;
 import jakarta.ws.rs.core.MediaType;
 
+//CHECKSTYLE:OFF
 @SuppressWarnings("unused")
 public class TestSchemaToProtoGenerator {
   @Test
@@ -117,8 +118,7 @@ public class TestSchemaToProtoGenerator {
         message testIntRequest {
           int32 value = 1;
         }
-
-        """, new ProtoToStringGenerator(proto).protoToString());
+        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
 
     protoGenerator =
         new SchemaToProtoGenerator("test.int", openAPI,
@@ -134,8 +134,7 @@ public class TestSchemaToProtoGenerator {
         message testIntResponse {
           int32 value = 1;
         }
-
-        """, new ProtoToStringGenerator(proto).protoToString());
+        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 
 
@@ -163,8 +162,7 @@ public class TestSchemaToProtoGenerator {
         message testModelRequest {
           Model value = 1;
         }
-
-        """, new ProtoToStringGenerator(proto).protoToString());
+        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
 
     protoGenerator =
         new SchemaToProtoGenerator("test.model", openAPI,
@@ -185,7 +183,7 @@ public class TestSchemaToProtoGenerator {
         message testIntResponse {
           Model value = 1;
         }
-
-        """, new ProtoToStringGenerator(proto).protoToString());
+        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 }
+//CHECKSTYLE:ON

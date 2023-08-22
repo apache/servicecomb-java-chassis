@@ -80,28 +80,27 @@ public class Echo {
 
   }
 
-  // TODO: this should fail. RequestMapping not parse consumes and produces.
-  @RequestMapping("partArray")
+  @RequestMapping(value = "partArray", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partArray(@RequestPart MultipartFile[] part) {
 
   }
 
-  @RequestMapping("partList")
+  @RequestMapping(value = "partList", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partList(@RequestPart List<MultipartFile> part) {
 
   }
 
-  @RequestMapping("partAnnotation")
+  @RequestMapping(value = "partAnnotation", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partAnnotation(@RequestPart MultipartFile part) {
 
   }
 
-  @RequestMapping("partArrayAnnotation")
+  @RequestMapping(value = "partArrayAnnotation", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partArrayAnnotation(@RequestPart MultipartFile[] part) {
 
   }
 
-  @RequestMapping("partListAnnotation")
+  @RequestMapping(value = "partListAnnotation", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partListAnnotation(@RequestPart List<MultipartFile> part) {
 
   }

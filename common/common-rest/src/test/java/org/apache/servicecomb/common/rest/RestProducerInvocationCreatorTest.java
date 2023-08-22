@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.rest;
 
-import static jakarta.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -50,7 +49,6 @@ import org.mockito.Mockito;
 
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
-import jakarta.ws.rs.core.HttpHeaders;
 
 public class RestProducerInvocationCreatorTest {
 
