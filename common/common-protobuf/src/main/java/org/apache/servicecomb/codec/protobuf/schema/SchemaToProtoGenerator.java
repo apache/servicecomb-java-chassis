@@ -32,11 +32,10 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
-import org.springframework.util.CollectionUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 
 import com.google.common.hash.Hashing;
 
-import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.Proto;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -44,6 +43,32 @@ import io.swagger.v3.oas.models.media.Schema;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class SchemaToProtoGenerator {
+  record IdentifierRunnable(Schema<?> identifier, Runnable target)
+      implements Runnable {
+
+    @Override
+    public void run() {
+      this.target.run();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      IdentifierRunnable that = (IdentifierRunnable) o;
+      return SwaggerUtils.schemaEquals(identifier, that.identifier);
+    }
+
+    @Override
+    public int hashCode() {
+      return SwaggerUtils.schemaHashCode(identifier);
+    }
+  }
+
   private final String protoPackage;
 
   private final OpenAPI openAPI;
@@ -51,8 +76,6 @@ public class SchemaToProtoGenerator {
   private final Schema<?> rootSchema;
 
   private final String rootName;
-
-  private final Set<String> imports = new HashSet<>();
 
   private final Set<String> messages = new HashSet<>();
 
@@ -68,19 +91,28 @@ public class SchemaToProtoGenerator {
   }
 
   public Proto convert() {
-    convertSwaggerType(this.rootSchema);
+    createMessage(this.rootSchema);
 
-    Map<String, Schema> wrap = new HashMap<>(1);
-    wrap.put("value", this.rootSchema);
-    createMessage(rootName, wrap, ProtoConst.ANNOTATION_WRAP_PROPERTY);
-
+    int iteration = 0;
     do {
       List<Runnable> oldPending = pending;
       pending = new ArrayList<>();
       for (Runnable runnable : oldPending) {
         runnable.run();
       }
-    } while (!pending.isEmpty());
+      if (pending.size() >= oldPending.size()) {
+        iteration++;
+      }
+    } while (!pending.isEmpty() && iteration < 1000);
+
+    if (iteration == 1000) {
+      throw new IllegalArgumentException(
+          String.format("Failed to create schema %s. May be cyclic object.", this.rootName));
+    }
+
+    Map<String, Schema> wrap = new HashMap<>(1);
+    wrap.put("value", this.rootSchema);
+    createMessage(rootName, wrap, ProtoConst.ANNOTATION_WRAP_PROPERTY);
 
     return createProto();
   }
@@ -88,9 +120,6 @@ public class SchemaToProtoGenerator {
   protected Proto createProto() {
     StringBuilder sb = new StringBuilder();
     appendLine(sb, "syntax = \"proto3\";");
-    for (String importMsg : imports) {
-      appendLine(sb, "import \"%s\";", importMsg);
-    }
     if (StringUtils.isNotEmpty(protoPackage)) {
       sb.append("package ").append(protoPackage).append(";\n");
     }
@@ -99,52 +128,58 @@ public class SchemaToProtoGenerator {
     return protoParser.parseFromContent(sb.toString());
   }
 
-  private String convertSwaggerType(Schema<?> swaggerType) {
+  private String findSchemaType(Schema<?> schema) {
     @SuppressWarnings("unchecked")
-    String type = tryFindEnumType((List<String>) swaggerType.getEnum());
+    String type = tryFindEnumType((List<String>) schema.getEnum());
     if (type != null) {
       return type;
     }
 
-    type = findBaseType(swaggerType.getType(), swaggerType.getFormat());
+    type = findBaseType(schema.getType(), schema.getFormat());
     if (type != null) {
       return type;
     }
 
-    Schema<?> itemProperty = swaggerType.getItems();
+    Schema<?> itemProperty = schema.getItems();
     if (itemProperty != null) {
-      return "repeated " + convertArrayOrMapItem(itemProperty);
+      String containerType = findArrayOrMapItemType(itemProperty);
+      if (containerType != null) {
+        return "repeated " + containerType;
+      }
+      return null;
     }
 
-    itemProperty = swaggerType.getAdditionalItems();
+    itemProperty = (Schema<?>) schema.getAdditionalProperties();
     if (itemProperty != null) {
-      return String.format("map<string, %s>", convertArrayOrMapItem(itemProperty));
+      String containerType = findArrayOrMapItemType(itemProperty);
+      if (containerType != null) {
+        return String.format("map<string, %s>", containerType);
+      }
+      return null;
     }
 
-    type = swaggerType.get$ref();
+    type = schema.get$ref();
     if (type != null) {
-      Schema<?> refSchema = openAPI.getComponents().getSchemas().get(
-          type.substring(Components.COMPONENTS_SCHEMAS_REF.length()));
+      String typeName = type.substring(Components.COMPONENTS_SCHEMAS_REF.length());
+      Schema<?> refSchema = openAPI.getComponents().getSchemas().get(typeName);
       if (refSchema == null) {
         throw new IllegalArgumentException("not found ref in components " + type);
       }
-      return convertSwaggerType(refSchema);
+      if (StringUtils.isEmpty(refSchema.getName())) {
+        refSchema.setName(typeName);
+      }
+      return findSchemaType(refSchema);
     }
 
-    Map<String, Schema> properties = swaggerType.getProperties();
-    if (CollectionUtils.isEmpty(properties)) {
-      addImports(ProtoConst.ANY_PROTO);
-      return ProtoConst.ANY.getCanonicalName();
-    }
-    createMessage(swaggerType.getName(), properties);
-    return swaggerType.getName();
+    return findObjectType(schema);
   }
 
-  private void addImports(Proto proto) {
-    imports.add(proto.getFilename());
-    for (Message message : proto.getMessages()) {
-      messages.add(message.getCanonicalName());
+  private String findObjectType(Schema<?> schema) {
+    String name = schema.getName();
+    if (messages.contains(name)) {
+      return name;
     }
+    return null;
   }
 
   private void createEnum(String enumName, List<String> enums) {
@@ -195,38 +230,40 @@ public class SchemaToProtoGenerator {
     };
   }
 
-  private String convertArrayOrMapItem(Schema<?> itemProperty) {
+  private String findArrayOrMapItemType(Schema<?> itemProperty) {
     // List<List<>>, need to wrap
     if (itemProperty.getItems() != null) {
-      String protoName = generateWrapPropertyName(List.class.getSimpleName(), itemProperty.getItems());
-      pending.add(() -> wrapPropertyToMessage(protoName, itemProperty));
-      return protoName;
+      return findWrapPropertyType(List.class.getSimpleName(), itemProperty.getItems());
     }
 
     // List<Map<>>, need to wrap
-    if (itemProperty.getAdditionalItems() != null) {
-      String protoName = generateWrapPropertyName(Map.class.getSimpleName(), itemProperty.getAdditionalItems());
-      pending.add(() -> wrapPropertyToMessage(protoName, itemProperty));
-      return protoName;
+    if (itemProperty.getAdditionalProperties() != null) {
+      return findWrapPropertyType(Map.class.getSimpleName(), (Schema<?>) itemProperty.getAdditionalProperties());
     }
 
-    return convertSwaggerType(itemProperty);
+    return findSchemaType(itemProperty);
   }
 
 
-  private String generateWrapPropertyName(String prefix, Schema<?> property) {
+  private String findWrapPropertyType(String prefix, Schema<?> property) {
     // List<List<>>, need to wrap
     if (property.getItems() != null) {
-      return generateWrapPropertyName(prefix + List.class.getSimpleName(), property.getItems());
+      return findWrapPropertyType(prefix + List.class.getSimpleName(), property.getItems());
     }
 
     // List<Map<>>, need to wrap
-    if (property.getAdditionalItems() != null) {
-      return generateWrapPropertyName(prefix + Map.class.getSimpleName(), property.getAdditionalItems());
+    if (property.getAdditionalProperties() != null) {
+      return findWrapPropertyType(prefix + Map.class.getSimpleName(),
+          (Schema<?>) property.getAdditionalProperties());
+    }
+
+    String type = findSchemaType(property);
+    if (type == null) {
+      return null;
     }
 
     // message name cannot have . (package separator)
-    return prefix + StringUtils.capitalize(escapeMessageName(convertSwaggerType(property)));
+    return prefix + StringUtils.capitalize(escapeMessageName(type));
   }
 
   public static String escapeMessageName(String name) {
@@ -239,11 +276,6 @@ public class SchemaToProtoGenerator {
   }
 
   private void createMessage(String protoName, Map<String, Schema> properties, String... annotations) {
-    if (!messages.add(protoName)) {
-      // already created
-      return;
-    }
-
     for (String annotation : annotations) {
       msgStringBuilder.append("//");
       appendLine(msgStringBuilder, annotation);
@@ -252,11 +284,127 @@ public class SchemaToProtoGenerator {
     int tag = 1;
     for (Entry<String, Schema> entry : properties.entrySet()) {
       Schema property = entry.getValue();
-      String propertyType = convertSwaggerType(property);
+      String propertyType = findSchemaType(property);
 
       appendLine(msgStringBuilder, "  %s %s = %d;", propertyType, entry.getKey(), tag);
       tag++;
     }
     appendLine(msgStringBuilder, "}");
+  }
+
+  public void createMessage(Schema<?> schema) {
+    String ref = schema.get$ref();
+    if (ref != null) {
+      String typeName = ref.substring(Components.COMPONENTS_SCHEMAS_REF.length());
+      Schema<?> refSchema = openAPI.getComponents().getSchemas().get(typeName);
+      if (refSchema == null) {
+        throw new IllegalArgumentException("not found ref in components " + ref);
+      }
+      if (StringUtils.isEmpty(refSchema.getName())) {
+        refSchema.setName(typeName);
+      }
+      createMessage(refSchema);
+      return;
+    }
+
+    boolean wait = false;
+
+    //array or map
+    if (isArrayOrMap(schema)) {
+      Schema<?> mapOrArrayItem = arrayOrMapItem(schema);
+      if (findSchemaType(mapOrArrayItem) == null) {
+        createMessageTask(mapOrArrayItem);
+        wait = true;
+      } else {
+        if (createMapOrArrayMessageTask(mapOrArrayItem, true, schema)) {
+          wait = true;
+        }
+      }
+    }
+
+    //object
+    if (schema.getProperties() != null) {
+      for (Entry<String, Schema> entry : schema.getProperties().entrySet()) {
+        if (findSchemaType(entry.getValue()) == null) {
+          createMessageTask(entry.getValue());
+          wait = true;
+        } else if (isArrayOrMap(entry.getValue())) {
+          if (createMapOrArrayMessageTask(arrayOrMapItem(entry.getValue()), false, null)) {
+            wait = true;
+          }
+        }
+      }
+    }
+
+    if (wait) {
+      IdentifierRunnable runnable = new IdentifierRunnable(schema, () -> createMessage(schema));
+      if (!pending.contains(runnable)) {
+        pending.add(runnable);
+      }
+      return;
+    }
+
+    if (findSchemaType(schema) != null) {
+      return;
+    }
+
+    messages.add(schema.getName());
+
+    appendLine(msgStringBuilder, "message %s {", schema.getName());
+    int tag = 1;
+    for (Entry<String, Schema> entry : schema.getProperties().entrySet()) {
+      Schema property = entry.getValue();
+      String propertyType = findSchemaType(property);
+
+      appendLine(msgStringBuilder, "  %s %s = %d;", propertyType, entry.getKey(), tag);
+      tag++;
+    }
+    appendLine(msgStringBuilder, "}");
+  }
+
+  private boolean isArrayOrMap(Schema<?> value) {
+    return value.getItems() != null || value.getAdditionalProperties() != null;
+  }
+
+  private Schema<?> arrayOrMapItem(Schema<?> schema) {
+    return schema.getItems() == null ?
+        (Schema<?>) schema.getAdditionalProperties() : schema.getItems();
+  }
+
+  private void createMessageTask(Schema<?> schema) {
+    IdentifierRunnable runnable = new IdentifierRunnable(schema, () -> createMessage(schema));
+    if (!pending.contains(runnable)) {
+      pending.add(runnable);
+    }
+  }
+
+  private boolean createMapOrArrayMessageTask(Schema<?> schema, boolean nested, Schema<?> owner) {
+    if (schema.getAdditionalProperties() != null) {
+      String protoName = findWrapPropertyType(Map.class.getSimpleName(),
+          (Schema<?>) schema.getAdditionalProperties());
+      if (messages.add(protoName)) {
+        pending.add(() -> wrapPropertyToMessage(protoName, schema));
+        createMessageTask((Schema<?>) schema.getAdditionalProperties());
+        return true;
+      }
+    }
+    if (schema.getItems() != null) {
+      String protoName = findWrapPropertyType(List.class.getSimpleName(), schema.getItems());
+      if (messages.add(protoName)) {
+        pending.add(() -> wrapPropertyToMessage(protoName, schema));
+        createMessageTask(schema.getItems());
+        return true;
+      }
+    }
+    if (nested) {
+      String protoName = owner.getAdditionalProperties() != null ?
+          findWrapPropertyType(Map.class.getSimpleName(), schema) :
+          findWrapPropertyType(List.class.getSimpleName(), schema);
+      if (messages.add(protoName)) {
+        pending.add(() -> wrapPropertyToMessage(protoName, owner));
+        return true;
+      }
+    }
+    return false;
   }
 }

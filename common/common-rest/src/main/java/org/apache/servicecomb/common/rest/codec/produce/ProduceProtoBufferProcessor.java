@@ -36,7 +36,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Schema;
 
 public class ProduceProtoBufferProcessor implements ProduceProcessor {
-  public static final String RESPONSE_MESSAGE_NAME = "response";
+  public static final String RESPONSE_MESSAGE_NAME = "X_RESPONSE";
 
   public static final String EXT_ID = "protobuf";
 

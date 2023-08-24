@@ -66,6 +66,8 @@ import jakarta.ws.rs.core.Response.Status;
 public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestBody> {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
 
+  public static final String REQUEST_BODY_NAME = "X_REQUEST";
+
   public static final String EXT_ID = "protobuf";
 
   public static final String PARAM_TYPE = "body";
@@ -180,14 +182,12 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
       }
 
       if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
-        String messageName = (String) requestBody.getExtensions()
-            .get(SwaggerConst.EXT_BODY_NAME);
         ProtoMapper protoMapper = scopedProtobufSchemaManager
             .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
-                messageName,
+                REQUEST_BODY_NAME,
                 requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getSchema());
         RootDeserializer<PropertyWrapper<Object>> deserializer = protoMapper.getDeserializerSchemaManager()
-            .createRootDeserializer(protoMapper.getProto().getMessage(messageName), targetType);
+            .createRootDeserializer(protoMapper.getProto().getMessage(REQUEST_BODY_NAME), targetType);
         PropertyWrapper<Object> result = deserializer.deserialize(inputStream.readAllBytes());
         return result.getValue();
       }
@@ -248,14 +248,12 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
      */
     private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
       if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
-        String messageName = (String) requestBody.getExtensions()
-            .get(SwaggerConst.EXT_BODY_NAME);
         ProtoMapper protoMapper = scopedProtobufSchemaManager
             .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
-                messageName,
+                REQUEST_BODY_NAME,
                 requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getSchema());
         RootSerializer serializer = protoMapper.getSerializerSchemaManager()
-            .createRootSerializer(protoMapper.getProto().getMessage(messageName),
+            .createRootSerializer(protoMapper.getProto().getMessage(REQUEST_BODY_NAME),
                 Object.class);
         Map<String, Object> bodyArg = new HashMap<>(1);
         bodyArg.put("value", arg);
