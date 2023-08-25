@@ -100,11 +100,11 @@ public class ScopedProtobufSchemaManager {
   /**
    * get the ProtoMapper from Schema
    */
-  public ProtoMapper getOrCreateProtoMapper(OpenAPI openAPI, String schemaId, String name, Schema<?> schema) {
+  public ProtoMapper getOrCreateProtoMapper(OpenAPI openAPI, String schemaId, String rootMessageName, Schema<?> schema) {
     SchemaKey schemaKey = new SchemaKey(schemaId, schema);
     return schemaMapperCache.computeIfAbsent(schemaKey, key -> {
       SchemaToProtoGenerator generator = new SchemaToProtoGenerator("scb.schema", openAPI,
-          key.schema, name);
+          key.schema, rootMessageName);
       Proto proto = generator.convert();
       ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
       return protoMapperFactory.create(proto);

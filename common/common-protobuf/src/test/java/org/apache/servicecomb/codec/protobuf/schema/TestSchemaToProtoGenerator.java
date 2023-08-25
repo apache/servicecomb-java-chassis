@@ -19,7 +19,9 @@ package org.apache.servicecomb.codec.protobuf.schema;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.apache.servicecomb.codec.protobuf.internal.converter.ProtoToStringGenerator;
+import org.apache.servicecomb.codec.protobuf.schema.model.SchemaService;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -184,6 +186,103 @@ public class TestSchemaToProtoGenerator {
           Model value = 1;
         }
         """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
+  }
+
+  @Test
+  public void testNestedModelCorrect() {
+    SpringmvcSwaggerGenerator generator = new SpringmvcSwaggerGenerator(SchemaService.class);
+    OpenAPI openAPI = generator.generate();
+    SchemaToProtoGenerator protoGenerator =
+        new SchemaToProtoGenerator("test.model", openAPI,
+            openAPI.getPaths().get("/testUserInfo").getPost()
+                .getRequestBody().getContent().get(MediaType.APPLICATION_JSON)
+                .getSchema(), "request");
+    Proto proto = protoGenerator.convert();
+    assertEquals("""
+        syntax = "proto3";
+        package test.model;
+                
+        //@WrapProperty
+        message MapString {
+          map<string, string> value = 1;
+        }
+                
+        //@WrapProperty
+        message ListListString {
+          repeated ListString value = 1;
+        }
+                
+        message DeptInfo {
+          string name = 1;
+          string code = 2;
+        }
+                
+        //@WrapProperty
+        message ListString {
+          repeated string value = 1;
+        }
+                
+        message UserInfo {
+          repeated DeptInfo subDeptInfos = 1;
+          repeated MapString extraInfos = 2;
+          repeated ListListString nestedLists = 3;
+        }
+                
+        //@WrapProperty
+        message ListDeptInfo {
+          repeated DeptInfo value = 1;
+        }
+                
+        //@WrapProperty
+        message request {
+          UserInfo value = 1;
+        }
+        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
+  }
+
+  @Test
+  public void testListMapTypeCorrect() {
+    SpringmvcSwaggerGenerator generator = new SpringmvcSwaggerGenerator(SchemaService.class);
+    OpenAPI openAPI = generator.generate();
+    SchemaToProtoGenerator protoGenerator =
+        new SchemaToProtoGenerator("test.model", openAPI,
+            openAPI.getPaths().get("/testListType").getPost()
+                .getRequestBody().getContent().get(MediaType.APPLICATION_JSON)
+                .getSchema(), "request");
+    Proto proto = protoGenerator.convert();
+    assertEquals("""
+        syntax = "proto3";
+        package test.model;
+               
+        message DeptInfo {
+          string name = 1;
+          string code = 2;
+        }
+               
+        //@WrapProperty
+        message ListDeptInfo {
+          repeated DeptInfo value = 1;
+        }
+               
+        //@WrapProperty
+        message request {
+          repeated DeptInfo value = 1;
+        }
+         """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
+  }
+
+  @Test
+  public void testCyclicModelWrong() {
+    SpringmvcSwaggerGenerator generator = new SpringmvcSwaggerGenerator(SchemaService.class);
+    OpenAPI openAPI = generator.generate();
+    SchemaToProtoGenerator protoGenerator =
+        new SchemaToProtoGenerator("test.model", openAPI,
+            openAPI.getPaths().get("/testCyclic").getPost()
+                .getRequestBody().getContent().get(MediaType.APPLICATION_JSON)
+                .getSchema(), "request");
+    IllegalArgumentException throwable = Assertions.catchThrowableOfType(() -> protoGenerator.convert(),
+        IllegalArgumentException.class);
+    assertEquals("Failed to create schema request. May be cyclic object.", throwable.getMessage());
   }
 }
 //CHECKSTYLE:ON

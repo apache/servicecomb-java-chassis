@@ -258,7 +258,8 @@ public final class SwaggerUtils {
     result = result ^ (schema.getName() != null ? schema.getName().hashCode() : 0);
     result = result ^ (schema.get$ref() != null ? schema.get$ref().hashCode() : 0);
     result = result ^ (schema.getItems() != null ? schemaHashCode(schema.getItems()) : 0);
-    result = result ^ (schema.getAdditionalItems() != null ? schemaHashCode(schema.getAdditionalItems()) : 0);
+    result = result ^ (schema.getAdditionalProperties() != null ?
+        schemaHashCode((Schema<?>) schema.getAdditionalProperties()) : 0);
     result = result ^ (schema.getProperties() != null ? propertiesHashCode(schema.getProperties()) : 0);
     return result;
   }
@@ -285,7 +286,7 @@ public final class SwaggerUtils {
         && StringUtils.equals(schema1.getName(), schema2.getName())
         && StringUtils.equals(schema1.get$ref(), schema2.get$ref())
         && schemaEquals(schema1.getItems(), schema2.getItems())
-        && schemaEquals(schema1.getAdditionalItems(), schema2.getAdditionalItems())
+        && schemaEquals((Schema<?>) schema1.getAdditionalProperties(), (Schema<?>) schema2.getAdditionalProperties())
         && propertiesEquals(schema1.getProperties(), schema2.getProperties());
   }
 
