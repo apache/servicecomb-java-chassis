@@ -266,13 +266,16 @@ public class SwaggerToProtoGenerator {
     String key = swaggerType + ":" + swaggerFmt;
     return switch (key) {
       case "boolean:null" -> "bool";
-      case "integer:null", "integer:int64" -> "int64";
-      case "integer:int32" -> "int32";
-      case "number:null", "number:double" -> "double";
+      case "integer:int32" -> "sint32";
+      case "integer:int64" -> "sint64";
+      case "integer:null" -> "string";  // BigInteger like values
+      case "number:double" -> "double";
       case "number:float" -> "float";
+      case "number:null" -> "string";  // BigDecimal like values
       case "string:null" -> "string";
       case "string:byte" -> "bytes";
-      case "string:date", "string:date-time" -> "int64";
+      case "string:date" -> "int64";
+      case "string:date-time" -> "int64";
       case "string:binary" -> throw new IllegalArgumentException("proto buffer not support file upload/download");
       default -> null;
     };

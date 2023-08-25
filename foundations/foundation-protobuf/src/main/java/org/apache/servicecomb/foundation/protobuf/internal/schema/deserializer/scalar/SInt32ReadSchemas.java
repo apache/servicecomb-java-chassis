@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 import java.io.IOException;
 
 import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
+import org.apache.servicecomb.foundation.common.utils.bean.ShortSetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractIntSchema;
@@ -34,6 +35,10 @@ public class SInt32ReadSchemas {
     JavaType javaType = propertyDescriptor.getJavaType();
     if (int.class.equals(javaType.getRawClass())) {
       return new SInt32PrimitiveSchema<>(protoField, propertyDescriptor);
+    }
+
+    if (short.class.equals(javaType.getRawClass())) {
+      return new ShortFieldSInt32PrimitiveSchema<>(protoField, propertyDescriptor);
     }
 
     if (Integer.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()) {
@@ -69,6 +74,22 @@ public class SInt32ReadSchemas {
     public int mergeFrom(InputEx input, T message) throws IOException {
       int value = input.readSInt32();
       setter.set(message, value);
+      return input.readFieldNumber();
+    }
+  }
+
+  private static class ShortFieldSInt32PrimitiveSchema<T> extends FieldSchema<T> {
+    protected final ShortSetter<T> setter;
+
+    public ShortFieldSInt32PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
+    }
+
+    @Override
+    public int mergeFrom(InputEx input, T message) throws IOException {
+      int value = input.readSInt32();
+      setter.set(message, (short) value);
       return input.readFieldNumber();
     }
   }
