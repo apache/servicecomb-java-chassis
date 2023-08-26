@@ -52,12 +52,12 @@ message Ref2 {
 //@WrapArguments
 message BaseRequestWrap {
   bool boolValue = 1;
-  int32 iValue = 2;
-  int64 lValue = 3;
+  sint32 iValue = 2;
+  sint64 lValue = 3;
   float fValue = 4;
   double dValue = 5;
   string sValue = 6;
-  repeated int32 iArray = 7;
+  repeated sint32 iArray = 7;
   Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 color = 8;
   int64 localDate = 9;
   int64 date = 10;
@@ -66,7 +66,7 @@ message BaseRequestWrap {
 
 //@WrapProperty
 message BaseResponseWrap200 {
-  int32 value = 1;
+  sint32 value = 1;
 }
 
 //@WrapProperty
@@ -286,7 +286,7 @@ message TestTextPlainResponseWrap200 {
 
 //@WrapArguments
 message UserWrapInProtobufRequestWrap {
-  int32 ivalue = 1;
+  sint32 ivalue = 1;
   User user = 2;
 }
 

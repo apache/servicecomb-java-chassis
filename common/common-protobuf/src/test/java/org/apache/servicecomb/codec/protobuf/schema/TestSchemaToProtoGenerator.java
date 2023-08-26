@@ -118,7 +118,7 @@ public class TestSchemaToProtoGenerator {
                 
         //@WrapProperty
         message testIntRequest {
-          int32 value = 1;
+          sint32 value = 1;
         }
         """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
 
@@ -134,7 +134,7 @@ public class TestSchemaToProtoGenerator {
                 
         //@WrapProperty
         message testIntResponse {
-          int32 value = 1;
+          sint32 value = 1;
         }
         """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
@@ -157,7 +157,7 @@ public class TestSchemaToProtoGenerator {
                 
         message Model {
           string name = 1;
-          int32 age = 2;
+          sint32 age = 2;
         }
                 
         //@WrapProperty
@@ -178,7 +178,7 @@ public class TestSchemaToProtoGenerator {
                 
         message Model {
           string name = 1;
-          int32 age = 2;
+          sint32 age = 2;
         }
                 
         //@WrapProperty
@@ -199,44 +199,54 @@ public class TestSchemaToProtoGenerator {
                 .getSchema(), "request");
     Proto proto = protoGenerator.convert();
     assertEquals("""
-        syntax = "proto3";
-        package test.model;
-                
-        //@WrapProperty
-        message MapString {
-          map<string, string> value = 1;
-        }
-                
-        //@WrapProperty
-        message ListListString {
-          repeated ListString value = 1;
-        }
-                
-        message DeptInfo {
-          string name = 1;
-          string code = 2;
-        }
-                
-        //@WrapProperty
-        message ListString {
-          repeated string value = 1;
-        }
-                
-        message UserInfo {
-          repeated DeptInfo subDeptInfos = 1;
-          repeated MapString extraInfos = 2;
-          repeated ListListString nestedLists = 3;
-        }
-                
-        //@WrapProperty
-        message ListDeptInfo {
-          repeated DeptInfo value = 1;
-        }
-                
-        //@WrapProperty
-        message request {
-          UserInfo value = 1;
-        }
+       syntax = "proto3";
+       package test.model;
+       
+       //@WrapProperty
+       message MapString {
+         map<string, string> value = 1;
+       }
+       
+       //@WrapProperty
+       message ListListString {
+         repeated ListString value = 1;
+       }
+       
+       //@WrapProperty
+       message ListString {
+         repeated string value = 1;
+       }
+       
+       message ScoreInfo {
+         sint32 type = 1;
+       }
+       
+       message DeptInfo {
+         string name = 1;
+         string code = 2;
+         repeated ScoreInfo scores = 3;
+       }
+       
+       message UserInfo {
+         repeated DeptInfo subDeptInfos = 1;
+         repeated MapString extraInfos = 2;
+         repeated ListListString nestedLists = 3;
+       }
+       
+       //@WrapProperty
+       message ListScoreInfo {
+         repeated ScoreInfo value = 1;
+       }
+       
+       //@WrapProperty
+       message ListDeptInfo {
+         repeated DeptInfo value = 1;
+       }
+       
+       //@WrapProperty
+       message request {
+         UserInfo value = 1;
+       }
         """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 
@@ -251,23 +261,33 @@ public class TestSchemaToProtoGenerator {
                 .getSchema(), "request");
     Proto proto = protoGenerator.convert();
     assertEquals("""
-        syntax = "proto3";
-        package test.model;
-               
-        message DeptInfo {
-          string name = 1;
-          string code = 2;
-        }
-               
-        //@WrapProperty
-        message ListDeptInfo {
-          repeated DeptInfo value = 1;
-        }
-               
-        //@WrapProperty
-        message request {
-          repeated DeptInfo value = 1;
-        }
+       syntax = "proto3";
+       package test.model;
+       
+       message ScoreInfo {
+         sint32 type = 1;
+       }
+       
+       message DeptInfo {
+         string name = 1;
+         string code = 2;
+         repeated ScoreInfo scores = 3;
+       }
+       
+       //@WrapProperty
+       message ListScoreInfo {
+         repeated ScoreInfo value = 1;
+       }
+       
+       //@WrapProperty
+       message ListDeptInfo {
+         repeated DeptInfo value = 1;
+       }
+       
+       //@WrapProperty
+       message request {
+         repeated DeptInfo value = 1;
+       }
          """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 

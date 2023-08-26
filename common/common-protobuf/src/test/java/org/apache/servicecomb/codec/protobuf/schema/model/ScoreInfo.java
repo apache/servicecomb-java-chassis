@@ -16,36 +16,14 @@
  */
 package org.apache.servicecomb.codec.protobuf.schema.model;
 
-import java.util.List;
+public class ScoreInfo {
+  private Integer type;
 
-public class DeptInfo {
-  private String name;
-
-  private String code;
-
-  private List<ScoreInfo> scores;
-
-  public String getName() {
-    return name;
+  public Integer getType() {
+    return type;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getCode() {
-    return code;
-  }
-
-  public void setCode(String code) {
-    this.code = code;
-  }
-
-  public List<ScoreInfo> getScores() {
-    return scores;
-  }
-
-  public void setScores(List<ScoreInfo> scores) {
-    this.scores = scores;
+  public void setType(Integer type) {
+    this.type = type;
   }
 }
