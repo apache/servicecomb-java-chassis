@@ -48,7 +48,7 @@ public class TestTransportClientConfig {
 
   @Test
   public void getConnectionIdleTimeoutInSeconds() {
-    Assertions.assertEquals(30, TransportClientConfig.getConnectionIdleTimeoutInSeconds());
+    Assertions.assertEquals(150, TransportClientConfig.getConnectionIdleTimeoutInSeconds());
   }
 
   @Test
@@ -63,7 +63,7 @@ public class TestTransportClientConfig {
 
   @Test
   public void getHttp2ConnectionIdleTimeoutInSeconds() {
-    Assertions.assertEquals(0, TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds());
+    Assertions.assertEquals(150, TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds());
   }
 
   @Test
