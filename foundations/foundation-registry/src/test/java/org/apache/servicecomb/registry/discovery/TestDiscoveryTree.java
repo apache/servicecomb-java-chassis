@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -294,7 +293,6 @@ public class TestDiscoveryTree {
     DiscoveryContext discoveryContext = new DiscoveryContext();
     discoveryTree.addFilter(new InstanceStatusDiscoveryFilter());
 
-
     Map<String, MicroserviceInstance> service1 = new HashMap<>();
     MicroserviceInstance instance1 = Mockito.mock(MicroserviceInstance.class);
     MicroserviceInstance instance2 = Mockito.mock(MicroserviceInstance.class);
@@ -312,7 +310,7 @@ public class TestDiscoveryTree {
     VersionedCache expects0 = new VersionedCache().autoCacheVersion().name("0+").data(service1);
     VersionedCache[] expects999 = new VersionedCache[999];
     for (int i = 0; i < 999; i++) {
-      expects999[i] = new VersionedCache().name("0+").data(service1).cacheVersion(i+1);
+      expects999[i] = new VersionedCache().name("0+").data(service1).cacheVersion(i + 1);
     }
     Mockito.when(instanceCacheManager.getOrCreateVersionedCache("app", "service1",
         "0+")).thenReturn(expects0, expects999);

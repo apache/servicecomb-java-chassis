@@ -37,7 +37,6 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.MicroserviceKey;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
