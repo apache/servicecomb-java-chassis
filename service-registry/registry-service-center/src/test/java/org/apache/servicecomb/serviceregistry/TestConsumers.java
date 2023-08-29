@@ -23,7 +23,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.MicroserviceKey;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
@@ -83,12 +82,9 @@ public class TestConsumers extends TestRegistryBase {
     mockNotExist();
 
     MicroserviceKey key = new MicroserviceKey();
-    MicroserviceInstanceChangedEvent event = new MicroserviceInstanceChangedEvent();
-    event.setKey(key);
-
     key.setAppId(appId);
     key.setServiceName(serviceName);
-    eventBus.post(event);
+    microserviceManager.onMicroserviceInstancesChanged(key);
     long begin = System.currentTimeMillis();
     while (microserviceManager.getVersionsByName().size() > 0 && System.currentTimeMillis() - begin < 1000) {
       Thread.yield();

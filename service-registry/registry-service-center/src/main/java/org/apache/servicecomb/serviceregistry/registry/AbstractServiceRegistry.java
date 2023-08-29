@@ -26,7 +26,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -277,7 +276,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
       executorService.execute(new SuppressedRunnableWrapper(
           () -> {
             serviceRegistryCache.onMicroserviceInstanceChanged(changedEvent);
-            DiscoveryManager.INSTANCE.getAppManager().onMicroserviceInstanceChanged(changedEvent);
           }));
     } catch (Exception e) {
       LOGGER.info("instance changed event ignored, {}", e.getMessage());
