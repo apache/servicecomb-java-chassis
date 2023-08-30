@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.MicroserviceKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,13 +70,13 @@ public class AppManager {
     return microserviceManager.getOrCreateMicroserviceVersions(microserviceName);
   }
 
-  public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
-    MicroserviceManager microserviceManager = apps.get(changedEvent.getKey().getAppId());
+  public void onMicroserviceInstancesChanged(MicroserviceKey microserviceKey) {
+    MicroserviceManager microserviceManager = apps.get(microserviceKey.getAppId());
     if (microserviceManager == null) {
       return;
     }
 
-    microserviceManager.onMicroserviceInstanceChanged(changedEvent);
+    microserviceManager.onMicroserviceInstancesChanged(microserviceKey);
   }
 
   public void pullInstances() {

@@ -23,6 +23,9 @@ import org.apache.servicecomb.registry.api.registry.WatchAction;
 
 /**
  * Created by   on 2016/12/25.
+ *
+ * This event is sent by service-center watcher, and indicates the status(CREATE/UPDATE/DELETE, etc.)
+ * of one instance change.
  */
 public class MicroserviceInstanceChangedEvent {
   private WatchAction action;

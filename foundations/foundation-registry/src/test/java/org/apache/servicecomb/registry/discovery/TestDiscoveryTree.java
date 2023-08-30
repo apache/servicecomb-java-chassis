@@ -18,7 +18,12 @@
 package org.apache.servicecomb.registry.discovery;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -26,6 +31,8 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -42,6 +49,7 @@ public class TestDiscoveryTree {
   public void before() {
     ConfigUtil.installDynamicConfig();
   }
+
   @AfterEach
   public void tearDown() {
     ArchaiusUtils.resetConfig();
@@ -176,7 +184,6 @@ public class TestDiscoveryTree {
     Mockito.when(DiscoveryManager.INSTANCE.getInstanceCacheManager()).thenReturn(instanceCacheManager);
     Mockito.when(instanceCacheManager.getOrCreateVersionedCache(null, null, null)).thenReturn(parent);
 
-
     result = discoveryTree.discovery(context, null, null, null);
     Assertions.assertEquals(parent.name(), result.name());
     Assertions.assertEquals(parent.cacheVersion(), result.cacheVersion());
@@ -203,7 +210,7 @@ public class TestDiscoveryTree {
     discoveryTree.addFilter(filter);
 
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-            () -> result = discoveryTree.discovery(context, null, null, null));
+        () -> result = discoveryTree.discovery(context, null, null, null));
     Assertions.assertEquals(filter.getClass().getName() + " discovery return null.", exception.getMessage());
   }
 
@@ -277,5 +284,52 @@ public class TestDiscoveryTree {
 
     Assertions.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
     Assertions.assertNotSame(discoveryTree.getRoot(), root);
+  }
+
+  @Test
+  @SuppressWarnings("unchecked")
+  public void test_one_service_concurrent_correct() throws Exception {
+    DiscoveryTree discoveryTree = new DiscoveryTree();
+    DiscoveryContext discoveryContext = new DiscoveryContext();
+    discoveryTree.addFilter(new InstanceStatusDiscoveryFilter());
+
+    Map<String, MicroserviceInstance> service1 = new HashMap<>();
+    MicroserviceInstance instance1 = Mockito.mock(MicroserviceInstance.class);
+    MicroserviceInstance instance2 = Mockito.mock(MicroserviceInstance.class);
+    Mockito.when(instance1.getInstanceId()).thenReturn("instance1");
+    Mockito.when(instance1.getStatus()).thenReturn(MicroserviceInstanceStatus.UP);
+    Mockito.when(instance2.getInstanceId()).thenReturn("instance2");
+    Mockito.when(instance2.getStatus()).thenReturn(MicroserviceInstanceStatus.UP);
+    service1.put(instance1.getInstanceId(), instance1);
+    service1.put(instance2.getInstanceId(), instance2);
+
+    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    DiscoveryManager.INSTANCE = Mockito.spy(DiscoveryManager.INSTANCE);
+    Mockito.when(DiscoveryManager.INSTANCE.getInstanceCacheManager()).thenReturn(instanceCacheManager);
+
+    VersionedCache expects0 = new VersionedCache().autoCacheVersion().name("0+").data(service1);
+    VersionedCache[] expects999 = new VersionedCache[999];
+    for (int i = 0; i < 999; i++) {
+      expects999[i] = new VersionedCache().name("0+").data(service1).cacheVersion(i + 1);
+    }
+    Mockito.when(instanceCacheManager.getOrCreateVersionedCache("app", "service1",
+        "0+")).thenReturn(expects0, expects999);
+
+    CountDownLatch countDownLatch = new CountDownLatch(1000);
+    AtomicInteger success = new AtomicInteger(0);
+    for (int i = 0; i < 10; i++) {
+      new Thread(() -> {
+        for (int j = 0; j < 100; j++) {
+          DiscoveryTreeNode result = discoveryTree.discovery(discoveryContext, "app", "service1", "0+");
+          if (((Map<String, MicroserviceInstance>) result.data()).size() == 2) {
+            success.getAndIncrement();
+          }
+          countDownLatch.countDown();
+        }
+      }).start();
+    }
+
+    countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+    Assertions.assertEquals(1000, success.get());
   }
 }

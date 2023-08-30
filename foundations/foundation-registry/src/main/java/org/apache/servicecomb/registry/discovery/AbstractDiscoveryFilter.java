@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry.discovery;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,11 @@ public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
     String childName = findChildName(context, parent);
     DiscoveryTreeNode node = parent.child(childName);
     if (node == null) {
-      LOGGER.warn("discovery filter {} return null.", this.getClass().getName());
+      LOGGER.warn("discovery filter {}/{} return null.", this.getClass().getName(), childName);
       return new DiscoveryTreeNode().subName(parent, "empty").data(new HashMap<>());
+    }
+    if (node.data() == null || ((Map<?, ?>) node.data()).isEmpty()) {
+      LOGGER.info("discovery filter {}/{} return empty data.", this.getClass().getName(), childName);
     }
     return node;
   }

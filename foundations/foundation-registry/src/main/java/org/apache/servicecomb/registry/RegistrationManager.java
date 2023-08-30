@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -51,6 +50,7 @@ import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -64,9 +64,9 @@ public class RegistrationManager {
 
   private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
-  private static final SwaggerLoader swaggerLoader = new SwaggerLoader();
-
   public static RegistrationManager INSTANCE = new RegistrationManager();
+
+  private final SwaggerLoader swaggerLoader = new SwaggerLoader();
 
   private final List<Registration> registrationList = new ArrayList<>();
 
@@ -83,6 +83,11 @@ public class RegistrationManager {
   @VisibleForTesting
   public static void setINSTANCE(RegistrationManager INSTANCE) {
     RegistrationManager.INSTANCE = INSTANCE;
+  }
+
+  @VisibleForTesting
+  public static void renewInstance() {
+    RegistrationManager.INSTANCE = new RegistrationManager();
   }
 
   public MicroserviceInstance getMicroserviceInstance() {
@@ -307,7 +312,6 @@ public class RegistrationManager {
               publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
           .getHostAddress();
     }
-
 
     return new IpPort(publicAddressSetting, publishPort);
   }

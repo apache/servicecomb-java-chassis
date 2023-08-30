@@ -28,6 +28,7 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -55,6 +56,7 @@ public class CseAsyncClientHttpRequestTest {
   public static void classTeardown() {
     scbEngine.destroy();
     DiscoveryManager.renewInstance();
+    RegistrationManager.renewInstance();
     ArchaiusUtils.resetConfig();
   }
 

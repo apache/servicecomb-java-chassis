@@ -52,6 +52,9 @@ public class SwaggerLoader {
   // third key : schemaId
   private final Map<String, Map<String, Map<String, Swagger>>> apps = new ConcurrentHashMapEx<>();
 
+  // first key: appId + microservice short name + service id
+  private final Map<String, Swagger> remoteSwagger = new ConcurrentHashMapEx<>();
+
   public SwaggerLoader() {
   }
 
@@ -117,7 +120,7 @@ public class SwaggerLoader {
     apps.computeIfAbsent(appId, k -> new ConcurrentHashMapEx<>())
         .computeIfAbsent(shortName, k -> new ConcurrentHashMapEx<>())
         .put(schemaId, swagger);
-    LOGGER.info("register swagger appId={}, name={}, schemaId={}.", appId, shortName, schemaId);
+    LOGGER.debug("register swagger appId={}, name={}, schemaId={}.", appId, shortName, schemaId);
   }
 
   public void unregisterSwagger(String appId, String shortName, String schemaId) {
@@ -136,7 +139,7 @@ public class SwaggerLoader {
   }
 
   public Swagger loadLocalSwagger(String appId, String shortName, String schemaId) {
-    LOGGER.info("try to load schema locally, appId=[{}], serviceName=[{}], schemaId=[{}]",
+    LOGGER.debug("try to load schema locally, appId=[{}], serviceName=[{}], schemaId=[{}]",
         appId, shortName, schemaId);
     Swagger swagger = loadFromMemory(appId, shortName, schemaId);
     if (swagger != null) {
@@ -178,17 +181,25 @@ public class SwaggerLoader {
 
   private Swagger loadFromRemote(Microservice microservice, Collection<MicroserviceInstance> instances,
       String schemaId) {
-    String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), instances, schemaId);
-    if (schemaContent != null) {
-      LOGGER.info(
-          "load schema from service center, appId={}, microserviceName={}, version={}, serviceId={}, schemaId={}.",
-          microservice.getAppId(),
-          microservice.getServiceName(),
-          microservice.getVersion(),
-          microservice.getServiceId(),
-          schemaId);
-      LOGGER.debug(schemaContent);
-      return SwaggerUtils.parseAndValidateSwagger(schemaContent);
+    String key = microservice.getServiceId() + "." + schemaId;
+    Swagger result = remoteSwagger.computeIfAbsent(key, k -> {
+      String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), instances, schemaId);
+      if (schemaContent != null) {
+        LOGGER.info(
+            "load schema from service center, appId={}, microserviceName={}, version={}, serviceId={}, schemaId={}.",
+            microservice.getAppId(),
+            microservice.getServiceName(),
+            microservice.getVersion(),
+            microservice.getServiceId(),
+            schemaId);
+        LOGGER.debug(schemaContent);
+        return SwaggerUtils.parseAndValidateSwagger(schemaContent);
+      }
+      return null;
+    });
+
+    if (result != null) {
+      return result;
     }
 
     LOGGER.warn("no schema in local, and can not get schema from service center, "
