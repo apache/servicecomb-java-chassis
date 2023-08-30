@@ -133,13 +133,11 @@ public class SCBEngine {
 
   protected SCBEngine() {
     eventBus = EventManager.getEventBus();
-
     eventBus.register(this);
-
-    INSTANCE = this;
-
     producerProviderManager = new ProducerProviderManager(this);
     serviceRegistryListener = new ServiceRegistryListener(this);
+
+    INSTANCE = this;
   }
 
   public ApplicationContext getApplicationContext() {
