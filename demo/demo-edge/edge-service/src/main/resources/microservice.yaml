@@ -36,6 +36,10 @@ servicecomb:
     client:
       verticle-count: 1
       http2.useAlpnEnabled: false
+  loadbalance:
+    filter:
+      operation:
+        enabled: true
   handler:
     chain:
       Consumer:
