@@ -39,9 +39,9 @@ import com.netflix.config.DynamicPropertyFactory;
 /**
  * Isolate instances by error metrics
  */
-public class IsolationDiscoveryFilter implements ServerListFilterExt {
+public class IsolationServerListFilterExt implements ServerListFilterExt {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(IsolationServerListFilterExt.class);
 
   private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
@@ -65,7 +65,7 @@ public class IsolationDiscoveryFilter implements ServerListFilterExt {
     return ORDER_ISOLATION;
   }
 
-  public IsolationDiscoveryFilter() {
+  public IsolationServerListFilterExt() {
     emptyProtection.addCallback(() -> {
       boolean newValue = emptyProtection.get();
       LOGGER.info("{} changed from {} to {}", EMPTY_INSTANCE_PROTECTION, emptyProtection, newValue);

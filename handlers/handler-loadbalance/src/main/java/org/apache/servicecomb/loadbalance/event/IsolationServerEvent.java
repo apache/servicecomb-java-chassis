@@ -20,7 +20,7 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
-import org.apache.servicecomb.loadbalance.filterext.IsolationDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filterext.IsolationServerListFilterExt;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 public class IsolationServerEvent extends AlarmEvent {
@@ -52,7 +52,7 @@ public class IsolationServerEvent extends AlarmEvent {
 
   public IsolationServerEvent(Invocation invocation, MicroserviceInstance instance,
       ServiceCombServerStats serverStats,
-      IsolationDiscoveryFilter.Settings settings, Type type, Endpoint endpoint) {
+      IsolationServerListFilterExt.Settings settings, Type type, Endpoint endpoint) {
     super(type);
     this.microserviceName = invocation.getMicroserviceName();
     this.endpoint = endpoint;

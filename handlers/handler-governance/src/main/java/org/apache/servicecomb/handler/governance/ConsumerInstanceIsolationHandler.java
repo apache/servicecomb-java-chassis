@@ -17,19 +17,21 @@
 
 package org.apache.servicecomb.handler.governance;
 
+import java.time.Duration;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.governance.MatchType;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
-import org.apache.servicecomb.registry.api.MicroserviceKey;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
+import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -57,6 +59,12 @@ public class ConsumerInstanceIsolationHandler implements Handler {
     DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
     GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
 
+    CircuitBreakerPolicy circuitBreakerPolicy = instanceIsolationHandler.matchPolicy(request);
+    if (circuitBreakerPolicy != null && circuitBreakerPolicy.isForceOpen()) {
+      asyncResp.consumerFail(new InvocationException(Status.SERVICE_UNAVAILABLE,
+          "Policy " + circuitBreakerPolicy.getName() + " forced open and deny requests"));
+      return;
+    }
     addCircuitBreaker(dcs, request);
 
     dcs.get().whenComplete((r, e) -> {
@@ -67,7 +75,7 @@ public class ConsumerInstanceIsolationHandler implements Handler {
 
       if (e instanceof CallNotPermittedException) {
         LOGGER.warn("instance isolation circuitBreaker is open by policy : {}", e.getMessage());
-        ServiceCenterEventBus.getEventBus().post(createMicroserviceInstanceChangedEvent(invocation));
+        EventManager.post(createInstanceIsolatedEvent(circuitBreakerPolicy, request));
         // return 503 so that consumer can retry
         asyncResp.complete(
             Response.failResp(new InvocationException(503, "instance isolation circuitBreaker is open.",
@@ -78,13 +86,10 @@ public class ConsumerInstanceIsolationHandler implements Handler {
     });
   }
 
-  private Object createMicroserviceInstanceChangedEvent(Invocation invocation) {
-    MicroserviceInstanceChangedEvent event = new MicroserviceInstanceChangedEvent();
-    MicroserviceKey key = new MicroserviceKey();
-    key.setAppId(invocation.getAppId());
-    key.setServiceName(invocation.getMicroserviceName());
-    event.setKey(key);
-    return event;
+  private Object createInstanceIsolatedEvent(CircuitBreakerPolicy circuitBreakerPolicy,
+      GovernanceRequestExtractor requestExtractor) {
+    return new InstanceIsolatedEvent(requestExtractor.instanceId(),
+        Duration.parse(circuitBreakerPolicy.getWaitDurationInOpenState()));
   }
 
   private void addCircuitBreaker(DecorateCompletionStage<Response> dcs, GovernanceRequestExtractor request) {

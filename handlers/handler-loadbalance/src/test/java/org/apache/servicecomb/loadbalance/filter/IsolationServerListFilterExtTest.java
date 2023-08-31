@@ -28,7 +28,7 @@ import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.loadbalance.TestServiceCombServerStats;
-import org.apache.servicecomb.loadbalance.filterext.IsolationDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filterext.IsolationServerListFilterExt;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.junit.jupiter.api.AfterEach;
@@ -42,9 +42,9 @@ import mockit.Deencapsulation;
 import mockit.Mocked;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class IsolationDiscoveryFilterTest {
+public class IsolationServerListFilterExtTest {
 
-  private IsolationDiscoveryFilter filter;
+  private IsolationServerListFilterExt filter;
 
   private List<ServiceCombServer> servers;
 
@@ -73,7 +73,7 @@ public class IsolationDiscoveryFilterTest {
       ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer);
     }
 
-    filter = new IsolationDiscoveryFilter();
+    filter = new IsolationServerListFilterExt();
     TestServiceCombServerStats.releaseTryingChance();
   }
 
