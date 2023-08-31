@@ -82,7 +82,7 @@ public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.operation.enabled", true).get();
+        .getBooleanProperty("servicecomb.loadbalance.filter.operation.enabled", false).get();
   }
 
   @Override
