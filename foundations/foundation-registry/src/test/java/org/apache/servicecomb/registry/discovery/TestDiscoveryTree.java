@@ -20,6 +20,9 @@ package org.apache.servicecomb.registry.discovery;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -31,6 +34,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestDiscoveryTree {
   DiscoveryContext context = new DiscoveryContext();
@@ -131,7 +135,7 @@ public class TestDiscoveryTree {
     discoveryTree.setDiscoveryFilters(Arrays.asList(new DiscoveryFilterForTest("g1"),
         new DiscoveryFilterForTest(null), new DiscoveryFilterForTest("g2"),
         new DiscoveryFilterForTest(null)));
-    result = discoveryTree.discovery(context, parent);
+    result = discoveryTree.discovery("app", "service", context, parent);
 
     Assertions.assertEquals("1.0.0-2.0.0/g1/g2", result.name());
   }
@@ -150,7 +154,7 @@ public class TestDiscoveryTree {
   @Test
   public void discovery_filterReturnNull() {
     DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
-    Mockito.when(discoveryManager.getOrCreateVersionedCache(null, null)).thenReturn(parent);
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("app", "service")).thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     DiscoveryFilter filter = new DiscoveryFilter() {
       @Override
@@ -166,7 +170,7 @@ public class TestDiscoveryTree {
     discoveryTree.setDiscoveryFilters(Arrays.asList(filter));
 
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-        () -> result = discoveryTree.discovery(context, null, null));
+        () -> result = discoveryTree.discovery(context, "app", "service"));
     Assertions.assertEquals(filter.getClass().getName() + " discovery return null.", exception.getMessage());
   }
 
@@ -199,56 +203,79 @@ public class TestDiscoveryTree {
     DiscoveryTree discoveryTree = new DiscoveryTree(
         new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     discoveryTree.setDiscoveryFilters(Arrays.asList(f1, f2));
-    result = discoveryTree.discovery(context, parent);
+    result = discoveryTree.discovery("app", "service", context, parent);
 
     Assertions.assertEquals("second", result.data());
   }
 
   @Test
-  public void avoidConcurrentProblem() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(
-        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
-    discoveryTree.setRoot(parent.cacheVersion(1));
-    Assertions.assertTrue(parent.children().isEmpty());
+  @SuppressWarnings("unchecked")
+  public void test_multi_service_discovery_correct() {
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    DiscoveryContext discoveryContext = new DiscoveryContext();
 
-    discoveryTree.discovery(context, new VersionedCache().cacheVersion(0).name("input"));
-    Assertions.assertTrue(parent.children().isEmpty());
+    List<String> service1 = Arrays.asList("s11", "s12");
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("app", "service1"))
+        .thenReturn(new VersionedCache().name("0+").data(service1));
+    DiscoveryTreeNode result = discoveryTree.discovery(discoveryContext, "app", "service1");
+    Assertions.assertArrayEquals(service1.toArray(new String[0]),
+        ((List<String>) result.data()).toArray(new String[0]));
+
+    List<String> service2 = Arrays.asList("s21", "s22");
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("app", "service2"))
+        .thenReturn(new VersionedCache().name("0+").data(service2));
+    result = discoveryTree.discovery(discoveryContext, "app", "service2");
+    Assertions.assertArrayEquals(service2.toArray(new String[0]),
+        ((List<String>) result.data()).toArray(new String[0]));
+
+    result = discoveryTree.discovery(discoveryContext, "app", "service1");
+    Assertions.assertArrayEquals(service1.toArray(new String[0]),
+        ((List<String>) result.data()).toArray(new String[0]));
   }
 
   @Test
-  public void getOrCreateRoot_match() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(
-        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
-    discoveryTree.setRoot(parent);
+  @SuppressWarnings("unchecked")
+  public void test_one_service_concurrent_correct() throws Exception {
+    DiscoveryManager discoveryManager = Mockito.mock(DiscoveryManager.class);
+    DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
+    DiscoveryContext discoveryContext = new DiscoveryContext();
+    InstanceStatusDiscoveryFilter filter = new InstanceStatusDiscoveryFilter();
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment
+            .getProperty("servicecomb.loadbalance.filter.status.enabled", Boolean.class, true))
+        .thenReturn(true);
+    filter.setEnvironment(environment);
+    discoveryTree.setDiscoveryFilters(List.of(filter));
 
-    DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(parent);
+    StatefulDiscoveryInstance instance1 = Mockito.mock(StatefulDiscoveryInstance.class);
+    StatefulDiscoveryInstance instance2 = Mockito.mock(StatefulDiscoveryInstance.class);
 
-    Assertions.assertSame(parent, root);
-  }
+    VersionedCache expects0 = new VersionedCache().autoCacheVersion().name("0+")
+        .data(Arrays.asList(instance1, instance2));
+    VersionedCache[] expects999 = new VersionedCache[999];
+    for (int i = 0; i < 999; i++) {
+      expects999[i] = new VersionedCache().name("0+")
+          .data(Arrays.asList(instance1, instance2)).cacheVersion(i + 1);
+    }
+    Mockito.when(discoveryManager.getOrCreateVersionedCache("app", "service1"))
+        .thenReturn(expects0, expects999);
 
-  @Test
-  public void getOrCreateRoot_expired() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(
-        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
-    discoveryTree.setRoot(parent);
+    CountDownLatch countDownLatch = new CountDownLatch(1000);
+    AtomicInteger success = new AtomicInteger(0);
+    for (int i = 0; i < 10; i++) {
+      new Thread(() -> {
+        for (int j = 0; j < 100; j++) {
+          DiscoveryTreeNode result = discoveryTree.discovery(discoveryContext, "app", "service1");
+          if (((List<StatefulDiscoveryInstance>) result.data()).size() == 2) {
+            success.getAndIncrement();
+          }
+          countDownLatch.countDown();
+        }
+      }).start();
+    }
 
-    VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() + 1);
-    DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
-
-    Assertions.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
-    Assertions.assertSame(discoveryTree.getRoot(), root);
-  }
-
-  @Test
-  public void getOrCreateRoot_tempRoot() {
-    DiscoveryTree discoveryTree = new DiscoveryTree(
-        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
-    discoveryTree.setRoot(parent);
-
-    VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() - 1);
-    DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
-
-    Assertions.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
-    Assertions.assertNotSame(discoveryTree.getRoot(), root);
+    countDownLatch.await(3000, TimeUnit.MILLISECONDS);
+    Assertions.assertEquals(1000, success.get());
   }
 }
