@@ -19,15 +19,15 @@ package org.apache.servicecomb.registry.discovery;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.google.common.annotations.VisibleForTesting;
 
 /**
  * <pre>
@@ -73,7 +73,7 @@ import com.google.common.annotations.VisibleForTesting;
 public class DiscoveryTree {
   private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryTree.class);
 
-  private volatile DiscoveryTreeNode root;
+  private final Map<String, Map<String, DiscoveryTreeNode>> root = new ConcurrentHashMapEx<>();
 
   private final Object lock = new Object();
 
@@ -83,21 +83,6 @@ public class DiscoveryTree {
 
   public DiscoveryTree(DiscoveryManager discoveryManager) {
     this.discoveryManager = discoveryManager;
-  }
-
-  @VisibleForTesting
-  public void setRoot(DiscoveryTreeNode root) {
-    this.root = root;
-  }
-
-  @VisibleForTesting
-  public DiscoveryTreeNode getRoot() {
-    return root;
-  }
-
-  @VisibleForTesting
-  public List<DiscoveryFilter> getFilters() {
-    return filters;
   }
 
   @Autowired
@@ -113,43 +98,45 @@ public class DiscoveryTree {
     }
   }
 
-  protected boolean isMatch(VersionedCache existing, VersionedCache inputCache) {
+  boolean isMatch(VersionedCache existing, VersionedCache inputCache) {
     return existing != null && existing.isSameVersion(inputCache);
   }
 
-  protected boolean isExpired(VersionedCache existing, VersionedCache inputCache) {
+  boolean isExpired(VersionedCache existing, VersionedCache inputCache) {
     return existing == null || existing.isExpired(inputCache);
   }
 
   public DiscoveryTreeNode discovery(DiscoveryContext context, String appId, String microserviceName) {
     VersionedCache instanceVersionedCache = this.discoveryManager.getOrCreateVersionedCache(appId, microserviceName);
 
-    return discovery(context, instanceVersionedCache);
+    return discovery(appId, microserviceName, context, instanceVersionedCache);
   }
 
-  public DiscoveryTreeNode discovery(DiscoveryContext context, VersionedCache inputCache) {
-    DiscoveryTreeNode tmpRoot = getOrCreateRoot(inputCache);
+  DiscoveryTreeNode discovery(String appId, String microserviceName, DiscoveryContext context,
+      VersionedCache inputCache) {
+    DiscoveryTreeNode tmpRoot = getOrCreateRoot(appId, microserviceName, inputCache);
     DiscoveryTreeNode parent = tmpRoot.children()
         .computeIfAbsent(inputCache.name(), name -> new DiscoveryTreeNode().fromCache(inputCache));
     return doDiscovery(context, parent);
   }
 
-  protected DiscoveryTreeNode getOrCreateRoot(VersionedCache inputCache) {
-    DiscoveryTreeNode tmpRoot = root;
+  protected DiscoveryTreeNode getOrCreateRoot(String appId, String microserviceName, VersionedCache inputCache) {
+    DiscoveryTreeNode tmpRoot = root.computeIfAbsent(appId, k -> new ConcurrentHashMapEx<>()).get(microserviceName);
     if (isMatch(tmpRoot, inputCache)) {
       return tmpRoot;
     }
 
     synchronized (lock) {
-      if (isExpired(root, inputCache)) {
+      if (isExpired(tmpRoot, inputCache)) {
         // not initialized or inputCache newer than root, create new root
-        root = new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
-        return root;
+        tmpRoot = new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
+        root.get(appId).put(microserviceName, tmpRoot);
+        return tmpRoot;
       }
 
-      if (root.isSameVersion(inputCache)) {
+      if (tmpRoot.isSameVersion(inputCache)) {
         // reuse root directly
-        return root;
+        return tmpRoot;
       }
     }
 
@@ -159,7 +146,9 @@ public class DiscoveryTree {
     // 3) thread 1 go on, then root is newer than inputCache
     //    but if create old children in new version root, it's a wrong logic
     // so just create a temporary root for the inputCache, DO NOT assign to root
-    return new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
+    tmpRoot = new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
+    root.get(appId).put(microserviceName, tmpRoot);
+    return tmpRoot;
   }
 
   protected DiscoveryTreeNode doDiscovery(DiscoveryContext context, DiscoveryTreeNode parent) {
