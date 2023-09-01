@@ -250,7 +250,6 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private HttpServerOptions createDefaultHttpServerOptions() {
     HttpServerOptions serverOptions = new HttpServerOptions();
-    serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
     serverOptions.setMaxFormAttributeSize(TransportConfig.getMaxFormAttributeSize());
@@ -258,10 +257,13 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setMaxChunkSize(TransportConfig.getMaxChunkSize());
     serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
     serverOptions.setDecoderInitialBufferSize(TransportConfig.getDecoderInitialBufferSize());
-    serverOptions.setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
     if (endpointObject.isHttp2Enabled()) {
       serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
+          .setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize())
+          .setIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
+          .setReadIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
+          .setWriteIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
           .setInitialSettings(new Http2Settings().setPushEnabled(TransportConfig.getPushEnabled())
               .setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams())
               .setHeaderTableSize(TransportConfig.getHttp2HeaderTableSize())
@@ -269,6 +271,10 @@ public class RestServerVerticle extends AbstractVerticle {
               .setMaxFrameSize(TransportConfig.getMaxFrameSize())
               .setMaxHeaderListSize(TransportConfig.getMaxHeaderListSize())
           );
+    } else {
+      serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
+      serverOptions.setReadIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
+      serverOptions.setWriteIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =

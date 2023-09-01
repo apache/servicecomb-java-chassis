@@ -32,7 +32,7 @@ import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpServerOptions;
 
 public final class TransportConfig {
-  public static final int DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND = 60;
+  public static final int DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND = 180;
 
   public static final boolean DEFAULT_SERVER_COMPRESSION_SUPPORT = false;
 
@@ -99,6 +99,13 @@ public final class TransportConfig {
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty("servicecomb.rest.server.connection.idleTimeoutInSeconds",
+            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
+        .get();
+  }
+
+  public static int getHttp2ConnectionIdleTimeoutInSeconds() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.http2.connection.idleTimeoutInSeconds",
             DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
         .get();
   }

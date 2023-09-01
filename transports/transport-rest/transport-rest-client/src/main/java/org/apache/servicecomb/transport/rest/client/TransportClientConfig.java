@@ -22,9 +22,12 @@ import org.apache.servicecomb.transport.common.TransportConfigUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.net.TCPSSLOptions;
 
 public final class TransportClientConfig {
+  private static final int DEFAULT_IDLE_TIME_OUT = 150;
+
+  private static final int DEFAULT_KEEP_ALIVE_TIME_OUT = 60;
+
   private TransportClientConfig() {
   }
 
@@ -43,12 +46,6 @@ public final class TransportClientConfig {
   public static int getHttp2MultiplexingLimit() {
     return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.multiplexingLimit",
             HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT)
-        .get();
-  }
-
-  public static int getHttp2ConnectionIdleTimeoutInSeconds() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.http2.idleTimeoutInSeconds", TCPSSLOptions.DEFAULT_IDLE_TIMEOUT)
         .get();
   }
 
@@ -71,9 +68,15 @@ public final class TransportClientConfig {
         .get();
   }
 
+  public static int getHttp2ConnectionIdleTimeoutInSeconds() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.client.http2.connection.idleTimeoutInSeconds", DEFAULT_IDLE_TIME_OUT)
+        .get();
+  }
+
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.connection.idleTimeoutInSeconds", 30)
+        .getIntProperty("servicecomb.rest.client.connection.idleTimeoutInSeconds", DEFAULT_IDLE_TIME_OUT)
         .get();
   }
 
@@ -84,35 +87,17 @@ public final class TransportClientConfig {
   }
 
   public static int getConnectionKeepAliveTimeoutInSeconds() {
-    int result = DynamicPropertyFactory.getInstance()
+    return DynamicPropertyFactory.getInstance()
         .getIntProperty("servicecomb.rest.client.connection.keepAliveTimeoutInSeconds",
-            -1)
+            DEFAULT_KEEP_ALIVE_TIME_OUT)
         .get();
-    if (result >= 0) {
-      return result;
-    }
-    result = getConnectionIdleTimeoutInSeconds();
-    if (result > 1) {
-      // a bit shorter than ConnectionIdleTimeoutInSeconds
-      return result - 1;
-    }
-    return result;
   }
 
   public static int getHttp2ConnectionKeepAliveTimeoutInSeconds() {
-    int result = DynamicPropertyFactory.getInstance()
+    return DynamicPropertyFactory.getInstance()
         .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds",
-            -1)
+            DEFAULT_KEEP_ALIVE_TIME_OUT)
         .get();
-    if (result >= 0) {
-      return result;
-    }
-    result = getHttp2ConnectionIdleTimeoutInSeconds();
-    if (result > 1) {
-      // a bit shorter than ConnectionIdleTimeoutInSeconds
-      return result - 1;
-    }
-    return result;
   }
 
   public static boolean getConnectionCompression() {

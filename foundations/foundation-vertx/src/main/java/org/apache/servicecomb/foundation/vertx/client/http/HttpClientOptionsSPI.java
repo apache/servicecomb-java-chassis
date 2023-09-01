@@ -40,7 +40,7 @@ public interface HttpClientOptionsSPI {
   boolean enabled();
 
   /* config tag is used for group configurations, like ssl, address resolver, etc. set config tag to distinguish
-  *  other clients configuration or read the common configuration. */
+   *  other clients configuration or read the common configuration. */
   String getConfigTag();
 
   /* for config modules, the configuration is not ready, need set up config reader */
@@ -85,6 +85,7 @@ public interface HttpClientOptionsSPI {
   int getHttp2MaxPoolSize();
 
   boolean isUseAlpn();
+
   /*****************  proxy settings ***************************/
   boolean isProxyEnable();
 
@@ -105,12 +106,13 @@ public interface HttpClientOptionsSPI {
     httpClientOptions.setProtocolVersion(spi.getHttpVersion());
     httpClientOptions.setConnectTimeout(spi.getConnectTimeoutInMillis());
     httpClientOptions.setIdleTimeout(spi.getIdleTimeoutInSeconds());
+    httpClientOptions.setReadIdleTimeout(spi.getIdleTimeoutInSeconds());
+    httpClientOptions.setWriteIdleTimeout(spi.getIdleTimeoutInSeconds());
     httpClientOptions.setTryUseCompression(spi.isTryUseCompression());
     httpClientOptions.setMaxWaitQueueSize(spi.getMaxWaitQueueSize());
     httpClientOptions.setMaxPoolSize(spi.getMaxPoolSize());
     httpClientOptions.setKeepAlive(spi.isKeepAlive());
     httpClientOptions.setMaxHeaderSize(spi.getMaxHeaderSize());
-    httpClientOptions.setKeepAliveTimeout(spi.getKeepAliveTimeout());
 
     if (spi.isProxyEnable()) {
       ProxyOptions proxy = new ProxyOptions();
@@ -128,6 +130,8 @@ public interface HttpClientOptionsSPI {
       httpClientOptions.setHttp2MultiplexingLimit(spi.getHttp2MultiplexingLimit());
       httpClientOptions.setHttp2MaxPoolSize(spi.getHttp2MaxPoolSize());
       httpClientOptions.setHttp2KeepAliveTimeout(spi.getKeepAliveTimeout());
+    } else {
+      httpClientOptions.setKeepAliveTimeout(spi.getKeepAliveTimeout());
     }
 
     if (spi.isSsl()) {
