@@ -19,6 +19,7 @@ package org.apache.servicecomb.core;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
+import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -64,5 +65,10 @@ public class ServiceCombCoreConfiguration {
   @Bean
   public ServiceInformationCollector serviceInformationCollector() {
     return new ServiceInformationCollector();
+  }
+
+  @Bean
+  public ExecutorManager executorManager() {
+    return new ExecutorManager();
   }
 }

@@ -23,8 +23,8 @@ import java.util.concurrent.Executor;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class ExecutorManager {
   public static final String KEY_EXECUTORS_PREFIX = "servicecomb.executors.Provider.";
@@ -39,8 +39,15 @@ public class ExecutorManager {
 
   private final Map<String, Executor> executors = new ConcurrentHashMapEx<>();
 
+  private Environment environment;
+
   public ExecutorManager() {
     registerExecutor(EXECUTOR_REACTIVE, new ReactiveExecutor());
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   public void registerExecutor(String id, Executor executor) {
@@ -101,7 +108,7 @@ public class ExecutorManager {
   }
 
   protected Executor findByKey(String configKey) {
-    String id = DynamicPropertyFactory.getInstance().getStringProperty(configKey, null).get();
+    String id = environment.getProperty(configKey, String.class);
     if (id == null) {
       return null;
     }
