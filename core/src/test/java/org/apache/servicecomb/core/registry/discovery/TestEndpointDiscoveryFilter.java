@@ -18,7 +18,7 @@
 package org.apache.servicecomb.core.registry.discovery;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -59,9 +59,9 @@ public class TestEndpointDiscoveryFilter {
   @Test
   public void getTransportName() {
     invocation = Mockito.mock(Invocation.class);
-    Mockito.when(invocation.getConfigTransportName()).thenReturn(Const.RESTFUL);
+    Mockito.when(invocation.getConfigTransportName()).thenReturn(CoreConst.RESTFUL);
     context.setInputParameters(invocation);
-    Assertions.assertEquals(Const.RESTFUL, filter.findTransportName(context, null));
+    Assertions.assertEquals(CoreConst.RESTFUL, filter.findTransportName(context, null));
   }
 
   @Test
@@ -69,9 +69,9 @@ public class TestEndpointDiscoveryFilter {
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
-    Mockito.when(transportManager.findTransport(Const.RESTFUL)).thenReturn(null);
+    Mockito.when(transportManager.findTransport(CoreConst.RESTFUL)).thenReturn(null);
     filter.setScbEngine(scbEngine);
-    Assertions.assertNull(filter.createEndpoint(null, Const.RESTFUL, "", null));
+    Assertions.assertNull(filter.createEndpoint(null, CoreConst.RESTFUL, "", null));
   }
 
   @Test
@@ -85,11 +85,11 @@ public class TestEndpointDiscoveryFilter {
 
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
-    Mockito.when(transportManager.findTransport(Const.RESTFUL)).thenReturn(transport);
+    Mockito.when(transportManager.findTransport(CoreConst.RESTFUL)).thenReturn(transport);
     Mockito.when(transport.parseAddress(endpoint)).thenReturn(address);
     filter.setScbEngine(scbEngine);
 
-    Endpoint ep = (Endpoint) filter.createEndpoint(null, Const.RESTFUL, endpoint, instance);
+    Endpoint ep = (Endpoint) filter.createEndpoint(null, CoreConst.RESTFUL, endpoint, instance);
     Assertions.assertSame(transport, ep.getTransport());
     Assertions.assertSame(address, ep.getAddress());
     Assertions.assertSame(instance, ep.getMicroserviceInstance());

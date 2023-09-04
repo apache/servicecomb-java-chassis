@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.inspector.internal;
 
-import static org.apache.servicecomb.core.Const.RESTFUL;
+import static org.apache.servicecomb.core.CoreConst.RESTFUL;
 
 import java.io.IOException;
 import java.io.InputStream;

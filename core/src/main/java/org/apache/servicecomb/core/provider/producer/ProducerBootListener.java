@@ -24,20 +24,19 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.Environment;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
@@ -53,6 +52,8 @@ public class ProducerBootListener implements BootListener {
 
   private MicroserviceProperties microserviceProperties;
 
+  private Environment environment;
+
   @Autowired
   public void setRegistrationManager(RegistrationManager registrationManager) {
     this.registrationManager = registrationManager;
@@ -63,12 +64,15 @@ public class ProducerBootListener implements BootListener {
     this.microserviceProperties = microserviceProperties;
   }
 
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void onAfterTransport(BootEvent event) {
-    boolean exportToFile = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, true).get();
-    String filePath = DynamicPropertyFactory.getInstance()
-        .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, TMP_DIR).get() + PATTERN;
+    boolean exportToFile = environment.getProperty(CoreConst.SWAGGER_EXPORT_ENABLED, boolean.class, true);
+    String filePath = environment.getProperty(CoreConst.SWAGGER_DIRECTORY, String.class, TMP_DIR) + PATTERN;
 
     if (exportToFile) {
       LOGGER.info("export microservice swagger file to path {}", filePath);

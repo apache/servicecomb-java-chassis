@@ -17,14 +17,14 @@
 
 package org.apache.servicecomb.core.tracing;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 
 import brave.internal.Platform;
 
 public class BraveTraceIdGenerator implements TraceIdGenerator {
   @Override
   public String getTraceIdKeyName() {
-    return Const.TRACE_ID_NAME;
+    return CoreConst.TRACE_ID_NAME;
   }
 
   @Override

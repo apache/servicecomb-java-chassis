@@ -33,7 +33,7 @@ import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.filter.Filter;
@@ -73,7 +73,7 @@ public class RestServerCodecFilter implements ProviderFilter {
 
   @Override
   public boolean enabledForTransport(String transport) {
-    return Const.RESTFUL.equals(transport);
+    return CoreConst.RESTFUL.equals(transport);
   }
 
   @Override

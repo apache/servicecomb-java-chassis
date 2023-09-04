@@ -25,7 +25,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -162,7 +162,7 @@ public class RestProducerInvocationCreatorTest {
       Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
       Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
       Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
-      Mockito.when(requestEx.getHeader(Const.CSE_CONTEXT)).thenReturn("{\"k\":\"v\"}");
+      Mockito.when(requestEx.getHeader(CoreConst.CSE_CONTEXT)).thenReturn("{\"k\":\"v\"}");
 
       Invocation invocation = creator.createAsync().join();
 

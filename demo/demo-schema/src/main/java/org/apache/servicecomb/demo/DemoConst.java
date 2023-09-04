@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.demo;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 
 public interface DemoConst {
-  String[] transports = new String[] {"rest", "highway", Const.ANY_TRANSPORT};
+  String[] transports = new String[] {"rest", "highway", CoreConst.ANY_TRANSPORT};
 }

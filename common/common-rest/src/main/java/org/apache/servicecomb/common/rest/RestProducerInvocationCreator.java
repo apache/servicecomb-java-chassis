@@ -31,7 +31,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.config.YAMLUtil;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -89,7 +89,7 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   }
 
   protected void initInvocationContext(Invocation invocation) {
-    String strCseContext = requestEx.getHeader(Const.CSE_CONTEXT);
+    String strCseContext = requestEx.getHeader(CoreConst.CSE_CONTEXT);
     if (StringUtils.isEmpty(strCseContext)) {
       return;
     }

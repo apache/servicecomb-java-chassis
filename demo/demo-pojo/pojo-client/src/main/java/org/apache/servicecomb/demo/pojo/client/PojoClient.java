@@ -26,7 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
@@ -191,7 +191,7 @@ public class PojoClient {
 
   private static void testTraceIdOnContextContainsTraceId() {
     InvocationContext context = new InvocationContext();
-    context.addContext(Const.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
+    context.addContext(CoreConst.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
     ContextUtils.setInvocationContext(context);
     String traceId = test.testTraceId();
     TestMgr.check(String.valueOf(Long.MIN_VALUE), traceId);

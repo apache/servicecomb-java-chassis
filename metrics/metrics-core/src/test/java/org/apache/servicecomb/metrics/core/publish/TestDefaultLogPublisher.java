@@ -24,7 +24,7 @@ import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
@@ -168,7 +168,7 @@ public class TestDefaultLogPublisher {
       operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST, perfTotal);
       operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE, perfTotal);
 
-      OperationPerfGroup operationPerfGroup = new OperationPerfGroup(Const.RESTFUL, Status.OK.name());
+      OperationPerfGroup operationPerfGroup = new OperationPerfGroup(CoreConst.RESTFUL, Status.OK.name());
       operationPerfGroup.addOperationPerf(operationPerf);
 
       OperationPerfGroups operationPerfGroups = new OperationPerfGroups();

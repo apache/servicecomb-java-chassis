@@ -17,7 +17,7 @@
 package org.apache.servicecomb.metrics.core;
 
 import com.netflix.spectator.api.Measurement;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
@@ -65,7 +65,7 @@ public class TestInvocationMetersInitializer {
         invocation.getInvocationType();
         result = InvocationType.CONSUMER;
         invocation.getRealTransportName();
-        result = Const.RESTFUL;
+        result = CoreConst.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
         invocation.getInvocationStageTrace().calcTotalTime();
@@ -148,7 +148,7 @@ public class TestInvocationMetersInitializer {
         invocation.isEdge();
         result = true;
         invocation.getRealTransportName();
-        result = Const.RESTFUL;
+        result = CoreConst.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
         invocation.getInvocationStageTrace().calcTotalTime();
@@ -251,7 +251,7 @@ public class TestInvocationMetersInitializer {
         invocation.getInvocationType();
         result = InvocationType.PROVIDER;
         invocation.getRealTransportName();
-        result = Const.RESTFUL;
+        result = CoreConst.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
         invocation.getInvocationStageTrace().calcTotalTime();

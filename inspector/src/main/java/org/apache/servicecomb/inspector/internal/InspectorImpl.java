@@ -38,7 +38,7 @@ import org.apache.servicecomb.common.rest.resource.StaticResourceHandler;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.priority.PriorityProperty;
 import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
@@ -109,7 +109,7 @@ public class InspectorImpl {
   // ServiceComb consumer has not this problem
   // ServiceComb consumer not care for producer deploy with or without servlet
   public InspectorImpl correctBasePathForOnlineTest(SCBEngine scbEngine) {
-    Transport restTransport = scbEngine.getTransportManager().findTransport(Const.RESTFUL);
+    Transport restTransport = scbEngine.getTransportManager().findTransport(CoreConst.RESTFUL);
     if (restTransport == null ||
         !restTransport.getClass().getName()
             .equals("org.apache.servicecomb.transport.rest.servlet.ServletRestTransport")) {

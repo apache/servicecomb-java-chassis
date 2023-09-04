@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -32,7 +33,7 @@ public class ServletRestTransport extends AbstractTransport {
 
   @Override
   public String getName() {
-    return org.apache.servicecomb.core.Const.RESTFUL;
+    return CoreConst.RESTFUL;
   }
 
   @Override

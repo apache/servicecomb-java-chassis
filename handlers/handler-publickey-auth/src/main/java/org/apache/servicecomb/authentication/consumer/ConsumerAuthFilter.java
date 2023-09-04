@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -59,7 +59,7 @@ public class ConsumerAuthFilter implements ConsumerFilter {
       return CompletableFuture.failedFuture(
           new InvocationException(Status.SERVICE_UNAVAILABLE, "auth token is not properly configured yet."));
     }
-    invocation.addContext(Const.AUTH_TOKEN, token.get());
+    invocation.addContext(CoreConst.AUTH_TOKEN, token.get());
     return nextNode.onFilter(invocation);
   }
 }

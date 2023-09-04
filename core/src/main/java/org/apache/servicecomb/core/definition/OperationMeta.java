@@ -18,7 +18,7 @@ package org.apache.servicecomb.core.definition;
 
 import java.util.concurrent.Executor;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
@@ -67,11 +67,11 @@ public class OperationMeta {
   }
 
   public void setSwaggerProducerOperation(SwaggerProducerOperation swaggerProducerOperation) {
-    this.putExtData(Const.PRODUCER_OPERATION, swaggerProducerOperation);
+    this.putExtData(CoreConst.PRODUCER_OPERATION, swaggerProducerOperation);
   }
 
   public SwaggerProducerOperation getSwaggerProducerOperation() {
-    return (SwaggerProducerOperation) this.getExtData(Const.PRODUCER_OPERATION);
+    return (SwaggerProducerOperation) this.getExtData(CoreConst.PRODUCER_OPERATION);
   }
 
   public OperationConfig getConfig() {

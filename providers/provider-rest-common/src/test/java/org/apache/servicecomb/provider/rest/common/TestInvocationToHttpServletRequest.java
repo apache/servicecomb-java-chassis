@@ -27,7 +27,7 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
@@ -58,7 +58,7 @@ public class TestInvocationToHttpServletRequest {
 
   @BeforeEach
   public void setup() {
-    handlerContext.put(Const.REMOTE_ADDRESS, socketAddress);
+    handlerContext.put(CoreConst.REMOTE_ADDRESS, socketAddress);
     args = new HashMap<>();
 
    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
@@ -221,7 +221,7 @@ public class TestInvocationToHttpServletRequest {
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerOperation);
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-    handlerContext.remove(Const.REMOTE_ADDRESS);
+    handlerContext.remove(CoreConst.REMOTE_ADDRESS);
     Mockito.when(invocation.getHandlerContext()).thenReturn(handlerContext);
     InvocationToHttpServletRequest request = new InvocationToHttpServletRequest(invocation);
     String addr = request.getRemoteAddr();

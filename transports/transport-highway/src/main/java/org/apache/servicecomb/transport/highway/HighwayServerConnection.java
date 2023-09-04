@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -138,7 +138,7 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
     Invocation invocation = InvocationFactory.forProvider(endpoint,
         operationMeta,
         null);
-    invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, netSocket.remoteAddress());
+    invocation.getHandlerContext().put(CoreConst.REMOTE_ADDRESS, netSocket.remoteAddress());
 
     HighwayTransportContext transportContext = new HighwayTransportContext()
         .setConnection(this)

@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.invocation;
 
 import java.util.Map;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -43,14 +43,14 @@ public final class InvocationFactory {
   }
 
   public static Invocation setSrcMicroservice(Invocation invocation) {
-    invocation.addContext(Const.SRC_MICROSERVICE, SCBEngine.getInstance().getMicroserviceProperties().getName());
+    invocation.addContext(CoreConst.SRC_MICROSERVICE, SCBEngine.getInstance().getMicroserviceProperties().getName());
     // TODO: hard code registry name here. This is an old feature not for all registry implementations.
     if (addSourceServiceId()) {
-      invocation.addContext(Const.SRC_SERVICE_ID,
+      invocation.addContext(CoreConst.SRC_SERVICE_ID,
           SCBEngine.getInstance().getRegistrationManager().getServiceId("sc-registration"));
     }
     if (addSourceInstanceId()) {
-      invocation.addContext(Const.SRC_INSTANCE_ID,
+      invocation.addContext(CoreConst.SRC_INSTANCE_ID,
           SCBEngine.getInstance().getRegistrationManager().getInstanceId("sc-registration"));
     }
     return invocation;

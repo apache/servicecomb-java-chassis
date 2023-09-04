@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ class OperationConfigTest {
 
       long nano = TimeUnit.MILLISECONDS.toNanos(2);
       assertThat(config.getNanoRestRequestWaitInPoolTimeout()).isEqualTo(nano);
-      assertThat(config.getNanoRequestWaitInPoolTimeout(Const.RESTFUL)).isEqualTo(nano);
+      assertThat(config.getNanoRequestWaitInPoolTimeout(CoreConst.RESTFUL)).isEqualTo(nano);
     }
 
     @Test
@@ -47,7 +47,7 @@ class OperationConfigTest {
 
       long nano = TimeUnit.MILLISECONDS.toNanos(2);
       assertThat(config.getNanoHighwayRequestWaitInPoolTimeout()).isEqualTo(nano);
-      assertThat(config.getNanoRequestWaitInPoolTimeout(Const.HIGHWAY)).isEqualTo(nano);
+      assertThat(config.getNanoRequestWaitInPoolTimeout(CoreConst.HIGHWAY)).isEqualTo(nano);
     }
 
     @Test

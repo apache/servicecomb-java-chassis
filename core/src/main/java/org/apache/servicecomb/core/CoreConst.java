@@ -19,8 +19,8 @@ package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 
-public final class Const {
-  private Const() {
+public final class CoreConst {
+  private CoreConst() {
   }
 
   public static final String CSE_CONTEXT = "x-cse-context";
@@ -55,4 +55,8 @@ public final class Const {
 
   // controlling whether to print stack information with sensitive errors
   public static final String PRINT_SENSITIVE_ERROR_MESSAGE = "servicecomb.error.printSensitiveErrorMessage";
+
+  public static final String SWAGGER_EXPORT_ENABLED = "servicecomb.swagger.export.enabled";
+
+  public static final String SWAGGER_DIRECTORY = "servicecomb.swagger.export.directory";
 }

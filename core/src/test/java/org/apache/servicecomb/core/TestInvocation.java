@@ -173,12 +173,12 @@ public class TestInvocation {
   @Test
   public void traceId_fromContext(@Mocked ReferenceConfig referenceConfig) {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
-    invocation.addContext(Const.TRACE_ID_NAME, "abc");
+    invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
 
     invocation.onStart(0);
 
     Assertions.assertEquals("abc", invocation.getTraceId());
-    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
   }
 
   @Test
@@ -195,14 +195,14 @@ public class TestInvocation {
     invocation.onStart(0);
 
     Assertions.assertEquals("abc", invocation.getTraceId());
-    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
   }
 
   @Test
   public void traceId_fromRequest(@Mocked Endpoint endpoint, @Mocked HttpServletRequestEx requestEx) {
     new Expectations() {
       {
-        requestEx.getHeader(Const.TRACE_ID_NAME);
+        requestEx.getHeader(CoreConst.TRACE_ID_NAME);
         result = "abc";
       }
     };
@@ -211,7 +211,7 @@ public class TestInvocation {
     invocation.onStart(requestEx, 0);
 
     Assertions.assertEquals("abc", invocation.getTraceId());
-    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
   }
 
   @Test
@@ -228,7 +228,7 @@ public class TestInvocation {
     invocation.onStart(requestEx, 0);
 
     Assertions.assertEquals("abc", invocation.getTraceId());
-    Assertions.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+    Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
   }
 
   @Test
@@ -306,12 +306,12 @@ public class TestInvocation {
     Invocation.INVOCATION_ID.set(0);
 
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
-    invocation.addContext(Const.TRACE_ID_NAME, "abc");
+    invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
     Assertions.assertEquals("abc-0", invocation.getTraceIdLogger().getName());
 
     invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
-    invocation.addContext(Const.TRACE_ID_NAME, "abc");
+    invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
     Assertions.assertEquals("abc-1", invocation.getTraceIdLogger().getName());
   }

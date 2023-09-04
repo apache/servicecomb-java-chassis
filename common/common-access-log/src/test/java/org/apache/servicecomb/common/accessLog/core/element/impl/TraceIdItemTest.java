@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
@@ -70,7 +70,7 @@ public class TraceIdItemTest {
   public void serverGetFormattedElementFromInvocationContext() {
     Map<String, Object> data = new HashMap<>();
     String traceIdTest = "traceIdTest";
-    when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn(traceIdTest);
+    when(invocation.getContext(CoreConst.TRACE_ID_NAME)).thenReturn(traceIdTest);
     when(routingContext.data()).thenReturn(data);
     data.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
 
@@ -81,7 +81,7 @@ public class TraceIdItemTest {
   @Test
   public void clientGetFormattedElementFromInvocationContext() {
     String traceIdTest = "traceIdTest";
-    clientContext.put(Const.TRACE_ID_NAME, traceIdTest);
+    clientContext.put(CoreConst.TRACE_ID_NAME, traceIdTest);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getContext()).thenReturn(clientContext);
 
@@ -93,11 +93,11 @@ public class TraceIdItemTest {
   public void serverGetFormattedElementFromRequestHeader() {
     Map<String, Object> data = new HashMap<>();
     String traceIdTest = "traceIdTest";
-    when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn(null);
+    when(invocation.getContext(CoreConst.TRACE_ID_NAME)).thenReturn(null);
     when(routingContext.data()).thenReturn(data);
     data.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
 
-    when(serverRequest.getHeader(Const.TRACE_ID_NAME)).thenReturn(traceIdTest);
+    when(serverRequest.getHeader(CoreConst.TRACE_ID_NAME)).thenReturn(traceIdTest);
     when(routingContext.request()).thenReturn(serverRequest);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
     MatcherAssert.assertThat(strBuilder.toString(), is(traceIdTest));
@@ -106,24 +106,24 @@ public class TraceIdItemTest {
   @Test
   public void serverGetFormattedElementOnTraceIdNotFound() {
     Map<String, Object> data = new HashMap<>();
-    when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn("");
+    when(invocation.getContext(CoreConst.TRACE_ID_NAME)).thenReturn("");
     when(routingContext.data()).thenReturn(data);
     data.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
 
-    when(serverRequest.getHeader(Const.TRACE_ID_NAME)).thenReturn(null);
+    when(serverRequest.getHeader(CoreConst.TRACE_ID_NAME)).thenReturn(null);
     when(routingContext.request()).thenReturn(serverRequest);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
     MatcherAssert.assertThat(strBuilder.toString(), is("-"));
 
     strBuilder = new StringBuilder();
-    when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn(null);
+    when(invocation.getContext(CoreConst.TRACE_ID_NAME)).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
     MatcherAssert.assertThat(strBuilder.toString(), is("-"));
   }
 
   @Test
   public void clientGetFormattedElementOnTraceIdNotFound() {
-    clientContext.put(Const.TRACE_ID_NAME, null);
+    clientContext.put(CoreConst.TRACE_ID_NAME, null);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getContext()).thenReturn(clientContext);
 
@@ -135,7 +135,7 @@ public class TraceIdItemTest {
   public void serverGetFormattedElementOnInvocationContextIsNull() {
     when(routingContext.data()).thenReturn(null);
     when(routingContext.request()).thenReturn(serverRequest);
-    when(serverRequest.getHeader(Const.TRACE_ID_NAME)).thenReturn(null);
+    when(serverRequest.getHeader(CoreConst.TRACE_ID_NAME)).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);
     MatcherAssert.assertThat(strBuilder.toString(), is("-"));
   }
@@ -151,7 +151,7 @@ public class TraceIdItemTest {
 
   @Test
   public void serverGetFormattedElementOnDataIsNull() {
-    when(serverRequest.getHeader(Const.TRACE_ID_NAME)).thenReturn(null);
+    when(serverRequest.getHeader(CoreConst.TRACE_ID_NAME)).thenReturn(null);
     when(routingContext.request()).thenReturn(serverRequest);
     when(routingContext.data()).thenReturn(null);
     ELEMENT.appendServerFormattedItem(accessLogEvent, strBuilder);

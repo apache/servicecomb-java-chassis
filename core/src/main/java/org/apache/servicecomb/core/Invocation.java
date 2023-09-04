@@ -445,7 +445,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public String getTraceId() {
-    return getContext(Const.TRACE_ID_NAME);
+    return getContext(CoreConst.TRACE_ID_NAME);
   }
 
   public String getTraceId(String traceIdName) {

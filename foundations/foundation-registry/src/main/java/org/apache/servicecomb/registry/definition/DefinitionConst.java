@@ -34,8 +34,4 @@ public interface DefinitionConst {
   String INSTANCE_PUBKEY_PRO = "publickey";
 
   String REGISTER_URL_PREFIX = "servicecomb.registry.registerUrlPrefix";
-
-  String SWAGGER_EXPORT_ENABLED = "servicecomb.swagger.export.enabled";
-
-  String SWAGGER_DIRECTORY = "servicecomb.swagger.export.directory";
 }

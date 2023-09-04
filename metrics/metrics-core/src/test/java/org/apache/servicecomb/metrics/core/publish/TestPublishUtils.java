@@ -21,7 +21,7 @@ import java.util.Map;
 
 import jakarta.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
@@ -68,11 +68,11 @@ public class TestPublishUtils {
   public void addOperationPerfGroups() {
     OperationPerfGroups groups = new OperationPerfGroups();
     PublishUtils.addOperationPerfGroups(groups,
-        Const.RESTFUL,
+        CoreConst.RESTFUL,
         op,
         Utils.createStatusNode(Status.OK.name(), Utils.totalStageNode));
 
-    Map<String, OperationPerfGroup> statusMap = groups.getGroups().get(Const.RESTFUL);
+    Map<String, OperationPerfGroup> statusMap = groups.getGroups().get(CoreConst.RESTFUL);
     OperationPerfGroup group = statusMap.get(Status.OK.name());
 
     PerfInfo perfInfo = group.getSummary().findStage(MeterInvocationConst.STAGE_TOTAL);

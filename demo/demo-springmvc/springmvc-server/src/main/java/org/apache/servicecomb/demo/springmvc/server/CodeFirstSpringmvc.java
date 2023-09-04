@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
 import org.apache.servicecomb.demo.compute.GenericParam;
@@ -140,10 +140,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
   public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
+    headers.add("h1", "h1v " + c1.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
+    headers.add("h2", "h2v " + c2.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
@@ -166,10 +166,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/cseResponse", method = RequestMethod.GET)
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
-    response.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
+    response.addHeader("h1", "h1v " + c1.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    response.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
+    response.addHeader("h2", "h2v " + c2.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     return response;
   }
@@ -183,10 +183,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/cseResponseCorrect", method = RequestMethod.GET)
   public Response cseResponseCorrect(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
-    response.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
+    response.addHeader("h1", "h1v " + c1.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    response.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
+    response.addHeader("h2", "h2v " + c2.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     return response;
   }
@@ -414,7 +414,7 @@ public class CodeFirstSpringmvc {
 
   @GetMapping(path = "/traceId")
   public String getTraceId() {
-    return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
+    return ContextUtils.getInvocationContext().getContext(CoreConst.TRACE_ID_NAME);
   }
 
   @PostMapping(path = "/emptyObject")
