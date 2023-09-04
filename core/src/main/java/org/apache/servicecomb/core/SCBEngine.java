@@ -60,12 +60,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.ws.rs.core.Response.Status;
@@ -73,9 +73,9 @@ import jakarta.ws.rs.core.Response.Status;
 public class SCBEngine {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCBEngine.class);
 
-  static final String CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC = "servicecomb.boot.turnDown.waitInSeconds";
+  public static final String CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC = "servicecomb.boot.turnDown.waitInSeconds";
 
-  static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
+  public static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
 
   // TODO: will remove in future. Too many codes need refactor.
   private static volatile SCBEngine INSTANCE;
@@ -122,6 +122,8 @@ public class SCBEngine {
 
   private DiscoveryManager discoveryManager;
 
+  private Environment environment;
+
   private final Map<String, MicroserviceReferenceConfig> referenceConfigs = new ConcurrentHashMapEx<>();
 
   private final Object referenceConfigsLock = new Object();
@@ -142,6 +144,15 @@ public class SCBEngine {
           new CommonExceptionData("SCBEngine is not initialized yet."));
     }
     return INSTANCE;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  public Environment getEnvironment() {
+    return this.environment;
   }
 
   @Autowired
@@ -479,9 +490,8 @@ public class SCBEngine {
 
   private void blockShutDownOperationForConsumerRefresh() {
     try {
-      long turnDownWaitSeconds = DynamicPropertyFactory.getInstance()
-          .getLongProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)
-          .get();
+      long turnDownWaitSeconds = environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+          long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
       if (turnDownWaitSeconds <= 0) {
         return;
       }

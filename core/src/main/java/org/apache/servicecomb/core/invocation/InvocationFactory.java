@@ -27,8 +27,6 @@ import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 public final class InvocationFactory {
   private InvocationFactory() {
   }
@@ -57,13 +55,13 @@ public final class InvocationFactory {
   }
 
   public static boolean addSourceServiceId() {
-    return DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.context.source.serviceId", true).get();
+    return SCBEngine.getInstance().getEnvironment().
+        getProperty("servicecomb.context.source.serviceId", boolean.class, true);
   }
 
   public static boolean addSourceInstanceId() {
-    return DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.context.source.instanceId", true).get();
+    return SCBEngine.getInstance().getEnvironment().
+        getProperty("servicecomb.context.source.instanceId", boolean.class, true);
   }
 
   /*

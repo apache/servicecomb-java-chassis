@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
 import static org.hamcrest.core.Is.is;
 
 import java.io.File;
@@ -39,6 +41,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -171,6 +174,11 @@ public class TestRestOperationMeta {
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     scbEngine.setTransportManager(transportManager);
     scbEngine.setExecutorManager(executorManager);
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine.setEnvironment(environment);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+
     List<BootListener> listeners = new ArrayList<>();
     listeners.add(new RestEngineSchemaListener());
     scbEngine.setBootListeners(listeners);

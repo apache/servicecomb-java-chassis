@@ -62,7 +62,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
@@ -99,10 +98,6 @@ public final class InvokerUtils {
     }
     return reactiveRetryPool;
   }
-
-  private static final boolean ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK =
-      DynamicPropertyFactory.getInstance()
-          .getBooleanProperty("servicecomb.invocation.enableEventLoopBlockingCallCheck", true).get();
 
   @SuppressWarnings({"unchecked"})
   public static <T> T syncInvoke(String microserviceName, String transport,
@@ -185,7 +180,10 @@ public final class InvokerUtils {
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
   public static Response innerSyncInvoke(Invocation invocation) {
-    if (ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK && isInEventLoop()) {
+    if (isInEventLoop() &&
+        SCBEngine.getInstance()
+            .getEnvironment()
+            .getProperty("servicecomb.invocation.enableEventLoopBlockingCallCheck", boolean.class, true)) {
       throw new IllegalStateException("Can not execute sync logic in event loop.");
     }
     return toSync(invoke(invocation), invocation.getWaitTime());

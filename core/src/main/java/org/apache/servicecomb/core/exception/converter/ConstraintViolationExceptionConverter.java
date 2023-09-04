@@ -22,35 +22,21 @@ import static org.apache.servicecomb.core.exception.ExceptionCodes.DEFAULT_VALID
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.validation.ConstraintViolationException;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class ConstraintViolationExceptionConverter implements ExceptionConverter<ConstraintViolationException> {
   public static final int ORDER = Short.MAX_VALUE;
 
   public static final String KEY_CODE = "servicecomb.filters.validate.code";
 
-  private DynamicStringProperty code;
-
   public ConstraintViolationExceptionConverter() {
-    refreshCode();
-  }
-
-  /**
-   * during UT, DynamicPropertyFactory will be reset, this caused code can not changed by event
-   */
-  @VisibleForTesting
-  public void refreshCode() {
-    code = DynamicPropertyFactory.getInstance().getStringProperty(KEY_CODE, DEFAULT_VALIDATE);
   }
 
   @Override
@@ -70,7 +56,8 @@ public class ConstraintViolationExceptionConverter implements ExceptionConverter
         .map(violation -> new ValidateDetail(violation.getPropertyPath().toString(), violation.getMessage()))
         .collect(Collectors.toList());
 
-    CommonExceptionData exceptionData = new CommonExceptionData(code.get(), "invalid parameters.");
+    CommonExceptionData exceptionData = new CommonExceptionData(SCBEngine.getInstance().getEnvironment().
+        getProperty(KEY_CODE, String.class, DEFAULT_VALIDATE), "invalid parameters.");
     exceptionData.putDynamic("validateDetail", details);
     return new InvocationException(BAD_REQUEST, exceptionData);
   }
