@@ -20,11 +20,13 @@ import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
 import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 @SuppressWarnings("unused")
@@ -70,5 +72,12 @@ public class ServiceCombCoreConfiguration {
   @Bean
   public ExecutorManager executorManager() {
     return new ExecutorManager();
+  }
+
+  @Bean(value = {"cse.executor.groupThreadPool", "cse.executor.default", "servicecomb.executor.groupThreadPool"})
+  public GroupExecutor groupExecutor(Environment environment) {
+    GroupExecutor groupExecutor = new GroupExecutor(environment);
+    groupExecutor.init();
+    return groupExecutor;
   }
 }
