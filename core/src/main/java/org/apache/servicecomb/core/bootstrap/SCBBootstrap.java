@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
@@ -43,6 +45,8 @@ public class SCBBootstrap {
     result.setBootListeners(Collections.emptyList());
     result.setMicroserviceProperties(microserviceProperties);
     result.setBootUpInformationCollectors(Collections.emptyList());
+    result.setExecutorManager(new ExecutorManager());
+    result.setTransportManager(new TransportManager());
     return result;
   }
 }

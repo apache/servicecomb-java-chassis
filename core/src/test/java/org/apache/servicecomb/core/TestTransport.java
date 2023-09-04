@@ -21,6 +21,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.env.Environment;
 
 public class TestTransport {
   @BeforeAll
@@ -40,6 +41,10 @@ public class TestTransport {
         return "127.0.0.1";
       }
 
+      @Override
+      public void setEnvironment(Environment environment) {
+
+      }
       @Override
       public boolean init() {
         return true;

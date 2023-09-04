@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core;
 
+import org.springframework.core.env.Environment;
+
 // TODO:感觉要拆成显式的client、server才好些
 public interface Transport {
   String getName();
@@ -30,6 +32,8 @@ public interface Transport {
   }
 
   boolean init() throws Exception;
+
+  void setEnvironment(Environment environment);
 
   /*
    * endpoint的格式为 URI，比如rest://192.168.1.1:8080
