@@ -102,7 +102,7 @@ public class SCBEngine {
 
   private final EventBus eventBus;
 
-  private ExecutorManager executorManager = new ExecutorManager();
+  private ExecutorManager executorManager;
 
   private PriorityPropertyManager priorityPropertyManager;
 
@@ -182,6 +182,11 @@ public class SCBEngine {
     this.microserviceProperties = microserviceProperties;
   }
 
+  @Autowired
+  public void setExecutorManager(ExecutorManager executorManager) {
+    this.executorManager = executorManager;
+  }
+
   public RegistrationManager getRegistrationManager() {
     return this.registrationManager;
   }
@@ -238,10 +243,6 @@ public class SCBEngine {
 
   public ExecutorManager getExecutorManager() {
     return executorManager;
-  }
-
-  public void setExecutorManager(ExecutorManager executorManager) {
-    this.executorManager = executorManager;
   }
 
   public ProducerProviderManager getProducerProviderManager() {
