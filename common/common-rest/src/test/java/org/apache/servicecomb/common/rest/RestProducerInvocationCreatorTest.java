@@ -18,6 +18,8 @@
 package org.apache.servicecomb.common.rest;
 
 import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -46,6 +48,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.json.Json;
 import io.vertx.ext.web.RoutingContext;
@@ -85,6 +88,10 @@ public class RestProducerInvocationCreatorTest {
 
     engine = SCBBootstrap.createSCBEngineForTest();
     engine.setStatus(SCBStatus.UP);
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    engine.setEnvironment(environment);
   }
 
   @AfterAll

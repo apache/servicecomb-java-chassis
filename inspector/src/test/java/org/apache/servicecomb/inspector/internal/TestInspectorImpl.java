@@ -17,6 +17,8 @@
 package org.apache.servicecomb.inspector.internal;
 
 import static org.apache.servicecomb.core.CoreConst.RESTFUL;
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,6 +59,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.netflix.config.DynamicProperty;
 
@@ -83,6 +86,10 @@ public class TestInspectorImpl {
 
   private static InspectorImpl initInspector(String urlPrefix) {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine.setEnvironment(environment);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
     scbEngine.getTransportManager().clearTransportBeforeInit();
 
     if (StringUtils.isNotEmpty(urlPrefix)) {

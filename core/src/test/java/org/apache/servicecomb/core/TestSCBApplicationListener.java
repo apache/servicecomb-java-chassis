@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.core;
 
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
+
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -25,6 +28,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.core.env.Environment;
 
 public class TestSCBApplicationListener {
   @BeforeEach
@@ -41,6 +45,10 @@ public class TestSCBApplicationListener {
   public void onApplicationEvent_close() {
     ContextClosedEvent contextClosedEvent = Mockito.mock(ContextClosedEvent.class);
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine.setEnvironment(environment);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
     scbEngine.setStatus(SCBStatus.UP);
 
     SCBApplicationListener listener = new SCBApplicationListener(scbEngine);

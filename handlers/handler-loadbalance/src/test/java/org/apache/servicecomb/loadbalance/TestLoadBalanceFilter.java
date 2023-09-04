@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +41,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import mockit.Deencapsulation;
 import mockit.Injectable;
@@ -71,7 +76,12 @@ public class TestLoadBalanceFilter {
   @Before
   public void setUp() {
     ConfigUtil.installDynamicConfig();
-    scbEngine = SCBBootstrap.createSCBEngineForTest().run();
+    scbEngine = SCBBootstrap.createSCBEngineForTest();
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine.setEnvironment(environment);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    scbEngine.run();
     transportManager = scbEngine.getTransportManager();
 
     new MockUp<Invocation>(invocation) {
