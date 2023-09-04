@@ -17,25 +17,40 @@
 
 package org.apache.servicecomb.core.executor;
 
+import static org.apache.servicecomb.core.executor.GroupExecutor.KEY_CORE_THREADS;
+import static org.apache.servicecomb.core.executor.GroupExecutor.KEY_GROUP;
+import static org.apache.servicecomb.core.executor.GroupExecutor.KEY_MAX_IDLE_SECOND;
+import static org.apache.servicecomb.core.executor.GroupExecutor.KEY_MAX_QUEUE_SIZE;
+import static org.apache.servicecomb.core.executor.GroupExecutor.KEY_MAX_THREADS;
+import static org.apache.servicecomb.core.executor.GroupExecutor.KEY_OLD_MAX_THREAD;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-
-import mockit.Deencapsulation;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import mockit.Deencapsulation;
 
 public class TestGroupExecutor {
   String strThreadTest = "default";
 
   @BeforeEach
   public void setup() {
-    ArchaiusUtils.resetConfig();
+    Mockito.when(environment.getProperty(KEY_GROUP, int.class, 2)).thenReturn(2);
+    Mockito.when(environment.getProperty(KEY_CORE_THREADS, int.class, 25)).thenReturn(25);
+    Mockito.when(environment.getProperty(KEY_MAX_IDLE_SECOND, int.class, 60)).thenReturn(60);
+    Mockito.when(environment.getProperty(KEY_MAX_THREADS, int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(KEY_OLD_MAX_THREAD, int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(KEY_MAX_QUEUE_SIZE, int.class, Integer.MAX_VALUE))
+        .thenReturn(Integer.MAX_VALUE);
   }
 
   @AfterAll
@@ -43,14 +58,16 @@ public class TestGroupExecutor {
     ArchaiusUtils.resetConfig();
   }
 
-  GroupExecutor groupExecutor = new GroupExecutor();
+  Environment environment = Mockito.mock(Environment.class);
+
+  GroupExecutor groupExecutor = new GroupExecutor(environment);
 
   @Test
   public void groupCount() {
     groupExecutor.initConfig();
     Assertions.assertEquals(2, groupExecutor.groupCount);
 
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_GROUP, 4);
+    Mockito.when(environment.getProperty(KEY_GROUP, int.class, 2)).thenReturn(4);
     groupExecutor.initConfig();
     Assertions.assertEquals(4, groupExecutor.groupCount);
   }
@@ -60,7 +77,7 @@ public class TestGroupExecutor {
     groupExecutor.initConfig();
     Assertions.assertEquals(25, groupExecutor.coreThreads);
 
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_CORE_THREADS, 100);
+    Mockito.when(environment.getProperty(KEY_CORE_THREADS, int.class, 25)).thenReturn(100);
     groupExecutor.initConfig();
     Assertions.assertEquals(100, groupExecutor.coreThreads);
   }
@@ -70,7 +87,7 @@ public class TestGroupExecutor {
     groupExecutor.initConfig();
     Assertions.assertEquals(60, groupExecutor.maxIdleInSecond);
 
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_IDLE_SECOND, 100);
+    Mockito.when(environment.getProperty(KEY_MAX_IDLE_SECOND, int.class, 60)).thenReturn(100);
     groupExecutor.initConfig();
     Assertions.assertEquals(100, groupExecutor.maxIdleInSecond);
   }
@@ -79,8 +96,7 @@ public class TestGroupExecutor {
   public void maxQueueSize() {
     groupExecutor.initConfig();
     Assertions.assertEquals(Integer.MAX_VALUE, groupExecutor.maxQueueSize);
-
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_QUEUE_SIZE, 100);
+    Mockito.when(environment.getProperty(KEY_MAX_QUEUE_SIZE, int.class, Integer.MAX_VALUE)).thenReturn(100);
     groupExecutor.initConfig();
     Assertions.assertEquals(100, groupExecutor.maxQueueSize);
   }
@@ -91,7 +107,7 @@ public class TestGroupExecutor {
     Assertions.assertEquals(100, groupExecutor.maxThreads);
 
     LogCollector collector = new LogCollector();
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_OLD_MAX_THREAD, 200);
+    Mockito.when(environment.getProperty(KEY_OLD_MAX_THREAD, int.class, -1)).thenReturn(200);
     groupExecutor.initConfig();
     Assertions.assertEquals(200, groupExecutor.maxThreads);
     Assertions.assertEquals(
@@ -99,15 +115,14 @@ public class TestGroupExecutor {
         collector.getEvents().get(collector.getEvents().size() - 2).getMessage().getFormattedMessage());
     collector.teardown();
 
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 300);
+    Mockito.when(environment.getProperty(KEY_MAX_THREADS, int.class, -1)).thenReturn(300);
     groupExecutor.initConfig();
     Assertions.assertEquals(300, groupExecutor.maxThreads);
   }
 
   @Test
   public void adjustCoreThreads() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 10);
-
+    Mockito.when(environment.getProperty(KEY_MAX_THREADS, int.class, -1)).thenReturn(10);
     LogCollector collector = new LogCollector();
     groupExecutor.initConfig();
     Assertions.assertEquals(10, groupExecutor.maxThreads);

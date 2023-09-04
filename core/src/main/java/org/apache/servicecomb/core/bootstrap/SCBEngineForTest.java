@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.core.bootstrap;
 
-import static org.apache.servicecomb.core.executor.ExecutorManager.EXECUTOR_GROUP_THREADPOOL;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -26,7 +24,6 @@ import org.apache.servicecomb.config.priority.ConfigObjectFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.core.filter.impl.EmptyFilter;
@@ -39,8 +36,6 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
  */
 public class SCBEngineForTest extends SCBEngine {
   public SCBEngineForTest() {
-    getExecutorManager().registerExecutor(EXECUTOR_GROUP_THREADPOOL, new GroupExecutor().init());
-
     List<Filter> filters = Arrays.asList(
         new EmptyFilter()
     );
