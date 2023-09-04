@@ -90,7 +90,7 @@ public class SCBEngine {
 
   private MicroserviceMeta producerMicroserviceMeta;
 
-  private TransportManager transportManager = new TransportManager();
+  private TransportManager transportManager;
 
   private List<BootListener> bootListeners;
 
@@ -187,6 +187,11 @@ public class SCBEngine {
     this.executorManager = executorManager;
   }
 
+  @Autowired
+  public void setTransportManager(TransportManager transportManager) {
+    this.transportManager = transportManager;
+  }
+
   public RegistrationManager getRegistrationManager() {
     return this.registrationManager;
   }
@@ -264,11 +269,6 @@ public class SCBEngine {
 
   public TransportManager getTransportManager() {
     return transportManager;
-  }
-
-  public SCBEngine setTransportManager(TransportManager transportManager) {
-    this.transportManager = transportManager;
-    return this;
   }
 
   public SwaggerEnvironment getSwaggerEnvironment() {

@@ -33,8 +33,6 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.VertxOptions;
 
@@ -53,8 +51,7 @@ public class VertxRestTransport extends AbstractTransport {
 
   @Override
   public boolean canInit() {
-    String pattern = DynamicPropertyFactory.getInstance()
-        .getStringProperty(VertxRestDispatcher.KEY_PATTERN, null).get();
+    String pattern = environment.getProperty(VertxRestDispatcher.KEY_PATTERN, String.class);
     String urlPrefix = null;
     if (pattern == null || pattern.length() <= 5) {
       setListenAddressWithoutSchema(TransportConfig.getAddress());

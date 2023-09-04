@@ -27,12 +27,15 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestRestEngineSchemaListener {
   static SCBEngine scbEngine;
@@ -43,6 +46,10 @@ public class TestRestEngineSchemaListener {
   public static void setup() {
     ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest();
+    ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    scbEngine.setTransportManager(transportManager);
+    scbEngine.setExecutorManager(executorManager);
     List<BootListener> listeners = new ArrayList<>();
     listeners.add(new RestEngineSchemaListener());
     scbEngine.setBootListeners(listeners);

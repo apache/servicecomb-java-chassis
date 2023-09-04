@@ -26,6 +26,8 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -45,6 +47,10 @@ public class TestMicroservicePaths {
     scbEngine = SCBBootstrap.createSCBEngineForTest();
     List<BootListener> listeners = new ArrayList<>();
     listeners.add(new RestEngineSchemaListener());
+    ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    scbEngine.setTransportManager(transportManager);
+    scbEngine.setExecutorManager(executorManager);
     scbEngine.setBootListeners(listeners);
     scbEngine.addProducerMeta("sid1", new TestPathSchema())
         .run();

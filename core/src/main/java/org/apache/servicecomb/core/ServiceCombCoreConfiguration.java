@@ -23,6 +23,7 @@ import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,5 +80,10 @@ public class ServiceCombCoreConfiguration {
     GroupExecutor groupExecutor = new GroupExecutor(environment);
     groupExecutor.init();
     return groupExecutor;
+  }
+
+  @Bean
+  public TransportManager transportManager() {
+    return new TransportManager();
   }
 }

@@ -23,6 +23,8 @@ import java.net.ServerSocket;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
@@ -85,6 +87,8 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
+    Environment environment = Mockito.mock(Environment.class);
+    transport.setEnvironment(environment);
     Assertions.assertTrue(transport.canInit());
   }
 
@@ -101,6 +105,8 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
+    Environment environment = Mockito.mock(Environment.class);
+    transport.setEnvironment(environment);
     Assertions.assertFalse(transport.canInit());
 
     ss.close();
@@ -120,6 +126,8 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
+    Environment environment = Mockito.mock(Environment.class);
+    transport.setEnvironment(environment);
     Assertions.assertTrue(transport.canInit());
   }
 }

@@ -31,6 +31,8 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class TransportManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(TransportManager.class);
@@ -41,6 +43,13 @@ public class TransportManager {
 
   public Map<String, Transport> getTransportMap() {
     return transportMap;
+  }
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   public void clearTransportBeforeInit() {
@@ -59,6 +68,7 @@ public class TransportManager {
     buildTransportMap();
 
     for (Transport transport : transportMap.values()) {
+      transport.setEnvironment(environment);
       if (transport.init()) {
         Endpoint endpoint = transport.getPublishEndpoint();
         if (endpoint != null && endpoint.getEndpoint() != null) {

@@ -36,6 +36,7 @@ import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -59,6 +60,8 @@ public abstract class AbstractTransport implements Transport {
 
   protected Endpoint publishEndpoint;
 
+  protected Environment environment;
+
   @Override
   public Endpoint getPublishEndpoint() {
     return publishEndpoint;
@@ -67,6 +70,11 @@ public abstract class AbstractTransport implements Transport {
   @Override
   public Endpoint getEndpoint() {
     return endpoint;
+  }
+
+  @Override
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   protected void setListenAddressWithoutSchema(String addressWithoutSchema) {
