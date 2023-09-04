@@ -19,7 +19,7 @@ package org.apache.servicecomb.transport.highway;
 
 import java.net.InetSocketAddress;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -78,7 +78,7 @@ public class HighwayServerVerticle extends AbstractVerticle {
         return;
       }
 
-      LOGGER.error(Const.HIGHWAY, ar.cause());
+      LOGGER.error(CoreConst.HIGHWAY, ar.cause());
       startPromise.fail(ar.cause());
     });
   }

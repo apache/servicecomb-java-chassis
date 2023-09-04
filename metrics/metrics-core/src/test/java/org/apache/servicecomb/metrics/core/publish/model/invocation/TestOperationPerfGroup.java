@@ -18,7 +18,7 @@ package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
 import jakarta.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -26,11 +26,11 @@ import org.junit.jupiter.api.Assertions;
 public class TestOperationPerfGroup {
   String op = "op";
 
-  OperationPerfGroup group = new OperationPerfGroup(Const.RESTFUL, Status.OK.name());
+  OperationPerfGroup group = new OperationPerfGroup(CoreConst.RESTFUL, Status.OK.name());
 
   @Test
   public void construct() {
-    Assertions.assertEquals(Const.RESTFUL, group.getTransport());
+    Assertions.assertEquals(CoreConst.RESTFUL, group.getTransport());
     Assertions.assertEquals(Status.OK.name(), group.getStatus());
     Assertions.assertTrue(group.getOperationPerfs().isEmpty());
     Assertions.assertNull(group.getSummary());

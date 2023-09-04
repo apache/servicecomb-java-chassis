@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
@@ -363,7 +363,7 @@ public class TestInvocationPublishModelFactory {
 
       @Mock
       String getRealTransportName() {
-        return Const.RESTFUL;
+        return CoreConst.RESTFUL;
       }
 
       @Mock

@@ -22,7 +22,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
@@ -49,7 +49,7 @@ public class HighwayClientFilter implements ConsumerFilter {
 
   @Override
   public boolean enabledForTransport(String transport) {
-    return Const.HIGHWAY.equals(transport);
+    return CoreConst.HIGHWAY.equals(transport);
   }
 
   @Override

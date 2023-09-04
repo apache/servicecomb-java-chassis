@@ -18,7 +18,7 @@
 package org.apache.servicecomb.transport.rest.servlet;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -41,7 +41,7 @@ public class ServletRestDispatcher {
 
   public void service(HttpServletRequest request, HttpServletResponse response) {
     if (transport == null) {
-      transport = SCBEngine.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+      transport = SCBEngine.getInstance().getTransportManager().findTransport(CoreConst.RESTFUL);
       microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     }
 

@@ -24,7 +24,7 @@ import jakarta.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -180,7 +180,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
   protected void onRequest(RoutingContext context) {
     if (transport == null) {
-      transport = SCBEngine.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+      transport = SCBEngine.getInstance().getTransportManager().findTransport(CoreConst.RESTFUL);
       microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     }
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);

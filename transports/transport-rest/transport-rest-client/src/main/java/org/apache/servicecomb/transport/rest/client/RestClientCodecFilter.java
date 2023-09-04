@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -50,7 +50,7 @@ public class RestClientCodecFilter implements ConsumerFilter {
 
   @Override
   public boolean enabledForTransport(String transport) {
-    return Const.RESTFUL.equals(transport);
+    return CoreConst.RESTFUL.equals(transport);
   }
 
   @Override

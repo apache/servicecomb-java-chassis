@@ -20,7 +20,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -43,7 +43,7 @@ public class VertxRestTransport extends AbstractTransport {
 
   @Override
   public String getName() {
-    return Const.RESTFUL;
+    return CoreConst.RESTFUL;
   }
 
   @Override

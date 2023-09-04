@@ -19,7 +19,7 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.Collections;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -32,7 +32,7 @@ public class HighwayTransport extends AbstractTransport {
 
   @Override
   public String getName() {
-    return Const.HIGHWAY;
+    return CoreConst.HIGHWAY;
   }
 
   @Override

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.config.MicroserviceProperties;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -59,7 +59,7 @@ public class CodeFirstRestTemplate {
     changeTransport(microserviceName, "highway");
     testOnlyHighway(template, cseUrlPrefix);
 
-    changeTransport(microserviceName, Const.RESTFUL);
+    changeTransport(microserviceName, CoreConst.RESTFUL);
     testOnlyRest(microserviceName, template, cseUrlPrefix);
 
     for (String transport : DemoConst.transports) {
@@ -293,7 +293,7 @@ public class CodeFirstRestTemplate {
   private void testTraceIdOnContextContainsTraceId(RestTemplate template, String cseUrlPrefix) {
     String traceIdUrl = cseUrlPrefix + "traceId";
     InvocationContext invocationContext = new InvocationContext();
-    invocationContext.addContext(Const.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
+    invocationContext.addContext(CoreConst.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
     ContextUtils.setInvocationContext(invocationContext);
     String result = template.getForObject(traceIdUrl, String.class);
     TestMgr.check(String.valueOf(Long.MIN_VALUE), result);

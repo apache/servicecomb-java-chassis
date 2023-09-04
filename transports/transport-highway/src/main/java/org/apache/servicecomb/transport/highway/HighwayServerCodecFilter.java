@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -53,7 +53,7 @@ public class HighwayServerCodecFilter implements ProviderFilter {
 
   @Override
   public boolean enabledForTransport(String transport) {
-    return Const.HIGHWAY.equals(transport);
+    return CoreConst.HIGHWAY.equals(transport);
   }
 
   @Override

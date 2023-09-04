@@ -18,7 +18,7 @@ package org.apache.servicecomb.demo.springmvc.server;
 
 import jakarta.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
@@ -32,14 +32,14 @@ public class Compatible1xTestSchema {
   @GetMapping(path = "/parameterName")
   public String parameterName(@RequestParam(name = "a", defaultValue = "10") int a,
       @RequestParam(name = "b", defaultValue = "10") int b) {
-    return ContextUtils.getInvocationContext().getContext(Const.SRC_MICROSERVICE) + a + b * 2;
+    return ContextUtils.getInvocationContext().getContext(CoreConst.SRC_MICROSERVICE) + a + b * 2;
   }
 
   @GetMapping(path = "/parameterNameServerContext")
   public String parameterNameServerContext(InvocationContext context,
       @RequestParam(name = "a", defaultValue = "10") int a,
       @RequestParam(name = "b", defaultValue = "10") int b) {
-    return context.getContext(Const.SRC_MICROSERVICE) + a + b * 2;
+    return context.getContext(CoreConst.SRC_MICROSERVICE) + a + b * 2;
   }
 
   @GetMapping(path = "/beanParameter")

@@ -44,7 +44,7 @@ public class NonSwaggerInvocation extends Invocation {
 
   @Override
   public String getConfigTransportName() {
-    return Const.RESTFUL;
+    return CoreConst.RESTFUL;
   }
 
   @Override

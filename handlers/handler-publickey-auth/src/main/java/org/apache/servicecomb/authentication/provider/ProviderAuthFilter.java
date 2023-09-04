@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -53,7 +53,7 @@ public class ProviderAuthFilter implements ProviderFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    String token = invocation.getContext(Const.AUTH_TOKEN);
+    String token = invocation.getContext(CoreConst.AUTH_TOKEN);
     if (null != token && authenticationTokenManager.valid(token)) {
       return nextNode.onFilter(invocation);
     }

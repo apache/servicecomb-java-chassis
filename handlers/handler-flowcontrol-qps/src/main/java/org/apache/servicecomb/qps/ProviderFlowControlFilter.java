@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -53,7 +53,7 @@ public class ProviderFlowControlFilter implements ProviderFilter {
       return nextNode.onFilter(invocation);
     }
 
-    String microserviceName = invocation.getContext(Const.SRC_MICROSERVICE);
+    String microserviceName = invocation.getContext(CoreConst.SRC_MICROSERVICE);
     QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(microserviceName, invocation);
     if (qpsStrategy.isLimitNewRequest()) {
       CommonExceptionData errorData = new CommonExceptionData(

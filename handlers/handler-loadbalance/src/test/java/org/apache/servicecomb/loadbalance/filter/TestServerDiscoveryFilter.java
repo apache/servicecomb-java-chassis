@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance.filter;
 
 import static org.mockito.ArgumentMatchers.any;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -42,7 +42,7 @@ public class TestServerDiscoveryFilter {
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
     filter.setScbEngine(scbEngine);
-    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(null, Const.RESTFUL, null, null);
+    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(null, CoreConst.RESTFUL, null, null);
     Assertions.assertNull(server);
   }
 
@@ -54,7 +54,7 @@ public class TestServerDiscoveryFilter {
     Transport transport = Mockito.mock(Transport.class);
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(transportManager.findTransport(any(String.class))).thenReturn(transport);
-    Mockito.when(invocation.getConfigTransportName()).thenReturn(Const.RESTFUL);
+    Mockito.when(invocation.getConfigTransportName()).thenReturn(CoreConst.RESTFUL);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("test");
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
@@ -65,7 +65,7 @@ public class TestServerDiscoveryFilter {
     filter.setScbEngine(scbEngine);
 
     ServiceCombServer server = (ServiceCombServer) filter
-        .createEndpoint(context, Const.RESTFUL, "rest://localhost:8080", instance);
+        .createEndpoint(context, CoreConst.RESTFUL, "rest://localhost:8080", instance);
     Assertions.assertSame(instance, server.getInstance());
     Assertions.assertSame(transport, server.getEndpoint().getTransport());
     Assertions.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());

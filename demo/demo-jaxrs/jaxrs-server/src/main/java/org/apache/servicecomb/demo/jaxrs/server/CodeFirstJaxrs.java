@@ -26,7 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -75,10 +75,10 @@ public class CodeFirstJaxrs {
   @GET
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
-    response.setHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
+    response.setHeader("h1", "h1v " + c1.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    response.setHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
+    response.setHeader("h2", "h2v " + c2.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     return response;
   }
@@ -213,7 +213,7 @@ public class CodeFirstJaxrs {
   @Path("/traceId")
   @GET
   public String getTraceId() {
-    return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
+    return ContextUtils.getInvocationContext().getContext(CoreConst.TRACE_ID_NAME);
   }
 
   @GET

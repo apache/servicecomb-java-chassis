@@ -243,7 +243,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
     try {
       ce.getPropertySources().addFirst(new MapPropertySource("dynamic-source", dynamicData));
     } catch (Exception e) {
-      if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.PRINT_SENSITIVE_ERROR_MESSAGE,
+      if (DynamicPropertyFactory.getInstance().getBooleanProperty(CoreConst.PRINT_SENSITIVE_ERROR_MESSAGE,
           false).get()) {
         LOGGER.warn("set up spring property source failed.", e);
       } else {

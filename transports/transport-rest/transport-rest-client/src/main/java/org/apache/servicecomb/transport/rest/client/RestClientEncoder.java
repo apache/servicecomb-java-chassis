@@ -32,7 +32,7 @@ import javax.annotation.Nullable;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.foundation.common.utils.StringBuilderUtils;
@@ -125,8 +125,8 @@ public class RestClientEncoder {
         return;
       }
 
-      httpClientRequest.putHeader(Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
-      httpClientRequest.putHeader(Const.CSE_CONTEXT,
+      httpClientRequest.putHeader(CoreConst.TARGET_MICROSERVICE, invocation.getMicroserviceName());
+      httpClientRequest.putHeader(CoreConst.CSE_CONTEXT,
           RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(invocation.getContext()));
     }
 
