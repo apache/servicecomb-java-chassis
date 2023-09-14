@@ -75,8 +75,8 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     if (CollectionUtils.isEmpty(schemas)) {
       return;
     }
-    for (String key : schemas.keySet()) {
-      metadata.put("schema_" + key, schemas.get(key));
+    for (Map.Entry<String, String> entry: schemas.entrySet()) {
+      metadata.put("schema_" + entry.getKey(), entry.getValue());
     }
   }
 

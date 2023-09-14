@@ -73,7 +73,7 @@ public class NacosMicroserviceHandler {
   }
 
   private static int getEnvPort(Environment environment) {
-    return Integer.valueOf(environment.getProperty("server.port"));
+    return Integer.parseInt(environment.getProperty("server.port"));
   }
 
   private static Map<String, String> genCasProperties() {

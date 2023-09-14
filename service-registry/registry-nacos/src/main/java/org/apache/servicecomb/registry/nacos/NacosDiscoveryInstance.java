@@ -94,9 +94,9 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
   public Map<String, String> getSchemas() {
     Map<String, String> metaData = instance.getMetadata();
     Map<String, String> schemas = new HashMap<>();
-    for (String  key : metaData.keySet()) {
-      if (key.startsWith("schema_")) {
-        schemas.put(key.substring("schema_".length()), metaData.get(key));
+    for (Map.Entry<String, String> entry: metaData.entrySet()) {
+      if (entry.getKey().startsWith("schema_")) {
+        schemas.put(entry.getKey().substring("schema_".length()), entry.getValue());
       }
     }
     return schemas;
