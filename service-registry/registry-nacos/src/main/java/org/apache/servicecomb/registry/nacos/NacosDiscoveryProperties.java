@@ -27,13 +27,9 @@ public class NacosDiscoveryProperties {
 
   private String serverAddr;
 
-  private String serviceName;
-
   private String ip;
 
   private String namespace;
-
-  private String group = "DEFAULT_GROUP";
 
   private Map<String, String> metadata = new HashMap<>();
 
@@ -57,8 +53,6 @@ public class NacosDiscoveryProperties {
 
   private String logName;
 
-  private String version;
-
   private boolean secure;
 
   public String getServerAddr() {
@@ -77,14 +71,6 @@ public class NacosDiscoveryProperties {
     this.enabled = enabled;
   }
 
-  public String getServiceName() {
-    return serviceName;
-  }
-
-  public void setServiceName(String serviceName) {
-    this.serviceName = serviceName;
-  }
-
   public String getIp() {
     return ip;
   }
@@ -99,14 +85,6 @@ public class NacosDiscoveryProperties {
 
   public void setNamespace(String namespace) {
     this.namespace = namespace;
-  }
-
-  public String getGroup() {
-    return group;
-  }
-
-  public void setGroup(String group) {
-    this.group = group;
   }
 
   public Map<String, String> getMetadata() {
@@ -195,14 +173,6 @@ public class NacosDiscoveryProperties {
 
   public void setLogName(String logName) {
     this.logName = logName;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
   }
 
   public boolean isSecure() {

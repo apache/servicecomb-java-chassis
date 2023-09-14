@@ -30,22 +30,30 @@ public class NamingServiceManager {
 
   private static volatile NamingMaintainService namingMaintainService;
 
-  public static NamingService buildNamingService(NacosDiscoveryProperties properties) throws NacosException {
+  public static NamingService buildNamingService(NacosDiscoveryProperties properties) {
     if (Objects.isNull(namingService)) {
       synchronized (NamingServiceManager.class) {
         if (Objects.isNull(namingService)) {
-          namingService = new NacosNamingService(properties.getProperties());
+          try {
+            namingService = new NacosNamingService(properties.getProperties());
+          } catch (NacosException e) {
+            throw new IllegalStateException("build namingService failed.");
+          }
         }
       }
     }
     return namingService;
   }
 
-  public static NamingMaintainService buildNamingMaintainService(NacosDiscoveryProperties properties) throws NacosException {
+  public static NamingMaintainService buildNamingMaintainService(NacosDiscoveryProperties properties) {
     if (Objects.isNull(namingMaintainService)) {
       synchronized (NamingServiceManager.class) {
         if (Objects.isNull(namingMaintainService)) {
-          namingMaintainService = new NacosNamingMaintainService(properties.getProperties());
+          try {
+            namingMaintainService = new NacosNamingMaintainService(properties.getProperties());
+          } catch (NacosException e) {
+            throw new IllegalStateException("build namingMaintainService failed.");
+          }
         }
       }
     }

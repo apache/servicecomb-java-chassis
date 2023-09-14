@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.EnvironmentConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.springframework.core.env.Environment;
 
@@ -44,7 +45,8 @@ public class NacosMicroserviceHandler {
 
   private static final String INSTANCE_PROPS = "SERVICECOMB_INSTANCE_PROPS";
 
-  public static Instance createMicroserviceInstance(NacosDiscoveryProperties properties, Environment environment) {
+  public static Instance createMicroserviceInstance(NacosDiscoveryProperties properties, Environment environment,
+      MicroserviceProperties microserviceProperties) {
     Instance instance = new Instance();
     instance.setIp(StringUtils.isEmpty(properties.getIp()) ? NetUtils.getHostName() : properties.getIp());
     instance.setPort(getEnvPort(environment));
@@ -52,7 +54,7 @@ public class NacosMicroserviceHandler {
     instance.setWeight(properties.getWeight());
     instance.setEnabled(properties.isInstanceEnabled());
     Map<String, String> metadata = properties.getMetadata();
-    metadata.put("version", properties.getVersion());
+    metadata.put("version", microserviceProperties.getVersion());
     metadata.put("secure", String.valueOf(properties.isSecure()));
     EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
     if (!StringUtils.isEmpty(envConfig.getString(VERSION_MAPPING)) &&
@@ -63,7 +65,7 @@ public class NacosMicroserviceHandler {
     instance.setMetadata(metadata);
     instance.setClusterName(properties.getClusterName());
     instance.setEphemeral(properties.isEphemeral());
-    instance.setServiceName(properties.getServiceName());
+    instance.setServiceName(microserviceProperties.getName());
     return instance;
   }
 

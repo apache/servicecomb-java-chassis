@@ -23,8 +23,6 @@ servicecomb:
   registry:
     nacos:
       serverAddr: ${PAAS_CSE_NACOS_ENDPOINT:http://127.0.0.1:8848}
-      serviceName: consumer
-      version: 0.0.1
       metadata:
         group: red
 

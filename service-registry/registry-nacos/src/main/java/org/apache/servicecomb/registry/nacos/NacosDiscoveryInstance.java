@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
@@ -32,9 +33,14 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
   private final NacosDiscoveryProperties nacosDiscoveryProperties;
 
   private final Instance instance;
-  public NacosDiscoveryInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties) {
+
+  private final MicroserviceProperties microserviceProperties;
+
+  public NacosDiscoveryInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
+      MicroserviceProperties microserviceProperties) {
     this.instance = instance;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
+    this.microserviceProperties = microserviceProperties;
   }
 
   @Override
@@ -54,17 +60,17 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public String getApplication() {
-    return nacosDiscoveryProperties.getGroup();
+    return microserviceProperties.getApplication();
   }
 
   @Override
   public String getServiceName() {
-    return nacosDiscoveryProperties.getServiceName();
+    return microserviceProperties.getName();
   }
 
   @Override
   public String getAlias() {
-    return null;
+    return microserviceProperties.getAlias();
   }
 
   @Override
@@ -82,7 +88,7 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public String getDescription() {
-    return null;
+    return microserviceProperties.getDescription();
   }
 
   @Override

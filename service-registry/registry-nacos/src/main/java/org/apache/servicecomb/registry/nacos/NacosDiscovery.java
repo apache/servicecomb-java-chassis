@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -37,9 +38,18 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
 
   private Environment environment;
 
+  private MicroserviceProperties microserviceProperties;
+
+  private NamingService namingService;
+
   @Autowired
   public NacosDiscovery(NacosDiscoveryProperties nacosDiscoveryProperties) {
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
+  }
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
   }
 
   @Autowired
@@ -61,8 +71,7 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   @Override
   public List<NacosDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     try {
-      String group = nacosDiscoveryProperties.getGroup();
-      NamingService namingService = NamingServiceManager.buildNamingService(nacosDiscoveryProperties);
+      String group = microserviceProperties.getApplication();
       List<Instance> instances = namingService.selectInstances(serviceName, group, true);
       return convertServiceInstanceList(instances);
     } catch (NacosException e) {
@@ -76,7 +85,7 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
     }
     List<NacosDiscoveryInstance> result = new ArrayList<>();
     for (Instance instance : isntances) {
-      result.add(new NacosDiscoveryInstance(instance, nacosDiscoveryProperties));
+      result.add(new NacosDiscoveryInstance(instance, nacosDiscoveryProperties, microserviceProperties));
     }
     return result;
   }
@@ -88,7 +97,7 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
 
   @Override
   public void init() {
-
+    namingService = NamingServiceManager.buildNamingService(nacosDiscoveryProperties);
   }
 
   @Override

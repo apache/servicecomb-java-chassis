@@ -20,6 +20,8 @@ package org.apache.servicecomb.registry.nacos;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.nacos.api.exception.NacosException;
+import com.alibaba.nacos.api.naming.NamingMaintainService;
+import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
 public class NacosRegistration implements Registration<NacosRegistrationInstance> {
@@ -44,6 +48,12 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   private String group;
 
+  private MicroserviceProperties microserviceProperties;
+
+  private NamingService namingService;
+
+  private NamingMaintainService namingMaintainService;
+
   @Autowired
   public NacosRegistration(NacosDiscoveryProperties nacosDiscoveryProperties, NacosDiscovery nacosDiscovery,
       Environment environment) {
@@ -52,20 +62,28 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     this.environment = environment;
   }
 
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
   @Override
   public void init() {
-    instance = NacosMicroserviceHandler.createMicroserviceInstance(nacosDiscoveryProperties, environment);
-    nacosRegistrationInstance = new NacosRegistrationInstance(instance, nacosDiscoveryProperties);
-    serviceId = nacosDiscoveryProperties.getServiceName();
-    group = nacosDiscoveryProperties.getGroup();
+    instance = NacosMicroserviceHandler.createMicroserviceInstance(nacosDiscoveryProperties, environment,
+        microserviceProperties);
+    nacosRegistrationInstance = new NacosRegistrationInstance(instance, nacosDiscoveryProperties, microserviceProperties);
+    serviceId = microserviceProperties.getName();
+    group = StringUtils.isEmpty(microserviceProperties.getApplication()) ?
+        "DEFAULT_GROUP" : microserviceProperties.getApplication();
+    namingService = NamingServiceManager.buildNamingService(nacosDiscoveryProperties);
+    namingMaintainService = NamingServiceManager.buildNamingMaintainService(nacosDiscoveryProperties);
   }
 
   @Override
   public void run() {
     try {
       addSchemas(nacosRegistrationInstance.getSchemas(), instance.getMetadata());
-      NamingServiceManager.buildNamingService(nacosDiscoveryProperties)
-          .registerInstance(serviceId, group, instance);
+      namingService.registerInstance(serviceId, group, instance);
     } catch (NacosException e) {
       throw new IllegalStateException("registry process is interrupted.");
     }
@@ -83,8 +101,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   @Override
   public void destroy() {
     try {
-      NamingServiceManager.buildNamingService(nacosDiscoveryProperties)
-          .deregisterInstance(serviceId, group, instance);
+      namingService.deregisterInstance(serviceId, group, instance);
     } catch (NacosException e) {
       throw new IllegalStateException("destroy process is interrupted.");
     }
@@ -108,8 +125,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
         return true;
       }
       instance.setEnabled(MicroserviceInstanceStatus.DOWN != status);
-      NamingServiceManager.buildNamingMaintainService(nacosDiscoveryProperties)
-          .updateInstance(serviceId, group, instance);
+      namingMaintainService.updateInstance(serviceId, group, instance);
       return true;
     } catch (NacosException e) {
       throw new IllegalStateException("updateMicroserviceInstanceStatus process is interrupted.");

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
@@ -37,9 +38,13 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   private final List<String> endpoints = new ArrayList<>();
 
-  public NacosRegistrationInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties) {
+  private final MicroserviceProperties microserviceProperties;
+
+  public NacosRegistrationInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
+      MicroserviceProperties microserviceProperties) {
     this.instance = instance;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
+    this.microserviceProperties = microserviceProperties;
   }
 
   @Override
@@ -49,12 +54,12 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getApplication() {
-    return nacosDiscoveryProperties.getGroup();
+    return microserviceProperties.getApplication();
   }
 
   @Override
   public String getServiceName() {
-    return nacosDiscoveryProperties.getServiceName();
+    return microserviceProperties.getName();
   }
 
   @Override
