@@ -35,5 +35,6 @@
     <module>registry-service-center</module>
     <module>registry-lightweight</module>
     <module>registry-zero-config</module>
+    <module>registry-nacos</module>
   </modules>
 </project>
