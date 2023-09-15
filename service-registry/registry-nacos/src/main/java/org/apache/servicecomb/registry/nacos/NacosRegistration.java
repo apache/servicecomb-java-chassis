@@ -122,7 +122,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     try {
       List<NacosDiscoveryInstance> instances = nacosDiscovery.findServiceInstances("", serviceId);
       if (CollectionUtils.isEmpty(instances)) {
-        return true;
+        return false;
       }
       instance.setEnabled(MicroserviceInstanceStatus.DOWN != status);
       namingMaintainService.updateInstance(serviceId, group, instance);

@@ -26,6 +26,7 @@ import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.springframework.util.CollectionUtils;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
@@ -35,6 +36,8 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
   private final Instance instance;
 
   private final MicroserviceProperties microserviceProperties;
+
+  private final Map<String, String> schemas = new HashMap<>();
 
   public NacosDiscoveryInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
       MicroserviceProperties microserviceProperties) {
@@ -98,12 +101,15 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public Map<String, String> getSchemas() {
-    Map<String, String> metaData = instance.getMetadata();
-    Map<String, String> schemas = new HashMap<>();
-    for (Map.Entry<String, String> entry: metaData.entrySet()) {
-      if (entry.getKey().startsWith("schema_")) {
-        schemas.put(entry.getKey().substring("schema_".length()), entry.getValue());
+    if (CollectionUtils.isEmpty(schemas)) {
+      Map<String, String> metaData = instance.getMetadata();
+      Map<String, String> instanceSchemas = new HashMap<>();
+      for (Map.Entry<String, String> entry: metaData.entrySet()) {
+        if (entry.getKey().startsWith("schema_")) {
+          instanceSchemas.put(entry.getKey().substring("schema_".length()), entry.getValue());
+        }
       }
+      schemas.putAll(instanceSchemas);
     }
     return schemas;
   }
