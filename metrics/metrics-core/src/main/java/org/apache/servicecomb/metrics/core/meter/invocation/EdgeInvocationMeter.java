@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
@@ -35,8 +36,8 @@ public class EdgeInvocationMeter extends ConsumerInvocationMeter {
 
   private final SimpleTimer sendResponseTimer;
 
-  public EdgeInvocationMeter(Id id) {
-    super(id);
+  public EdgeInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(id, metricsBootstrapConfig);
     executorQueueTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
     serverFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
     serverFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);

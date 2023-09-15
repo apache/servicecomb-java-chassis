@@ -16,6 +16,10 @@
  */
 package org.apache.servicecomb.foundation.metrics;
 
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -28,6 +32,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 
@@ -40,9 +45,17 @@ public class TestMetricsBootstrap {
 
   EventBus eventBus = new EventBus();
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @BeforeEach
   public void setUp() {
     bootstrap.setMetricsInitializers(List.of());
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+    bootstrap.setEnvironment(environment);
   }
 
   @Test

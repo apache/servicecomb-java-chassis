@@ -16,18 +16,24 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+
 import java.util.List;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.servo.DefaultMonitorRegistry;
 import com.netflix.spectator.api.Registry;
 
 import mockit.Deencapsulation;
-import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultRegistryInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry();
@@ -36,10 +42,17 @@ public class TestDefaultRegistryInitializer {
 
   DefaultRegistryInitializer registryInitializer = new DefaultRegistryInitializer();
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @Test
   @SuppressWarnings("deprecation")
   public void init() {
-    registryInitializer.init(globalRegistry, new EventBus(), new MetricsBootstrapConfig());
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+    registryInitializer.init(globalRegistry, new EventBus(), new MetricsBootstrapConfig(environment));
 
     Assertions.assertEquals(-10, registryInitializer.getOrder());
     Assertions.assertTrue(globalRegistry.getDefaultRegistry() instanceof com.netflix.spectator.servo.ServoRegistry);

@@ -29,9 +29,9 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Registry;
@@ -45,7 +45,7 @@ import io.prometheus.client.exporter.HTTPServer;
 public class PrometheusPublisher extends Collector implements Collector.Describable, MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusPublisher.class);
 
-  static final String METRICS_PROMETHEUS_ADDRESS = "servicecomb.metrics.prometheus.address";
+  public static final String METRICS_PROMETHEUS_ADDRESS = "servicecomb.metrics.prometheus.address";
 
   private HTTPServer httpServer;
 
@@ -53,9 +53,16 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
 
   private MicroserviceProperties microserviceProperties;
 
+  private Environment environment;
+
   @Autowired
   public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
     this.microserviceProperties = microserviceProperties;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   @Override
@@ -63,8 +70,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     this.globalRegistry = globalRegistry;
 
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
-    String address =
-        DynamicPropertyFactory.getInstance().getStringProperty(METRICS_PROMETHEUS_ADDRESS, "0.0.0.0:9696").get();
+    String address = environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696");
 
     try {
       InetSocketAddress socketAddress = getSocketAddress(address);

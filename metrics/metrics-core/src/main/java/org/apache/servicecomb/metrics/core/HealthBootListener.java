@@ -18,13 +18,20 @@ package org.apache.servicecomb.metrics.core;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class HealthBootListener implements BootListener {
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void onBeforeProducerProvider(BootEvent event) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.health.endpoint.enabled", true).get()) {
+    if (!environment.getProperty("servicecomb.health.endpoint.enabled", boolean.class, true)) {
       return;
     }
 

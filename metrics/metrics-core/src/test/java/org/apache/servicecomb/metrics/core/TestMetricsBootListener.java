@@ -16,6 +16,10 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,28 +28,40 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestMetricsBootListener {
+  Environment environment = Mockito.mock(Environment.class);
+
+  MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
+
   @Before
   public void setUp() {
-    ArchaiusUtils.resetConfig();
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+    metricsBootstrap.setEnvironment(environment);
   }
 
   @After
   public void tearDown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void onBeforeProducerProvider_metrics_endpoint_enabled_by_default() {
-    final MetricsBootListener listener = new MetricsBootListener(new MetricsBootstrap());
+    Mockito.when(environment.getProperty("servicecomb.metrics.endpoint.enabled", boolean.class, true))
+        .thenReturn(true);
+    final MetricsBootListener listener = new MetricsBootListener(metricsBootstrap);
+    listener.setEnvironment(environment);
     listener.setMetricsRestPublisher(new MetricsRestPublisher());
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
@@ -76,8 +92,10 @@ public class TestMetricsBootListener {
 
   @Test
   public void onBeforeProducerProvider_metrics_endpoint_disabled() {
-    ArchaiusUtils.setProperty("servicecomb.metrics.endpoint.enabled", false);
-    final MetricsBootListener listener = new MetricsBootListener(new MetricsBootstrap());
+    Mockito.when(environment.getProperty("servicecomb.metrics.endpoint.enabled", boolean.class, true))
+        .thenReturn(false);
+    final MetricsBootListener listener = new MetricsBootListener(metricsBootstrap);
+    listener.setEnvironment(environment);
 
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();

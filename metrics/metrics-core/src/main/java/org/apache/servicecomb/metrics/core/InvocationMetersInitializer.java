@@ -43,9 +43,9 @@ public class InvocationMetersInitializer implements MetricsInitializer {
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     Registry registry = globalRegistry.getDefaultRegistry();
 
-    consumerMeters = new ConsumerMeters(registry);
-    producerMeters = new ProducerMeters(registry);
-    edgeMeters = new EdgeMeters(registry);
+    consumerMeters = new ConsumerMeters(registry, config);
+    producerMeters = new ProducerMeters(registry, config);
+    edgeMeters = new EdgeMeters(registry, config);
 
     eventBus.register(this);
   }

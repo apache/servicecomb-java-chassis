@@ -17,6 +17,11 @@
 
 package org.apache.servicecomb.metrics.prometheus;
 
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.metrics.prometheus.PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -27,12 +32,15 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.netflix.spectator.api.Counter;
 import com.netflix.spectator.api.DefaultRegistry;
@@ -47,6 +55,18 @@ public class TestPrometheusPublisher {
 
   PrometheusPublisher publisher = new PrometheusPublisher();
 
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  public void setUp() {
+    publisher.setEnvironment(environment);
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+  }
+
   @AfterAll
   public static void teardown() {
     ArchaiusUtils.resetConfig();
@@ -55,7 +75,7 @@ public class TestPrometheusPublisher {
   @Test
   public void testBadPublishAddress() {
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "a:b:c");
+      ArchaiusUtils.setProperty(METRICS_PROMETHEUS_ADDRESS, "a:b:c");
       publisher.init(globalRegistry, null, null);
     });
   }
@@ -63,15 +83,16 @@ public class TestPrometheusPublisher {
   @Test
   public void testBadPublishAddress_BadPort() {
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:xxxx");
+      ArchaiusUtils.setProperty(METRICS_PROMETHEUS_ADDRESS, "localhost:xxxx");
       publisher.init(globalRegistry, null, null);
     });
   }
 
   @Test
   public void testBadPublishAddress_TooLargePort() {
+    Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
+        .thenReturn("localhost:9999999");
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:9999999");
       publisher.init(globalRegistry, null, null);
     });
   }
@@ -80,9 +101,10 @@ public class TestPrometheusPublisher {
   public void collect() throws IllegalAccessException, IOException {
     MicroserviceProperties microserviceProperties = Mockito.mock(MicroserviceProperties.class);
     Mockito.when(microserviceProperties.getApplication()).thenReturn("testAppId");
-    ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:0");
+    Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
+        .thenReturn("localhost:0");
     publisher.setMicroserviceProperties(microserviceProperties);
-    publisher.init(globalRegistry, null, null);
+    publisher.init(globalRegistry, null, new MetricsBootstrapConfig(environment));
 
     Registry registry = new DefaultRegistry(new ManualClock());
     globalRegistry.add(registry);

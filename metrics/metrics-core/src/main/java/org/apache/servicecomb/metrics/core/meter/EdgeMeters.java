@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.metrics.core.meter;
 
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.metrics.core.meter.invocation.AbstractInvocationMeters;
 import org.apache.servicecomb.metrics.core.meter.invocation.EdgeInvocationMeters;
 
@@ -26,8 +27,8 @@ public class EdgeMeters {
   private final AbstractInvocationMeters invocationMeters;
 
 
-  public EdgeMeters(Registry registry) {
-    this.invocationMeters = new EdgeInvocationMeters(registry);
+  public EdgeMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
+    this.invocationMeters = new EdgeInvocationMeters(registry, metricsBootstrapConfig);
   }
 
   public AbstractInvocationMeters getInvocationMeters() {

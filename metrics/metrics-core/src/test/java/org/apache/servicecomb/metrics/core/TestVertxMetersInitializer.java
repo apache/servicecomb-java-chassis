@@ -16,12 +16,17 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher.ENDPOINTS_CLIENT_DETAIL_ENABLED;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -30,6 +35,9 @@ import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
@@ -47,7 +55,6 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import org.junit.jupiter.api.Assertions;
 
 public class TestVertxMetersInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
@@ -59,6 +66,8 @@ public class TestVertxMetersInitializer {
   VertxMetersInitializer vertxMetersInitializer = new VertxMetersInitializer();
 
   DefaultLogPublisher logPublisher = new DefaultLogPublisher();
+
+  Environment environment = Mockito.mock(Environment.class);
 
   static int port;
 
@@ -113,8 +122,16 @@ public class TestVertxMetersInitializer {
 
   @Test
   public void init() throws InterruptedException {
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+    Mockito.when(environment.getProperty(DefaultLogPublisher.ENABLED, boolean.class, false)).thenReturn(false);
+
     globalRegistry.add(registry);
-    vertxMetersInitializer.init(globalRegistry, eventBus, null);
+    vertxMetersInitializer.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
+    logPublisher.setEnvironment(environment);
     logPublisher.init(null, eventBus, null);
     VertxUtils
         .blockDeploy(SharedVertxFactory.getSharedVertx(), TestServerVerticle.class, new DeploymentOptions());
@@ -139,7 +156,7 @@ public class TestVertxMetersInitializer {
 
   private void testLog(LogCollector logCollector, List<Meter> meters, List<Measurement> measurements,
       boolean printDetail) {
-    ArchaiusUtils.setProperty(DefaultLogPublisher.ENDPOINTS_CLIENT_DETAIL_ENABLED, String.valueOf(printDetail));
+    Mockito.when(environment.getProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, boolean.class, true)).thenReturn(printDetail);
     logPublisher.onPolledEvent(new PolledEvent(meters, measurements));
 
     StringBuilder sb = new StringBuilder();
