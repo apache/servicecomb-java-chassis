@@ -46,7 +46,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   private String serviceId;
 
-  private String group;
+  private String application;
 
   private MicroserviceProperties microserviceProperties;
 
@@ -73,8 +73,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
         microserviceProperties);
     nacosRegistrationInstance = new NacosRegistrationInstance(instance, nacosDiscoveryProperties, microserviceProperties);
     serviceId = microserviceProperties.getName();
-    group = StringUtils.isEmpty(microserviceProperties.getApplication()) ?
-        "DEFAULT_GROUP" : microserviceProperties.getApplication();
+    application = microserviceProperties.getApplication();
     namingService = NamingServiceManager.buildNamingService(nacosDiscoveryProperties);
     namingMaintainService = NamingServiceManager.buildNamingMaintainService(nacosDiscoveryProperties);
   }
@@ -83,7 +82,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   public void run() {
     try {
       addSchemas(nacosRegistrationInstance.getSchemas(), instance.getMetadata());
-      namingService.registerInstance(serviceId, group, instance);
+      namingService.registerInstance(serviceId, application, instance);
     } catch (NacosException e) {
       throw new IllegalStateException("registry process is interrupted.");
     }
@@ -101,7 +100,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   @Override
   public void destroy() {
     try {
-      namingService.deregisterInstance(serviceId, group, instance);
+      namingService.deregisterInstance(serviceId, application, instance);
     } catch (NacosException e) {
       throw new IllegalStateException("destroy process is interrupted.");
     }
@@ -120,12 +119,12 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
     try {
-      List<NacosDiscoveryInstance> instances = nacosDiscovery.findServiceInstances("", serviceId);
+      List<NacosDiscoveryInstance> instances = nacosDiscovery.findServiceInstances(application, serviceId);
       if (CollectionUtils.isEmpty(instances)) {
         return false;
       }
       instance.setEnabled(MicroserviceInstanceStatus.DOWN != status);
-      namingMaintainService.updateInstance(serviceId, group, instance);
+      namingMaintainService.updateInstance(serviceId, application, instance);
       return true;
     } catch (NacosException e) {
       throw new IllegalStateException("updateMicroserviceInstanceStatus process is interrupted.");

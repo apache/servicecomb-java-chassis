@@ -55,6 +55,8 @@ public class NacosMicroserviceHandler {
     instance.setEnabled(properties.isInstanceEnabled());
     Map<String, String> metadata = properties.getMetadata();
     metadata.put("version", microserviceProperties.getVersion());
+    metadata.put("alias", microserviceProperties.getAlias());
+    metadata.put("description", microserviceProperties.getDescription());
     metadata.put("secure", String.valueOf(properties.isSecure()));
     EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
     if (!StringUtils.isEmpty(envConfig.getString(VERSION_MAPPING)) &&

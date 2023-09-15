@@ -39,11 +39,14 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final Map<String, String> schemas = new HashMap<>();
 
+  private String application;
+
   public NacosDiscoveryInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
-      MicroserviceProperties microserviceProperties) {
+      MicroserviceProperties microserviceProperties, String application) {
     this.instance = instance;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
     this.microserviceProperties = microserviceProperties;
+    this.application = application;
   }
 
   @Override
@@ -63,17 +66,17 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public String getApplication() {
-    return microserviceProperties.getApplication();
+    return application;
   }
 
   @Override
   public String getServiceName() {
-    return microserviceProperties.getName();
+    return instance.getServiceName();
   }
 
   @Override
   public String getAlias() {
-    return microserviceProperties.getAlias();
+    return instance.getMetadata().get("alias");
   }
 
   @Override
@@ -91,7 +94,7 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public String getDescription() {
-    return microserviceProperties.getDescription();
+    return instance.getMetadata().get("description");
   }
 
   @Override
@@ -118,8 +121,8 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
   public List<String> getEndpoints() {
     List<String> endpoints = new ArrayList<>();
     StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("rest://");
-    stringBuilder.append(instance.getIp())
+    stringBuilder.append("rest://")
+      .append(instance.getIp())
       .append(":")
       .append(instance.getPort());
     endpoints.add(stringBuilder.toString());

@@ -71,21 +71,20 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   @Override
   public List<NacosDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     try {
-      String group = microserviceProperties.getApplication();
-      List<Instance> instances = namingService.selectInstances(serviceName, group, true);
-      return convertServiceInstanceList(instances);
+      List<Instance> instances = namingService.selectInstances(serviceName, application, true);
+      return convertServiceInstanceList(instances, application);
     } catch (NacosException e) {
       throw new IllegalStateException("updateMicroserviceInstanceStatus process is interrupted.");
     }
   }
 
-  private List<NacosDiscoveryInstance> convertServiceInstanceList(List<Instance> isntances) {
+  private List<NacosDiscoveryInstance> convertServiceInstanceList(List<Instance> isntances, String application) {
     if (CollectionUtils.isEmpty(isntances)) {
       return Collections.emptyList();
     }
     List<NacosDiscoveryInstance> result = new ArrayList<>();
     for (Instance instance : isntances) {
-      result.add(new NacosDiscoveryInstance(instance, nacosDiscoveryProperties, microserviceProperties));
+      result.add(new NacosDiscoveryInstance(instance, nacosDiscoveryProperties, microserviceProperties, application));
     }
     return result;
   }
