@@ -23,8 +23,7 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.Environment;
 
 public class MetricsBootListener implements BootListener {
   private final MetricsBootstrap metricsBootstrap;
@@ -32,6 +31,8 @@ public class MetricsBootListener implements BootListener {
   private SlowInvocationLogger slowInvocationLogger;
 
   private MetricsRestPublisher metricsRestPublisher;
+
+  private Environment environment;
 
   public MetricsBootstrap getMetricsBootstrap() {
     return metricsBootstrap;
@@ -46,13 +47,18 @@ public class MetricsBootListener implements BootListener {
   }
 
   @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  @Autowired
   public void setMetricsRestPublisher(MetricsRestPublisher metricsRestPublisher) {
     this.metricsRestPublisher = metricsRestPublisher;
   }
 
   @Override
   public void onBeforeProducerProvider(BootEvent event) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.metrics.endpoint.enabled", true).get()) {
+    if (!environment.getProperty("servicecomb.metrics.endpoint.enabled", boolean.class, true)) {
       return;
     }
 

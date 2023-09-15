@@ -65,10 +65,10 @@ public class TransportManager {
   }
 
   public void init(SCBEngine scbEngine) throws Exception {
+    initEnvironment();
     buildTransportMap();
 
     for (Transport transport : transportMap.values()) {
-      transport.setEnvironment(environment);
       if (transport.init()) {
         Endpoint endpoint = transport.getPublishEndpoint();
         if (endpoint != null && endpoint.getEndpoint() != null) {
@@ -77,6 +77,12 @@ public class TransportManager {
         }
         continue;
       }
+    }
+  }
+
+  private void initEnvironment() {
+    for (Transport transport : transports) {
+      transport.setEnvironment(environment);
     }
   }
 

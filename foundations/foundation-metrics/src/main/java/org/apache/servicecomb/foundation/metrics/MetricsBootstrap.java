@@ -26,6 +26,7 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -37,11 +38,19 @@ public class MetricsBootstrap {
 
   private EventBus eventBus;
 
-  private final MetricsBootstrapConfig config = new MetricsBootstrapConfig();
+  private MetricsBootstrapConfig config;
 
   private ScheduledExecutorService executorService;
 
   private List<MetricsInitializer> metricsInitializers;
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+    config = new MetricsBootstrapConfig(environment);
+  }
 
   @Autowired
   public void setMetricsInitializers(List<MetricsInitializer> metricsInitializers) {

@@ -16,17 +16,25 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
@@ -40,7 +48,6 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestInvocationPublishModelFactory {
   EventBus eventBus = new EventBus();
@@ -61,11 +68,18 @@ public class TestInvocationPublishModelFactory {
 
   InvocationType invocationType;
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @Test
   public void createDefaultPublishModel() {
-    ArchaiusUtils.setProperty("servicecomb.metrics.invocation.latencyDistribution", "0,1,100");
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+    Mockito.when(environment.getProperty(CONFIG_LATENCY_DISTRIBUTION, String.class)).thenReturn("0,1,100");
     globalRegistry.add(registry);
-    invocationMetersInitializer.init(globalRegistry, eventBus, null);
+    invocationMetersInitializer.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
     prepareInvocation();
 
     globalRegistry.poll(1);

@@ -16,13 +16,14 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.Measurement;
-import io.vertx.core.impl.VertxImpl;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.foundation.common.Holder;
@@ -48,11 +49,18 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
+import com.google.common.eventbus.EventBus;
+import com.netflix.spectator.api.Measurement;
+
+import io.vertx.core.impl.VertxImpl;
 import jakarta.ws.rs.core.Response.Status;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestDefaultLogPublisher {
@@ -64,9 +72,16 @@ public class TestDefaultLogPublisher {
 
   LogCollector collector = new LogCollector();
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @Before
   public void setup() {
-
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+    publisher.setEnvironment(environment);
   }
 
   @After
@@ -77,6 +92,7 @@ public class TestDefaultLogPublisher {
 
   @Test
   public void init_enabled_default() {
+    Mockito.when(environment.getProperty(DefaultLogPublisher.ENABLED, boolean.class, false)).thenReturn(false);
     Holder<Boolean> registered = new Holder<>(false);
     new MockUp<EventBus>(eventBus) {
       @Mock
@@ -85,12 +101,13 @@ public class TestDefaultLogPublisher {
       }
     };
 
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
+    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertFalse(registered.value);
   }
 
   @Test
   public void init_enabled_true() {
+    Mockito.when(environment.getProperty(DefaultLogPublisher.ENABLED, boolean.class, false)).thenReturn(true);
     Holder<Boolean> registered = new Holder<>();
     new MockUp<EventBus>(eventBus) {
       @Mock
@@ -101,12 +118,13 @@ public class TestDefaultLogPublisher {
 
     ArchaiusUtils.setProperty(DefaultLogPublisher.ENABLED, true);
 
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
+    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertTrue(registered.value);
   }
 
   @Test
   public void init_enabled_false() {
+    Mockito.when(environment.getProperty(DefaultLogPublisher.ENABLED, boolean.class, false)).thenReturn(false);
     Holder<Boolean> registered = new Holder<>();
     new MockUp<EventBus>(eventBus) {
       @Mock
@@ -117,7 +135,7 @@ public class TestDefaultLogPublisher {
 
     ArchaiusUtils.setProperty(DefaultLogPublisher.ENABLED, false);
 
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
+    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertNull(registered.value);
   }
 
@@ -132,10 +150,11 @@ public class TestDefaultLogPublisher {
 
   @Test
   public void onPolledEvent(@Injectable VertxImpl vertxImpl, @Injectable MeasurementTree tree,
-      @Injectable GlobalRegistry globalRegistry, @Injectable EventBus eventBus, @Injectable MetricsBootstrapConfig config) {
+      @Injectable GlobalRegistry globalRegistry, @Injectable EventBus eventBus) {
+    MetricsBootstrapConfig config = Mockito.mock(MetricsBootstrapConfig.class);
     try {
-      ArchaiusUtils.setProperty("servicecomb.metrics.publisher.defaultLog.enabled", true);
-      ArchaiusUtils.setProperty("servicecomb.metrics.invocation.latencyDistribution", "0,1,100");
+      Mockito.when(environment.getProperty(DefaultLogPublisher.ENABLED, boolean.class, false)).thenReturn(true);
+      Mockito.when(config.getLatencyDistribution()).thenReturn("0,1,100");
       publisher.init(globalRegistry, eventBus, config);
       new Expectations(VertxUtils.class) {
         {
@@ -249,9 +268,9 @@ public class TestDefaultLogPublisher {
               + "  0        0          0        0           NaN      0         0.0       0.0          test\n"
               + "consumer:\n"
               + " simple:\n"
-              + "  status      tps      latency            [0,1)  [1,100) [100,) operation\n"
-              + "  rest.OK     100000.0 3000.000/30000.000 12     120     1200   op\n"
-              + "              100000.0 3000.000/30000.000 12     120     1200   (summary)\n"
+              + "  status      tps      latency            [0,1) [1,100) [100,) operation\n"
+              + "  rest.OK     100000.0 3000.000/30000.000 12    120     1200   op\n"
+              + "              100000.0 3000.000/30000.000 12    120     1200   (summary)\n"
               + " details:\n"
               + "    rest.OK:\n"
               + "      op:\n"
@@ -260,9 +279,9 @@ public class TestDefaultLogPublisher {
               + "        cFiltersResp: 3000.000/30000.000 handlersResp: 3000.000/30000.000\n"
               + "producer:\n"
               + " simple:\n"
-              + "  status      tps      latency            [0,1)  [1,100) [100,) operation\n"
-              + "  rest.OK     100000.0 3000.000/30000.000 12     120     1200   op\n"
-              + "              100000.0 3000.000/30000.000 12     120     1200   (summary)\n"
+              + "  status      tps      latency            [0,1) [1,100) [100,) operation\n"
+              + "  rest.OK     100000.0 3000.000/30000.000 12    120     1200   op\n"
+              + "              100000.0 3000.000/30000.000 12    120     1200   (summary)\n"
               + " details:\n"
               + "    rest.OK:\n"
               + "      op:\n"
@@ -270,9 +289,9 @@ public class TestDefaultLogPublisher {
               + "        execute: 3000.000/30000.000 handlersResp: 3000.000/30000.000 filtersResp: 3000.000/30000.000 sendResp   : 3000.000/30000.000\n"
               + "edge:\n"
               + " simple:\n"
-              + "  status      tps      latency            [0,1)  [1,100) [100,) operation\n"
-              + "  rest.OK     100000.0 3000.000/30000.000 12     120     1200   op\n"
-              + "              100000.0 3000.000/30000.000 12     120     1200   (summary)\n"
+              + "  status      tps      latency            [0,1) [1,100) [100,) operation\n"
+              + "  rest.OK     100000.0 3000.000/30000.000 12    120     1200   op\n"
+              + "              100000.0 3000.000/30000.000 12    120     1200   (summary)\n"
               + " details:\n"
               + "    rest.OK:\n"
               + "      op:\n"

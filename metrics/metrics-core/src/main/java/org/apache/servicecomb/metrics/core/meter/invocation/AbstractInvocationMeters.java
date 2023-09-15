@@ -22,6 +22,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 import com.netflix.spectator.api.Id;
@@ -36,8 +37,11 @@ public abstract class AbstractInvocationMeters {
   // not care for concurrency, just for make build key faster
   private int maxKeyLen = 64;
 
-  public AbstractInvocationMeters(Registry registry) {
+  protected MetricsBootstrapConfig metricsBootstrapConfig;
+
+  public AbstractInvocationMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
     this.registry = registry;
+    this.metricsBootstrapConfig = metricsBootstrapConfig;
   }
 
   protected AbstractInvocationMeter getOrCreateMeters(Invocation invocation, Response response) {

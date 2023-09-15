@@ -16,16 +16,18 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
+
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Registry;
 
 public class ProducerInvocationMeters extends AbstractInvocationMeters {
-  public ProducerInvocationMeters(Registry registry) {
-    super(registry);
+  public ProducerInvocationMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(registry, metricsBootstrapConfig);
   }
 
   @Override
   protected AbstractInvocationMeter createMeter(Id id) {
-    return new ProducerInvocationMeter(id);
+    return new ProducerInvocationMeter(id, metricsBootstrapConfig);
   }
 }

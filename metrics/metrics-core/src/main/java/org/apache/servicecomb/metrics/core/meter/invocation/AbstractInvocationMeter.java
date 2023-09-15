@@ -21,11 +21,11 @@ import java.util.List;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
 import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionMeter;
 import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
@@ -46,8 +46,11 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   // latency distribution
   private final LatencyDistributionMeter latencyDistributionMeter;
 
-  public AbstractInvocationMeter(Id id) {
+  protected final MetricsBootstrapConfig metricsBootstrapConfig;
+
+  public AbstractInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
     this.id = id;
+    this.metricsBootstrapConfig = metricsBootstrapConfig;
     latencyDistributionMeter = createLatencyDistribution(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
     totalTimer = createStageTimer(MeterInvocationConst.STAGE_TOTAL);
     prepareTimer = createStageTimer(MeterInvocationConst.STAGE_PREPARE);
@@ -56,10 +59,8 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   }
 
   protected LatencyDistributionMeter createLatencyDistribution(String tagValue) {
-    String config = DynamicPropertyFactory.getInstance()
-        .getStringProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION, null)
-        .get();
-    return new LatencyDistributionMeter(id.withTag(MeterInvocationConst.TAG_TYPE, tagValue), config);
+    return new LatencyDistributionMeter(id.withTag(MeterInvocationConst.TAG_TYPE, tagValue),
+        metricsBootstrapConfig.getLatencyDistribution());
   }
 
   protected SimpleTimer createStageTimer(String stageValue) {

@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
@@ -36,8 +37,8 @@ public class ProducerInvocationMeter extends AbstractInvocationMeter {
 
   private final SimpleTimer sendResponseTimer;
 
-  public ProducerInvocationMeter(Id id) {
-    super(id);
+  public ProducerInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(id, metricsBootstrapConfig);
 
     executorQueueTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
     executionTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTION);
