@@ -64,7 +64,7 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getAlias() {
-    return null;
+    return microserviceProperties.getAlias();
   }
 
   @Override
@@ -82,7 +82,7 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getDescription() {
-    return null;
+    return microserviceProperties.getDescription();
   }
 
   @Override
