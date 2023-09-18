@@ -17,10 +17,9 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationConfig;
@@ -28,7 +27,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
@@ -38,15 +36,18 @@ import org.apache.servicecomb.foundation.vertx.client.tcp.TcpResponseCallback;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
+import jakarta.ws.rs.core.Response.Status;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -67,13 +68,12 @@ public class TestHighwayClient {
 
   Endpoint endpoint = Mockito.mock(Endpoint.class);
 
+  Environment environment = Mockito.mock(Environment.class);
+
   static long nanoTime = 123;
 
   @BeforeClass
   public static void setup() {
-    ArchaiusUtils.resetConfig();
-    ArchaiusUtils.setProperty(REQUEST_TIMEOUT_KEY, 2000);
-
     new MockUp<System>() {
       @Mock
       long nanoTime() {
@@ -84,7 +84,22 @@ public class TestHighwayClient {
 
   @AfterClass
   public static void teardown() {
-    ArchaiusUtils.resetConfig();
+
+  }
+
+  @Before
+  public void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty(REQUEST_TIMEOUT_KEY, long.class, (long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT))
+        .thenReturn((long) 2000);
+    Mockito.when(environment.getProperty("servicecomb.highway.client.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.highway.client.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.highway.server.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.highway.server.thread-count", int.class, -1))
+        .thenReturn(-1);
   }
 
   @Test

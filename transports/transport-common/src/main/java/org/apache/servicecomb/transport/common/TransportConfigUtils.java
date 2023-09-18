@@ -16,10 +16,9 @@
  */
 package org.apache.servicecomb.transport.common;
 
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public final class TransportConfigUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(TransportConfigUtils.class);
@@ -30,12 +29,12 @@ public final class TransportConfigUtils {
   // old verticle count key is ambiguous
   // suggest to use new name
   public static int readVerticleCount(String key, String deprecatedKey) {
-    int count = DynamicPropertyFactory.getInstance().getIntProperty(key, -1).get();
+    int count = LegacyPropertyFactory.getIntProperty(key, -1);
     if (count > 0) {
       return count;
     }
 
-    count = DynamicPropertyFactory.getInstance().getIntProperty(deprecatedKey, -1).get();
+    count = LegacyPropertyFactory.getIntProperty(deprecatedKey, -1);
     if (count > 0) {
       LOGGER.warn("{} is ambiguous, and deprecated, recommended to use {}.", deprecatedKey, key);
       return count;

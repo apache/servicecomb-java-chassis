@@ -17,19 +17,15 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.transport.common.TransportConfigUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 
 public final class HighwayConfig {
   private HighwayConfig() {
   }
 
   public static String getAddress() {
-    DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.highway.address", null);
-    return address.get();
+    return LegacyPropertyFactory.getStringProperty("servicecomb.highway.address", null);
   }
 
   public static int getServerThreadCount() {

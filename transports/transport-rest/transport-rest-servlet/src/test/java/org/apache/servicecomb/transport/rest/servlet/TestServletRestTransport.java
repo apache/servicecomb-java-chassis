@@ -17,19 +17,35 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
+import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_ADDRESS;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import mockit.Expectations;
 
 public class TestServletRestTransport {
   ServletRestTransport transport = new ServletRestTransport();
+
+  Environment environment = Mockito.mock(Environment.class);
+
+  @Before
+  public void setUp() {
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
+        .thenReturn("");
+    Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
+            .thenReturn(0);
+    transport.setEnvironment(environment);
+  }
 
   @After
   public void tearDown() {

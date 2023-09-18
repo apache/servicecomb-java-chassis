@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.core.governance;
 
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 
 public class GovernanceConfiguration {
   public static final String ROOT = "servicecomb.loadbalance.";
@@ -62,7 +62,7 @@ public class GovernanceConfiguration {
   public static String getStringProperty(String defaultValue, String... keys) {
     String property;
     for (String key : keys) {
-      property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      property = LegacyPropertyFactory.getStringProperty(key);
       if (property != null) {
         return property;
       }

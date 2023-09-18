@@ -17,9 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.transport.common.TransportConfigUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.http.HttpClientOptions;
 
@@ -38,98 +37,80 @@ public final class TransportClientConfig {
   }
 
   public static int getHttp2ConnectionMaxPoolSize() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.maxPoolSize",
-            HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE)
-        .get();
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.client.http2.maxPoolSize",
+        HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE);
   }
 
   public static int getHttp2MultiplexingLimit() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.multiplexingLimit",
-            HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT)
-        .get();
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.client.http2.multiplexingLimit",
+        HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT);
   }
 
   public static boolean getUseAlpn() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.client.http2.useAlpnEnabled", true)
-        .get();
+    return LegacyPropertyFactory.getBooleanProperty("servicecomb.rest.client.http2.useAlpnEnabled", true);
   }
 
   public static boolean isHttp2TransportClientEnabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.client.http2.enabled",
-            true)
-        .get();
+    return LegacyPropertyFactory.getBooleanProperty("servicecomb.rest.client.http2.enabled",
+        true);
   }
 
   public static int getConnectionMaxPoolSize() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.connection.maxPoolSize", HttpClientOptions.DEFAULT_MAX_POOL_SIZE)
-        .get();
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.client.connection.maxPoolSize",
+        HttpClientOptions.DEFAULT_MAX_POOL_SIZE);
   }
 
   public static int getHttp2ConnectionIdleTimeoutInSeconds() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.http2.connection.idleTimeoutInSeconds", DEFAULT_IDLE_TIME_OUT)
-        .get();
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.client.http2.connection.idleTimeoutInSeconds",
+        DEFAULT_IDLE_TIME_OUT);
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.connection.idleTimeoutInSeconds", DEFAULT_IDLE_TIME_OUT)
-        .get();
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.client.connection.idleTimeoutInSeconds",
+        DEFAULT_IDLE_TIME_OUT);
   }
 
   public static boolean getConnectionKeepAlive() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.client.connection.keepAlive", HttpClientOptions.DEFAULT_KEEP_ALIVE)
-        .get();
+    return LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.client.connection.keepAlive", HttpClientOptions.DEFAULT_KEEP_ALIVE);
   }
 
   public static int getConnectionKeepAliveTimeoutInSeconds() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.connection.keepAliveTimeoutInSeconds",
-            DEFAULT_KEEP_ALIVE_TIME_OUT)
-        .get();
+    return LegacyPropertyFactory
+        .getIntProperty("servicecomb.rest.client.connection.keepAliveTimeoutInSeconds", DEFAULT_KEEP_ALIVE_TIME_OUT);
   }
 
   public static int getHttp2ConnectionKeepAliveTimeoutInSeconds() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds",
-            DEFAULT_KEEP_ALIVE_TIME_OUT)
-        .get();
+            DEFAULT_KEEP_ALIVE_TIME_OUT);
   }
 
   public static boolean getConnectionCompression() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getBooleanProperty("servicecomb.rest.client.connection.compression",
-            HttpClientOptions.DEFAULT_TRY_USE_COMPRESSION)
-        .get();
+            HttpClientOptions.DEFAULT_TRY_USE_COMPRESSION);
   }
 
   public static int getMaxHeaderSize() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.maxHeaderSize", HttpClientOptions.DEFAULT_MAX_HEADER_SIZE)
-        .get();
+    return LegacyPropertyFactory
+        .getIntProperty("servicecomb.rest.client.maxHeaderSize", HttpClientOptions.DEFAULT_MAX_HEADER_SIZE);
   }
 
   public static int getMaxWaitQueueSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.client.maxWaitQueueSize",
-            HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE)
-        .get();
+            HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
   }
 
   public static boolean isHttpTransportClientEnabled() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getBooleanProperty("servicecomb.rest.client.enabled",
-            true)
-        .get();
+            true);
   }
 
   public static int getConnectionTimeoutInMillis() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.connection.timeoutInMillis", 1000)
-        .get();
+    return LegacyPropertyFactory
+        .getIntProperty("servicecomb.rest.client.connection.timeoutInMillis", 1000);
   }
 }

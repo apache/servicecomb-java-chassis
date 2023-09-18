@@ -38,8 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
@@ -133,7 +131,7 @@ public abstract class AbstractTransport implements Transport {
    *
    * @return the publish address, or {@code null} if the param {@code address} is null.
    */
-  public static String getPublishAddress(String schema, String address) {
+  protected String getPublishAddress(String schema, String address) {
     if (address == null) {
       return address;
     }
@@ -155,16 +153,12 @@ public abstract class AbstractTransport implements Transport {
     }
   }
 
-  private static IpPort genPublishIpPort(String schema, IpPort ipPort) {
-    String publicAddressSetting = DynamicPropertyFactory.getInstance()
-        .getStringProperty(PUBLISH_ADDRESS, "")
-        .get();
+  private IpPort genPublishIpPort(String schema, IpPort ipPort) {
+    String publicAddressSetting = environment.getProperty(PUBLISH_ADDRESS, String.class, "");
     publicAddressSetting = publicAddressSetting.trim();
 
     String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
-    int publishPortSetting = DynamicPropertyFactory.getInstance()
-        .getIntProperty(publishPortKey, 0)
-        .get();
+    int publishPortSetting = environment.getProperty(publishPortKey, int.class, 0);
     int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
 
     if (publicAddressSetting.isEmpty()) {

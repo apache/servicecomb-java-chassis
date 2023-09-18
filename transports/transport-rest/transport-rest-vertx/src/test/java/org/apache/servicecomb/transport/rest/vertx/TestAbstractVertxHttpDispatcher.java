@@ -17,17 +17,15 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.vertx.ext.web.Router;
 import mockit.Deencapsulation;
@@ -45,21 +43,26 @@ public class TestAbstractVertxHttpDispatcher {
     }
   }
 
-  Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+  Environment environment = Mockito.mock(Environment.class);
 
-  @BeforeClass
-  public static void setup() {
-    ArchaiusUtils.resetConfig();
-  }
-
-
-  @AfterClass
-  public static void teardown() {
-    ArchaiusUtils.resetConfig();
+  @Before
+  public void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty(
+            RestConst.UPLOAD_MAX_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_MAX_FILE_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, int.class, 0))
+        .thenReturn(0);
   }
 
   @Test
   public void createBodyHandlerUploadDefault() {
+    Mockito.when(environment.getProperty(
+            "servicecomb.uploads.directory", String.class, RestConst.UPLOAD_DEFAULT_DIR))
+        .thenReturn(RestConst.UPLOAD_DEFAULT_DIR);
+
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();
 
@@ -69,7 +72,9 @@ public class TestAbstractVertxHttpDispatcher {
 
   @Test
   public void createBodyHandlerUploadNormal() {
-    config.setProperty("servicecomb.uploads.directory", "/path");
+    Mockito.when(environment.getProperty(
+            "servicecomb.uploads.directory", String.class, RestConst.UPLOAD_DEFAULT_DIR))
+        .thenReturn("/path");
 
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();

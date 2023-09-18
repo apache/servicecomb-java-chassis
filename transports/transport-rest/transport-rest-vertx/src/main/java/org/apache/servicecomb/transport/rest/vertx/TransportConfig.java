@@ -22,10 +22,8 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.transport.common.TransportConfigUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 
 import io.vertx.core.Verticle;
 import io.vertx.core.http.Http2Settings;
@@ -55,39 +53,35 @@ public final class TransportConfig {
   }
 
   public static String getAddress() {
-    DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.rest.address", null);
-    return address.get();
+    return LegacyPropertyFactory.getStringProperty("servicecomb.rest.address", null);
   }
 
   public static int getMaxFormAttributeSize() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.server.maxFormAttributeSize",
-            HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE).get();
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.server.maxFormAttributeSize",
+        HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE);
   }
 
   public static int getCompressionLevel() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.server.compressionLevel",
-            HttpServerOptions.DEFAULT_COMPRESSION_LEVEL).get();
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.server.compressionLevel",
+        HttpServerOptions.DEFAULT_COMPRESSION_LEVEL);
   }
 
   public static int getMaxChunkSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.maxChunkSize",
-            HttpServerOptions.DEFAULT_MAX_CHUNK_SIZE).get();
+            HttpServerOptions.DEFAULT_MAX_CHUNK_SIZE);
   }
 
   public static int getDecoderInitialBufferSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.decoderInitialBufferSize",
-            HttpServerOptions.DEFAULT_DECODER_INITIAL_BUFFER_SIZE).get();
+            HttpServerOptions.DEFAULT_DECODER_INITIAL_BUFFER_SIZE);
   }
 
   public static int getHttp2ConnectionWindowSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.http2ConnectionWindowSize",
-            HttpServerOptions.DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE).get();
+            HttpServerOptions.DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE);
   }
 
   public static int getThreadCount() {
@@ -97,122 +91,111 @@ public final class TransportConfig {
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.connection.idleTimeoutInSeconds",
             DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
-        .get();
+        ;
   }
 
   public static int getHttp2ConnectionIdleTimeoutInSeconds() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.http2.connection.idleTimeoutInSeconds",
-            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
-        .get();
+            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND);
   }
 
   public static boolean getCompressed() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
-        .get();
+    return LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT);
   }
 
   public static boolean getDecompressionSupported() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getBooleanProperty("servicecomb.rest.server.decompressionSupported",
-            HttpServerOptions.DEFAULT_DECOMPRESSION_SUPPORTED).get();
+            HttpServerOptions.DEFAULT_DECOMPRESSION_SUPPORTED);
   }
 
   public static long getMaxConcurrentStreams() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getLongProperty("servicecomb.rest.server.http2.concurrentStreams",
-            HttpServerOptions.DEFAULT_INITIAL_SETTINGS_MAX_CONCURRENT_STREAMS).get();
+            HttpServerOptions.DEFAULT_INITIAL_SETTINGS_MAX_CONCURRENT_STREAMS);
   }
 
   public static long getHttp2HeaderTableSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getLongProperty("servicecomb.rest.server.http2.HeaderTableSize",
-            Http2Settings.DEFAULT_HEADER_TABLE_SIZE).get();
+            Http2Settings.DEFAULT_HEADER_TABLE_SIZE);
   }
 
   public static boolean getPushEnabled() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getBooleanProperty("servicecomb.rest.server.http2.pushEnabled",
-            Http2Settings.DEFAULT_ENABLE_PUSH).get();
+            Http2Settings.DEFAULT_ENABLE_PUSH);
   }
 
   public static int getInitialWindowSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.http2.initialWindowSize",
-            Http2Settings.DEFAULT_INITIAL_WINDOW_SIZE).get();
+            Http2Settings.DEFAULT_INITIAL_WINDOW_SIZE);
   }
 
   public static int getMaxFrameSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.http2.maxFrameSize",
-            Http2Settings.DEFAULT_MAX_FRAME_SIZE).get();
+            Http2Settings.DEFAULT_MAX_FRAME_SIZE);
   }
 
   public static int getMaxHeaderListSize() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.http2.maxHeaderListSize",
-            Http2Settings.DEFAULT_MAX_HEADER_LIST_SIZE).get();
+            Http2Settings.DEFAULT_MAX_HEADER_LIST_SIZE);
   }
 
   public static boolean getUseAlpn() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.server.http2.useAlpnEnabled", true)
-        .get();
+    return LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.server.http2.useAlpnEnabled", true);
   }
 
   public static int getMaxHeaderSize() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE)
-        .get();
+    return LegacyPropertyFactory
+        .getIntProperty("servicecomb.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE);
   }
 
   public static boolean isCorsEnabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".enabled", false)
-        .get();
+    return LegacyPropertyFactory
+        .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".enabled", false);
   }
 
   public static String getCorsAllowedOrigin() {
-    return DynamicPropertyFactory.getInstance()
-        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".origin", "*")
-        .get();
+    return LegacyPropertyFactory
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".origin", "*");
   }
 
   public static boolean isCorsAllowCredentials() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowCredentials", false)
-        .get();
+    return LegacyPropertyFactory
+        .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowCredentials", false);
   }
 
   public static Set<String> getCorsAllowedHeaders() {
-    String allowedHeaders = DynamicPropertyFactory.getInstance()
-        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowedHeader", null)
-        .get();
+    String allowedHeaders = LegacyPropertyFactory
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowedHeader");
     return convertToSet(allowedHeaders);
   }
 
   public static Set<String> getCorsAllowedMethods() {
-    String allowedMethods = DynamicPropertyFactory.getInstance()
-        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowedMethod", null)
-        .get();
+    String allowedMethods = LegacyPropertyFactory
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowedMethod");
     return convertToSet(allowedMethods);
   }
 
   public static Set<String> getCorsExposedHeaders() {
-    String exposedHeaders = DynamicPropertyFactory.getInstance()
-        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".exposedHeader", null)
-        .get();
+    String exposedHeaders = LegacyPropertyFactory
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".exposedHeader");
     return convertToSet(exposedHeaders);
   }
 
   public static int getCorsMaxAge() {
-    return DynamicPropertyFactory.getInstance()
-        .getIntProperty(SERVICECOMB_CORS_CONFIG_BASE + ".maxAge", -1)
-        .get();
+    return LegacyPropertyFactory
+        .getIntProperty(SERVICECOMB_CORS_CONFIG_BASE + ".maxAge", -1);
   }
 
   private static Set<String> convertToSet(String setString) {
@@ -226,9 +209,8 @@ public final class TransportConfig {
   }
 
   public static int getMaxInitialLineLength() {
-    return DynamicPropertyFactory.getInstance()
+    return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.maxInitialLineLength",
-            HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH)
-        .get();
+            HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH);
   }
 }
