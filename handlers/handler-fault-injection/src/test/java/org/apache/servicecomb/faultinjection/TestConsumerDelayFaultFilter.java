@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.jupiter.api.AfterAll;
@@ -31,16 +31,56 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import com.netflix.config.DynamicProperty;
+import org.springframework.core.env.Environment;
 
 public class TestConsumerDelayFaultFilter {
   private Invocation invocation;
 
+  private Environment environment;
+
   @BeforeEach
   public void before() {
-    ArchaiusUtils.resetConfig();
-    FaultInjectionConfig.getCfgCallback().clear();
+    environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
+
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4.operations.sayBye4"
+            + ".policy.fault.protocols.rest.delay.fixedDelay",
+        int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4.operations.sayBye4"
+            + ".policy.fault.protocols.rest.delay.percent",
+        int.class, -1)).thenReturn(-1);
+
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4"
+            + ".policy.fault.protocols.rest.delay.fixedDelay",
+        int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4"
+            + ".policy.fault.protocols.rest.delay.percent",
+        int.class, -1)).thenReturn(-1);
+
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6"
+            + ".policy.fault.protocols.rest.delay.fixedDelay",
+        int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6"
+            + ".policy.fault.protocols.rest.delay.percent",
+        int.class, -1)).thenReturn(-1);
+
+    Mockito.when(environment.getProperty(
+            "servicecomb.governance.Consumer._global"
+                + ".policy.fault.protocols.rest.delay.fixedDelay",
+            int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(
+            "servicecomb.governance.Consumer._global"
+                + ".policy.fault.protocols.rest.delay.percent",
+            int.class, -1))
+        .thenReturn(-1);
+
     FaultInjectionUtil.getConfigCenterValue().clear();
 
     invocation = Mockito.mock(Invocation.class);
@@ -55,7 +95,6 @@ public class TestConsumerDelayFaultFilter {
 
   @AfterEach
   public void after() {
-    ArchaiusUtils.resetConfig();
   }
 
   @AfterAll
@@ -65,17 +104,15 @@ public class TestConsumerDelayFaultFilter {
 
   @Test
   public void injectFaultVertxDelay() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
-
-    Assertions.assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
-        .getString());
-    Assertions.assertEquals("100", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
+    Mockito.when(environment.getProperty("servicecomb.governance.Consumer._global"
+                + ".policy.fault.protocols.rest.delay.fixedDelay",
+            int.class, -1))
+        .thenReturn(10);
+    Mockito.when(
+            environment.getProperty("servicecomb.governance.Consumer._global"
+                    + ".policy.fault.protocols.rest.delay.percent",
+                int.class, -1))
+        .thenReturn(100);
 
     ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);
@@ -87,17 +124,14 @@ public class TestConsumerDelayFaultFilter {
 
   @Test
   public void injectFaultSystemDelay() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
-
-    Assertions.assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
-        .getString());
-    Assertions.assertEquals("100", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
+    Mockito.when(
+            environment.getProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay",
+                int.class, -1))
+        .thenReturn(10);
+    Mockito.when(
+            environment.getProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent",
+                int.class, -1))
+        .thenReturn(100);
 
     ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);
@@ -109,16 +143,14 @@ public class TestConsumerDelayFaultFilter {
 
   @Test
   public void injectFaultNotDelay() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
-    ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "0");
-
-    Assertions.assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
-        .getString());
-    Assertions.assertEquals("0", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
+    Mockito.when(
+            environment.getProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay",
+                int.class, -1))
+        .thenReturn(10);
+    Mockito.when(
+            environment.getProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent",
+                int.class, -1))
+        .thenReturn(0);
 
     ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);
@@ -130,13 +162,6 @@ public class TestConsumerDelayFaultFilter {
 
   @Test
   public void injectFaultNoPercentageConfig() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", null);
-
-    Assertions.assertNull(DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
-
     ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);
     Mockito.when(filterNode.onFilter(invocation))
@@ -147,12 +172,10 @@ public class TestConsumerDelayFaultFilter {
 
   @Test
   public void injectFaultNoDelayMsConfig() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
-
-    Assertions.assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
+    Mockito.when(
+            environment.getProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent",
+                int.class, -1))
+        .thenReturn(10);
 
     ConsumerDelayFaultFilter delayFault = new ConsumerDelayFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);

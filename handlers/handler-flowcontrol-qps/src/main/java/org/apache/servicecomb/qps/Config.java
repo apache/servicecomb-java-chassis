@@ -17,15 +17,9 @@
 
 package org.apache.servicecomb.qps;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 public final class Config {
-  private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
-
   public static final String STRATEGY_KEY = "servicecomb.flowcontrol.strategy";
 
   public static final String ANY_SERVICE = "ANY";
@@ -56,29 +50,15 @@ public final class Config {
 
   public static Config INSTANCE = new Config();
 
-  private final DynamicBooleanProperty consumerEnabled =
-      DynamicPropertyFactory.getInstance().getBooleanProperty(CONSUMER_ENABLED, true);
-
-  private final DynamicBooleanProperty providerEnabled =
-      DynamicPropertyFactory.getInstance().getBooleanProperty(PROVIDER_ENABLED, true);
-
   public Config() {
-    consumerEnabled.addCallback(() -> {
-      boolean newValue = consumerEnabled.get();
-      LOGGER.info("{} changed from {} to {}", CONSUMER_ENABLED, consumerEnabled, newValue);
-    });
 
-    providerEnabled.addCallback(() -> {
-      boolean newValue = providerEnabled.get();
-      LOGGER.info("{} changed from {} to {}", PROVIDER_ENABLED, providerEnabled, newValue);
-    });
   }
 
   public boolean isConsumerEnabled() {
-    return consumerEnabled.get();
+    return LegacyPropertyFactory.getBooleanProperty(CONSUMER_ENABLED, true);
   }
 
   public boolean isProviderEnabled() {
-    return providerEnabled.get();
+    return LegacyPropertyFactory.getBooleanProperty(PROVIDER_ENABLED, true);
   }
 }

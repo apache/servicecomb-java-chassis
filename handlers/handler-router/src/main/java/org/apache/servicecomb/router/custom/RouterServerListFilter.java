@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.netflix.config.DynamicPropertyFactory;
 
 public class RouterServerListFilter implements ServerListFilterExt {
 
@@ -53,7 +53,7 @@ public class RouterServerListFilter implements ServerListFilterExt {
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getStringProperty(ENABLE, "").get()
+    return LegacyPropertyFactory.getStringProperty(ENABLE, "")
         .equals(TYPE_ROUTER);
   }
 

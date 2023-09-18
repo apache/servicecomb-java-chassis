@@ -24,6 +24,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -34,16 +35,57 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.netflix.config.DynamicProperty;
 
 public class TestConsumerAbortFaultFilter {
   private Invocation invocation;
 
+  private Environment environment;
+
   @BeforeEach
   public void before() {
-    ArchaiusUtils.resetConfig();
-    FaultInjectionConfig.getCfgCallback().clear();
+    environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4.operations.sayBye4"
+            + ".policy.fault.protocols.rest.abort.percent",
+        int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4.operations.sayBye4"
+            + ".policy.fault.protocols.rest.abort.httpStatus",
+        int.class, -1)).thenReturn(-1);
+
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4"
+            + ".policy.fault.protocols.rest.abort.percent",
+        int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6.schemas.testSchema4"
+            + ".policy.fault.protocols.rest.abort.httpStatus",
+        int.class, -1)).thenReturn(-1);
+
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6"
+            + ".policy.fault.protocols.rest.abort.percent",
+        int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty(
+        "servicecomb.governance.Consumer.carts6"
+            + ".policy.fault.protocols.rest.abort.httpStatus",
+        int.class, -1)).thenReturn(-1);
+
+    Mockito.when(environment.getProperty(
+            "servicecomb.governance.Consumer._global"
+                + ".policy.fault.protocols.rest.abort.percent",
+            int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(
+            "servicecomb.governance.Consumer._global"
+                + ".policy.fault.protocols.rest.abort.httpStatus",
+            int.class, -1))
+        .thenReturn(-1);
+
     FaultInjectionUtil.getConfigCenterValue().clear();
 
     invocation = Mockito.mock(Invocation.class);
@@ -58,7 +100,6 @@ public class TestConsumerAbortFaultFilter {
 
   @AfterEach
   public void after() {
-    ArchaiusUtils.resetConfig();
   }
 
   @AfterAll
@@ -68,17 +109,16 @@ public class TestConsumerAbortFaultFilter {
 
   @Test
   public void injectFaultError() {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "100");
-
-    Assertions.assertEquals("421", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
-        .getString());
-    Assertions.assertEquals("100", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
-        .getString());
+    Mockito.when(environment.getProperty(
+            "servicecomb.governance.Consumer._global"
+                + ".policy.fault.protocols.rest.abort.httpStatus",
+            int.class, -1))
+        .thenReturn(421);
+    Mockito.when(environment.getProperty(
+            "servicecomb.governance.Consumer._global"
+                + ".policy.fault.protocols.rest.abort.percent",
+            int.class, -1))
+        .thenReturn(100);
 
     ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
 
