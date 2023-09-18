@@ -19,11 +19,9 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.concurrent.TimeoutException;
 
-import jakarta.ws.rs.core.Response.Status;
-
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -40,10 +38,11 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicPropertyFactory;
+import com.google.common.annotations.VisibleForTesting;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
+import jakarta.ws.rs.core.Response.Status;
 
 public class HighwayClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClient.class);
@@ -70,8 +69,8 @@ public class HighwayClient {
   TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
     // global request timeout to be login timeout
-    tcpClientConfig.setMsLoginTimeout(DynamicPropertyFactory.getInstance()
-        .getLongProperty("servicecomb.request.timeout", TcpClientConfig.DEFAULT_LOGIN_TIMEOUT).get());
+    tcpClientConfig.setMsLoginTimeout(
+        LegacyPropertyFactory.getLongProperty("servicecomb.request.timeout", TcpClientConfig.DEFAULT_LOGIN_TIMEOUT));
 
     SSLOptionFactory factory =
         SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);

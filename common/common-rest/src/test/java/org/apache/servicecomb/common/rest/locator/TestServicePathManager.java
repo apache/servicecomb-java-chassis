@@ -87,6 +87,8 @@ public class TestServicePathManager {
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty(DefinitionConst.REGISTER_URL_PREFIX, boolean.class, false)).thenReturn(false);
+
     ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     scbEngine.setTransportManager(transportManager);

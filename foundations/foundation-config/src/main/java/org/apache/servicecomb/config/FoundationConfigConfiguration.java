@@ -23,6 +23,7 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 @SuppressWarnings("unused")
@@ -67,5 +68,10 @@ public class FoundationConfigConfiguration {
   @ConfigurationProperties(prefix = DataCenterProperties.PREFIX)
   public DataCenterProperties dataCenterProperties() {
     return new DataCenterProperties();
+  }
+
+  @Bean
+  public LegacyPropertyFactory legacyPropertyFactory(Environment environment) {
+    return new LegacyPropertyFactory(environment);
   }
 }

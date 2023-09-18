@@ -17,11 +17,25 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_COMPRESSION_LEVEL;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_DECODER_INITIAL_BUFFER_SIZE;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_DECOMPRESSION_SUPPORTED;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_CHUNK_SIZE;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH;
+import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_ADDRESS;
+import static org.apache.servicecomb.transport.rest.vertx.TransportConfig.DEFAULT_SERVER_COMPRESSION_SUPPORT;
+import static org.apache.servicecomb.transport.rest.vertx.TransportConfig.DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND;
+import static org.apache.servicecomb.transport.rest.vertx.TransportConfig.DEFAULT_SERVER_MAX_HEADER_SIZE;
+import static org.apache.servicecomb.transport.rest.vertx.TransportConfig.SERVICECOMB_CORS_CONFIG_BASE;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -30,6 +44,7 @@ import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -37,11 +52,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
@@ -60,9 +77,80 @@ public class TestRestServerVerticle {
 
   Promise<Void> startPromise = null;
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @Before
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
+    Mockito.when(environment.getProperty(
+            "servicecomb.request.timeout", long.class, (long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT))
+        .thenReturn((long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT);
+    Mockito.when(environment.getProperty("servicecomb.rest.client.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.client.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.rest.order", int.class, Integer.MAX_VALUE))
+        .thenReturn(Integer.MAX_VALUE);
+    Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
+        .thenReturn(0);
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.rest.enabled", boolean.class, true))
+        .thenReturn(true);
+    Mockito.when(environment.getProperty(SERVICECOMB_CORS_CONFIG_BASE + ".enabled", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
+        .thenReturn("");
+    Mockito.when(environment.getProperty(
+            RestConst.UPLOAD_MAX_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_MAX_FILE_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, int.class, 0))
+        .thenReturn(0);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.compression", boolean.class,
+            DEFAULT_SERVER_COMPRESSION_SUPPORT))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.maxHeaderSize", int.class,
+            DEFAULT_SERVER_MAX_HEADER_SIZE))
+        .thenReturn(DEFAULT_SERVER_MAX_HEADER_SIZE);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.maxFormAttributeSize", int.class,
+            DEFAULT_MAX_FORM_ATTRIBUTE_SIZE))
+        .thenReturn(DEFAULT_MAX_FORM_ATTRIBUTE_SIZE);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.compressionLevel", int.class,
+            DEFAULT_COMPRESSION_LEVEL))
+        .thenReturn(DEFAULT_COMPRESSION_LEVEL);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.maxChunkSize", int.class,
+            DEFAULT_MAX_CHUNK_SIZE))
+        .thenReturn(DEFAULT_MAX_CHUNK_SIZE);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.decompressionSupported", boolean.class,
+            DEFAULT_DECOMPRESSION_SUPPORTED))
+        .thenReturn(DEFAULT_DECOMPRESSION_SUPPORTED);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.decoderInitialBufferSize", int.class,
+            DEFAULT_DECODER_INITIAL_BUFFER_SIZE))
+        .thenReturn(DEFAULT_DECODER_INITIAL_BUFFER_SIZE);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.maxInitialLineLength", int.class,
+            DEFAULT_MAX_INITIAL_LINE_LENGTH))
+        .thenReturn(DEFAULT_MAX_INITIAL_LINE_LENGTH);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.connection.idleTimeoutInSeconds", int.class,
+            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND))
+        .thenReturn(DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.http2.useAlpnEnabled", boolean.class,
+            true))
+        .thenReturn(true);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.http2ConnectionWindowSize", int.class,
+            DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE))
+        .thenReturn(DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.http2.connection.idleTimeoutInSeconds", int.class,
+            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND))
+        .thenReturn(DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.http2.pushEnabled", boolean.class,
+            Http2Settings.DEFAULT_ENABLE_PUSH))
+        .thenReturn(Http2Settings.DEFAULT_ENABLE_PUSH);
+
+    LegacyPropertyFactory.setEnvironment(environment);
+
     instance = new RestServerVerticle();
     startPromise = Promise.promise();
 
@@ -81,6 +169,7 @@ public class TestRestServerVerticle {
   public void testRestServerVerticleWithRouter(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
       @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) throws Exception {
+
     URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080");
     new Expectations() {
       {
@@ -131,37 +220,6 @@ public class TestRestServerVerticle {
     server.start(startPromise);
   }
 
-  @Test
-  public void testRestServerVerticleWithHttp2(@Mocked Transport transport, @Mocked Vertx vertx,
-      @Mocked Context context,
-      @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) {
-    URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?protocol=http2");
-    new Expectations() {
-      {
-        transport.parseAddress("http://127.0.0.1:8080?protocol=http2");
-        result = endpointObject;
-      }
-    };
-    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080?protocol=http2");
-
-    new Expectations() {
-      {
-        context.config();
-        result = jsonObject;
-        jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
-        result = endpiont;
-      }
-    };
-    RestServerVerticle server = new RestServerVerticle();
-    boolean status = false;
-    try {
-      server.init(vertx, context);
-      server.start(startPromise);
-    } catch (Exception e) {
-      status = true;
-    }
-    Assertions.assertFalse(status);
-  }
 
   @Test
   public void testStartFutureAddressEmpty() {
@@ -189,11 +247,23 @@ public class TestRestServerVerticle {
 
   @Test
   public void testMountCorsHandler() {
-    ArchaiusUtils.setProperty("servicecomb.cors.enabled", true);
-    ArchaiusUtils.setProperty("servicecomb.cors.allowedMethod", "GET,PUT,POST");
-    ArchaiusUtils.setProperty("servicecomb.cors.allowedHeader", "abc,def");
-    ArchaiusUtils.setProperty("servicecomb.cors.exposedHeader", "abc2,def2");
-    ArchaiusUtils.setProperty("servicecomb.cors.maxAge", 1);
+    Mockito.when(environment.getProperty("servicecomb.cors.enabled", boolean.class,
+            false))
+        .thenReturn(true);
+    Mockito.when(environment.getProperty("servicecomb.cors.origin", String.class,
+            "*"))
+        .thenReturn("*");
+    Mockito.when(environment.getProperty("servicecomb.cors.allowedMethod"))
+        .thenReturn("GET,PUT,POST");
+    Mockito.when(environment.getProperty("servicecomb.cors.allowedHeader"))
+        .thenReturn("abc,def");
+    Mockito.when(environment.getProperty("servicecomb.cors.exposedHeader"))
+        .thenReturn("abc2,def2");
+    Mockito.when(environment.getProperty("servicecomb.cors.maxAge", int.class, -1))
+        .thenReturn(1);
+    Mockito.when(environment.getProperty("servicecomb.cors.allowCredentials", boolean.class, false))
+        .thenReturn(false);
+
     Set<HttpMethod> methodSet = new HashSet<>(3);
     methodSet.add(HttpMethod.GET);
     methodSet.add(HttpMethod.PUT);

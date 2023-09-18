@@ -52,10 +52,8 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 
-
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.WatchedUpdateResult;
 
 /**
@@ -243,8 +241,8 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
     try {
       ce.getPropertySources().addFirst(new MapPropertySource("dynamic-source", dynamicData));
     } catch (Exception e) {
-      if (DynamicPropertyFactory.getInstance().getBooleanProperty(CoreConst.PRINT_SENSITIVE_ERROR_MESSAGE,
-          false).get()) {
+      if (environment.getProperty(CoreConst.PRINT_SENSITIVE_ERROR_MESSAGE, boolean.class,
+          false)) {
         LOGGER.warn("set up spring property source failed.", e);
       } else {
         LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
@@ -331,7 +329,9 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
         try {
           Object propertyValue = environment.getProperty(propertyName, Object.class);
           if (propertyValue == null) {
-            LOGGER.error("The value of a configuration item is null, please check whether there is any impact, config item key: {}", propertyName);
+            LOGGER.error(
+                "The value of a configuration item is null, please check whether there is any impact, config item key: {}",
+                propertyName);
             continue;
           }
           configFromSpringBoot.put(propertyName, propertyValue);

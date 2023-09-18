@@ -18,25 +18,28 @@ package org.apache.servicecomb.transport.common;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-
-import mockit.Mock;
-import mockit.MockUp;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestTransportConfigUtils {
+  Environment environment = Mockito.mock(Environment.class);
+
   @BeforeEach
   public void setup() {
-    ArchaiusUtils.resetConfig();
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @AfterAll
   public static void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   static String key = "verticle-count";
@@ -45,15 +48,14 @@ public class TestTransportConfigUtils {
 
   @Test
   public void readVerticleCount_new_exist() {
-    ArchaiusUtils.setProperty(key, 10);
-
+    Mockito.when(environment.getProperty("verticle-count", int.class, -1)).thenReturn(10);
     Assertions.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
   }
 
   @Test
   public void readVerticleCount_old_exist() {
-    ArchaiusUtils.setProperty(deprecatedKey, 10);
-
+    Mockito.when(environment.getProperty("verticle-count", int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty("thread-count", int.class, -1)).thenReturn(10);
     LogCollector collector = new LogCollector();
     Assertions.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
     Assertions.assertEquals("thread-count is ambiguous, and deprecated, recommended to use verticle-count.",
@@ -63,6 +65,9 @@ public class TestTransportConfigUtils {
 
   @Test
   public void readVerticleCount_default_smallCpu() {
+    Mockito.when(environment.getProperty("verticle-count", int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty("thread-count", int.class, -1)).thenReturn(-1);
+
     new MockUp<Runtime>() {
       @Mock
       int availableProcessors() {
@@ -79,6 +84,9 @@ public class TestTransportConfigUtils {
 
   @Test
   public void readVerticleCount_default_bigCpu() {
+    Mockito.when(environment.getProperty("verticle-count", int.class, -1)).thenReturn(-1);
+    Mockito.when(environment.getProperty("thread-count", int.class, -1)).thenReturn(-1);
+
     AtomicInteger count = new AtomicInteger(8);
     new MockUp<Runtime>() {
       @Mock

@@ -20,6 +20,7 @@ package org.apache.servicecomb.core.filter.impl;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.DEFAULT_VALIDATE;
 import static org.apache.servicecomb.core.exception.converter.ConstraintViolationExceptionConverter.KEY_CODE;
+import static org.apache.servicecomb.core.filter.impl.ParameterValidatorFilter.ENABLE_EL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -39,7 +40,6 @@ import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -88,7 +88,7 @@ public class ParameterValidatorFilterTest {
     }
   }
 
-  static ParameterValidatorFilter filter = new ParameterValidatorFilter();
+  ParameterValidatorFilter filter = new ParameterValidatorFilter();
 
   @Mocked
   Invocation invocation;
@@ -98,15 +98,13 @@ public class ParameterValidatorFilterTest {
 
   Environment environment;
 
-  @BeforeClass
-  public static void beforeClass() throws Exception {
-    filter.afterPropertiesSet();
-  }
-
   @Before
   public void setUp() throws Exception {
     SCBEngine engine = SCBBootstrap.createSCBEngineForTest();
     environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty(ENABLE_EL, boolean.class, false)).thenReturn(false);
+    filter.setEnvironment(environment);
+    filter.afterPropertiesSet();
     engine.setEnvironment(environment);
     new Expectations() {
       {

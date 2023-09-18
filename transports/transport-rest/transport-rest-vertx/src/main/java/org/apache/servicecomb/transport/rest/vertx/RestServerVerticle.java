@@ -21,12 +21,10 @@ import java.nio.channels.ClosedChannelException;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
 import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.transport.AbstractTransport;
@@ -46,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -62,6 +59,8 @@ import io.vertx.core.net.impl.ConnectionBase;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 public class RestServerVerticle extends AbstractVerticle {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServerVerticle.class);
@@ -100,8 +99,8 @@ public class RestServerVerticle extends AbstractVerticle {
         DefaultHttpServerMetrics serverMetrics = (DefaultHttpServerMetrics) ((ConnectionBase) connection).metrics();
         DefaultServerEndpointMetric endpointMetric = serverMetrics.getEndpointMetric();
         long connectedCount = endpointMetric.getCurrentConnectionCount();
-        int connectionLimit = DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
+        int connectionLimit = LegacyPropertyFactory.getIntProperty("servicecomb.rest.server.connection-limit",
+            Integer.MAX_VALUE);
         if (connectedCount > connectionLimit) {
           connection.close();
           endpointMetric.onRejectByConnectionLimit();

@@ -39,8 +39,6 @@ import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 import io.swagger.v3.oas.models.OpenAPI;
 
 public class ProducerProviderManager {
@@ -121,8 +119,7 @@ public class ProducerProviderManager {
   private void registerUrlPrefixToSwagger(OpenAPI swagger) {
     String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (!StringUtils.isEmpty(urlPrefix) && !SwaggerUtils.getBasePath(swagger).startsWith(urlPrefix)
-        && DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(DefinitionConst.REGISTER_URL_PREFIX, false).get()) {
+        && scbEngine.getEnvironment().getProperty(DefinitionConst.REGISTER_URL_PREFIX, boolean.class, false)) {
       LOGGER.info("Add swagger base path prefix for {} with {}", SwaggerUtils.getBasePath(swagger), urlPrefix);
       SwaggerUtils.setBasePath(swagger, urlPrefix + SwaggerUtils.getBasePath(swagger));
     }

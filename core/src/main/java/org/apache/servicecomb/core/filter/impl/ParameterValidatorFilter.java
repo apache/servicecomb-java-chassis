@@ -37,8 +37,8 @@ import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -52,9 +52,16 @@ public class ParameterValidatorFilter implements ProviderFilter, InitializingBea
 
   public static final String NAME = "validator";
 
-  private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
+  public static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
   protected ExecutableValidator validator;
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Nonnull
   @Override
@@ -89,7 +96,7 @@ public class ParameterValidatorFilter implements ProviderFilter, InitializingBea
   }
 
   private boolean useResourceBundleMessageInterpolator() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_EL, false).get();
+    return environment.getProperty(ENABLE_EL, boolean.class, false);
   }
 
   @Override

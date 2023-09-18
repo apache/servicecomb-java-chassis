@@ -17,10 +17,15 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_ADDRESS;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
@@ -37,6 +42,30 @@ import mockit.MockUp;
 public class TestVertxRestTransport {
 
   private final VertxRestTransport instance = new VertxRestTransport();
+
+  Environment environment = Mockito.mock(Environment.class);
+
+  @Before
+  public void setUp() {
+    Mockito.when(environment.getProperty(
+            "servicecomb.request.timeout", long.class, (long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT))
+        .thenReturn((long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT);
+    Mockito.when(environment.getProperty("servicecomb.rest.client.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.client.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.rest.order", int.class, Integer.MAX_VALUE))
+        .thenReturn(Integer.MAX_VALUE);
+    Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
+        .thenReturn(0);
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
+        .thenReturn("");
+    LegacyPropertyFactory.setEnvironment(environment);
+  }
 
   @Test
   public void testGetInstance() {
@@ -66,6 +95,7 @@ public class TestVertxRestTransport {
       };
       instance.init();
     } catch (Exception e) {
+      e.printStackTrace();
       status = true;
     }
     Assertions.assertFalse(status);
@@ -105,7 +135,6 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
-    Environment environment = Mockito.mock(Environment.class);
     transport.setEnvironment(environment);
     Assertions.assertFalse(transport.canInit());
 
@@ -126,7 +155,6 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
-    Environment environment = Mockito.mock(Environment.class);
     transport.setEnvironment(environment);
     Assertions.assertTrue(transport.canInit());
   }
