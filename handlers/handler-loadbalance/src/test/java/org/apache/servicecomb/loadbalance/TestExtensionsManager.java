@@ -19,30 +19,36 @@ package org.apache.servicecomb.loadbalance;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestExtensionsManager {
+  Environment environment = Mockito.mock(Environment.class);
+
   @BeforeEach
   public void setUp() {
-    ConfigUtil.createLocalConfig();
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @AfterEach
   public void tearDown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testRuleName() {
-    System.setProperty("servicecomb.loadbalance.mytest1.strategy.name", "RoundRobin");
-    System.setProperty("servicecomb.loadbalance.mytest2.strategy.name", "Random");
-    System.setProperty("servicecomb.loadbalance.mytest3.strategy.name", "WeightedResponse");
-    System.setProperty("servicecomb.loadbalance.mytest4.strategy.name", "SessionStickiness");
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest1.strategy.name"))
+        .thenReturn("RoundRobin");
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest2.strategy.name"))
+        .thenReturn("Random");
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest3.strategy.name"))
+        .thenReturn("WeightedResponse");
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest4.strategy.name"))
+        .thenReturn("SessionStickiness");
 
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
@@ -56,10 +62,5 @@ public class TestExtensionsManager {
         extensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
     Assertions.assertEquals(SessionStickinessRule.class.getName(),
         extensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
-
-    System.getProperties().remove("servicecomb.loadbalance.mytest1.strategy.name");
-    System.getProperties().remove("servicecomb.loadbalance.mytest2.strategy.name");
-    System.getProperties().remove("servicecomb.loadbalance.mytest3.strategy.name");
-    System.getProperties().remove("servicecomb.loadbalance.mytest4.strategy.name");
   }
 }

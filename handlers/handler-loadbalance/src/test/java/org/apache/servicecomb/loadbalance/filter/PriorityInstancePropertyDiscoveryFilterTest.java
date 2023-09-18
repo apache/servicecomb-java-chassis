@@ -38,6 +38,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.google.common.collect.Sets;
 
@@ -63,9 +64,14 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
 
   StatefulDiscoveryInstance instance1;
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @Before
   public void setUp() {
     filter = new PriorityInstancePropertyDiscoveryFilter();
+    filter.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key",
+        String.class, "environment")).thenReturn("environment");
     instances = new ArrayList<>();
     self = new MicroserviceProperties();
     filter.setMicroserviceProperties(self);

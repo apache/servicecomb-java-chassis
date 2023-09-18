@@ -18,6 +18,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
 
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.loadbalance.filter.InstancePropertyDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.PriorityInstancePropertyDiscoveryFilter;
@@ -37,8 +38,9 @@ public class LoadBalanceConfiguration {
   public static final String LOAD_BALANCE_ENABLED = LOAD_BALANCE_PREFIX + ".enabled";
 
   @Bean
-  public ConsumerFilter loadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryTree discoveryTree) {
-    return new LoadBalanceFilter(extensionsManager, discoveryTree);
+  public ConsumerFilter loadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryTree discoveryTree,
+      SCBEngine scbEngine) {
+    return new LoadBalanceFilter(extensionsManager, discoveryTree, scbEngine);
   }
 
   @Bean

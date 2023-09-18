@@ -81,6 +81,8 @@ public class TestLoadBalanceFilter {
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",
+        boolean.class, false)).thenReturn(false);
     scbEngine.run();
     transportManager = scbEngine.getTransportManager();
 
@@ -115,7 +117,7 @@ public class TestLoadBalanceFilter {
     DiscoveryTree discoveryTree = new DiscoveryTree(
         new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        discoveryTree);
+        discoveryTree, scbEngine);
     loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
   }
 

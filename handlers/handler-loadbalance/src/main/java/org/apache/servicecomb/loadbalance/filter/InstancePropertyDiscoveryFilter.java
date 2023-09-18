@@ -29,8 +29,6 @@ import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 /**
  *  Instance property based filter
  */
@@ -44,8 +42,8 @@ public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.instanceProperty.enabled", true).get();
+    return environment.getProperty("servicecomb.loadbalance.filter.instanceProperty.enabled",
+        boolean.class, true);
   }
 
   @Override
