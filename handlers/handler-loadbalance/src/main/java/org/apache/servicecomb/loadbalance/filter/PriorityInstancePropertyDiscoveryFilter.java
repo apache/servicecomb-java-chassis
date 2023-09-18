@@ -25,8 +25,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
@@ -34,8 +34,6 @@ import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -59,9 +57,8 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   @Override
   protected void init(DiscoveryContext context, DiscoveryTreeNode parent) {
-    propertyKey = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key", "environment")
-        .get();
+    propertyKey = environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key",
+        String.class, "environment");
 
     // group all instance by property
     List<StatefulDiscoveryInstance> instances = parent.data();
@@ -117,9 +114,8 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled", false)
-        .get();
+    return environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled",
+        boolean.class, false);
   }
 
   @Override

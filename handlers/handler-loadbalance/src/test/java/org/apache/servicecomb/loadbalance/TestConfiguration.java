@@ -18,20 +18,29 @@
 package org.apache.servicecomb.loadbalance;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
-import org.junit.jupiter.api.Assertions;
 
 /**
  *
  */
 public class TestConfiguration {
+  Environment environment = Mockito.mock(Environment.class);
+
+  @Before
+  public void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
+  }
+
   @After
   public void after() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -84,8 +93,7 @@ public class TestConfiguration {
   @Test
   public void testGetMaxSingleTestWindow() {
     Assertions.assertEquals(60000, Configuration.INSTANCE.getMaxSingleTestWindow());
-
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow", 5000);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow")).thenReturn("5000");
     Assertions.assertEquals(5000, Configuration.INSTANCE.getMaxSingleTestWindow());
   }
 }

@@ -45,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import jakarta.ws.rs.core.Response.Status;
 
@@ -59,15 +58,9 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   public static final String SERVICECOMB_SERVER_ENDPOINT = "scb-endpoint";
 
-  // set endpoint in invocation.localContext
-  // ignore logic of loadBalance
-  public static final boolean supportDefinedEndpoint =
-      DynamicPropertyFactory.getInstance()
-          .getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
-
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalanceFilter.class);
 
-  private DiscoveryTree discoveryTree;
+  private final DiscoveryTree discoveryTree;
 
   // key为grouping filter qualified name
   private final Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
@@ -78,33 +71,35 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private String strategy = null;
 
-  private SCBEngine scbEngine;
+  private final SCBEngine scbEngine;
+
+  // set endpoint in invocation.localContext
+  // ignore logic of loadBalance
+  public boolean supportDefinedEndpoint;
 
   @Autowired
   public LoadBalanceFilter(ExtensionsManager extensionsManager,
-      DiscoveryTree discoveryTree) {
-    preCheck();
+      DiscoveryTree discoveryTree, SCBEngine scbEngine) {
+    preCheck(scbEngine);
+    this.scbEngine = scbEngine;
+    this.supportDefinedEndpoint = this.scbEngine.getEnvironment()
+        .getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",
+            boolean.class, false);
     this.extensionsManager = extensionsManager;
     this.discoveryTree = discoveryTree;
   }
 
-  @Autowired
-  public void setScbEngine(SCBEngine scbEngine) {
-    this.scbEngine = scbEngine;
-  }
-
-  private void preCheck() {
+  private void preCheck(SCBEngine scbEngine) {
     // Old configurations check.Just print an error, because configurations may given in dynamic and fail on runtime.
-
-    String policyName = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName", null)
-        .get();
+    String policyName = scbEngine.getEnvironment()
+        .getProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName");
     if (!StringUtils.isEmpty(policyName)) {
       LOGGER.error("[servicecomb.loadbalance.NFLoadBalancerRuleClassName] is not supported anymore." +
           "use [servicecomb.loadbalance.strategy.name] instead.");
     }
 
-    String filterNames = Configuration.getStringProperty(null, "servicecomb.loadbalance.serverListFilters");
+    String filterNames = scbEngine.getEnvironment()
+        .getProperty("servicecomb.loadbalance.serverListFilters");
     if (!StringUtils.isEmpty(filterNames)) {
       LOGGER.error(
           "Server list implementation changed to SPI. Configuration [servicecomb.loadbalance.serverListFilters]" +

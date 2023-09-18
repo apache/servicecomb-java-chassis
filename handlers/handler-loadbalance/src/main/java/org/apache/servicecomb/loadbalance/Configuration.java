@@ -19,9 +19,8 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.Map;
 
+import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * configuration items
@@ -195,7 +194,7 @@ public final class Configuration {
   public static String getStringProperty(String defaultValue, String... keys) {
     String property;
     for (String key : keys) {
-      property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      property = LegacyPropertyFactory.getStringProperty(key);
       if (property != null) {
         return property;
       }

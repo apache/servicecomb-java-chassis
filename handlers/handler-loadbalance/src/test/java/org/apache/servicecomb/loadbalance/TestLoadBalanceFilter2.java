@@ -46,11 +46,20 @@ import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 public class TestLoadBalanceFilter2 {
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",
+        boolean.class, false)).thenReturn(false);
+  }
+
   @Test
   public void testZoneAwareFilterWorks() {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
@@ -67,6 +76,7 @@ public class TestLoadBalanceFilter2 {
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getEnvironment()).thenReturn(environment);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
 
     // set up data
@@ -124,7 +134,6 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    Environment environment = Mockito.mock(Environment.class);
     zoneAwareDiscoveryFilter.setEnvironment(environment);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
@@ -134,7 +143,7 @@ public class TestLoadBalanceFilter2 {
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
         serverDiscoveryFilter));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        discoveryTree);
+        discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
@@ -142,7 +151,7 @@ public class TestLoadBalanceFilter2 {
     data.add(noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        discoveryTree);
+        discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
@@ -177,6 +186,7 @@ public class TestLoadBalanceFilter2 {
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getEnvironment()).thenReturn(environment);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
 
     // set up data
@@ -211,7 +221,6 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    Environment environment = Mockito.mock(Environment.class);
     zoneAwareDiscoveryFilter.setEnvironment(environment);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
@@ -221,7 +230,7 @@ public class TestLoadBalanceFilter2 {
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
         serverDiscoveryFilter));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
-        discoveryTree);
+        discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
@@ -251,6 +260,7 @@ public class TestLoadBalanceFilter2 {
     Transport transport = Mockito.mock(Transport.class);
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    Mockito.when(scbEngine.getEnvironment()).thenReturn(environment);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
@@ -309,7 +319,6 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    Environment environment = Mockito.mock(Environment.class);
     zoneAwareDiscoveryFilter.setEnvironment(environment);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
@@ -318,14 +327,14 @@ public class TestLoadBalanceFilter2 {
     serverDiscoveryFilter.setScbEngine(scbEngine);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
         serverDiscoveryFilter));
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.add(noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
@@ -350,7 +359,9 @@ public class TestLoadBalanceFilter2 {
     Transport transport = Mockito.mock(Transport.class);
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
+    Mockito.when(scbEngine.getEnvironment()).thenReturn(environment);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.operation.enabled",
+        boolean.class, true)).thenReturn(false);
 
     // set up data
     DataCenterProperties myself = new DataCenterProperties();
@@ -417,14 +428,14 @@ public class TestLoadBalanceFilter2 {
     serverDiscoveryFilter.setScbEngine(scbEngine);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
         serverDiscoveryFilter));
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.add(noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
@@ -452,6 +463,7 @@ public class TestLoadBalanceFilter2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    Mockito.when(scbEngine.getEnvironment()).thenReturn(environment);
 
     // set up data
     DataCenterProperties myself = new DataCenterProperties();
@@ -519,14 +531,14 @@ public class TestLoadBalanceFilter2 {
     serverDiscoveryFilter.setScbEngine(scbEngine);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
         serverDiscoveryFilter));
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertNull(server);
 
     data.add(noneMatchInstance);
     parent.cacheVersion(1);
-    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree);
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()), discoveryTree, scbEngine);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
