@@ -24,6 +24,7 @@ import static org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher.EN
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
@@ -50,6 +51,7 @@ import com.netflix.spectator.api.Registry;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
+import io.vertx.core.file.impl.FileResolverImpl;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
@@ -112,6 +114,11 @@ public class TestVertxMetersInitializer {
 
   @Before
   public void setup() {
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
     HttpClients.load();
   }
 

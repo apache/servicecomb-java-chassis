@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.config;
+package org.apache.servicecomb.foundation.common;
 
 import org.springframework.core.env.Environment;
 
@@ -35,6 +35,10 @@ public class LegacyPropertyFactory {
   @VisibleForTesting
   public static void setEnvironment(Environment environment) {
     LegacyPropertyFactory.environment = environment;
+  }
+
+  public static <T> T getProperty(String key, Class<T> targetType, T defaultValue) {
+    return environment.getProperty(key, targetType, defaultValue);
   }
 
   public static boolean getBooleanProperty(String key, boolean defaultValue) {

@@ -18,7 +18,7 @@
 package org.apache.servicecomb.transport.rest.vertx;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;

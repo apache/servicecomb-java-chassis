@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

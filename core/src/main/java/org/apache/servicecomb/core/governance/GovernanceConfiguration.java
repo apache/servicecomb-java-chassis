@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.core.governance;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 public class GovernanceConfiguration {
   public static final String ROOT = "servicecomb.loadbalance.";

@@ -18,13 +18,7 @@ package org.apache.servicecomb.swagger.invocation.validator;
 
 import java.util.Set;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validation;
-import jakarta.validation.ValidatorFactory;
-import jakarta.validation.executable.ExecutableValidator;
-import jakarta.validation.groups.Default;
-
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
@@ -34,8 +28,12 @@ import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicPropertyFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableValidator;
+import jakarta.validation.groups.Default;
 
 public class ParameterValidator implements ProducerInvokeExtension {
 
@@ -45,23 +43,19 @@ public class ParameterValidator implements ProducerInvokeExtension {
 
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
-  private final DynamicBooleanProperty paramValidationEnabled = DynamicPropertyFactory.getInstance()
-      .getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
+  private final boolean paramValidationEnabled;
 
   public ParameterValidator() {
-    paramValidationEnabled.addCallback(() -> {
-      boolean newValue = paramValidationEnabled.get();
-      LOGGER.info("{} changed from {} to {}", PARAM_VALIDATION_ENABLED, paramValidationEnabled, newValue);
-    });
+    paramValidationEnabled = LegacyPropertyFactory.getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
   }
 
   private static ExecutableValidator executableValidator;
 
   @Override
-  public <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
+  public void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
       Object[] args)
       throws ConstraintViolationException {
-    if (paramValidationEnabled.get()) {
+    if (paramValidationEnabled) {
       if (null == executableValidator) {
         ValidatorFactory factory =
             Validation.byDefaultProvider()
@@ -91,7 +85,7 @@ public class ParameterValidator implements ProducerInvokeExtension {
   }
 
   private boolean useResourceBundleMessageInterpolator() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_EL, false).get();
+    return LegacyPropertyFactory.getBooleanProperty(ENABLE_EL, false);
   }
 
   @Override

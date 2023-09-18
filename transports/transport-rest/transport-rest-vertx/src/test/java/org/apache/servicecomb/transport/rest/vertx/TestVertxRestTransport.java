@@ -22,7 +22,7 @@ import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_AD
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.junit.Before;
@@ -35,13 +35,14 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.file.impl.FileResolverImpl;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestVertxRestTransport {
 
-  private final VertxRestTransport instance = new VertxRestTransport();
+  private VertxRestTransport instance;
 
   Environment environment = Mockito.mock(Environment.class);
 
@@ -64,7 +65,12 @@ public class TestVertxRestTransport {
         .thenReturn(0);
     Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
         .thenReturn("");
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);
+    instance = new VertxRestTransport();
   }
 
   @Test

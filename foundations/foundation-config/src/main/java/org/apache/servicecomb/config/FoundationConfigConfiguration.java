@@ -20,6 +20,7 @@ import org.apache.servicecomb.config.inject.InjectBeanPostProcessor;
 import org.apache.servicecomb.config.priority.ConfigObjectFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

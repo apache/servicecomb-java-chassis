@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 import jakarta.servlet.MultipartConfigElement;
 

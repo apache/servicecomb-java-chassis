@@ -23,21 +23,35 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-import io.vertx.core.file.impl.FileResolverImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import io.vertx.core.file.impl.FileResolverImpl;
 
 public class TestVertxUtils {
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+
+    LegacyPropertyFactory.setEnvironment(environment);
+  }
+
   @Test
   public void testGetOrCreateVertx() throws InterruptedException {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
@@ -56,11 +70,9 @@ public class TestVertxUtils {
 
   @Test
   public void testCreateVertxWithFileCPResolving() {
-    // Prepare
-    ArchaiusUtils.resetConfig();
-
     // create .vertx folder
-    ArchaiusUtils.setProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, false);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(false);
     deleteCacheFile();
     VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingFalse", null);
     Assertions.assertTrue(isCacheFileExists());
@@ -69,7 +81,8 @@ public class TestVertxUtils {
     // don't create .vertx folder
     deleteCacheFile();
     Assertions.assertFalse(isCacheFileExists());
-    ArchaiusUtils.setProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, true);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
     VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingTrue", null);
     Assertions.assertFalse(isCacheFileExists());
     VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingTrue");

@@ -24,12 +24,15 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
+
+import io.vertx.core.file.impl.FileResolverImpl;
 
 public class TestAbstractTransport {
   Environment environment = Mockito.mock(Environment.class);
@@ -51,6 +54,11 @@ public class TestAbstractTransport {
   public void setUp() {
     Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, "")).thenReturn("");
     Mockito.when(environment.getProperty("servicecomb.my.publishPort", int.class, 0)).thenReturn(0);
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+            .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test

@@ -19,10 +19,10 @@ package org.apache.servicecomb.transport.highway;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
@@ -36,10 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
+import io.vertx.core.file.impl.FileResolverImpl;
+
 public class TestHighwayTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestHighwayTransport.class);
-
-  private final HighwayTransport transport = new HighwayTransport();
 
   Environment environment = Mockito.mock(Environment.class);
 
@@ -61,23 +61,29 @@ public class TestHighwayTransport {
             "servicecomb.request.timeout", long.class, (long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT))
         .thenReturn((long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT);
     Mockito.when(environment.getProperty("servicecomb.highway.client.verticle-count", int.class, -1))
-            .thenReturn(-1);
+        .thenReturn(-1);
     Mockito.when(environment.getProperty("servicecomb.highway.client.thread-count", int.class, -1))
         .thenReturn(-1);
     Mockito.when(environment.getProperty("servicecomb.highway.server.verticle-count", int.class, -1))
         .thenReturn(-1);
     Mockito.when(environment.getProperty("servicecomb.highway.server.thread-count", int.class, -1))
         .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
   public void testGetInstance() {
+    HighwayTransport transport = new HighwayTransport();
     Assertions.assertNotNull(transport);
   }
 
   @Test
   public void testInit() {
+    HighwayTransport transport = new HighwayTransport();
     boolean status = true;
     try {
       transport.init();
@@ -91,6 +97,7 @@ public class TestHighwayTransport {
 
   @Test
   public void testHighway() {
+    HighwayTransport transport = new HighwayTransport();
     Invocation invocation = Mockito.mock(Invocation.class);
     commonHighwayMock(invocation);
     Assertions.assertEquals("highway", transport.getName());

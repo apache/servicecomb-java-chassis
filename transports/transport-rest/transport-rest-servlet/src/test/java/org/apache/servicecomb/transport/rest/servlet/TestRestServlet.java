@@ -17,31 +17,43 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_ADDRESS;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
+import io.vertx.core.file.impl.FileResolverImpl;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
-import org.junit.jupiter.api.Assertions;
 
 public class TestRestServlet {
   private RestServlet restservlet = null;
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @Before
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
-
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
+        .thenReturn("");
+    Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
+        .thenReturn(0);
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
     restservlet = new RestServlet();
 
     SCBBootstrap.createSCBEngineForTest();
@@ -51,7 +63,6 @@ public class TestRestServlet {
   public void tearDown() {
     restservlet = null;
     SCBEngine.getInstance().destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

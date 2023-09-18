@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 public final class ServletConfig {
   public static final long DEFAULT_ASYN_SERVLET_TIMEOUT = -1;

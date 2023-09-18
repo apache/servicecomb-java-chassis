@@ -24,7 +24,7 @@ import java.util.Set;
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
 import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.transport.AbstractTransport;

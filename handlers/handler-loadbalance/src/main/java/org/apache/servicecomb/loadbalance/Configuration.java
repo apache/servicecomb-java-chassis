@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.Map;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 
 /**

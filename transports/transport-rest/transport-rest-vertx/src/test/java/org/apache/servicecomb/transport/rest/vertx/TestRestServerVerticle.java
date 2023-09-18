@@ -24,6 +24,12 @@ import static io.vertx.core.http.HttpServerOptions.DEFAULT_HTTP2_CONNECTION_WIND
 import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_CHUNK_SIZE;
 import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE;
 import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH;
+import static org.apache.servicecomb.common.accessLog.AccessLogConfig.CLIENT_LOG_ENABLED;
+import static org.apache.servicecomb.common.accessLog.AccessLogConfig.CLIENT_LOG_PATTERN;
+import static org.apache.servicecomb.common.accessLog.AccessLogConfig.DEFAULT_CLIENT_PATTERN;
+import static org.apache.servicecomb.common.accessLog.AccessLogConfig.DEFAULT_SERVER_PATTERN;
+import static org.apache.servicecomb.common.accessLog.AccessLogConfig.SERVER_LOG_ENABLED;
+import static org.apache.servicecomb.common.accessLog.AccessLogConfig.SERVER_LOG_PATTERN;
 import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_ADDRESS;
 import static org.apache.servicecomb.transport.rest.vertx.TransportConfig.DEFAULT_SERVER_COMPRESSION_SUPPORT;
 import static org.apache.servicecomb.transport.rest.vertx.TransportConfig.DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND;
@@ -35,13 +41,13 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
@@ -58,6 +64,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.file.impl.FileResolverImpl;
 import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
@@ -148,7 +155,18 @@ public class TestRestServerVerticle {
     Mockito.when(environment.getProperty("servicecomb.rest.server.http2.pushEnabled", boolean.class,
             Http2Settings.DEFAULT_ENABLE_PUSH))
         .thenReturn(Http2Settings.DEFAULT_ENABLE_PUSH);
-
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    Mockito.when(environment.getProperty(CLIENT_LOG_ENABLED, boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty(SERVER_LOG_ENABLED, boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty(CLIENT_LOG_PATTERN, String.class, DEFAULT_CLIENT_PATTERN))
+        .thenReturn(DEFAULT_CLIENT_PATTERN);
+    Mockito.when(environment.getProperty(SERVER_LOG_PATTERN, String.class, DEFAULT_SERVER_PATTERN))
+        .thenReturn(DEFAULT_CLIENT_PATTERN);
     LegacyPropertyFactory.setEnvironment(environment);
 
     instance = new RestServerVerticle();
