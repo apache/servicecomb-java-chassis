@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -35,20 +34,20 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.impl.FileResolverImpl;
 import io.vertx.core.json.Json;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -78,28 +77,27 @@ public class HighwayServerCodecFilterTest {
 
   static SCBEngine engine;
 
-  @BeforeClass
-  public static void beforeClass() {
-    ArchaiusUtils.resetConfig();
-    ConfigUtil.installDynamicConfig();
-
-    engine = SCBBootstrap.createSCBEngineForTest();
-    Environment environment = Mockito.mock(Environment.class);
-    engine.setEnvironment(environment);
-    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
-        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
-    engine.setStatus(SCBStatus.UP);
-  }
-
-  @AfterClass
-  public static void afterClass() {
-    engine.destroy();
-    ArchaiusUtils.resetConfig();
-  }
+  Environment environment = Mockito.mock(Environment.class);
 
   @Before
   public void setUp() {
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
+
+    engine = SCBBootstrap.createSCBEngineForTest();
+    engine.setEnvironment(environment);
+    engine.setStatus(SCBStatus.UP);
     invocation = InvocationFactory.forProvider(endpoint, operationMeta, null);
+  }
+
+  @After
+  public void tearDown() {
+    engine.destroy();
   }
 
   private void mockDecodeRequestFail() throws Exception {

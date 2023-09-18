@@ -18,7 +18,7 @@
 package org.apache.servicecomb.loadbalance;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

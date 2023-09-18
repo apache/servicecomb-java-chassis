@@ -19,7 +19,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;

@@ -30,10 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;

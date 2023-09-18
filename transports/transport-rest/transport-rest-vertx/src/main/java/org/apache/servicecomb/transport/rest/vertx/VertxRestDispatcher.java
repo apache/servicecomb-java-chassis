@@ -19,7 +19,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;

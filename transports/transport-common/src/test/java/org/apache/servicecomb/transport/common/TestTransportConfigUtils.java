@@ -18,7 +18,7 @@ package org.apache.servicecomb.transport.common;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

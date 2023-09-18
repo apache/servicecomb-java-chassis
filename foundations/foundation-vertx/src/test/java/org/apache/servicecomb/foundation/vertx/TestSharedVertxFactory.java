@@ -16,10 +16,28 @@
  */
 package org.apache.servicecomb.foundation.vertx;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import io.vertx.core.file.impl.FileResolverImpl;
 
 public class TestSharedVertxFactory {
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
+  }
+
+
   @Test
   public void getTransportVertx() {
     Assertions.assertNotNull(SharedVertxFactory.getSharedVertx());

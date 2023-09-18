@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.transport.common.TransportConfigUtils;
 
 import io.vertx.core.http.HttpClientOptions;

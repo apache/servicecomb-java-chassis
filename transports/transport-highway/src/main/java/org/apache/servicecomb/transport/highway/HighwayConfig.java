@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import org.apache.servicecomb.config.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.transport.common.TransportConfigUtils;
 
 public final class HighwayConfig {

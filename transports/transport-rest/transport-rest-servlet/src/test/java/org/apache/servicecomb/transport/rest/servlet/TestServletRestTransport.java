@@ -22,6 +22,7 @@ import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_AD
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.After;
@@ -31,10 +32,11 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
+import io.vertx.core.file.impl.FileResolverImpl;
 import mockit.Expectations;
 
 public class TestServletRestTransport {
-  ServletRestTransport transport = new ServletRestTransport();
+  ServletRestTransport transport;
 
   Environment environment = Mockito.mock(Environment.class);
 
@@ -43,7 +45,13 @@ public class TestServletRestTransport {
     Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
         .thenReturn("");
     Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
-            .thenReturn(0);
+        .thenReturn(0);
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
+    transport = new ServletRestTransport();
     transport.setEnvironment(environment);
   }
 

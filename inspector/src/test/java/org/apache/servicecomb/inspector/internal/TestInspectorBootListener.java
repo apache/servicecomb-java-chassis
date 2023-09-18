@@ -21,11 +21,28 @@ import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import io.vertx.core.file.impl.FileResolverImpl;
 
 public class TestInspectorBootListener {
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
+  }
+
   @Test
   public void getOrder() {
     Assertions.assertEquals(Short.MAX_VALUE, new InspectorBootListener(null, null).getOrder());
@@ -60,30 +77,5 @@ public class TestInspectorBootListener {
         .onAfterTransport(new BootEvent(scbEngine, EventType.AFTER_TRANSPORT));
 
     Assertions.assertNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
-  }
-
-  @Test
-  public void enabled() {
-    // TODO: may be delete in future
-//    Holder<Object> holder = new Holder<>();
-//
-//    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
-//    scbEngine.setProducerMicroserviceMeta(new MicroserviceMeta(scbEngine, "ms", false));
-//    scbEngine.setProducerProviderManager(new ProducerProviderManager(scbEngine) {
-//      @Override
-//      public SchemaMeta registerSchema(String schemaId, Object instance) {
-//        if ("inspector".equals(schemaId)) {
-//          holder.value = instance;
-//        }
-//        return null;
-//      }
-//    });
-//
-//    InspectorConfig inspectorConfig = new InspectorConfig()
-//        .setEnabled(true);
-//    new InspectorBootListener(inspectorConfig, null)
-//        .onAfterTransport(new BootEvent(scbEngine, EventType.AFTER_TRANSPORT));
-//
-//    Assertions.assertNotNull(holder.value);
   }
 }

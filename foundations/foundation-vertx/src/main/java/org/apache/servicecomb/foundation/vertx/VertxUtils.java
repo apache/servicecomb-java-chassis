@@ -25,17 +25,15 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import io.vertx.core.file.impl.FileResolverImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.AbstractVerticle;
@@ -44,6 +42,7 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.impl.FileResolverImpl;
 import io.vertx.core.impl.VertxBuilder;
 import io.vertx.core.impl.VertxThread;
 import io.vertx.core.spi.VertxThreadFactory;
@@ -137,8 +136,8 @@ public final class VertxUtils {
    * 配置vertx的文件缓存功能，默认关闭
    */
   private static void configureVertxFileCaching(VertxOptions vertxOptions) {
-    boolean disableFileCPResolving = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, true).get();
+    boolean disableFileCPResolving = LegacyPropertyFactory
+        .getBooleanProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, true);
     vertxOptions.getFileSystemOptions().setClassPathResolvingEnabled(!disableFileCPResolving);
   }
 
