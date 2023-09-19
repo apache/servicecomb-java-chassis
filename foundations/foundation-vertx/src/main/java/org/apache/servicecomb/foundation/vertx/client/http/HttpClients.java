@@ -89,7 +89,7 @@ public class HttpClients {
     }
 
     AddressResolverOptions resolverOptions = AddressResolverConfig
-        .getAddressResover(option.getConfigTag(), option.getConfigReader());
+        .getAddressResolverOptions(option.getConfigTag());
     VertxOptions vertxOptions = new VertxOptions()
         .setAddressResolverOptions(resolverOptions)
         .setEventLoopPoolSize(option.getEventLoopPoolSize());

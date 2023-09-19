@@ -73,10 +73,10 @@ public class HighwayClient {
         LegacyPropertyFactory.getLongProperty("servicecomb.request.timeout", TcpClientConfig.DEFAULT_LOGIN_TIMEOUT));
 
     SSLOptionFactory factory =
-        SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+        SSLOptionFactory.createSSLOptionFactory(SSL_KEY, LegacyPropertyFactory.getEnvironment());
     SSLOption sslOption;
     if (factory == null) {
-      sslOption = SSLOption.buildFromYaml(SSL_KEY);
+      sslOption = SSLOption.build(SSL_KEY, LegacyPropertyFactory.getEnvironment());
     } else {
       sslOption = factory.createSSLOption();
     }

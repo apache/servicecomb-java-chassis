@@ -37,6 +37,10 @@ public class LegacyPropertyFactory {
     LegacyPropertyFactory.environment = environment;
   }
 
+  public static <T> T getProperty(String key, Class<T> targetType) {
+    return environment.getProperty(key, targetType);
+  }
+
   public static <T> T getProperty(String key, Class<T> targetType, T defaultValue) {
     return environment.getProperty(key, targetType, defaultValue);
   }
@@ -59,5 +63,9 @@ public class LegacyPropertyFactory {
 
   public static String getStringProperty(String key, String defaultValue) {
     return environment.getProperty(key, String.class, defaultValue);
+  }
+
+  public static Environment getEnvironment() {
+    return environment;
   }
 }

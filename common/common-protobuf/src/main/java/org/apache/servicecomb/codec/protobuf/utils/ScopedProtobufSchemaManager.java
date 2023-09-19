@@ -19,7 +19,7 @@ package org.apache.servicecomb.codec.protobuf.utils;
 
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.SwaggerToProtoGenerator;
 import org.apache.servicecomb.codec.protobuf.schema.SchemaToProtoGenerator;
 import org.apache.servicecomb.core.definition.SchemaMeta;

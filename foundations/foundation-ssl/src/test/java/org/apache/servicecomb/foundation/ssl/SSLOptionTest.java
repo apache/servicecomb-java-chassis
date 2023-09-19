@@ -24,32 +24,38 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.commons.configuration.SystemConfiguration;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.ConfigSourceMaker;
-import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConcurrentMapConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.FixedDelayPollingScheduler;
-
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
-import org.junit.jupiter.api.Assertions;
 
 public class SSLOptionTest {
   private static final String DIR = Thread.currentThread().getContextClassLoader().getResource("").getPath();
 
-  @AfterClass
-  public static void tearDown() throws Exception {
-    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+  Environment environment = Mockito.mock(Environment.class);
+
+  @Before
+  public void setUp() throws Exception {
+    Mockito.when(environment.getProperty("ssl.protocols")).thenReturn("TLSv1.2,TLSv1.1,TLSv1,SSLv2Hello");
+    Mockito.when(environment.getProperty("ssl.ciphers")).thenReturn(
+        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256");
+    Mockito.when(environment.getProperty("ssl.authPeer")).thenReturn("true");
+    Mockito.when(environment.getProperty("ssl.checkCN.host")).thenReturn("true");
+    Mockito.when(environment.getProperty("ssl.checkCN.white")).thenReturn("true");
+    Mockito.when(environment.getProperty("ssl.checkCN.white.file")).thenReturn("white.list");
+    Mockito.when(environment.getProperty("ssl.allowRenegociate")).thenReturn("false");
+    Mockito.when(environment.getProperty("ssl.storePath")).thenReturn("internal");
+    Mockito.when(environment.getProperty("ssl.trustStore")).thenReturn("trust.jks");
+    Mockito.when(environment.getProperty("ssl.trustStoreType")).thenReturn("JKS");
+    Mockito.when(environment.getProperty("ssl.trustStoreValue")).thenReturn("Changeme_123");
+    Mockito.when(environment.getProperty("ssl.keyStore")).thenReturn("server.p12");
+    Mockito.when(environment.getProperty("ssl.keyStoreType")).thenReturn("PKCS12");
+    Mockito.when(environment.getProperty("ssl.keyStoreValue")).thenReturn("Changeme_123");
+    Mockito.when(environment.getProperty("ssl.crl")).thenReturn("revoke.crl");
   }
 
   @Test
@@ -124,21 +130,8 @@ public class SSLOptionTest {
 
   @Test
   public void testSSLOptionYaml() {
-    // configuration from yaml files: default microservice.yaml
-    DynamicConfiguration configFromYamlFile =
-        new DynamicConfiguration(ConfigSourceMaker.yamlConfigSource(), new FixedDelayPollingScheduler());
-    // configuration from system properties
-    ConcurrentMapConfiguration configFromSystemProperties =
-        new ConcurrentMapConfiguration(new SystemConfiguration());
-
-    // create a hierarchy of configuration that makes
-    // 1) dynamic configuration source override system properties
-    ConcurrentCompositeConfiguration finalConfig = new ConcurrentCompositeConfiguration();
-    finalConfig.addConfiguration(configFromSystemProperties, "systemEnvConfig");
-    finalConfig.addConfiguration(configFromYamlFile, "configFromYamlFile");
-    ConfigurationManager.install(finalConfig);
-
-    SSLOption option = SSLOption.buildFromYaml("server");
+    Mockito.when(environment.getProperty("ssl.server.sslCustomClass")).thenReturn("wwrong");
+    SSLOption option = SSLOption.build("server", environment);
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
@@ -146,10 +139,7 @@ public class SSLOptionTest {
 
     String ciphers = option.getCiphers();
     option.setCiphers(ciphers);
-    Assertions.assertEquals(
-        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SH"
-            +
-            "A,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA",
+    Assertions.assertEquals("TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256",
         ciphers);
 
     boolean authPeer = option.isAuthPeer();
@@ -212,10 +202,9 @@ public class SSLOptionTest {
 
   @Test
   public void testSSLOptionYamlOption2() throws Exception {
-    System.setProperty("ssl.protocols", "TLSv1.2");
-    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
+    Mockito.when(environment.getProperty("ssl.protocols")).thenReturn("TLSv1.2");
 
-    SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
+    SSLOption option = SSLOption.build("server", environment);
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
@@ -225,10 +214,9 @@ public class SSLOptionTest {
 
   @Test
   public void testSSLOptionYamlOptionWithProperyFalse() throws Exception {
-    System.setProperty("ssl.authPeer", "false");
-    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
+    Mockito.when(environment.getProperty("ssl.authPeer")).thenReturn("false");
 
-    SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
+    SSLOption option = SSLOption.build("server", environment);
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
@@ -238,10 +226,7 @@ public class SSLOptionTest {
 
   @Test
   public void testSSLOptionYamlOptionWithProperyTrue() throws Exception {
-    System.setProperty("ssl.authPeer", "true");
-    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
-
-    SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
+    SSLOption option = SSLOption.build("server", environment);
 
     boolean authPeer = option.isAuthPeer();
     option.setAuthPeer(authPeer);
@@ -251,9 +236,7 @@ public class SSLOptionTest {
 
   @Test
   public void testSSLOptionYamlOption() throws Exception {
-    ConcurrentCompositeConfiguration finalConfig = ConfigUtil.createLocalConfig();
-
-    SSLOption option = SSLOption.buildFromYaml("server", finalConfig);
+    SSLOption option = SSLOption.build("server", environment);
 
     String protocols = option.getProtocols();
     option.setProtocols(protocols);
@@ -262,9 +245,7 @@ public class SSLOptionTest {
     String ciphers = option.getCiphers();
     option.setCiphers(ciphers);
     Assertions.assertEquals(
-        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SH"
-            +
-            "A,TLS_DHE_DSS_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_128_CBC_SHA",
+        "TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_DSS_WITH_AES_128_CBC_SHA256",
         ciphers);
 
     boolean authPeer = option.isAuthPeer();

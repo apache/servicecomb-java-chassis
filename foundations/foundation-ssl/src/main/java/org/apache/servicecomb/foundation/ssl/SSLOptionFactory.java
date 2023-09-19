@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.foundation.ssl;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.springframework.core.env.Environment;
 
 public interface SSLOptionFactory {
-  static SSLOptionFactory createSSLOptionFactory(String tag, ConcurrentCompositeConfiguration configSource) {
-    String name = SSLOption.getStringProperty(configSource,
+  static SSLOptionFactory createSSLOptionFactory(String tag, Environment environment) {
+    String name = SSLOption.getStringProperty(environment,
         null,
         "ssl." + tag + ".sslOptionFactory",
         "ssl.sslOptionFactory");

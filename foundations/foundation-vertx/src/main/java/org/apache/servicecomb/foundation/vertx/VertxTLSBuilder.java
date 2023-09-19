@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -75,10 +76,10 @@ public final class VertxTLSBuilder {
   }
 
   public static void buildHttpClientOptions(String sslKey, HttpClientOptions httpClientOptions) {
-    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(sslKey, null);
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(sslKey, LegacyPropertyFactory.getEnvironment());
     SSLOption sslOption;
     if (factory == null) {
-      sslOption = SSLOption.buildFromYaml(sslKey);
+      sslOption = SSLOption.build(sslKey, LegacyPropertyFactory.getEnvironment());
     } else {
       sslOption = factory.createSSLOption();
     }
