@@ -97,7 +97,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
       return;
     }
     for (Map.Entry<String, String> entry: schemas.entrySet()) {
-      metadata.put("schema_" + entry.getKey(), entry.getValue());
+      metadata.put(NacosConst.SCHEMA_PREFIX + entry.getKey(), entry.getValue());
     }
   }
 

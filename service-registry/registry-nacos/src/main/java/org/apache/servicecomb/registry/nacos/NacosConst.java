@@ -39,4 +39,6 @@ public class NacosConst {
   public static final String NAMING_LOAD_CACHE_AT_START = "namingLoadCacheAtStart";
 
   public static final String NACOS_REGISTRY_NAME = "nacos-registry";
+
+  public static final String SCHEMA_PREFIX = "schema_";
 }
