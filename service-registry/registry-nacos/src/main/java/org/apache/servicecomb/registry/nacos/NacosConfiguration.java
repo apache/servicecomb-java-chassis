@@ -35,7 +35,7 @@ public class NacosConfiguration {
   public NacosRegistration nacosRegistration(
       @Qualifier("nacosDiscoveryProperties") NacosDiscoveryProperties nacosDiscoveryProperties,
       @Qualifier("nacosDiscovery") NacosDiscovery nacosDiscovery, Environment environment,
-      @Qualifier("instancesChangeEventListener")InstancesChangeEventListener instancesChangeEventListener) {
+      @Qualifier("instancesChangeEventListener") InstancesChangeEventListener instancesChangeEventListener) {
     return new NacosRegistration(nacosDiscoveryProperties, nacosDiscovery, environment, instancesChangeEventListener);
   }
 
