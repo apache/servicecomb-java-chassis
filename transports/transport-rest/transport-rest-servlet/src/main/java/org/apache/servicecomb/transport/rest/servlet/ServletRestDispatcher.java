@@ -48,7 +48,7 @@ public class ServletRestDispatcher {
     // 异步场景
     AsyncContext asyncCtx = request.startAsync();
     asyncCtx.addListener(restAsyncListener);
-    asyncCtx.setTimeout(ServletConfig.getAsyncServletTimeout());
+    asyncCtx.setTimeout(ServletConfig.getAsyncServletTimeout(SCBEngine.getInstance().getEnvironment()));
 
     HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
     HttpServletResponseEx responseEx = new StandardHttpServletResponseEx(response);

@@ -20,33 +20,41 @@ package org.apache.servicecomb.huaweicloud.servicestage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.springframework.core.env.Environment;
 
 public class TestAKSKAuthHeaderProvider {
   @Test
   public void test_project_name_properly_encoded_en() {
-    ConcurrentCompositeConfiguration configuration = Mockito.mock(ConcurrentCompositeConfiguration.class);
-    Mockito.when(configuration.getBoolean("servicecomb.credentials.akskEnabled", true)).thenReturn(true);
-    Mockito.when(configuration.getString("servicecomb.credentials.project", "default")).thenReturn("hello");
-    Mockito.when(configuration.getString("servicecomb.credentials.accessKey", "")).thenReturn("access key");
-    Mockito.when(configuration.getString("servicecomb.credentials.secretKey", "")).thenReturn("secret key");
-    Mockito.when(configuration.getString("servicecomb.credentials.akskCustomCipher", "default")).thenReturn("default");
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty("servicecomb.credentials.akskEnabled",
+        boolean.class, true)).thenReturn(true);
+    Mockito.when(environment.getProperty("servicecomb.credentials.project",
+        "default")).thenReturn("hello");
+    Mockito.when(environment.getProperty("servicecomb.credentials.accessKey",
+        "")).thenReturn("access key");
+    Mockito.when(environment.getProperty("servicecomb.credentials.secretKey",
+        "")).thenReturn("secret key");
+    Mockito.when(environment.getProperty("servicecomb.credentials.akskCustomCipher",
+        "default")).thenReturn("default");
 
-    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(configuration);
+    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(environment);
     Assertions.assertEquals("hello", provider.authHeaders().get("X-Service-Project"));
   }
 
   @Test
   public void test_project_name_properly_encoded_cn() {
-    ConcurrentCompositeConfiguration configuration = Mockito.mock(ConcurrentCompositeConfiguration.class);
-    Mockito.when(configuration.getBoolean("servicecomb.credentials.akskEnabled", true)).thenReturn(true);
-    Mockito.when(configuration.getString("servicecomb.credentials.project", "default")).thenReturn("测试");
-    Mockito.when(configuration.getString("servicecomb.credentials.accessKey", "")).thenReturn("access key");
-    Mockito.when(configuration.getString("servicecomb.credentials.secretKey", "")).thenReturn("secret key");
-    Mockito.when(configuration.getString("servicecomb.credentials.akskCustomCipher", "default")).thenReturn("default");
-
-    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(configuration);
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty("servicecomb.credentials.akskEnabled",
+        boolean.class, true)).thenReturn(true);
+    Mockito.when(environment.getProperty("servicecomb.credentials.project",
+        "default")).thenReturn("测试");
+    Mockito.when(environment.getProperty("servicecomb.credentials.accessKey",
+        "")).thenReturn("access key");
+    Mockito.when(environment.getProperty("servicecomb.credentials.secretKey",
+        "")).thenReturn("secret key");
+    Mockito.when(environment.getProperty("servicecomb.credentials.akskCustomCipher",
+        "default")).thenReturn("default");
+    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(environment);
     Assertions.assertEquals("%E6%B5%8B%E8%AF%95", provider.authHeaders().get("X-Service-Project"));
   }
 }

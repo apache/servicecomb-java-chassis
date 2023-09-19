@@ -57,7 +57,7 @@ public class TestServletUtils {
 
   @Before
   public void setUp() {
-    Mockito.when(environment.getProperty(RestConst.UPLOAD_DIR, String.class, RestConst.UPLOAD_DEFAULT_DIR))
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR))
         .thenReturn(RestConst.UPLOAD_DEFAULT_DIR);
     Mockito.when(environment.getProperty(RestConst.UPLOAD_MAX_FILE_SIZE, long.class, -1L))
         .thenReturn(-1L);
@@ -258,7 +258,7 @@ public class TestServletUtils {
   @Test
   public void setServletParameters_notSupportUpload() {
     // not support upload will not set parameters to servlet, so servletContext is null will not throw exception
-    ServletUtils.setServletParameters(null);
+    ServletUtils.setServletParameters(null, environment);
   }
 
   @Test
@@ -288,10 +288,10 @@ public class TestServletUtils {
 
     File tempDir = Files.createTempDirectory("temp").toFile();
     File uploadDir = new File(tempDir, "upload");
-    Mockito.when(environment.getProperty(RestConst.UPLOAD_DIR, String.class, RestConst.UPLOAD_DEFAULT_DIR))
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR))
         .thenReturn(uploadDir.getAbsolutePath());
 
-    ServletUtils.setServletParameters(servletContext);
+    ServletUtils.setServletParameters(servletContext, environment);
 
     Assertions.assertEquals(1, multipartConfigs.size());
 

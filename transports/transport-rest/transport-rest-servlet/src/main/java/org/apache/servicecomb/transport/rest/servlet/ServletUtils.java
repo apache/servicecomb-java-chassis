@@ -23,11 +23,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletRegistration;
-import jakarta.servlet.ServletRegistration.Dynamic;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.UploadConfig;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
@@ -37,6 +32,12 @@ import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 public class ServletUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServletUtils.class);
@@ -154,8 +155,8 @@ public class ServletUtils {
     return dir;
   }
 
-  static void setServletParameters(ServletContext servletContext) {
-    UploadConfig uploadConfig = new UploadConfig();
+  static void setServletParameters(ServletContext servletContext, Environment environment) {
+    UploadConfig uploadConfig = new UploadConfig(environment);
     MultipartConfigElement multipartConfig = uploadConfig.toMultipartConfigElement();
 
     File dir = createUploadDir(servletContext, multipartConfig.getLocation());
@@ -174,9 +175,9 @@ public class ServletUtils {
     }
   }
 
-  public static void init(ServletContext servletContext) {
-    RestServletInjector.defaultInject(servletContext);
+  public static void init(ServletContext servletContext, Environment environment) {
+    RestServletInjector.defaultInject(servletContext, environment);
     ServletUtils.saveUrlPrefix(servletContext);
-    setServletParameters(servletContext);
+    setServletParameters(servletContext, environment);
   }
 }

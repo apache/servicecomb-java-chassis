@@ -20,17 +20,14 @@ package org.apache.servicecomb.springboot.starter.servlet;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.transport.rest.servlet.ServletConfig;
 import org.apache.servicecomb.transport.rest.servlet.ServletUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.Environment;
 
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
@@ -41,6 +38,13 @@ public class RestServletInitializer
 
   private AbstractConfigurableWebServerFactory factory = null;
 
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void customize(AbstractConfigurableWebServerFactory factory) {
     this.factory = factory;
@@ -49,16 +53,10 @@ public class RestServletInitializer
   @Override
   @SuppressWarnings("try")
   public void onStartup(ServletContext servletContext) throws ServletException {
-    if (StringUtils.isEmpty(ServletConfig.getServletUrlPattern())) {
-      // ensure the servlet will be instantiated
-      Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-      configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, ServletConfig.DEFAULT_URL_PATTERN);
-    }
-
     if (this.factory == null) {
       // when running in external tomcat, WebServerFactoryCustomizer will not be available, but now tomcat
       // is already listening and we can call ServletUtils.init directly.
-      ServletUtils.init(servletContext);
+      ServletUtils.init(servletContext, environment);
       return;
     }
 
@@ -71,7 +69,7 @@ public class RestServletInitializer
     // when running in embedded tomcat, web container did not listen now. Call ServletUtils.init needs server is ready,
     // so mock to listen, and then close.
     try (ServerSocket ss = new ServerSocket(factory.getPort(), 0, factory.getAddress())) {
-      ServletUtils.init(servletContext);
+      ServletUtils.init(servletContext, environment);
     } catch (IOException e) {
       throw new ServletException(e);
     }

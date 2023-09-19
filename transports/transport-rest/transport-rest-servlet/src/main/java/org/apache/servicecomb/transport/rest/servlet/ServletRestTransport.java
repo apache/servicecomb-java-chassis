@@ -38,7 +38,7 @@ public class ServletRestTransport extends AbstractTransport {
 
   @Override
   public boolean canInit() {
-    String listenAddress = ServletConfig.getLocalServerAddress();
+    String listenAddress = ServletConfig.getLocalServerAddress(environment);
     if (listenAddress == null) {
       // not publish, but can init and be RESTful client
       return true;
@@ -60,7 +60,7 @@ public class ServletRestTransport extends AbstractTransport {
       queryMap.put(DefinitionConst.URL_PREFIX, urlPrefix);
     }
 
-    String listenAddress = ServletConfig.getLocalServerAddress();
+    String listenAddress = ServletConfig.getLocalServerAddress(environment);
     setListenAddressWithoutSchema(listenAddress, queryMap);
 
     return true;

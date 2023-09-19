@@ -18,6 +18,7 @@
 package org.apache.servicecomb.springboot.springmvc.server;
 
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +26,6 @@ import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 @SpringBootApplication(exclude = {WebMvcAutoConfiguration.class})
 @EnableServiceComb
@@ -40,8 +39,7 @@ public class SpringmvcServer {
   }
 
   private static void assertPropertyCorrect() {
-    String result = DynamicPropertyFactory.getInstance()
-        .getStringProperty("test.unresolved.placeholder", null).get();
+    String result = LegacyPropertyFactory.getStringProperty("test.unresolved.placeholder");
     if (!"jdbc:postgresql://${ip}:${port}/pt".equals(result)) {
       LOGGER.error("tests for configuration error, stop");
       SCBEngine.getInstance().destroy();

@@ -42,7 +42,7 @@ public class TestServletRestTransport {
 
   @Before
   public void setUp() {
-    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, ""))
         .thenReturn("");
     Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
         .thenReturn(0);
@@ -64,7 +64,7 @@ public class TestServletRestTransport {
   public void testInitNotPublish() {
     new Expectations(ServletConfig.class) {
       {
-        ServletConfig.getLocalServerAddress();
+        ServletConfig.getLocalServerAddress(environment);
         result = null;
       }
     };
@@ -76,7 +76,7 @@ public class TestServletRestTransport {
   public void testInitPublishNoUrlPrefix() {
     new Expectations(ServletConfig.class) {
       {
-        ServletConfig.getLocalServerAddress();
+        ServletConfig.getLocalServerAddress(environment);
         result = "1.1.1.1:1234";
       }
     };
@@ -88,7 +88,7 @@ public class TestServletRestTransport {
   public void testInitPublishWithUrlPrefix() {
     new Expectations(ServletConfig.class) {
       {
-        ServletConfig.getLocalServerAddress();
+        ServletConfig.getLocalServerAddress(environment);
         result = "1.1.1.1:1234";
       }
     };
@@ -108,12 +108,13 @@ public class TestServletRestTransport {
   public void testCanInitNullAddress() throws IOException {
     new Expectations(ServletConfig.class) {
       {
-        ServletConfig.getLocalServerAddress();
+        ServletConfig.getLocalServerAddress(environment);
         result = null;
       }
     };
 
     ServletRestTransport transport = new ServletRestTransport();
+    transport.setEnvironment(environment);
     Assertions.assertTrue(transport.canInit());
   }
 
@@ -124,12 +125,13 @@ public class TestServletRestTransport {
 
     new Expectations(ServletConfig.class) {
       {
-        ServletConfig.getLocalServerAddress();
+        ServletConfig.getLocalServerAddress(environment);
         result = "0.0.0.0:" + port;
       }
     };
 
     ServletRestTransport transport = new ServletRestTransport();
+    transport.setEnvironment(environment);
     Assertions.assertTrue(transport.canInit());
 
     ss.close();
@@ -143,12 +145,13 @@ public class TestServletRestTransport {
 
     new Expectations(ServletConfig.class) {
       {
-        ServletConfig.getLocalServerAddress();
+        ServletConfig.getLocalServerAddress(environment);
         result = "0.0.0.0:" + port;
       }
     };
 
     ServletRestTransport transport = new ServletRestTransport();
+    transport.setEnvironment(environment);
     Assertions.assertFalse(transport.canInit());
   }
 }

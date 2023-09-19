@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -35,6 +34,7 @@ import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 public class SCClientUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCClientUtils.class);
@@ -47,22 +47,23 @@ public class SCClientUtils {
 
   // add other headers needed for registration by new ServiceCenterClient(...)
   public static ServiceCenterClient serviceCenterClient(SCConfigurationProperties discoveryProperties,
-      List<AuthHeaderProvider> authHeaderProviders) {
+      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
     ServiceCenterAddressManager addressManager = createAddressManager(discoveryProperties);
 
-    SSLProperties sslProperties = buildSslProperties(addressManager);
+    SSLProperties sslProperties = buildSslProperties(addressManager, environment);
 
     return new ServiceCenterClient(addressManager, sslProperties,
         getRequestAuthHeaderProvider(authHeaderProviders),
         "default", new HashMap<>()).setEventBus(EventManager.getEventBus());
   }
 
-  private static SSLProperties buildSslProperties(ServiceCenterAddressManager addressManager) {
+  private static SSLProperties buildSslProperties(ServiceCenterAddressManager addressManager,
+      Environment environment) {
     SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SCConst.SC_SSL_TAG,
-        LegacyPropertyFactory.getEnvironment());
+        environment);
     SSLOption sslOption;
     if (factory == null) {
-      sslOption = SSLOption.build(SCConst.SC_SSL_TAG, LegacyPropertyFactory.getEnvironment());
+      sslOption = SSLOption.build(SCConst.SC_SSL_TAG, environment);
     } else {
       sslOption = factory.createSSLOption();
     }
@@ -76,9 +77,9 @@ public class SCClientUtils {
   }
 
   public static ServiceCenterWatch serviceCenterWatch(SCConfigurationProperties discoveryProperties,
-      List<AuthHeaderProvider> authHeaderProviders) {
+      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
     ServiceCenterAddressManager addressManager = createAddressManager(discoveryProperties);
-    SSLProperties sslProperties = buildSslProperties(addressManager);
+    SSLProperties sslProperties = buildSslProperties(addressManager, environment);
     return new ServiceCenterWatch(addressManager, sslProperties, getRequestAuthHeaderProvider(authHeaderProviders),
         "default", new HashMap<>(), EventManager.getEventBus());
   }

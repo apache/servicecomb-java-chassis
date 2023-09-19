@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 @RestSchema(schemaId = "ConsumerConfigController")
 @RequestMapping(path = "/")
 public class ConsumerConfigController {
@@ -36,7 +34,8 @@ public class ConsumerConfigController {
   private ConsumerConfigurationProperties consumerConfigurationProperties;
 
   @Autowired
-  public ConsumerConfigController(Environment environment, ConsumerConfigurationProperties consumerConfigurationProperties) {
+  public ConsumerConfigController(Environment environment,
+      ConsumerConfigurationProperties consumerConfigurationProperties) {
     this.environment = environment;
     this.consumerConfigurationProperties = consumerConfigurationProperties;
   }
@@ -58,18 +57,12 @@ public class ConsumerConfigController {
 
   @GetMapping("/dynamicString")
   public String dynamicString(@RequestParam("key") String key) {
-    return DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+    return environment.getProperty(key);
   }
 
   @GetMapping("/dynamicArray")
   @SuppressWarnings("unchecked")
   public List<String> dynamicArray() {
     return consumerConfigurationProperties.getDynamicArray();
-//     DynamicPropertyFactory & Environment do not support arrays like:
-//           key[0]: v0
-//           key[1]: v1
-//    return environment.getProperty(key, List.class);
-//    return Arrays.asList(((AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource())
-//        .getStringArray(key));
   }
 }

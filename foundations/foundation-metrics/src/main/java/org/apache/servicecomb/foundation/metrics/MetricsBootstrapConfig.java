@@ -34,7 +34,10 @@ public class MetricsBootstrapConfig {
 
   private int minScopeLength;
 
+  private Environment environment;
+
   public MetricsBootstrapConfig(Environment environment) {
+    this.environment = environment;
     msPollInterval =
         environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME);
     if (msPollInterval < 1000) {
@@ -44,6 +47,10 @@ public class MetricsBootstrapConfig {
     latencyDistribution = environment.getProperty(CONFIG_LATENCY_DISTRIBUTION, String.class);
     minScopeLength = environment.getProperty(
         CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7);
+  }
+
+  public Environment getEnvironment() {
+    return environment;
   }
 
   public long getMsPollInterval() {

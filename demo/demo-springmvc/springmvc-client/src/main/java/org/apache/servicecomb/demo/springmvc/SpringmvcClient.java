@@ -29,6 +29,7 @@ import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.demo.springmvc.client.CodeFirstRestTemplateSpringmvc;
 import org.apache.servicecomb.demo.springmvc.client.ThirdSvc.ThirdSvcClient;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
@@ -52,7 +53,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.config.DynamicPropertyFactory;
 
 @SpringBootApplication
 @EnableServiceComb
@@ -164,8 +164,7 @@ public class SpringmvcClient {
       String content = restTemplate
           .getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
-      String application = DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.service.application", "")
-          .get();
+      String application = LegacyPropertyFactory.getStringProperty("servicecomb.service.application", "");
 
       TestMgr.check(true,
           content.contains(

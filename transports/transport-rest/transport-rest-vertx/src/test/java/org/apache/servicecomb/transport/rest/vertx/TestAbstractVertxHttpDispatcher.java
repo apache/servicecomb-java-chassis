@@ -60,7 +60,7 @@ public class TestAbstractVertxHttpDispatcher {
   @Test
   public void createBodyHandlerUploadDefault() {
     Mockito.when(environment.getProperty(
-            "servicecomb.uploads.directory", String.class, RestConst.UPLOAD_DEFAULT_DIR))
+            "servicecomb.uploads.directory", RestConst.UPLOAD_DEFAULT_DIR))
         .thenReturn(RestConst.UPLOAD_DEFAULT_DIR);
 
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
@@ -73,7 +73,7 @@ public class TestAbstractVertxHttpDispatcher {
   @Test
   public void createBodyHandlerUploadNormal() {
     Mockito.when(environment.getProperty(
-            "servicecomb.uploads.directory", String.class, RestConst.UPLOAD_DEFAULT_DIR))
+            "servicecomb.uploads.directory", RestConst.UPLOAD_DEFAULT_DIR))
         .thenReturn("/path");
 
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();

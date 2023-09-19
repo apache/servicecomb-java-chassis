@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class SC2Configuration {
@@ -40,15 +41,15 @@ public class SC2Configuration {
   @Bean
   public ServiceCenterWatch serviceCenterWatch2(
       @Qualifier("scConfigurationProperties2") SCConfigurationProperties scConfigurationProperties2,
-      List<AuthHeaderProvider> authHeaderProviders) {
-    return SCClientUtils.serviceCenterWatch(scConfigurationProperties2, authHeaderProviders);
+      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
+    return SCClientUtils.serviceCenterWatch(scConfigurationProperties2, authHeaderProviders, environment);
   }
 
   @Bean
   public ServiceCenterClient serviceCenterClient2(
       @Qualifier("scConfigurationProperties2") SCConfigurationProperties scConfigurationProperties2,
-      List<AuthHeaderProvider> authHeaderProviders) {
-    return SCClientUtils.serviceCenterClient(scConfigurationProperties2, authHeaderProviders);
+      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
+    return SCClientUtils.serviceCenterClient(scConfigurationProperties2, authHeaderProviders, environment);
   }
 
   @Bean

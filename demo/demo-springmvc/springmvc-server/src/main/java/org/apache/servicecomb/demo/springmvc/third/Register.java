@@ -22,21 +22,23 @@ import java.util.List;
 import org.apache.servicecomb.localregistry.RegistryBean;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
 import org.apache.servicecomb.localregistry.RegistryBean.Instances;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.Environment;
 
 /**
  * see: https://github.com/apache/servicecomb-java-chassis/issues/2534
  */
 @Configuration
 public class Register {
+  @Autowired
+  Environment environment;
+
   @Bean
   public RegistryBean thirdRegistryBean() {
     String endpoint;
-    if (DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+    if (environment.getProperty("servicecomb.test.vert.transport", boolean.class, true)) {
       endpoint = "rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi";
     } else {
       endpoint = "rest://localhost:8080?sslEnabled=false";

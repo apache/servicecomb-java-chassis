@@ -27,7 +27,7 @@ servicecomb:
   registry:
     sc:
       address: https://cse.cn-south-1.myhuaweicloud.com
-      watch: fasle
+      watch: false
   config:
     client:
       serverUri: https://cse.cn-south-1.myhuaweicloud.com

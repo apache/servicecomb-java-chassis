@@ -52,10 +52,10 @@ public class TestAbstractTransport {
 
   @BeforeEach
   public void setUp() {
-    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, "")).thenReturn("");
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, "")).thenReturn("");
     Mockito.when(environment.getProperty("servicecomb.my.publishPort", int.class, 0)).thenReturn(0);
     Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
-            .thenReturn(-1);
+        .thenReturn(-1);
     Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
         .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);

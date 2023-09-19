@@ -33,7 +33,7 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
-import org.apache.servicecomb.registry.sc.SCRegistrationInstance;
+import org.apache.servicecomb.registry.sc.SCRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.eventbus.Subscribe;
@@ -55,15 +55,15 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
 
   private volatile List<Meter> meters = null;
 
-  private SCRegistrationInstance registrationInstance;
+  private SCRegistration scRegistration;
 
   public MetricsMonitorDataProvider() {
     EventManager.register(this);
   }
 
   @Autowired
-  public void setRegistrationInstance(SCRegistrationInstance registrationInstance) {
-    this.registrationInstance = registrationInstance;
+  public void setSCRegistration(SCRegistration scRegistration) {
+    this.scRegistration = scRegistration;
   }
 
   @Override
@@ -75,18 +75,18 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
 
   @Override
   public String getURL() {
-    return String.format(MonitorConstant.MONITORS_URI, registrationInstance.getServiceName());
+    return String.format(MonitorConstant.MONITORS_URI, scRegistration.getMicroserviceInstance().getServiceName());
   }
 
   @Override
   public void extractServiceInfo(MonitorData monitorData) {
-    monitorData.setAppId(registrationInstance.getApplication());
-    monitorData.setName(registrationInstance.getServiceName());
-    monitorData.setVersion(registrationInstance.getVersion());
-    monitorData.setServiceId(registrationInstance.getBackendMicroservice().getServiceId());
-    monitorData.setInstance(registrationInstance.getBackendMicroserviceInstance().getHostName());
-    monitorData.setInstanceId(registrationInstance.getInstanceId());
-    monitorData.setEnvironment(registrationInstance.getEnvironment());
+    monitorData.setAppId(scRegistration.getMicroserviceInstance().getApplication());
+    monitorData.setName(scRegistration.getMicroserviceInstance().getServiceName());
+    monitorData.setVersion(scRegistration.getMicroserviceInstance().getVersion());
+    monitorData.setServiceId(scRegistration.getMicroserviceInstance().getBackendMicroservice().getServiceId());
+    monitorData.setInstance(scRegistration.getMicroserviceInstance().getBackendMicroserviceInstance().getHostName());
+    monitorData.setInstanceId(scRegistration.getMicroserviceInstance().getInstanceId());
+    monitorData.setEnvironment(scRegistration.getMicroserviceInstance().getEnvironment());
   }
 
   @Override

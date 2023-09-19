@@ -16,31 +16,36 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.springframework.core.env.Environment;
 
 import jakarta.servlet.MultipartConfigElement;
 
 public class UploadConfig {
+  private final Environment environment;
+
+  public UploadConfig(Environment environment) {
+    this.environment = environment;
+  }
+
   /**
    * null means not support upload
    */
   public String getLocation() {
-    return LegacyPropertyFactory
-        .getStringProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR);
+    return environment.getProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR);
   }
 
   /**
    * limit of one upload file, only available for servlet rest transport
    */
   public long getMaxFileSize() {
-    return LegacyPropertyFactory.getLongProperty(RestConst.UPLOAD_MAX_FILE_SIZE, -1L);
+    return environment.getProperty(RestConst.UPLOAD_MAX_FILE_SIZE, long.class, -1L);
   }
 
   /**
    * limit of upload request body
    */
   public long getMaxSize() {
-    return LegacyPropertyFactory.getLongProperty(RestConst.UPLOAD_MAX_SIZE, -1L);
+    return environment.getProperty(RestConst.UPLOAD_MAX_SIZE, long.class, -1L);
   }
 
 
@@ -48,7 +53,7 @@ public class UploadConfig {
    * the size threshold after which files will be written to disk, only available for servlet rest transport
    */
   public int getFileSizeThreshold() {
-    return LegacyPropertyFactory.getIntProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, 0);
+    return environment.getProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, int.class, 0);
   }
 
   public MultipartConfigElement toMultipartConfigElement() {
