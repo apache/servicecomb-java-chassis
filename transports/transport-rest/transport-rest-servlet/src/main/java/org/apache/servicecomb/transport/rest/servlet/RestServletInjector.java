@@ -19,33 +19,34 @@ package org.apache.servicecomb.transport.rest.servlet;
 
 import java.util.Arrays;
 
-import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletRegistration.Dynamic;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
+
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 public class RestServletInjector {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInjector.class);
 
   public static final String SERVLET_NAME = "ServicecombRestServlet";
 
-  public static Dynamic defaultInject(ServletContext servletContext) {
+  public static Dynamic defaultInject(ServletContext servletContext, Environment environment) {
     RestServletInjector injector = new RestServletInjector();
 
-    String urlPattern = ServletConfig.getServletUrlPattern();
-    return injector.inject(servletContext, urlPattern);
+    String urlPattern = ServletConfig.getServletUrlPattern(environment);
+    return injector.inject(servletContext, urlPattern, environment);
   }
 
-  public Dynamic inject(ServletContext servletContext, String urlPattern) {
+  public Dynamic inject(ServletContext servletContext, String urlPattern, Environment environment) {
     String[] urlPatterns = splitUrlPattern(urlPattern);
     if (urlPatterns.length == 0) {
       LOGGER.warn("urlPattern is empty, ignore register {}.", SERVLET_NAME);
       return null;
     }
 
-    String listenAddress = ServletConfig.getLocalServerAddress();
+    String listenAddress = ServletConfig.getLocalServerAddress(environment);
     if (!ServletUtils.canPublishEndpoint(listenAddress)) {
       LOGGER.warn("ignore register {}.", SERVLET_NAME);
       return null;

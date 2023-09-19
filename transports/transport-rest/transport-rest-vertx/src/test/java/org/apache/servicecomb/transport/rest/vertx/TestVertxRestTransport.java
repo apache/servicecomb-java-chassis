@@ -63,7 +63,7 @@ public class TestVertxRestTransport {
         .thenReturn(Integer.MAX_VALUE);
     Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
         .thenReturn(0);
-    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, ""))
         .thenReturn("");
     Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
         .thenReturn(-1);
@@ -71,6 +71,7 @@ public class TestVertxRestTransport {
         .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);
     instance = new VertxRestTransport();
+    instance.setEnvironment(environment);
   }
 
   @Test

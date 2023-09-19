@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.foundation.vertx;
 
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.metrics.DefaultVertxMetricsFactory;
 import org.apache.servicecomb.foundation.vertx.metrics.MetricsOptionsEx;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -32,13 +32,13 @@ public class SharedVertxFactory {
 
     public MetricsOptionsEx metricsOptionsEx = (MetricsOptionsEx) metricsFactory.newOptions();
 
-    public SharedVertxInfo() {
+    public SharedVertxInfo(Environment environment) {
       vertxOptions.setMetricsOptions(metricsOptionsEx);
-      vertxOptions.setEventLoopPoolSize(readEventLoopPoolSize("servicecomb.transport.eventloop.size"));
+      vertxOptions.setEventLoopPoolSize(readEventLoopPoolSize(environment, "servicecomb.transport.eventloop.size"));
     }
 
-    private static int readEventLoopPoolSize(String key) {
-      int count = LegacyPropertyFactory.getIntProperty(key, -1);
+    private static int readEventLoopPoolSize(Environment environment, String key) {
+      int count = environment.getProperty(key, int.class, -1);
       if (count > 0) {
         return count;
       }
@@ -50,18 +50,19 @@ public class SharedVertxFactory {
 
   private static final String INFO = "transport-vertx-info";
 
-  public static DefaultVertxMetricsFactory getMetricsFactory() {
-    SharedVertxInfo info = (SharedVertxInfo) getSharedVertx().sharedData().getLocalMap(LOCAL_MAP_NAME)
+  public static DefaultVertxMetricsFactory getMetricsFactory(Environment environment) {
+    SharedVertxInfo info = (SharedVertxInfo) getSharedVertx(environment).sharedData().getLocalMap(LOCAL_MAP_NAME)
         .get(INFO);
     return info.metricsFactory;
   }
 
-  public static Vertx getSharedVertx() {
-    return VertxUtils.getVertxMap().computeIfAbsent("transport", SharedVertxFactory::createSharedVertx);
+  public static Vertx getSharedVertx(Environment environment) {
+    return VertxUtils.getVertxMap().computeIfAbsent("transport",
+        key -> createSharedVertx(environment, key));
   }
 
-  private static Vertx createSharedVertx(String name) {
-    SharedVertxInfo info = new SharedVertxInfo();
+  private static Vertx createSharedVertx(Environment environment, String name) {
+    SharedVertxInfo info = new SharedVertxInfo(environment);
 
     Vertx vertx = VertxUtils.init(name, info.vertxOptions);
     info.metricsFactory.setVertx(vertx, info.vertxOptions);

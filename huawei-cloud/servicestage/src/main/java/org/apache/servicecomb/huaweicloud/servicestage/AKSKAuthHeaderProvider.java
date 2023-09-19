@@ -28,9 +28,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
@@ -38,6 +36,7 @@ import org.apache.servicecomb.foundation.auth.ShaAKSKCipher;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
   private static final Logger LOGGER = LoggerFactory.getLogger(AKSKAuthHeaderProvider.class);
@@ -64,19 +63,15 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
 
   private final Map<String, String> headers = new HashMap<>();
 
-  private final Configuration configuration;
-
   private boolean enabled;
 
   private final boolean loaded = false;
 
-  public AKSKAuthHeaderProvider() {
-    this(ConfigUtil.createLocalConfig());
-  }
+  private final Environment environment;
 
-  public AKSKAuthHeaderProvider(Configuration configuration) {
-    this.configuration = configuration;
-    this.enabled = configuration.getBoolean(CONFIG_AKSK_ENABLED, true);
+  public AKSKAuthHeaderProvider(Environment environment) {
+    this.environment = environment;
+    this.enabled = environment.getProperty(CONFIG_AKSK_ENABLED, boolean.class, true);
   }
 
   public Map<String, String> authHeaders() {
@@ -107,15 +102,15 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
   }
 
   private String getAccessKey() {
-    return configuration.getString(CONFIG_ACCESS_KEY, "");
+    return environment.getProperty(CONFIG_ACCESS_KEY, "");
   }
 
   private String getCipher() {
-    return configuration.getString(CONFIG_CIPHER, VALUE_DEFAULT_CIPHER);
+    return environment.getProperty(CONFIG_CIPHER, VALUE_DEFAULT_CIPHER);
   }
 
   private String getSecretKey() {
-    String secretKey = configuration.getString(CONFIG_SECRET_KEY, "");
+    String secretKey = environment.getProperty(CONFIG_SECRET_KEY, "");
     String decodedSecretKey = new String(findCipher().decrypt(secretKey.toCharArray()));
 
     // ShaAKSKCipher 不解密, 认证的时候不处理；其他算法解密为 plain，需要 encode 为 ShaAKSKCipher 去认证。
@@ -127,7 +122,7 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
   }
 
   private String getProject() {
-    String project = configuration.getString(CONFIG_PROJECT, VALUE_DEFAULT_PROJECT);
+    String project = environment.getProperty(CONFIG_PROJECT, VALUE_DEFAULT_PROJECT);
     if (StringUtils.isEmpty(project)) {
       return project;
     }

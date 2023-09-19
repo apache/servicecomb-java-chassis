@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
@@ -85,7 +86,7 @@ public class HttpClients {
 
   private static Vertx getOrCreateVertx(HttpClientOptionsSPI option) {
     if (option.useSharedVertx()) {
-      return SharedVertxFactory.getSharedVertx();
+      return SharedVertxFactory.getSharedVertx(LegacyPropertyFactory.getEnvironment());
     }
 
     AddressResolverOptions resolverOptions = AddressResolverConfig

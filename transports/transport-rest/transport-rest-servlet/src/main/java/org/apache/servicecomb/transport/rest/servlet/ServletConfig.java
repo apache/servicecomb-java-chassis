@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.springframework.core.env.Environment;
 
 public final class ServletConfig {
   public static final long DEFAULT_ASYN_SERVLET_TIMEOUT = -1;
@@ -33,16 +33,16 @@ public final class ServletConfig {
   private ServletConfig() {
   }
 
-  public static long getAsyncServletTimeout() {
-    return LegacyPropertyFactory.getLongProperty(KEY_SERVICECOMB_ASYC_SERVLET_TIMEOUT,
+  public static long getAsyncServletTimeout(Environment environment) {
+    return environment.getProperty(KEY_SERVICECOMB_ASYC_SERVLET_TIMEOUT, long.class,
         DEFAULT_ASYN_SERVLET_TIMEOUT);
   }
 
-  public static String getLocalServerAddress() {
-    return LegacyPropertyFactory.getStringProperty(SERVICECOMB_REST_ADDRESS, null);
+  public static String getLocalServerAddress(Environment environment) {
+    return environment.getProperty(SERVICECOMB_REST_ADDRESS);
   }
 
-  public static String getServletUrlPattern() {
-    return LegacyPropertyFactory.getStringProperty(KEY_SERVLET_URL_PATTERN, null);
+  public static String getServletUrlPattern(Environment environment) {
+    return environment.getProperty(KEY_SERVLET_URL_PATTERN, DEFAULT_URL_PATTERN);
   }
 }

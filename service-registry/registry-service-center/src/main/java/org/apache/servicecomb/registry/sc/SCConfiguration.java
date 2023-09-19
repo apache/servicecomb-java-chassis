@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 @SuppressWarnings("unused")
@@ -39,15 +40,15 @@ public class SCConfiguration {
   @Bean
   public ServiceCenterClient serviceCenterClient(
       @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
-      List<AuthHeaderProvider> authHeaderProviders) {
-    return SCClientUtils.serviceCenterClient(scConfigurationProperties, authHeaderProviders);
+      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
+    return SCClientUtils.serviceCenterClient(scConfigurationProperties, authHeaderProviders, environment);
   }
 
   @Bean
   public ServiceCenterWatch serviceCenterWatch(
       @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
-      List<AuthHeaderProvider> authHeaderProviders) {
-    return SCClientUtils.serviceCenterWatch(scConfigurationProperties, authHeaderProviders);
+      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
+    return SCClientUtils.serviceCenterWatch(scConfigurationProperties, authHeaderProviders, environment);
   }
 
   @Bean

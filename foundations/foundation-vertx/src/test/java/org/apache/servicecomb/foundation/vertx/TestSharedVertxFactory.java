@@ -40,9 +40,10 @@ public class TestSharedVertxFactory {
 
   @Test
   public void getTransportVertx() {
-    Assertions.assertNotNull(SharedVertxFactory.getSharedVertx());
-    Assertions.assertSame(SharedVertxFactory.getSharedVertx(), SharedVertxFactory.getSharedVertx());
+    Assertions.assertNotNull(SharedVertxFactory.getSharedVertx(environment));
+    Assertions.assertSame(SharedVertxFactory.getSharedVertx(environment),
+        SharedVertxFactory.getSharedVertx(environment));
 
-    SharedVertxFactory.getSharedVertx().close();
+    SharedVertxFactory.getSharedVertx(environment).close();
   }
 }

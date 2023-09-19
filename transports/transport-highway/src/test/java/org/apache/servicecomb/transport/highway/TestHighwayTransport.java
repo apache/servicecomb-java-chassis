@@ -84,6 +84,7 @@ public class TestHighwayTransport {
   @Test
   public void testInit() {
     HighwayTransport transport = new HighwayTransport();
+    transport.setEnvironment(environment);
     boolean status = true;
     try {
       transport.init();

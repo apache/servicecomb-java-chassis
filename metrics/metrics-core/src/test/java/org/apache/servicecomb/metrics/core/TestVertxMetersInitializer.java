@@ -141,9 +141,9 @@ public class TestVertxMetersInitializer {
     logPublisher.setEnvironment(environment);
     logPublisher.init(null, eventBus, null);
     VertxUtils
-        .blockDeploy(SharedVertxFactory.getSharedVertx(), TestServerVerticle.class, new DeploymentOptions());
+        .blockDeploy(SharedVertxFactory.getSharedVertx(environment), TestServerVerticle.class, new DeploymentOptions());
     VertxUtils
-        .blockDeploy(SharedVertxFactory.getSharedVertx(), TestClientVerticle.class, new DeploymentOptions());
+        .blockDeploy(SharedVertxFactory.getSharedVertx(environment), TestClientVerticle.class, new DeploymentOptions());
 
     globalRegistry.poll(1);
     List<Meter> meters = Lists.newArrayList(registry.iterator());

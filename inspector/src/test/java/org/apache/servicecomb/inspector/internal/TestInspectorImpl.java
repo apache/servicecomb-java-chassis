@@ -34,11 +34,11 @@ import java.util.zip.ZipInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
@@ -65,6 +65,7 @@ import org.springframework.core.env.Environment;
 
 import com.netflix.config.DynamicProperty;
 
+import io.vertx.core.file.impl.FileResolverImpl;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -77,25 +78,22 @@ public class TestInspectorImpl {
 
   @BeforeAll
   public static void setup() throws IOException {
-    ConfigUtil.installDynamicConfig();
     schemas.put("schema1", IOUtils
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema1.yaml"), StandardCharsets.UTF_8));
     schemas.put("schema2", IOUtils
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema2.yaml"), StandardCharsets.UTF_8));
-
-    inspector = initInspector(null);
   }
 
   Environment environment = Mockito.mock(Environment.class);
 
   @BeforeEach
   public void setUp() {
+    inspector = initInspector(null);
     LegacyPropertyFactory.setEnvironment(environment);
   }
 
-  private static InspectorImpl initInspector(String urlPrefix) {
+  private InspectorImpl initInspector(String urlPrefix) {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
-    Environment environment = Mockito.mock(Environment.class);
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
@@ -103,7 +101,9 @@ public class TestInspectorImpl {
 
     if (StringUtils.isNotEmpty(urlPrefix)) {
       Map<String, Transport> transportMap = scbEngine.getTransportManager().getTransportMap();
-      transportMap.put(RESTFUL, new ServletRestTransport());
+      ServletRestTransport servletRestTransport = new ServletRestTransport();
+      servletRestTransport.setEnvironment(environment);
+      transportMap.put(RESTFUL, servletRestTransport);
       ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
     }
 
@@ -301,6 +301,10 @@ public class TestInspectorImpl {
 
   @Test
   public void urlPrefix() {
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
     InspectorImpl inspector = initInspector("/webroot/rest");
 
     Map<String, String> schemas = inspector.getSchemas();

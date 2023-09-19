@@ -52,7 +52,7 @@ public abstract class AbstractTransport implements Transport {
    */
   public static final String ENDPOINT_KEY = "servicecomb.endpoint";
 
-  protected Vertx transportVertx = SharedVertxFactory.getSharedVertx();
+  protected Vertx transportVertx;
 
   protected Endpoint endpoint;
 
@@ -73,6 +73,7 @@ public abstract class AbstractTransport implements Transport {
   @Override
   public void setEnvironment(Environment environment) {
     this.environment = environment;
+    this.transportVertx = SharedVertxFactory.getSharedVertx(environment);
   }
 
   protected void setListenAddressWithoutSchema(String addressWithoutSchema) {
@@ -154,7 +155,7 @@ public abstract class AbstractTransport implements Transport {
   }
 
   private IpPort genPublishIpPort(String schema, IpPort ipPort) {
-    String publicAddressSetting = environment.getProperty(PUBLISH_ADDRESS, String.class, "");
+    String publicAddressSetting = environment.getProperty(PUBLISH_ADDRESS, "");
     publicAddressSetting = publicAddressSetting.trim();
 
     String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);

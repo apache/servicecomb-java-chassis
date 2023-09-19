@@ -24,14 +24,14 @@ import org.apache.servicecomb.localregistry.RegistryBean;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
 import org.apache.servicecomb.localregistry.RegistryBean.Instances;
 import org.apache.servicecomb.provider.pojo.Invoker;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,6 +40,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 @Configuration
 public class ThirdSvc {
+  @Autowired
+  Environment environment;
+
   @RequestMapping(path = "/codeFirstSpringmvc")
   public interface ThirdSvcClient {
     @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Date.class))
@@ -53,8 +56,7 @@ public class ThirdSvc {
   @Bean
   public RegistryBean thirdRegistryBean() {
     String endpoint;
-    if (DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+    if (environment.getProperty("servicecomb.test.vert.transport", boolean.class, true)) {
       endpoint = "rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi";
     } else {
       endpoint = "rest://localhost:8080?sslEnabled=false";
@@ -75,8 +77,7 @@ public class ThirdSvc {
   @Bean
   public RegistryBean thirdPartyServiceRegistryBean() {
     List<String> endpoints = new ArrayList<>();
-    if (DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+    if (environment.getProperty("servicecomb.test.vert.transport", boolean.class, true)) {
       endpoints.add("rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi");
     } else {
       endpoints.add("rest://localhost:8080?sslEnabled=false");

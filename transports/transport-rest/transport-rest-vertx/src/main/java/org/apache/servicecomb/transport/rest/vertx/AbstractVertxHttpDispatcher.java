@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.vertx;
 
 import org.apache.servicecomb.common.rest.UploadConfig;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
   protected BodyHandler createBodyHandler() {
     RestBodyHandler bodyHandler = new RestBodyHandler();
 
-    UploadConfig uploadConfig = new UploadConfig();
+    UploadConfig uploadConfig = new UploadConfig(LegacyPropertyFactory.getEnvironment());
 
     bodyHandler.setUploadsDirectory(uploadConfig.getLocation());
     bodyHandler.setDeleteUploadedFilesOnEnd(true);

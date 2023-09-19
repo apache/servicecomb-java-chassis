@@ -22,26 +22,29 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
 
+import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletRegistration.Dynamic;
-
-import org.junit.Test;
-
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestRestServletInjector {
+  Environment environment = Mockito.mock(Environment.class);
+
   @Test
   public void testDefaultInjectEmptyUrlPattern(@Mocked ServletContext servletContext, @Mocked Dynamic dynamic) {
     new Expectations(ServletConfig.class) {
       {
-        ServletConfig.getServletUrlPattern();
+        ServletConfig.getServletUrlPattern(environment);
         result = null;
       }
     };
 
-    Assertions.assertNull(RestServletInjector.defaultInject(servletContext));
+    Assertions.assertNull(RestServletInjector.defaultInject(servletContext, environment));
   }
 
   @Test
@@ -52,15 +55,15 @@ public class TestRestServletInjector {
 
       new Expectations(ServletConfig.class) {
         {
-          ServletConfig.getServletUrlPattern();
+          ServletConfig.getServletUrlPattern(environment);
           result = "/*";
-          ServletConfig.getLocalServerAddress();
+          ServletConfig.getLocalServerAddress(environment);
           result = "127.0.0.1:" + port;
         }
       };
     }
 
-    Assertions.assertNull(RestServletInjector.defaultInject(servletContext));
+    Assertions.assertNull(RestServletInjector.defaultInject(servletContext, environment));
   }
 
   @Test
@@ -71,14 +74,14 @@ public class TestRestServletInjector {
 
       new Expectations(ServletConfig.class) {
         {
-          ServletConfig.getServletUrlPattern();
+          ServletConfig.getServletUrlPattern(environment);
           result = "/rest/*";
-          ServletConfig.getLocalServerAddress();
+          ServletConfig.getLocalServerAddress(environment);
           result = "127.0.0.1:" + port;
         }
       };
 
-      Assertions.assertEquals(dynamic, RestServletInjector.defaultInject(servletContext));
+      Assertions.assertEquals(dynamic, RestServletInjector.defaultInject(servletContext, environment));
     }
   }
 }
