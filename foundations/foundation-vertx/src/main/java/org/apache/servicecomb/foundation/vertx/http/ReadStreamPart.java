@@ -20,10 +20,7 @@ import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.common.part.AbstractPart;
 import org.apache.servicecomb.foundation.vertx.stream.PumpCommon;
@@ -39,6 +36,8 @@ import io.vertx.core.file.OpenOptions;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
 
 /**
  * this is not a really part type, all method extend from AbstractPart is undefined except:<br>

@@ -25,11 +25,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Properties;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.Environment;
 
 /**
  * SSL配置选项。
@@ -253,30 +251,11 @@ public final class SSLOption {
     return option;
   }
 
-  private static String listToString(Object[] lists) {
-    StringBuilder sb = new StringBuilder();
-    sb.append(lists[0]);
-    for (int i = 1; i < lists.length; i++) {
-      sb.append(",");
-      sb.append(lists[i]);
-    }
-    return sb.toString();
-  }
-
-  public static String getStringProperty(ConcurrentCompositeConfiguration configSource, String defaultValue,
+  public static String getStringProperty(Environment environment, String defaultValue,
       String... keys) {
     String property = null;
     for (String key : keys) {
-      if (configSource != null) {
-        Object v = configSource.getProperty(key);
-        if (v instanceof List) {
-          property = listToString(((List<?>) v).toArray());
-        } else {
-          property = (String) configSource.getProperty(key);
-        }
-      } else {
-        property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
-      }
+      property = environment.getProperty(key);
       if (property != null) {
         break;
       }
@@ -289,17 +268,11 @@ public final class SSLOption {
     }
   }
 
-  private static boolean getBooleanProperty(ConcurrentCompositeConfiguration configSource, boolean defaultValue,
+  private static boolean getBooleanProperty(Environment environment, boolean defaultValue,
       String... keys) {
     String property = null;
     for (String key : keys) {
-      if (configSource != null) {
-        if (configSource.getProperty(key) != null) {
-          return configSource.getBoolean(key);
-        }
-      } else {
-        property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
-      }
+      property = environment.getProperty(key);
       if (property != null) {
         break;
       }
@@ -312,81 +285,77 @@ public final class SSLOption {
     }
   }
 
-  public static SSLOption buildFromYaml(String tag, ConcurrentCompositeConfiguration configSource) {
+  public static SSLOption build(String tag, Environment environment) {
     SSLOption option = new SSLOption();
-    option.engine = getStringProperty(configSource,
+    option.engine = getStringProperty(environment,
         DEFAULT_OPTION.getEngine(),
         "ssl." + tag + ".engine",
         "ssl.engine");
     option.protocols =
-        getStringProperty(configSource,
+        getStringProperty(environment,
             DEFAULT_OPTION.getProtocols(),
             "ssl." + tag + ".protocols",
             "ssl.protocols");
     option.ciphers =
-        getStringProperty(configSource, DEFAULT_OPTION.getCiphers(), "ssl." + tag + ".ciphers", "ssl.ciphers");
+        getStringProperty(environment, DEFAULT_OPTION.getCiphers(), "ssl." + tag + ".ciphers", "ssl.ciphers");
     option.authPeer =
-        getBooleanProperty(configSource, DEFAULT_OPTION.isAuthPeer(), "ssl." + tag + ".authPeer", "ssl.authPeer");
+        getBooleanProperty(environment, DEFAULT_OPTION.isAuthPeer(), "ssl." + tag + ".authPeer", "ssl.authPeer");
     option.checkCNHost =
-        getBooleanProperty(configSource,
+        getBooleanProperty(environment,
             DEFAULT_OPTION.isCheckCNHost(),
             "ssl." + tag + ".checkCN.host",
             "ssl.checkCN.host");
     option.checkCNWhite =
-        getBooleanProperty(configSource,
+        getBooleanProperty(environment,
             DEFAULT_OPTION.isCheckCNWhite(),
             "ssl." + tag + ".checkCN.white",
             "ssl.checkCN.white");
-    option.checkCNWhiteFile = getStringProperty(configSource,
+    option.checkCNWhiteFile = getStringProperty(environment,
         DEFAULT_OPTION.getCiphers(),
         "ssl." + tag + ".checkCN.white.file",
         "ssl.checkCN.white.file");
-    option.allowRenegociate = getBooleanProperty(configSource,
+    option.allowRenegociate = getBooleanProperty(environment,
         DEFAULT_OPTION.isAllowRenegociate(),
         "ssl." + tag + ".allowRenegociate",
         "ssl.allowRenegociate");
     option.storePath =
-        getStringProperty(configSource,
+        getStringProperty(environment,
             DEFAULT_OPTION.getStorePath(),
             "ssl." + tag + ".storePath",
             "ssl.storePath");
     option.clientAuth =
-        getStringProperty(configSource,
+        getStringProperty(environment,
             DEFAULT_OPTION.getClientAuth(),
             "ssl." + tag + ".storePath",
             "ssl.clientAuth");
     option.trustStore =
-        getStringProperty(configSource,
+        getStringProperty(environment,
             DEFAULT_OPTION.getTrustStore(),
             "ssl." + tag + ".trustStore",
             "ssl.trustStore");
-    option.trustStoreType = getStringProperty(configSource,
+    option.trustStoreType = getStringProperty(environment,
         DEFAULT_OPTION.getTrustStoreType(),
         "ssl." + tag + ".trustStoreType",
         "ssl.trustStoreType");
-    option.trustStoreValue = getStringProperty(configSource,
+    option.trustStoreValue = getStringProperty(environment,
         DEFAULT_OPTION.getTrustStoreValue(),
         "ssl." + tag + ".trustStoreValue",
         "ssl.trustStoreValue");
     option.keyStore =
-        getStringProperty(configSource, DEFAULT_OPTION.getKeyStore(), "ssl." + tag + ".keyStore", "ssl.keyStore");
+        getStringProperty(environment, DEFAULT_OPTION.getKeyStore(), "ssl." + tag + ".keyStore", "ssl.keyStore");
     option.keyStoreType =
-        getStringProperty(configSource,
+        getStringProperty(environment,
             DEFAULT_OPTION.getKeyStoreType(),
             "ssl." + tag + ".keyStoreType",
             "ssl.keyStoreType");
-    option.keyStoreValue = getStringProperty(configSource,
+    option.keyStoreValue = getStringProperty(environment,
         DEFAULT_OPTION.getKeyStoreValue(),
         "ssl." + tag + ".keyStoreValue",
         "ssl.keyStoreValue");
-    option.crl = getStringProperty(configSource, DEFAULT_OPTION.getCrl(), "ssl." + tag + ".crl", "ssl.crl");
+    option.crl = getStringProperty(environment, DEFAULT_OPTION.getCrl(), "ssl." + tag + ".crl", "ssl.crl");
     option.sslCustomClass =
-        getStringProperty(configSource, null, "ssl." + tag + ".sslCustomClass", "ssl.sslCustomClass");
+        getStringProperty(environment, null, "ssl." + tag + ".sslCustomClass", "ssl.sslCustomClass");
     return option;
-  }
-
-  public static SSLOption buildFromYaml(String tag) {
-    return buildFromYaml(tag, null);
   }
 
   private void fromProperty(Properties props) {

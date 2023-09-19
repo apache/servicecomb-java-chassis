@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -57,10 +58,11 @@ public class SCClientUtils {
   }
 
   private static SSLProperties buildSslProperties(ServiceCenterAddressManager addressManager) {
-    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SCConst.SC_SSL_TAG, null);
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SCConst.SC_SSL_TAG,
+        LegacyPropertyFactory.getEnvironment());
     SSLOption sslOption;
     if (factory == null) {
-      sslOption = SSLOption.buildFromYaml(SCConst.SC_SSL_TAG);
+      sslOption = SSLOption.build(SCConst.SC_SSL_TAG, LegacyPropertyFactory.getEnvironment());
     } else {
       sslOption = factory.createSSLOption();
     }

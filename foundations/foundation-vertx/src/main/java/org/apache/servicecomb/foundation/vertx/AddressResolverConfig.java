@@ -20,7 +20,6 @@ package org.apache.servicecomb.foundation.vertx;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,17 +35,7 @@ public class AddressResolverConfig {
    * @param tag config tag, such as sc.consumer or cc.consumer
    * @return AddressResolverOptions
    */
-  public static AddressResolverOptions getAddressResover(String tag) {
-    return getAddressResover(tag, null);
-  }
-
-  /**
-   * get the target endpoints with custom address resolve config
-   * @param tag config tag, such as sc.consumer or cc.consumer
-   * @param configSource get config from special config source
-   * @return AddressResolverOptions
-   */
-  public static AddressResolverOptions getAddressResover(String tag, Configuration configSource) {
+  public static AddressResolverOptions getAddressResolverOptions(String tag) {
     AddressResolverOptions addressResolverOptions = new AddressResolverOptions();
     addressResolverOptions
         .setServers(getStringListProperty(
@@ -108,7 +97,7 @@ public class AddressResolverConfig {
 
   private static List<String> getStringListProperty(List<String> defaultValue, String... keys) {
     for (String key : keys) {
-      String[] vals = LegacyPropertyFactory.getProperty(key, String[].class, null);
+      String[] vals = LegacyPropertyFactory.getProperty(key, String[].class);
       if (vals != null && vals.length > 0) {
         return Arrays.asList(vals);
       }
@@ -118,7 +107,7 @@ public class AddressResolverConfig {
 
   private static int getPositiveIntProperty(int defaultValue, String... keys) {
     for (String key : keys) {
-      Integer val = LegacyPropertyFactory.getProperty(key, Integer.class, null);
+      Integer val = LegacyPropertyFactory.getProperty(key, Integer.class);
       if (val != null && val <= 0) {
         LOGGER.warn("Address resover key:{}'s value:{} is not positive, please check!", key, val);
         continue;
@@ -133,7 +122,7 @@ public class AddressResolverConfig {
   private static boolean getBooleanProperty(boolean defaultValue,
       String... keys) {
     for (String key : keys) {
-      Boolean val = LegacyPropertyFactory.getProperty(key, Boolean.class, null);
+      Boolean val = LegacyPropertyFactory.getProperty(key, Boolean.class);
       if (val != null) {
         return val;
       }

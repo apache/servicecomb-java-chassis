@@ -30,22 +30,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+
+import com.google.common.annotations.VisibleForTesting;
+
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.vertx.core.buffer.Buffer;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 import jakarta.ws.rs.HttpMethod;
 import jakarta.ws.rs.core.MediaType;
-
-import com.google.common.annotations.VisibleForTesting;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
-
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.vertx.core.buffer.Buffer;
 
 public class StandardHttpServletRequestEx extends HttpServletRequestWrapper implements HttpServletRequestEx {
   private final BodyBufferSupport bodyBuffer = new BodyBufferSupportImpl();

@@ -24,10 +24,10 @@ import java.util.Set;
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
 import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
@@ -277,10 +277,10 @@ public class RestServerVerticle extends AbstractVerticle {
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, LegacyPropertyFactory.getEnvironment());
       SSLOption sslOption;
       if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(SSL_KEY);
+        sslOption = SSLOption.build(SSL_KEY, LegacyPropertyFactory.getEnvironment());
       } else {
         sslOption = factory.createSSLOption();
       }
