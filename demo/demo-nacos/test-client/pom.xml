@@ -65,8 +65,8 @@
               <configuration>
                 <images>
                   <image>
-                    <name>servicecomb/nacos-center</name>
-                    <alias>service8848</alias>
+                    <name>nacos/nacos-server:v2.1.2-slim</name>
+                    <alias>nacos-server</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
                       <wait>
@@ -79,7 +79,7 @@
                         <time>60000</time>
                       </wait>
                       <ports>
-                        <port>8848:8848</port>
+                        <port>nacos-server.port:8848</port>
                       </ports>
                     </run>
                   </image>
@@ -90,12 +90,12 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.nacos.serverAddr=http://service8848:8848
+                          -Dservicecomb.registry.nacos.serverAddr=http://nacos-server:8848
                         </JAVA_OPTS>
-                        <JAR_PATH>/maven/maven/provider-${project.version}.jar</JAR_PATH>
+                        <JAR_PATH>/maven/maven/nacos-provider-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>service8848:service8848</link>
+                        <link>nacos-server:nacos-server</link>
                       </links>
                       <wait>
                         <log>Nacos is ready</log>
@@ -118,12 +118,12 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.nacos.serverAddr=http://service8848:8848
+                          -Dservicecomb.registry.nacos.serverAddr=http://nacos-server:8848
                         </JAVA_OPTS>
-                        <JAR_PATH>/maven/maven/consumer-${project.version}.jar</JAR_PATH>
+                        <JAR_PATH>/maven/maven/nacos-consumer-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>service8848:service8848</link>
+                        <link>nacos-server:nacos-server</link>
                       </links>
                       <wait>
                         <log>Nacos is ready</log>
@@ -146,12 +146,12 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.nacos.serverAddr=http://service8848:8848
+                          -Dservicecomb.registry.nacos.serverAddr=http://nacos-server:8848
                         </JAVA_OPTS>
-                        <JAR_PATH>/maven/maven/gateway-${project.version}.jar</JAR_PATH>
+                        <JAR_PATH>/maven/maven/nacos-gateway-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>service8848:service8848</link>
+                        <link>nacos-server:nacos-server</link>
                       </links>
                       <wait>
                         <log>Nacos is ready</log>
