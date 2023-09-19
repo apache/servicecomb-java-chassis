@@ -57,14 +57,142 @@
     <profile>
       <id>docker</id>
       <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <images>
+                  <image>
+                    <name>servicecomb/nacos-center</name>
+                    <alias>service8848</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <wait>
+                        <log>server is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>8848</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>8848:8848</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>provider:${project.version}</name>
+                    <alias>provider</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.registry.nacos.serverAddr=http://service8848:8848
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/provider-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service8848:service8848</link>
+                      </links>
+                      <wait>
+                        <log>Nacos is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>9094</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>9094:9094</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>consumer:${project.version}</name>
+                    <alias>consumer</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.registry.nacos.serverAddr=http://service8848:8848
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/consumer-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service8848:service8848</link>
+                      </links>
+                      <wait>
+                        <log>Nacos is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>9092</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>9092:9092</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>gateway:${project.version}</name>
+                    <alias>gateway</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.registry.nacos.serverAddr=http://service8848:8848
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/gateway-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service8848:service8848</link>
+                      </links>
+                      <wait>
+                        <log>Nacos is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>9090</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>9090:9090</port>
+                      </ports>
+                    </run>
+                  </image>
+                </images>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
         <plugins>
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-          </plugin>
-          <plugin>
-            <groupId>org.commonjava.maven.plugins</groupId>
-            <artifactId>directory-maven-plugin</artifactId>
           </plugin>
           <plugin>
             <groupId>com.github.odavid.maven.plugins</groupId>
@@ -73,7 +201,7 @@
               <mixins>
                 <mixin>
                   <groupId>org.apache.servicecomb.demo</groupId>
-                  <artifactId>docker-build-config</artifactId>
+                  <artifactId>docker-run-config</artifactId>
                   <version>${project.version}</version>
                 </mixin>
               </mixins>

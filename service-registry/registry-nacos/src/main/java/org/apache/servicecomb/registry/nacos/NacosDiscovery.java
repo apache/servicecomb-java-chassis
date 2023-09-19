@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -30,6 +29,7 @@ import org.springframework.util.CollectionUtils;
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.alibaba.nacos.client.naming.event.InstancesChangeEvent;
 
 public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   public static final String NACOS_DISCOVERY_ENABLED = "servicecomb.registry.nacos.%s.%s.enabled";
@@ -38,18 +38,13 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
 
   private Environment environment;
 
-  private MicroserviceProperties microserviceProperties;
-
   private NamingService namingService;
+
+  private InstanceChangedListener<NacosDiscoveryInstance> instanceChangedListener;
 
   @Autowired
   public NacosDiscovery(NacosDiscoveryProperties nacosDiscoveryProperties) {
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
-  }
-
-  @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
   }
 
   @Autowired
@@ -84,14 +79,19 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
     }
     List<NacosDiscoveryInstance> result = new ArrayList<>();
     for (Instance instance : isntances) {
-      result.add(new NacosDiscoveryInstance(instance, nacosDiscoveryProperties, microserviceProperties, application));
+      result.add(new NacosDiscoveryInstance(instance, nacosDiscoveryProperties, application));
     }
     return result;
   }
 
   @Override
   public void setInstanceChangedListener(InstanceChangedListener<NacosDiscoveryInstance> instanceChangedListener) {
+    this.instanceChangedListener = instanceChangedListener;
+  }
 
+  public void onInstanceChangedEvent(InstancesChangeEvent event) {
+    this.instanceChangedListener.onInstanceChanged(name(), event.getGroupName(), event.getServiceName(),
+        convertServiceInstanceList(event.getHosts(), event.getGroupName()));
   }
 
   @Override

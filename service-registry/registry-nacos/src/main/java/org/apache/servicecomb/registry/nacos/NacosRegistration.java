@@ -20,7 +20,6 @@ package org.apache.servicecomb.registry.nacos;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
@@ -32,6 +31,7 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.alibaba.nacos.common.notify.NotifyCenter;
 
 public class NacosRegistration implements Registration<NacosRegistrationInstance> {
   private final NacosDiscoveryProperties nacosDiscoveryProperties;
@@ -39,6 +39,8 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   private final NacosDiscovery nacosDiscovery;
 
   private final Environment environment;
+
+  private final InstancesChangeEventListener instancesChangeEventListener;
 
   private NacosRegistrationInstance nacosRegistrationInstance;
 
@@ -56,10 +58,11 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Autowired
   public NacosRegistration(NacosDiscoveryProperties nacosDiscoveryProperties, NacosDiscovery nacosDiscovery,
-      Environment environment) {
+      Environment environment, InstancesChangeEventListener instancesChangeEventListener) {
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
     this.nacosDiscovery = nacosDiscovery;
     this.environment = environment;
+    this.instancesChangeEventListener = instancesChangeEventListener;
   }
 
   @Autowired
@@ -76,6 +79,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     application = microserviceProperties.getApplication();
     namingService = NamingServiceManager.buildNamingService(nacosDiscoveryProperties);
     namingMaintainService = NamingServiceManager.buildNamingMaintainService(nacosDiscoveryProperties);
+    NotifyCenter.registerSubscriber(instancesChangeEventListener);
   }
 
   @Override

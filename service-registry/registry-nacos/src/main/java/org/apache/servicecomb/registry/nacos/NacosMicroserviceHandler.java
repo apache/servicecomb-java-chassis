@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.registry.nacos;
 
+import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class NacosMicroserviceHandler {
     Instance instance = new Instance();
     instance.setIp(StringUtils.isEmpty(properties.getIp()) ? NetUtils.getHostName() : properties.getIp());
     instance.setPort(getEnvPort(environment));
-    instance.setInstanceId(buildInstanceId(instance));
+    instance.setInstanceId(buildInstanceId());
     instance.setWeight(properties.getWeight());
     instance.setEnabled(properties.isInstanceEnabled());
     Map<String, String> metadata = properties.getMetadata();
@@ -71,9 +72,8 @@ public class NacosMicroserviceHandler {
     return instance;
   }
 
-  private static String buildInstanceId(Instance instance) {
-    String instanceId = instance.getIp() + "-" + instance.getPort();
-    return instanceId.replaceAll("[^0-9a-zA-Z]", "-");
+  private static String buildInstanceId() {
+    return System.currentTimeMillis() + "-" + ManagementFactory.getRuntimeMXBean().getPid();
   }
 
   private static int getEnvPort(Environment environment) {

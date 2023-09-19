@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
@@ -35,17 +34,14 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final Instance instance;
 
-  private final MicroserviceProperties microserviceProperties;
-
   private final Map<String, String> schemas = new HashMap<>();
 
   private String application;
 
   public NacosDiscoveryInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
-      MicroserviceProperties microserviceProperties, String application) {
+      String application) {
     this.instance = instance;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
-    this.microserviceProperties = microserviceProperties;
     this.application = application;
   }
 
