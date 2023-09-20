@@ -69,6 +69,10 @@
                     <alias>nacos-server</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <MODE>standalone</MODE>
+                        <PREFER_HOST_MODE>hostname</PREFER_HOST_MODE>
+                      </env>
                       <wait>
                         <log>server is ready</log>
                         <tcp>
