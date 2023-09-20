@@ -74,7 +74,7 @@
                         <PREFER_HOST_MODE>hostname</PREFER_HOST_MODE>
                       </env>
                       <wait>
-                        <log>server is ready</log>
+                        <log>Tomcat started on port</log>
                         <tcp>
                           <ports>
                             <port>8848</port>
