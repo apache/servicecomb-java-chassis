@@ -84,8 +84,8 @@
                     </run>
                   </image>
                   <image>
-                    <name>provider:${project.version}</name>
-                    <alias>provider</alias>
+                    <name>nacos-provider:${project.version}</name>
+                    <alias>nacos-provider</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
                       <env>
@@ -112,8 +112,8 @@
                     </run>
                   </image>
                   <image>
-                    <name>consumer:${project.version}</name>
-                    <alias>consumer</alias>
+                    <name>nacos-consumer:${project.version}</name>
+                    <alias>nacos-consumer</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
                       <env>
@@ -140,8 +140,8 @@
                     </run>
                   </image>
                   <image>
-                    <name>gateway:${project.version}</name>
-                    <alias>gateway</alias>
+                    <name>nacos-gateway:${project.version}</name>
+                    <alias>nacos-gateway</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
                       <env>
