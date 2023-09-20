@@ -49,7 +49,7 @@ public class RouterRuleCache {
 
   private static final String ROUTE_RULE = "servicecomb.routeRule.%s";
 
-  public static final String GLOBAL_ROUTE_RULE_PREFIX = "servicecomb.globalRouteRule";
+  public static final String GLOBAL_ROUTE_RULE_KEY = "servicecomb.globalRouteRule";
 
   private final Environment environment;
 
@@ -98,7 +98,7 @@ public class RouterRuleCache {
   private boolean addAllRule(String targetServiceName) {
     String ruleStr = environment.getProperty(String.format(ROUTE_RULE, targetServiceName), "");
     if (StringUtils.isEmpty(ruleStr)) {
-      ruleStr = environment.getProperty(GLOBAL_ROUTE_RULE_PREFIX, "");
+      ruleStr = environment.getProperty(GLOBAL_ROUTE_RULE_KEY, "");
     }
     if (StringUtils.isEmpty(ruleStr)) {
       return false;
@@ -128,7 +128,7 @@ public class RouterRuleCache {
    */
   private boolean isServerContainRule(String targetServiceName) {
     return !StringUtils.isEmpty(environment.getProperty(String.format(ROUTE_RULE, targetServiceName), "")) ||
-        !StringUtils.isEmpty(environment.getProperty(GLOBAL_ROUTE_RULE_PREFIX, ""));
+        !StringUtils.isEmpty(environment.getProperty(GLOBAL_ROUTE_RULE_KEY, ""));
   }
 
   public ConcurrentHashMap<String, ServiceInfoCache> getServiceInfoCacheMap() {

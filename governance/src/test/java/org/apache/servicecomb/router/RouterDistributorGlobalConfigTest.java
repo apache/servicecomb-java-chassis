@@ -121,8 +121,8 @@ public class RouterDistributorGlobalConfigTest {
           }
         });
 
-    dynamicValues.put(RouterRuleCache.GLOBAL_ROUTE_RULE_PREFIX, RULE_STRING);
-    postConfigurationChangedEvent(RouterRuleCache.GLOBAL_ROUTE_RULE_PREFIX);
+    dynamicValues.put(RouterRuleCache.GLOBAL_ROUTE_RULE_KEY, RULE_STRING);
+    postConfigurationChangedEvent(RouterRuleCache.GLOBAL_ROUTE_RULE_KEY);
   }
 
   @Test
