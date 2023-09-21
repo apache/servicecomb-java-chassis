@@ -35,6 +35,7 @@ import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
@@ -51,7 +52,6 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -75,8 +75,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
   private static final JavaType OBJECT_TYPE = SimpleType.constructUnsafe(Object.class);
 
   // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-  private static final boolean decodeAsObject = DynamicPropertyFactory.getInstance()
-      .getBooleanProperty("servicecomb.rest.parameter.decodeAsObject", false).get();
+  private static final boolean decodeAsObject = LegacyPropertyFactory
+      .getBooleanProperty("servicecomb.rest.parameter.decodeAsObject", false);
 
   private static final Object LOCK = new Object();
 

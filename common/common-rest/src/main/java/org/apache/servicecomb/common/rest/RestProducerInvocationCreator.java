@@ -38,12 +38,11 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.Json;
 
@@ -100,10 +99,10 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   }
 
   protected void addParameterContext(Invocation invocation) {
-    String headerContextMapper = DynamicPropertyFactory.getInstance()
-        .getStringProperty(RestConst.HEADER_CONTEXT_MAPPER, null).get();
-    String queryContextMapper = DynamicPropertyFactory.getInstance()
-        .getStringProperty(RestConst.QUERY_CONTEXT_MAPPER, null).get();
+    String headerContextMapper = LegacyPropertyFactory
+        .getStringProperty(RestConst.HEADER_CONTEXT_MAPPER);
+    String queryContextMapper = LegacyPropertyFactory
+        .getStringProperty(RestConst.QUERY_CONTEXT_MAPPER);
 
     Map<String, Object> headerContextMappers;
     if (headerContextMapper != null) {

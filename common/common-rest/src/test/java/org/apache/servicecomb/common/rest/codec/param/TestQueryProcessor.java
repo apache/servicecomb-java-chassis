@@ -18,11 +18,14 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -35,6 +38,19 @@ import io.swagger.v3.oas.models.parameters.QueryParameter;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class TestQueryProcessor {
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+  }
+
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
   private ParamValueProcessor createProcessor(String name, Class<?> type,
