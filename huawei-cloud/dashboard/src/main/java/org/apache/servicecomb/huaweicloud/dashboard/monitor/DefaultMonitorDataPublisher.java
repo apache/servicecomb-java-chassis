@@ -44,11 +44,19 @@ import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   private static final String SSL_KEY = "mc.consumer";
 
   private DashboardClient dashboardClient;
+
+  private MonitorConstant monitorConstant;
+
+  @Autowired
+  public void setMonitorConstant(MonitorConstant monitorConstant) {
+    this.monitorConstant = monitorConstant;
+  }
 
   @Override
   public void init() {
@@ -83,16 +91,16 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
       Configuration localConfiguration) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
-    if (MonitorConstant.isProxyEnable()) {
+    if (monitorConstant.isProxyEnable()) {
       HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
           setDefaultRequestConfig(requestConfig);
-      HttpHost proxy = new HttpHost(MonitorConstant.getProxyHost(),
-          MonitorConstant.getProxyPort(), "http"); // now only support http proxy
+      HttpHost proxy = new HttpHost(monitorConstant.getProxyHost(),
+          monitorConstant.getProxyPort(), "http"); // now only support http proxy
       httpClientBuilder.setProxy(proxy);
       CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       credentialsProvider.setCredentials(new AuthScope(proxy),
-          new UsernamePasswordCredentials(MonitorConstant.getProxyUsername(),
-              MonitorConstant.getProxyPasswd()));
+          new UsernamePasswordCredentials(monitorConstant.getProxyUsername(),
+              monitorConstant.getProxyPasswd()));
       httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
 
       return HttpTransportFactory
@@ -105,7 +113,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
     return HttpTransportFactory
         .createHttpTransport(
             TransportUtils
-                .createSSLProperties(MonitorConstant.sslEnabled(), localConfiguration, SSL_KEY),
+                .createSSLProperties(monitorConstant.sslEnabled(), localConfiguration, SSL_KEY),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 
