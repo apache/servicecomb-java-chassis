@@ -55,6 +55,7 @@
     <module>demo-multi-service-center</module>
     <module>demo-cse-v1</module>
     <module>demo-cse-v2</module>
+    <module>demo-nacos</module>
   </modules>
 
   <dependencyManagement>

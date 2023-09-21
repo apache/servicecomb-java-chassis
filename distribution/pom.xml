@@ -54,6 +54,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>service-center-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-nacos</artifactId>
+    </dependency>
 
     <!-- common -->
     <dependency>

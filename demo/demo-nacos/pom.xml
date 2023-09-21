@@ -18,23 +18,46 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
-    <version>3.0.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>service-registry-parent</artifactId>
-  <name>Java Chassis::Service Registry</name>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-parent</artifactId>
+    <version>3.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>demo-nacos</artifactId>
+  <name>Java Chassis::Demo::NACOS</name>
   <packaging>pom</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>solution-basic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-nacos</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>servicestage-environment</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.servicecomb</groupId>
+          <artifactId>registry-service-center</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+  </dependencies>
 
   <modules>
-    <module>registry-local</module>
-    <module>registry-service-center</module>
-    <module>registry-lightweight</module>
-    <module>registry-zero-config</module>
-    <module>registry-nacos</module>
+    <module>provider</module>
+    <module>consumer</module>
+    <module>gateway</module>
+    <module>test-client</module>
   </modules>
+
 </project>
