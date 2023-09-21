@@ -35,9 +35,9 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.apache.servicecomb.registry.sc.SCRegistration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Meter;
 
 /**
@@ -57,6 +57,10 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
 
   private SCRegistration scRegistration;
 
+  private Environment environment;
+
+  private MonitorConstant monitorConstant;
+
   public MetricsMonitorDataProvider() {
     EventManager.register(this);
   }
@@ -66,16 +70,24 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
     this.scRegistration = scRegistration;
   }
 
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  @Autowired
+  public void setMonitorConstant(MonitorConstant monitorConstant) {
+    this.monitorConstant = monitorConstant;
+  }
+
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.monitor.provider.metrics.enabled", true)
-        .get();
+    return environment.getProperty("servicecomb.monitor.provider.metrics.enabled", boolean.class, true);
   }
 
   @Override
   public String getURL() {
-    return String.format(MonitorConstant.MONITORS_URI, scRegistration.getMicroserviceInstance().getServiceName());
+    return String.format(monitorConstant.getMonitorUri(), scRegistration.getMicroserviceInstance().getServiceName());
   }
 
   @Override

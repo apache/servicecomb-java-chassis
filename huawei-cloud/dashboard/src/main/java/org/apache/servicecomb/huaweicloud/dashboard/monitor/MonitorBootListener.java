@@ -17,19 +17,21 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class MonitorBootListener implements BootListener {
 
-  @Inject
+  @Autowired
   private DataFactory dataFactory;
+
+  @Autowired
+  private MonitorConstant monitorConstant;
 
   @Override
   public void onBootEvent(BootEvent event) {
-    if (!MonitorConstant.isMonitorEnabled()) {
+    if (!monitorConstant.isMonitorEnabled()) {
       return;
     }
 
