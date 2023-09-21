@@ -49,6 +49,8 @@ public class RouterRuleCache {
 
   private static final String ROUTE_RULE = "servicecomb.routeRule.%s";
 
+  public static final String GLOBAL_ROUTE_RULE_KEY = "servicecomb.globalRouteRule";
+
   private final Environment environment;
 
   private final ConcurrentHashMap<String, ServiceInfoCache> serviceInfoCacheMap = new ConcurrentHashMap<>();
@@ -78,7 +80,7 @@ public class RouterRuleCache {
         if (serviceInfoCacheMap.containsKey(targetServiceName)) {
           return true;
         }
-        return addAllRule(targetServiceName, environment.getProperty(String.format(ROUTE_RULE, targetServiceName), ""));
+        return addAllRule(targetServiceName);
       }
     }
     return true;
@@ -90,10 +92,17 @@ public class RouterRuleCache {
       if (key.startsWith(ROUTE_RULE_PREFIX)) {
         serviceInfoCacheMap.remove(key.substring(ROUTE_RULE_PREFIX.length()));
       }
+      if (key.equals(GLOBAL_ROUTE_RULE_KEY)) {
+        serviceInfoCacheMap.clear();
+      }
     }
   }
 
-  private boolean addAllRule(String targetServiceName, String ruleStr) {
+  private boolean addAllRule(String targetServiceName) {
+    String ruleStr = environment.getProperty(String.format(ROUTE_RULE, targetServiceName), "");
+    if (StringUtils.isEmpty(ruleStr)) {
+      ruleStr = environment.getProperty(GLOBAL_ROUTE_RULE_KEY, "");
+    }
     if (StringUtils.isEmpty(ruleStr)) {
       return false;
     }
@@ -121,7 +130,8 @@ public class RouterRuleCache {
    * if a server don't have rule , avoid registered too many callback , it may cause memory leak
    */
   private boolean isServerContainRule(String targetServiceName) {
-    return !StringUtils.isEmpty(environment.getProperty(String.format(ROUTE_RULE, targetServiceName), ""));
+    return !StringUtils.isEmpty(environment.getProperty(String.format(ROUTE_RULE, targetServiceName), "")) ||
+        !StringUtils.isEmpty(environment.getProperty(GLOBAL_ROUTE_RULE_KEY, ""));
   }
 
   public ConcurrentHashMap<String, ServiceInfoCache> getServiceInfoCacheMap() {
