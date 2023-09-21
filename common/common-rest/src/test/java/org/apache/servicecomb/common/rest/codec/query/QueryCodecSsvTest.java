@@ -19,11 +19,28 @@ package org.apache.servicecomb.common.rest.codec.query;
 
 import java.util.Date;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
-class QueryCodecSsvTest extends QueryCodecTestBase {
+public class QueryCodecSsvTest extends QueryCodecTestBase {
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+  }
+
   @BeforeEach
   void setUp() {
     codec = new QueryCodecSsv();

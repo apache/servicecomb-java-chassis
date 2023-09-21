@@ -24,13 +24,13 @@ import java.util.Enumeration;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
@@ -45,8 +45,8 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parame
 
   public static class HeaderProcessor extends AbstractParamProcessor {
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private final boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false).get();
+    private final boolean ignoreRequiredCheck = LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false);
 
     private final boolean repeatedType;
 

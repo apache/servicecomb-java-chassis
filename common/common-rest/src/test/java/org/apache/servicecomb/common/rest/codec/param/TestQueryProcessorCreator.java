@@ -18,10 +18,13 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -31,6 +34,19 @@ import io.swagger.v3.oas.models.parameters.QueryParameter;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class TestQueryProcessorCreator {
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+  }
+
   @Test
   public void testCreate() {
     ParamValueProcessorCreator creator =
@@ -56,7 +72,8 @@ public class TestQueryProcessorCreator {
   @Test
   public void testCreateNullAsEmpty() throws Exception {
     HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-    ArchaiusUtils.setProperty("servicecomb.rest.parameter.query.emptyAsNull", "true");
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(true);
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
     Parameter parameter = new QueryParameter();

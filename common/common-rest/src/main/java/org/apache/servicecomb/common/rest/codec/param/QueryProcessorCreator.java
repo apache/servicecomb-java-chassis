@@ -25,11 +25,11 @@ import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecsUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.parameters.Parameter;
@@ -43,16 +43,16 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator<Paramet
 
   public static class QueryProcessor extends AbstractParamProcessor {
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private final boolean emptyAsNull = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.parameter.query.emptyAsNull", false).get();
+    private final boolean emptyAsNull = LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.parameter.query.emptyAsNull", false);
 
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private final boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", false).get();
+    private final boolean ignoreDefaultValue = LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", false);
 
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private final boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", false).get();
+    private final boolean ignoreRequiredCheck = LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", false);
 
     private final boolean repeatedType;
 

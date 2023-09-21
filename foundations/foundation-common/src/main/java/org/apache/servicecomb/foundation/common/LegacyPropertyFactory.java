@@ -23,7 +23,8 @@ import com.google.common.annotations.VisibleForTesting;
 /**
  * Provider a convenient way to get property value in static context.
  *
- * NOTE: this way is not commented and only for legacy code without too much refactoring.
+ * NOTE: This way is not commented and only for legacy code without too much refactoring.
+ *   And make sure to use this class when spring bean context is already initialized.
  */
 public class LegacyPropertyFactory {
   private static Environment environment;
