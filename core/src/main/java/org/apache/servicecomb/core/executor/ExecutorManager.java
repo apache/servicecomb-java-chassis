@@ -31,13 +31,17 @@ public class ExecutorManager {
 
   public static final String KEY_EXECUTORS_DEFAULT = "servicecomb.executors.default";
 
-  public static final String EXECUTOR_GROUP_THREADPOOL = "servicecomb.executor.groupThreadPool";
+  public static final String EXECUTOR_GROUP_THREAD_POOL = "servicecomb.executor.groupThreadPool";
 
   public static final String EXECUTOR_REACTIVE = "servicecomb.executor.reactive";
 
-  public static final String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREADPOOL;
-
   private final Map<String, Executor> executors = new ConcurrentHashMapEx<>();
+
+  static String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREAD_POOL;
+
+  public static void setExecutorDefault(String executorDefault) {
+    EXECUTOR_DEFAULT = executorDefault;
+  }
 
   private Environment environment;
 
@@ -108,7 +112,7 @@ public class ExecutorManager {
   }
 
   protected Executor findByKey(String configKey) {
-    String id = environment.getProperty(configKey, String.class);
+    String id = environment.getProperty(configKey);
     if (id == null) {
       return null;
     }

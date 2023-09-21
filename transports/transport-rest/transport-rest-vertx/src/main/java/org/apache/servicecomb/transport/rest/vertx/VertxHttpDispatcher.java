@@ -22,6 +22,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 
 import io.vertx.ext.web.Router;
 
+// TODO: use spring beans.
 public interface VertxHttpDispatcher extends SPIOrder, SPIEnabled {
   @Override
   default boolean enabled() {
