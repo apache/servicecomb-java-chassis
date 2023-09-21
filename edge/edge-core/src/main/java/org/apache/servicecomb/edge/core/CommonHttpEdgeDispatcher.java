@@ -38,6 +38,8 @@ import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOpti
 import org.apache.servicecomb.transport.rest.client.HttpTransportHttpClientOptionsSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
@@ -74,10 +76,18 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
+  private Environment environment;
+
   public CommonHttpEdgeDispatcher() {
     if (this.enabled()) {
       loadConfigurations();
     }
+  }
+
+  // though this is an SPI, but add as beans.
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   // Maybe future change to beans
@@ -97,17 +107,17 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public int getOrder() {
-    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, 40_000).get();
+    return environment.getProperty(KEY_ORDER, int.class, 40_000);
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, false).get();
+    return environment.getProperty(KEY_ENABLED, boolean.class, false);
   }
 
   @Override
   public void init(Router router) {
-    String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, PATTERN_ANY).get();
+    String pattern = environment.getProperty(KEY_PATTERN, PATTERN_ANY);
     router.routeWithRegex(pattern).failureHandler(this::onFailure).handler(this::onRequest);
   }
 

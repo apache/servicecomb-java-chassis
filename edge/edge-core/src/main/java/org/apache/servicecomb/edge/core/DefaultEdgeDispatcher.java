@@ -23,9 +23,10 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.ext.web.Router;
@@ -48,20 +49,28 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private int prefixSegmentCount;
 
+  private Environment environment;
+
+  // though this is an SPI, but add as beans.
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public int getOrder() {
-    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, 20_000).get();
+    return environment.getProperty(KEY_ORDER, int.class, 20_000);
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, false).get();
+    return environment.getProperty(KEY_ENABLED, boolean.class, false);
   }
 
   @Override
   public void init(Router router) {
-    String prefix = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PREFIX, "api").get();
-    prefixSegmentCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PREFIX_SEGMENT_COUNT, 1).get();
+    String prefix = environment.getProperty(KEY_PREFIX, "api");
+    prefixSegmentCount = environment.getProperty(KEY_PREFIX_SEGMENT_COUNT, int.class, 1);
     String regex = generateRouteRegex(prefix, false);
 
     // cookies handler are enabled by default start from 3.8.3

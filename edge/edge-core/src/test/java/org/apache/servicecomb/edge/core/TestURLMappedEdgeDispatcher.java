@@ -26,12 +26,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.ext.web.RoutingContext;
 
 public class TestURLMappedEdgeDispatcher {
+  Environment environment = Mockito.mock(Environment.class);
+
   @BeforeEach
   public void setUp() throws Exception {
+    DynamicPropertyFactory.getInstance();
   }
 
   @AfterEach
@@ -41,9 +47,10 @@ public class TestURLMappedEdgeDispatcher {
 
   @Test
   public void testConfigurations() {
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.enabled", true);
-
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.enabled", boolean.class, false))
+        .thenReturn(true);
     URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher();
+    dispatcher.setEnvironment(environment);
     Map<String, URLMappedConfigurationItem> items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 0);
 

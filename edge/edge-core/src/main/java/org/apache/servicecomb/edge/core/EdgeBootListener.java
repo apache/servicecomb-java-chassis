@@ -17,17 +17,23 @@
 
 package org.apache.servicecomb.edge.core;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class EdgeBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(EdgeBootListener.class);
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public void onBootEvent(BootEvent event) {
@@ -36,18 +42,6 @@ public class EdgeBootListener implements BootListener {
     }
 
     TransportConfig.setRestServerVerticle(EdgeRestServerVerticle.class);
-
-    String defaultExecutor = DynamicPropertyFactory.getInstance()
-        .getStringProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, null)
-        .get();
-    if (defaultExecutor != null) {
-      LOGGER.info("Edge service default executor is {}.", defaultExecutor);
-      return;
-    }
-
-    // change default to reactive mode
-    Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    configuration.setProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, ExecutorManager.EXECUTOR_REACTIVE);
-    LOGGER.info("Set ReactiveExecutor to be edge service default executor.");
+    ExecutorManager.setExecutorDefault(ExecutorManager.EXECUTOR_REACTIVE);
   }
 }
