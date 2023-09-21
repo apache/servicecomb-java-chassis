@@ -38,6 +38,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
@@ -49,7 +50,6 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestDefaultHttpClientFilter {
   private final DefaultHttpClientFilter filter = new DefaultHttpClientFilter();
@@ -155,7 +155,8 @@ public class TestDefaultHttpClientFilter {
     Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
     Assertions.assertEquals(
-        "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported]",
+        "InvocationException: code=400;msg=CommonExceptionData "
+            + "[message=Failed to decode response body. Operation null.]",
         invocationException.getMessage());
     Assertions.assertEquals(
         "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
@@ -164,7 +165,7 @@ public class TestDefaultHttpClientFilter {
     Assertions.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
     Assertions.assertEquals(
-        "method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported",
+        "Failed to decode response body. Operation null.",
         commonExceptionData.getMessage());
   }
 
@@ -202,7 +203,8 @@ public class TestDefaultHttpClientFilter {
     Assertions.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
     Assertions.assertEquals(
-        "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported]",
+        "InvocationException: code=400;msg=CommonExceptionData "
+            + "[message=Failed to decode response body. Operation null.]",
         invocationException.getMessage());
     Assertions.assertEquals(
         "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
@@ -211,7 +213,7 @@ public class TestDefaultHttpClientFilter {
     Assertions.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
     Assertions.assertEquals(
-        "method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported",
+        "Failed to decode response body. Operation null.",
         commonExceptionData.getMessage());
   }
 

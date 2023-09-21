@@ -111,8 +111,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     } catch (Exception e) {
       LOGGER.error("failed to decode response body.", e);
       String msg =
-          String.format("Failed to decode response body. %s",
-              e.getMessage());
+          String.format("Failed to decode response body. Operation %s.",
+              invocation.getMicroserviceQualifiedName());
       if (HttpStatus.isSuccess(responseEx.getStatus())) {
         return Response.createConsumerFail(
             new InvocationException(400, responseEx.getStatusType().getReasonPhrase(),
