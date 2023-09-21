@@ -90,14 +90,13 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     if (produceProcessor == null) {
       // This happens outside the runtime such as Servlet filter response. Here we give a default json parser to it
       // and keep user data not get lose.
-      String msg =
-          String.format("method %s, path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
-              swaggerRestOperation.getHttpMethod(),
-              swaggerRestOperation.getAbsolutePath(),
-              responseEx.getStatus(),
-              responseEx.getStatusType().getReasonPhrase(),
-              responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
-      LOGGER.warn(msg);
+      LOGGER.warn("Response content-type {} is not supported. Method {}, path {}, statusCode {}, reasonPhrase {}.",
+          responseEx.getHeader(HttpHeaders.CONTENT_TYPE),
+          swaggerRestOperation.getHttpMethod(),
+          swaggerRestOperation.getAbsolutePath(),
+          responseEx.getStatus(),
+          responseEx.getStatusType().getReasonPhrase()
+      );
       produceProcessor = ProduceProcessorManager.INSTANCE.findDefaultProcessor();
     }
 
@@ -110,14 +109,10 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       }
       return response;
     } catch (Exception e) {
-      LOGGER.error("failed to decode response body, exception is [{}]", e.getMessage());
+      LOGGER.error("failed to decode response body.", e);
       String msg =
-          String.format("method %s, path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
-              swaggerRestOperation.getHttpMethod(),
-              swaggerRestOperation.getAbsolutePath(),
-              responseEx.getStatus(),
-              responseEx.getStatusType().getReasonPhrase(),
-              responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
+          String.format("Failed to decode response body. %s",
+              e.getMessage());
       if (HttpStatus.isSuccess(responseEx.getStatus())) {
         return Response.createConsumerFail(
             new InvocationException(400, responseEx.getStatusType().getReasonPhrase(),
