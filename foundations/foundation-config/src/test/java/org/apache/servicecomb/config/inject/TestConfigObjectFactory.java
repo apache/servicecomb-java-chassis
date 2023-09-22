@@ -423,4 +423,33 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     ArchaiusUtils.setProperty("override.low", null);
     Assertions.assertNull(config.strValue);
   }
+
+  @InjectProperties(prefix = "root")
+  public static class ConfigWithPojo {
+
+    @InjectProperties(prefix = "root.model")
+    public static class Model {
+      @InjectProperty(defaultValue = "h")
+      public String name;
+    }
+
+    @InjectProperty(defaultValue = "4")
+    public int index;
+
+    public Model model;
+  }
+
+  @Test
+  public void configWithPojoWork() {
+    ConfigWithPojo config = priorityPropertyManager.createConfigObject(ConfigWithPojo.class);
+    ConfigWithPojo.Model model = priorityPropertyManager.createConfigObject(ConfigWithPojo.Model.class);
+    config.model = model;
+
+    Assertions.assertEquals(4, config.index);
+    Assertions.assertEquals("h", config.model.name);
+    ArchaiusUtils.setProperty("root.index", "5");
+    ArchaiusUtils.setProperty("root.model.name", "w");
+    Assertions.assertEquals(5, config.index);
+    Assertions.assertEquals("w", config.model.name);
+  }
 }

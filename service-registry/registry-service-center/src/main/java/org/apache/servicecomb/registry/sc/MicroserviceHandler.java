@@ -107,6 +107,9 @@ public class MicroserviceHandler {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     String hostName = StringUtils.isEmpty(scConfigurationProperties.getHostname()) ? NetUtils.getHostName()
         : scConfigurationProperties.getHostname();
+    if (hostName.length() > 64) {
+      hostName = hostName.substring(0, 64);
+    }
     microserviceInstance.setHostName(hostName);
 
     if (StringUtils.isNotEmpty(dataCenterProperties.getName())) {
