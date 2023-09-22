@@ -100,10 +100,13 @@ public class ConfigObjectFactory {
         continue;
       }
 
-      Setter<Object, Object> setter = beanDescriptionCache.computeIfAbsent(propertyDefinition,
-          LambdaMetafactoryUtils::createObjectSetter);
       PriorityProperty<?> priorityProperty = createPriorityProperty(propertyDefinition.getField().getAnnotated(),
           prefix, parameters);
+      if (priorityProperty == null) {
+        continue;
+      }
+      Setter<Object, Object> setter = beanDescriptionCache.computeIfAbsent(propertyDefinition,
+          LambdaMetafactoryUtils::createObjectSetter);
       setter.set(instance, priorityProperty.getValue());
       properties.add(new ConfigObjectProperty(setter, priorityProperty));
     }
@@ -138,7 +141,7 @@ public class ConfigObjectFactory {
       case "java.lang.Boolean":
         return createBooleanProperty(field, keys, null);
       default:
-        throw new IllegalStateException("not support, field=" + field);
+        return null;
     }
   }
 

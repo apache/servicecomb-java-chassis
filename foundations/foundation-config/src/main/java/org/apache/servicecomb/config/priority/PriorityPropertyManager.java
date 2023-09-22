@@ -28,6 +28,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.ConfigurationManager;
 
 public class PriorityPropertyManager {
@@ -70,6 +71,7 @@ public class PriorityPropertyManager {
     }
   }
 
+  @VisibleForTesting
   public Map<Object, List<ConfigObjectProperty>> getConfigObjectMap() {
     return configObjectMap;
   }
