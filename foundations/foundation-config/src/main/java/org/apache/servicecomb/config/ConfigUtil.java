@@ -20,11 +20,13 @@ package org.apache.servicecomb.config;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_KEY_SPLITER;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
@@ -49,6 +51,9 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.PropertySource;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
@@ -282,5 +287,19 @@ public final class ConfigUtil {
     } catch (IllegalAccessException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  public static Set<String> propertiesWithPrefix(ConfigurableEnvironment environment, String prefix) {
+    Set<String> result = new HashSet<>();
+    for (PropertySource<?> propertySource : environment.getPropertySources()) {
+      if (propertySource instanceof EnumerablePropertySource) {
+        for (String key : ((EnumerablePropertySource<?>) propertySource).getPropertyNames()) {
+          if (key.startsWith(prefix)) {
+            result.add(key);
+          }
+        }
+      }
+    }
+    return result;
   }
 }

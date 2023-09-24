@@ -17,17 +17,21 @@
 package org.apache.servicecomb.authentication.provider;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
+import com.google.common.eventbus.Subscribe;
 
 /**
  * Add black / white list control to service access
@@ -55,13 +59,17 @@ public class AccessController {
 
   private static final String KEY_RULE_POSTFIX = ".rule";
 
+  private final Environment environment;
+
   private Map<String, ConfigurationItem> whiteList = new HashMap<>();
 
   private Map<String, ConfigurationItem> blackList = new HashMap<>();
 
-  public AccessController() {
+  public AccessController(Environment environment) {
+    this.environment = environment;
     loadConfigurations(KEY_BLACK_LIST_PREFIX);
     loadConfigurations(KEY_WHITE_LIST_PREFIX);
+    EventManager.register(this);
   }
 
   public boolean isAllowed(DiscoveryInstance microservice) {
@@ -128,40 +136,45 @@ public class AccessController {
     return value.equals(pattern);
   }
 
-  private void loadConfigurations(String prefix) {
-    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
-        .getBackingConfigurationSource();
-    loadConfigurations(config, prefix);
-    config.addConfigurationListener(event -> {
-      if (event.getPropertyName().startsWith(prefix)) {
-        LOG.info("Access rule have been changed. Reload configurations. Event=" + event.getType());
-        loadConfigurations(config, prefix);
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    Map<String, Object> changed = new HashMap<>();
+    changed.putAll(event.getDeleted());
+    changed.putAll(event.getAdded());
+    changed.putAll(event.getUpdated());
+
+    for (Entry<String, Object> entry : changed.entrySet()) {
+      if (entry.getKey().startsWith(KEY_WHITE_LIST_PREFIX)) {
+        loadConfigurations(KEY_WHITE_LIST_PREFIX);
+        break;
       }
-    });
+    }
+    for (Entry<String, Object> entry : changed.entrySet()) {
+      if (entry.getKey().startsWith(KEY_BLACK_LIST_PREFIX)) {
+        loadConfigurations(KEY_BLACK_LIST_PREFIX);
+        break;
+      }
+    }
   }
 
-  private void loadConfigurations(ConcurrentCompositeConfiguration config, String prefix) {
+  private void loadConfigurations(String prefix) {
     Map<String, ConfigurationItem> configurations = new HashMap<>();
-    Iterator<String> configsItems = config.getKeys(prefix);
-    while (configsItems.hasNext()) {
-      String pathKey = configsItems.next();
+    Set<String> configsItems = ConfigUtil.propertiesWithPrefix((ConfigurableEnvironment) environment, prefix);
+    for (String pathKey : configsItems) {
       if (pathKey.endsWith(KEY_RULE_POSTFIX)) {
         ConfigurationItem configurationItem = new ConfigurationItem();
-        String rule = DynamicPropertyFactory.getInstance()
-            .getStringProperty(pathKey, null).get();
+        String rule = environment.getProperty(pathKey);
         if (StringUtils.isEmpty(rule)) {
           continue;
         }
         configurationItem.rule = rule;
         String pathKeyItem = pathKey
             .substring(prefix.length() + 1, pathKey.length() - KEY_RULE_POSTFIX.length());
-        configurationItem.propertyName = DynamicPropertyFactory.getInstance()
-            .getStringProperty(String.format(KEY_PROPERTY_NAME, prefix, pathKeyItem), null).get();
+        configurationItem.propertyName = environment.getProperty(String.format(KEY_PROPERTY_NAME, prefix, pathKeyItem));
         if (StringUtils.isEmpty(configurationItem.propertyName)) {
           continue;
         }
-        configurationItem.category = DynamicPropertyFactory.getInstance()
-            .getStringProperty(String.format(KEY_CATEGORY, prefix, pathKeyItem), null).get();
+        configurationItem.category = environment.getProperty(String.format(KEY_CATEGORY, prefix, pathKeyItem));
         if (StringUtils.isEmpty(configurationItem.category)) {
           continue;
         }

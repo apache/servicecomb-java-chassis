@@ -18,11 +18,13 @@ package org.apache.servicecomb.authentication;
 
 import org.apache.servicecomb.authentication.consumer.ConsumerAuthFilter;
 import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
+import org.apache.servicecomb.authentication.provider.AccessController;
 import org.apache.servicecomb.authentication.provider.ProviderAuthFilter;
 import org.apache.servicecomb.authentication.provider.ProviderTokenManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 @ConditionalOnProperty(value = AuthenticationConfiguration.ACCESS_CONTROL_ENABLED,
@@ -55,5 +57,10 @@ public class AuthenticationConfiguration {
   @Bean
   public ProviderTokenManager providerTokenManager() {
     return new ProviderTokenManager();
+  }
+
+  @Bean
+  public AccessController accessController(Environment environment) {
+    return new AccessController(environment);
   }
 }

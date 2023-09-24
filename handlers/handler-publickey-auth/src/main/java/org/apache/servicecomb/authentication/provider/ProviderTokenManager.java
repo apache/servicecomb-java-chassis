@@ -43,13 +43,18 @@ public class ProviderTokenManager {
       .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)
       .build();
 
-  private final AccessController accessController = new AccessController();
+  private AccessController accessController;
 
   private MicroserviceInstanceCache microserviceInstanceCache;
 
   @Autowired
   public void setMicroserviceInstanceCache(MicroserviceInstanceCache microserviceInstanceCache) {
     this.microserviceInstanceCache = microserviceInstanceCache;
+  }
+
+  @Autowired
+  public void setAccessController(AccessController accessController) {
+    this.accessController = accessController;
   }
 
   public boolean valid(String token) {

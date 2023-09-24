@@ -17,6 +17,7 @@
 package org.apache.servicecomb.authentication.provider;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.endsWith;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.MutablePropertySources;
 
 import com.google.common.cache.Cache;
 
@@ -80,6 +84,10 @@ public class TestProviderTokenManager {
         return 500;
       }
     });
+    ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    tokenManager.setAccessController(new AccessController(environment));
     MicroserviceInstanceCache microserviceInstanceCache = Mockito.mock(MicroserviceInstanceCache.class);
     DiscoveryInstance microserviceInstance = Mockito.mock(DiscoveryInstance.class);
     Mockito.when(microserviceInstance.getInstanceId()).thenReturn("");
@@ -113,6 +121,7 @@ public class TestProviderTokenManager {
     String serviceId = "test";
     String instanceId = "test";
     ConsumerTokenManager consumerTokenManager = new ConsumerTokenManager();
+
     MicroserviceProperties microserviceProperties = Mockito.mock(MicroserviceProperties.class);
     Mockito.when(microserviceProperties.getName()).thenReturn("test");
     Mockito.when(microserviceProperties.getApplication()).thenReturn("test");
@@ -130,6 +139,11 @@ public class TestProviderTokenManager {
     // use cache token
     Assertions.assertEquals(token, consumerTokenManager.getToken());
     ProviderTokenManager rsaProviderTokenManager = new ProviderTokenManager();
+    ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    rsaProviderTokenManager.setAccessController(new AccessController(environment));
+
     rsaProviderTokenManager.setMicroserviceInstanceCache(microserviceInstanceCache);
     //first validate need to verify use RSA
     Assertions.assertTrue(rsaProviderTokenManager.valid(token));
