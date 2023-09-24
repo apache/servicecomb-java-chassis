@@ -19,7 +19,9 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -41,8 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
+import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -122,15 +123,22 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
   }
 
   private void loadConfigurations() {
-    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
-        .getBackingConfigurationSource();
-    configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
-    config.addConfigurationListener(event -> {
-      if (event.getPropertyName().startsWith(KEY_MAPPING_PREFIX)) {
-        LOG.info("Map rule have been changed. Reload configurations. Event=" + event.getType());
-        configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
+    configurations = URLMappedConfigurationLoader.loadConfigurations(environment, KEY_MAPPING_PREFIX);
+  }
+
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    Map<String, Object> changed = new HashMap<>();
+    changed.putAll(event.getDeleted());
+    changed.putAll(event.getAdded());
+    changed.putAll(event.getUpdated());
+
+    for (Entry<String, Object> entry : changed.entrySet()) {
+      if (entry.getKey().startsWith(KEY_MAPPING_PREFIX)) {
+        loadConfigurations();
+        break;
       }
-    });
+    }
   }
 
   protected void onRequest(RoutingContext context) {

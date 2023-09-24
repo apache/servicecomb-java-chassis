@@ -17,36 +17,41 @@
 
 package org.apache.servicecomb.edge.core;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 
 import io.vertx.ext.web.RoutingContext;
 
 public class TestURLMappedEdgeDispatcher {
-  Environment environment = Mockito.mock(Environment.class);
+  ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
 
   @BeforeEach
   public void setUp() throws Exception {
-    DynamicPropertyFactory.getInstance();
   }
 
   @AfterEach
   public void tearDown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testConfigurations() {
+    EnumerablePropertySource<?> propertySource = Mockito.mock(EnumerablePropertySource.class);
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    mutablePropertySources.addLast(propertySource);
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {
+    });
     Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.enabled", boolean.class, false))
         .thenReturn(true);
     URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher();
@@ -58,10 +63,26 @@ public class TestURLMappedEdgeDispatcher {
     Mockito.when(context.get(RestBodyHandler.BYPASS_BODY_HANDLER)).thenReturn(Boolean.TRUE);
     dispatcher.onRequest(context);
 
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.path", "/a/b/c/.*");
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.microserviceName", "serviceName");
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.prefixSegmentCount", 2);
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.versionRule", "2.0.0+");
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.path",
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.microserviceName",
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.prefixSegmentCount",
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.versionRule"
+    });
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.path"))
+        .thenReturn("/a/b/c/.*");
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.microserviceName"))
+        .thenReturn("serviceName");
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.prefixSegmentCount",
+            int.class, 0))
+        .thenReturn(2);
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.versionRule",
+            "0.0.0+"))
+        .thenReturn("2.0.0+");
+    Map<String, Object> latest = new HashMap<>();
+    latest.put("servicecomb.http.dispatcher.edge.url.mappings.service1.path", "/a/b/c/.*");
+    dispatcher.onConfigurationChangedEvent(ConfigurationChangedEvent.createIncremental(latest, new HashMap<>()));
+
     items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 1);
     URLMappedConfigurationItem item = items.get("service1");
@@ -70,8 +91,23 @@ public class TestURLMappedEdgeDispatcher {
     Assertions.assertEquals(item.getStringPattern(), "/a/b/c/.*");
     Assertions.assertEquals(item.getVersionRule(), "2.0.0+");
 
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service2.versionRule", "2.0.0+");
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service3.path", "/b/c/d/.*");
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.path",
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.microserviceName",
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.prefixSegmentCount",
+        "servicecomb.http.dispatcher.edge.url.mappings.service1.versionRule",
+        "servicecomb.http.dispatcher.edge.url.mappings.service2.versionRule",
+        "servicecomb.http.dispatcher.edge.url.mappings.service3.path"
+    });
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.mappings.service2.versionRule"))
+        .thenReturn("2.0.0+");
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.edge.url.mappings.service3.path"))
+        .thenReturn("/b/c/d/.*");
+
+    latest = new HashMap<>();
+    latest.put("servicecomb.http.dispatcher.edge.url.mappings.service3.path", "/a/b/c/.*");
+    dispatcher.onConfigurationChangedEvent(ConfigurationChangedEvent.createIncremental(latest, new HashMap<>()));
+
     items = dispatcher.getConfigurations();
     Assertions.assertEquals(items.size(), 1);
     item = items.get("service1");
