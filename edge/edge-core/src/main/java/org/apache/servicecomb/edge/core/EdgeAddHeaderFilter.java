@@ -18,26 +18,31 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
 import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.rest.client.RestClientTransportContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
+import com.google.common.eventbus.Subscribe;
 
 public class EdgeAddHeaderFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(EdgeAddHeaderFilter.class);
@@ -50,24 +55,36 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
 
   private static final String KEY_HEADERS = PREFIX + ".allowedHeaders";
 
+  private final Environment environment;
+
   private List<String> publicHeaders = new ArrayList<>();
 
   private boolean enabled = false;
 
-  public EdgeAddHeaderFilter() {
+  public EdgeAddHeaderFilter(Environment environment) {
+    this.environment = environment;
     init();
-    ConfigurationManager.getConfigInstance()
-        .addConfigurationListener(event -> {
-          if (StringUtils.startsWith(event.getPropertyName(), PREFIX)) {
-            LOGGER.info("Public headers config have been changed. Event=" + event.getType());
-            init();
-          }
-        });
+    EventManager.register(this);
+  }
+
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    Map<String, Object> changed = new HashMap<>();
+    changed.putAll(event.getDeleted());
+    changed.putAll(event.getAdded());
+    changed.putAll(event.getUpdated());
+
+    for (Entry<String, Object> entry : changed.entrySet()) {
+      if (entry.getKey().startsWith(PREFIX)) {
+        init();
+        break;
+      }
+    }
   }
 
   private void init() {
-    enabled = DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, false).get();
-    String publicHeaderStr = DynamicPropertyFactory.getInstance().getStringProperty(KEY_HEADERS, "").get();
+    enabled = environment.getProperty(KEY_ENABLED, boolean.class, false);
+    String publicHeaderStr = environment.getProperty(KEY_HEADERS, "");
     String[] split = publicHeaderStr.split(",");
     if (split.length > 0) {
       publicHeaders = Arrays.asList(split);

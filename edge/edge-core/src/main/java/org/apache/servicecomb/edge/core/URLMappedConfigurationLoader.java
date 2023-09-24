@@ -18,16 +18,16 @@
 package org.apache.servicecomb.edge.core;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
 public class URLMappedConfigurationLoader {
   private static final Logger LOG = LoggerFactory.getLogger(URLMappedConfigurationLoader.class);
@@ -41,15 +41,13 @@ public class URLMappedConfigurationLoader {
   private static final String KEY_MAPPING_PREFIX_SEGMENT_COUNT = "%s.%s.prefixSegmentCount";
 
   public static Map<String, URLMappedConfigurationItem> loadConfigurations(
-      ConcurrentCompositeConfiguration config, String configPrefix) {
+      Environment environment, String configPrefix) {
     Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
-    Iterator<String> configsItems = config.getKeys(configPrefix);
-    while (configsItems.hasNext()) {
-      String pathKey = configsItems.next();
+    Set<String> configsItems = ConfigUtil.propertiesWithPrefix((ConfigurableEnvironment) environment, configPrefix);
+    for (String pathKey : configsItems) {
       if (pathKey.endsWith(KEY_MAPPING_PATH)) {
         URLMappedConfigurationItem configurationItem = new URLMappedConfigurationItem();
-        String pattern = DynamicPropertyFactory.getInstance()
-            .getStringProperty(pathKey, null).get();
+        String pattern = environment.getProperty(pathKey);
         if (StringUtils.isEmpty(pattern)) {
           continue;
         }
@@ -57,15 +55,15 @@ public class URLMappedConfigurationLoader {
         configurationItem.setStringPattern(pattern);
         String pathKeyItem = pathKey
             .substring(configPrefix.length() + 1, pathKey.length() - KEY_MAPPING_PATH.length());
-        configurationItem.setMicroserviceName(DynamicPropertyFactory.getInstance()
-            .getStringProperty(String.format(KEY_MAPPING_SERVICE_NAME, configPrefix, pathKeyItem), null).get());
+        configurationItem.setMicroserviceName(environment.getProperty(
+            String.format(KEY_MAPPING_SERVICE_NAME, configPrefix, pathKeyItem)));
         if (StringUtils.isEmpty(configurationItem.getMicroserviceName())) {
           continue;
         }
-        configurationItem.setPrefixSegmentCount(DynamicPropertyFactory.getInstance()
-            .getIntProperty(String.format(KEY_MAPPING_PREFIX_SEGMENT_COUNT, configPrefix, pathKeyItem), 0).get());
-        configurationItem.setVersionRule(DynamicPropertyFactory.getInstance()
-            .getStringProperty(String.format(KEY_MAPPING_VERSION_RULE, configPrefix, pathKeyItem), "0.0.0+").get());
+        configurationItem.setPrefixSegmentCount(environment.getProperty(
+            String.format(KEY_MAPPING_PREFIX_SEGMENT_COUNT, configPrefix, pathKeyItem), int.class, 0));
+        configurationItem.setVersionRule(environment.getProperty(
+            String.format(KEY_MAPPING_VERSION_RULE, configPrefix, pathKeyItem), "0.0.0+"));
         configurations.put(pathKeyItem, configurationItem);
       }
     }
