@@ -21,11 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.apollo.ApolloClient;
-import org.apache.servicecomb.config.apollo.ApolloConfig;
-import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl;
-import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.config.apollo.ApolloClient.ConfigRefresh;
+import org.apache.servicecomb.config.apollo.ApolloDynamicPropertiesSource.UpdateHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -53,11 +50,11 @@ public class ApolloClientTest {
     ResponseEntity<String> responseEntity = new ResponseEntity<>(
         "{\"apollo\":\"mocked\", \"configurations\":{\"timeout\":1000}}", HttpStatus.OK);
     Mockito.when(rest.exchange(
-            ArgumentMatchers.anyString(),
-            ArgumentMatchers.any(HttpMethod.class),
-            ArgumentMatchers.<HttpEntity<String>>any(),
-            ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
-    ApolloConfigurationSourceImpl impl = new ApolloConfigurationSourceImpl();
+        ArgumentMatchers.anyString(),
+        ArgumentMatchers.any(HttpMethod.class),
+        ArgumentMatchers.<HttpEntity<String>>any(),
+        ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
+    ApolloDynamicPropertiesSource impl = new ApolloDynamicPropertiesSource();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     ApolloClient apolloClient = new ApolloClient(updateHandler);
     ConfigRefresh cr = apolloClient.new ConfigRefresh(apolloConfig.getServerUri());
@@ -72,7 +69,7 @@ public class ApolloClientTest {
     Map<String, Object> before = new HashMap<>();
     Map<String, Object> after = new HashMap<>();
 
-    ApolloConfigurationSourceImpl impl = new ApolloConfigurationSourceImpl();
+    ApolloDynamicPropertiesSource impl = new ApolloDynamicPropertiesSource();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     ApolloClient apolloClient = new ApolloClient(updateHandler);
 
