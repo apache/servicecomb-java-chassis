@@ -14,4 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider
+org.apache.servicecomb.config.cc.ConfigCenterDefaultDeploymentProvider

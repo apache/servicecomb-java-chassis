@@ -14,14 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.config;
+package org.apache.servicecomb.config.cc;
 
-import org.apache.servicecomb.config.collect.ConfigCenterInformationCollector;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 public class ConfigCenterConfiguration {
   @Bean
   public ConfigCenterInformationCollector configCenterInformationCollector() {
     return new ConfigCenterInformationCollector();
+  }
+
+  @Bean
+  public ConfigCenterDynamicPropertiesSource configCenterDynamicPropertiesSource() {
+    return new ConfigCenterDynamicPropertiesSource();
+  }
+
+  @Bean
+  public ConfigCenterConfig configCenterConfig(Environment environment) {
+    return new ConfigCenterConfig(environment);
   }
 }

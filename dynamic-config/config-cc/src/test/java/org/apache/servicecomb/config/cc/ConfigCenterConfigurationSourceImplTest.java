@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config;
+package org.apache.servicecomb.config.cc;
 
 
 import java.lang.reflect.Field;

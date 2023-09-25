@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.collect;
+package org.apache.servicecomb.config.cc;
 
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
 import org.apache.servicecomb.deployment.Deployment;

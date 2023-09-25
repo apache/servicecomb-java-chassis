@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.collect;
+package org.apache.servicecomb.config.cc;
 
 import java.util.List;
 

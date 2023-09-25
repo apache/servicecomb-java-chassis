@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config;
+package org.apache.servicecomb.config.cc;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
+import org.springframework.core.env.Environment;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 
 public final class ConfigCenterConfig {
-  public static final ConfigCenterConfig INSTANCE = new ConfigCenterConfig();
-
   public static final String SSL_TAG = "cc.consumer";
 
   private static ConcurrentCompositeConfiguration finalConfig;
@@ -51,76 +47,52 @@ public final class ConfigCenterConfig {
 
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
 
-  private ConfigCenterConfig() {
-  }
+  private final Environment environment;
 
-  public static void setConcurrentCompositeConfiguration(ConcurrentCompositeConfiguration config) {
-    finalConfig = config;
+  public ConfigCenterConfig(Environment environment) {
+    this.environment = environment;
   }
-
-  public static ConcurrentCompositeConfiguration getConcurrentCompositeConfiguration() {
-    return finalConfig;
-  }
-
 
   public String getDomainName() {
-    return finalConfig.getString(DOMAIN_NAME, "default");
+    return environment.getProperty(DOMAIN_NAME, "default");
   }
 
   public boolean firstPullRequired() {
-    return finalConfig.getBoolean(FIRST_PULL_REQUIRED, false);
+    return environment.getProperty(FIRST_PULL_REQUIRED, boolean.class, false);
   }
 
   @SuppressWarnings("unchecked")
   public List<String> getFileSources() {
-    Object property = finalConfig.getProperty(FILE_SOURCE);
-    if (property instanceof String) {
-      return new ArrayList<>(Arrays.asList(((String) property).split(",")));
-    }
-    if (property instanceof List) {
-      return (List<String>) property;
-    }
-    return Collections.EMPTY_LIST;
+    return environment.getProperty(FILE_SOURCE, List.class, Collections.emptyList());
   }
 
   public long getRefreshInterval() {
-    return finalConfig.getLong(REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
+    return environment.getProperty(
+        REFRESH_INTERVAL, long.class, (long) DEFAULT_REFRESH_INTERVAL);
   }
 
   public int getFirstRefreshInterval() {
-    return finalConfig.getInt(FIRST_REFRESH_INTERVAL, DEFAULT_FIRST_REFRESH_INTERVAL);
+    return environment.getProperty(FIRST_REFRESH_INTERVAL, int.class, DEFAULT_FIRST_REFRESH_INTERVAL);
   }
 
   public Boolean isProxyEnable() {
-    return finalConfig.getBoolean(VertxConst.PROXY_ENABLE, false);
+    return environment.getProperty(VertxConst.PROXY_ENABLE, boolean.class, false);
   }
 
   public String getProxyHost() {
-    return finalConfig.getString(VertxConst.PROXY_HOST, "127.0.0.1");
+    return environment.getProperty(VertxConst.PROXY_HOST, "127.0.0.1");
   }
 
   public int getProxyPort() {
-    return finalConfig.getInt(VertxConst.PROXY_PORT, 8080);
+    return environment.getProperty(VertxConst.PROXY_PORT, int.class, 8080);
   }
 
   public String getProxyUsername() {
-    return finalConfig.getString(VertxConst.PROXY_USERNAME, null);
+    return environment.getProperty(VertxConst.PROXY_USERNAME);
   }
 
   public String getProxyPasswd() {
-    return finalConfig.getString(VertxConst.PROXY_PASSWD, null);
-  }
-
-  public String getServiceName() {
-    return BootStrapProperties.readServiceName(finalConfig);
-  }
-
-  public String getAppName() {
-    return BootStrapProperties.readApplication(finalConfig);
-  }
-
-  public String getServiceVersion() {
-    return BootStrapProperties.readServiceVersion(finalConfig);
+    return environment.getProperty(VertxConst.PROXY_PASSWD);
   }
 
   public List<String> getServerUri() {
@@ -129,10 +101,6 @@ public final class ConfigCenterConfig {
   }
 
   public boolean getAutoDiscoveryEnabled() {
-    return finalConfig.getBoolean(AUTO_DISCOVERY_ENABLED, false);
-  }
-
-  public String getEnvironment() {
-    return BootStrapProperties.readServiceEnvironment(finalConfig);
+    return environment.getProperty(AUTO_DISCOVERY_ENABLED, boolean.class, false);
   }
 }

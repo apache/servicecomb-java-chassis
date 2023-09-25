@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.collect;
+package org.apache.servicecomb.config.cc;
 
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.cc.ConfigCenterDefaultDeploymentProvider;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
