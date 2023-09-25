@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -289,9 +290,9 @@ public final class ConfigUtil {
     }
   }
 
-  public static Set<String> propertiesWithPrefix(ConfigurableEnvironment environment, String prefix) {
+  public static Set<String> propertiesWithPrefix(Environment environment, String prefix) {
     Set<String> result = new HashSet<>();
-    for (PropertySource<?> propertySource : environment.getPropertySources()) {
+    for (PropertySource<?> propertySource : ((ConfigurableEnvironment) environment).getPropertySources()) {
       if (propertySource instanceof EnumerablePropertySource) {
         for (String key : ((EnumerablePropertySource<?>) propertySource).getPropertyNames()) {
           if (key.startsWith(prefix)) {

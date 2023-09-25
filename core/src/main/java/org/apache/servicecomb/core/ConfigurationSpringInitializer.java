@@ -119,7 +119,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
 
     // watch configuration changes
     EventManager.register(this);
-    configCenterConfigurationSource = ConfigUtil.installDynamicConfig();
+    configCenterConfigurationSource = ConfigUtil.installDynamicConfig(environment);
     addDynamicConfigurationToSpring(environment, configCenterConfigurationSource);
   }
 

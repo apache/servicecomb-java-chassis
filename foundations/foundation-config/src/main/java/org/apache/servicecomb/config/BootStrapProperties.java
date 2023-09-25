@@ -17,16 +17,14 @@
 
 package org.apache.servicecomb.config;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertyConverter;
-import org.apache.commons.configuration.SubsetConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.env.Environment;
 
 
 /**
@@ -108,49 +106,31 @@ public class BootStrapProperties {
 
   public static final String DEFAULT_MICROSERVICE_INSTANCE_INITIAL_STATUS = "UP";
 
-  private static final Configuration configuration = ConfigUtil.createLocalConfig();
-
-  public static String readApplication(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_APPLICATION,
+  public static String readApplication(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_APPLICATION,
         OLD_CONFIG_SERVICE_APPLICATION, DEFAULT_APPLICATION);
   }
 
-  public static String readApplication() {
-    return readApplication(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceName(Configuration configuration) {
-    String result = readStringValue(configuration, CONFIG_SERVICE_NAME, OLD_CONFIG_SERVICE_NAME,
+  public static String readServiceName(Environment environment) {
+    String result = readStringValue(environment, CONFIG_SERVICE_NAME, OLD_CONFIG_SERVICE_NAME,
         DEFAULT_MICROSERVICE_NAME);
     checkMicroserviceName(result);
     return result;
   }
 
-  public static String readServiceName() {
-    return readServiceName(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceVersion(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_VERSION, OLD_CONFIG_SERVICE_VERSION,
+  public static String readServiceVersion(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_VERSION, OLD_CONFIG_SERVICE_VERSION,
         DEFAULT_MICROSERVICE_VERSION);
   }
 
-  public static String readServiceVersion() {
-    return readServiceVersion(BootStrapProperties.configuration);
+  public static String readServiceRole(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_ROLE, OLD_CONFIG_SERVICE_ROLE, DEFAULT_MICROSERVICE_ROLE);
   }
 
-  public static String readServiceRole(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_ROLE, OLD_CONFIG_SERVICE_ROLE, DEFAULT_MICROSERVICE_ROLE);
-  }
-
-  public static String readServiceRole() {
-    return readServiceRole(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceDescription(Configuration configuration) {
-    String[] descriptionArray = configuration.getStringArray(CONFIG_SERVICE_DESCRIPTION);
+  public static String readServiceDescription(Environment environment) {
+    String[] descriptionArray = environment.getProperty(CONFIG_SERVICE_DESCRIPTION, String[].class);
     if (null == descriptionArray || descriptionArray.length < 1) {
-      descriptionArray = configuration.getStringArray(OLD_CONFIG_SERVICE_DESCRIPTION);
+      descriptionArray = environment.getProperty(OLD_CONFIG_SERVICE_DESCRIPTION, String[].class);
     }
 
     if (null == descriptionArray || descriptionArray.length < 1) {
@@ -165,34 +145,18 @@ public class BootStrapProperties {
     return rawDescriptionBuilder.substring(0, rawDescriptionBuilder.length() - 1);
   }
 
-  public static String readServiceDescription() {
-    return readServiceDescription(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceEnvironment(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_ENVIRONMENT, OLD_CONFIG_SERVICE_ENVIRONMENT,
+  public static String readServiceEnvironment(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_ENVIRONMENT, OLD_CONFIG_SERVICE_ENVIRONMENT,
         DEFAULT_MICROSERVICE_ENVIRONMENT);
   }
 
-  public static String readServiceEnvironment() {
-    return readServiceEnvironment(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceExtendedClass(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_EXTENDED_CLASS, OLD_CONFIG_SERVICE_EXTENDED_CLASS,
+  public static String readServiceExtendedClass(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_EXTENDED_CLASS, OLD_CONFIG_SERVICE_EXTENDED_CLASS,
         null);
   }
 
-  public static String readServiceExtendedClass() {
-    return readServiceExtendedClass(BootStrapProperties.configuration);
-  }
-
-  public static Map<String, String> readServiceProperties(Configuration configuration) {
-    return readProperties(configuration, CONFIG_SERVICE_PROPERTIES, OLD_CONFIG_SERVICE_PROPERTIES);
-  }
-
-  public static Map<String, String> readServiceProperties() {
-    return readServiceProperties(BootStrapProperties.configuration);
+  public static Map<String, String> readServiceProperties(Environment environment) {
+    return readProperties(environment, CONFIG_SERVICE_PROPERTIES, OLD_CONFIG_SERVICE_PROPERTIES);
   }
 
   public static List<Object> readServicePaths(Configuration configuration) {
@@ -203,73 +167,41 @@ public class BootStrapProperties {
     return result;
   }
 
-  public static List<Object> readServicePaths() {
-    return readServicePaths(BootStrapProperties.configuration);
+  public static Map<String, String> readServiceInstanceProperties(Environment environment) {
+    return readProperties(environment, CONFIG_SERVICE_INSTANCE_PROPERTIES, OLD_CONFIG_SERVICE_INSTANCE_PROPERTIES);
   }
 
-  public static Map<String, String> readServiceInstanceProperties(Configuration configuration) {
-    return readProperties(configuration, CONFIG_SERVICE_INSTANCE_PROPERTIES, OLD_CONFIG_SERVICE_INSTANCE_PROPERTIES);
-  }
-
-  public static Map<String, String> readServiceInstanceProperties() {
-    return readServiceInstanceProperties(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceInstanceExtendedClass(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS,
+  public static String readServiceInstanceExtendedClass(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS,
         OLD_CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS,
         null);
   }
 
-  public static String readServiceInstanceExtendedClass() {
-    return readServiceInstanceExtendedClass(BootStrapProperties.configuration);
-  }
-
-  public static String readServiceInstanceInitialStatus(Configuration configuration) {
-    return readStringValue(configuration, CONFIG_SERVICE_INSTANCE_INITIAL_STATUS,
+  public static String readServiceInstanceInitialStatus(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_INSTANCE_INITIAL_STATUS,
         OLD_CONFIG_SERVICE_INSTANCE_INITIAL_STATUS,
         DEFAULT_MICROSERVICE_INSTANCE_INITIAL_STATUS);
   }
 
-  public static String readServiceInstanceInitialStatus() {
-    return readServiceInstanceInitialStatus(BootStrapProperties.configuration);
-  }
-
-  private static String readStringValue(Configuration configuration, String newKey, String oldKey,
+  private static String readStringValue(Environment environment, String newKey, String oldKey,
       String defaultValue) {
-    String result = configuration.getString(newKey, null);
+    String result = environment.getProperty(newKey);
     if (result == null) {
-      return configuration.getString(oldKey, defaultValue);
+      return environment.getProperty(oldKey, defaultValue);
     }
     return result;
   }
 
-  private static Map<String, String> readProperties(Configuration configuration, String newKey, String oldKey) {
-    AbstractConfiguration subset = (AbstractConfiguration) configuration.subset(newKey);
-    if (subset.isEmpty()) {
-      subset = (AbstractConfiguration) configuration.subset(oldKey);
+  private static Map<String, String> readProperties(Environment environment, String newKey, String oldKey) {
+    Set<String> keys = ConfigUtil.propertiesWithPrefix(environment, newKey);
+    if (keys.isEmpty()) {
+      keys = ConfigUtil.propertiesWithPrefix(environment, oldKey);
     }
-    return toStringMap(subset);
-  }
-
-  private static Map<String, String> toStringMap(AbstractConfiguration configuration) {
-    AbstractConfiguration root = findRoot(configuration);
-    Map<String, String> map = new LinkedHashMap<>();
-    configuration.getKeys().forEachRemaining(key -> {
-      Object value = configuration.getProperty(key);
-      // support placeholder
-      value = PropertyConverter.interpolate(value, root);
-      map.put(key, Objects.toString(value, null));
-    });
-    return map;
-  }
-
-  private static AbstractConfiguration findRoot(AbstractConfiguration configuration) {
-    if (configuration instanceof SubsetConfiguration) {
-      return findRoot((AbstractConfiguration) ((SubsetConfiguration) configuration).getParent());
+    Map<String, String> result = new HashMap<>(keys.size());
+    for (String key : keys) {
+      result.put(key, environment.getProperty(key));
     }
-
-    return configuration;
+    return result;
   }
 
   private static void checkMicroserviceName(String name) {

@@ -120,7 +120,7 @@ public class RegistryBean {
     if (!StringUtils.isEmpty(configAppId)) {
       return configAppId;
     }
-    return BootStrapProperties.readApplication();
+    return BootStrapProperties.DEFAULT_APPLICATION;
   }
 
   public String getId() {

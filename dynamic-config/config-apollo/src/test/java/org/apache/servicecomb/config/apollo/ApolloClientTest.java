@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.apollo;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.apollo.ApolloClient;
+import org.apache.servicecomb.config.apollo.ApolloConfig;
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl;
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
-import org.apache.servicecomb.config.client.ApolloClient.ConfigRefresh;
+import org.apache.servicecomb.config.apollo.ApolloClient.ConfigRefresh;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

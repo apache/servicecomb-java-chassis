@@ -22,15 +22,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.netflix.config.DynamicPropertyFactory;
 
 /**
  * Created by   on 2016/12/5.
@@ -177,36 +176,32 @@ public class MicroserviceInstance {
   }
 
   // Some properties of microservice instance are dynamic changed, not cover them all now.
-  public static MicroserviceInstance createFromDefinition(Configuration configuration) {
+  public static MicroserviceInstance createFromDefinition(Environment environment) {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     // default hard coded values
     microserviceInstance.setStage(DefinitionConst.DEFAULT_STAGE);
     microserviceInstance.setStatus(MicroserviceInstanceStatus
-        .valueOf(BootStrapProperties.readServiceInstanceInitialStatus()));
+        .valueOf(BootStrapProperties.readServiceInstanceInitialStatus(environment)));
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.HEARTBEAT);
     microserviceInstance.setHealthCheck(healthCheck);
 
     // load properties
-    Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties(configuration);
+    Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties(environment);
     microserviceInstance.setProperties(propertiesMap);
 
     // load data center information
-    loadDataCenterInfo(microserviceInstance);
+    loadDataCenterInfo(environment, microserviceInstance);
     return microserviceInstance;
   }
 
-  private static void loadDataCenterInfo(MicroserviceInstance microserviceInstance) {
-    String dataCenterName = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.datacenter.name", null)
-        .get();
+  private static void loadDataCenterInfo(Environment environment, MicroserviceInstance microserviceInstance) {
+    String dataCenterName = environment.getProperty("servicecomb.datacenter.name");
     if (StringUtils.isEmpty(dataCenterName)) {
       return;
     }
-    String region = DynamicPropertyFactory.getInstance().
-        getStringProperty("servicecomb.datacenter.region", null).get();
-    String availableZone = DynamicPropertyFactory.getInstance().
-        getStringProperty("servicecomb.datacenter.availableZone", null).get();
+    String region = environment.getProperty("servicecomb.datacenter.region");
+    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
     DataCenterInfo dataCenterInfo = new DataCenterInfo();
     dataCenterInfo.setName(dataCenterName);
     dataCenterInfo.setRegion(region);

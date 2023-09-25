@@ -19,15 +19,15 @@ package org.apache.servicecomb.registry.lightweight;
 
 import java.util.UUID;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.registry.lightweight.model.Microservice;
 import org.apache.servicecomb.registry.lightweight.model.MicroserviceFactory;
 import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.ConfigurationManager;
 
 public class Self implements InitializingBean, BootListener {
   private Microservice microservice;
@@ -39,14 +39,21 @@ public class Self implements InitializingBean, BootListener {
 
   private final MicroserviceInfo microserviceInfo = new MicroserviceInfo();
 
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void afterPropertiesSet() {
-    init(ConfigurationManager.getConfigInstance());
+    init(environment);
   }
 
   @VisibleForTesting
-  public Self init(AbstractConfiguration configuration) {
-    microservice = new MicroserviceFactory().create(configuration);
+  public Self init(Environment environment) {
+    microservice = new MicroserviceFactory().create(environment);
     microservice.serviceId(String.format("%s/%s/%s/%s",
         microservice.getEnvironment(),
         microservice.getAppId(),
