@@ -14,30 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.config;
 
-package org.apache.servicecomb.registry.lightweight.model;
-
-import java.util.Map;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.config.BootStrapProperties;
+import org.springframework.core.Ordered;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 
-public final class InstancePropertiesLoader extends AbstractPropertiesLoader {
-
-  public static final InstancePropertiesLoader INSTANCE = new InstancePropertiesLoader();
-
-  private InstancePropertiesLoader() {
-  }
-
-
-  @Override
-  protected Map<String, String> readProperties(Environment environment) {
-    return BootStrapProperties.readServiceInstanceProperties(environment);
-  }
-
-  @Override
-  protected String readPropertiesExtendedClass(Environment environment) {
-    return BootStrapProperties.readServiceInstanceExtendedClass(environment);
-  }
+public interface DynamicPropertiesSource<T> extends Ordered {
+  EnumerablePropertySource<T> create(Environment environment);
 }

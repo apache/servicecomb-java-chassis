@@ -15,9 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.apollo;
 
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.apollo.ApolloConfig;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

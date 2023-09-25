@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.apollo;
 
-import static org.apache.servicecomb.config.client.ConfigurationAction.CREATE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.DELETE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.SET;
+import static org.apache.servicecomb.config.apollo.ConfigurationAction.CREATE;
+import static org.apache.servicecomb.config.apollo.ConfigurationAction.DELETE;
+import static org.apache.servicecomb.config.apollo.ConfigurationAction.SET;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,7 +30,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.apollo.ApolloDynamicPropertiesSource.UpdateHandler;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

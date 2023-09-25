@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.apollo;
 
 import org.apache.commons.configuration.Configuration;
 

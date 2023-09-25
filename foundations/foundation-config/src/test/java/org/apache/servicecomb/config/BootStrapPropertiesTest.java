@@ -21,16 +21,20 @@ import static org.apache.servicecomb.foundation.test.scaffolding.AssertUtils.ass
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.commons.configuration.MapConfiguration;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 class BootStrapPropertiesTest {
   private Map<String, String> readInstanceProperties(String yaml) {
     Map<String, Object> properties = YAMLUtil.yaml2Properties(yaml);
-    MapConfiguration configuration = new MapConfiguration(properties);
-
-    return BootStrapProperties.readServiceInstanceProperties(configuration);
+    ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+    for (Entry<String, Object> entry : properties.entrySet()) {
+      Mockito.when(environment.getProperty(entry.getKey())).thenReturn(entry.getValue().toString());
+    }
+    return BootStrapProperties.readServiceInstanceProperties(environment);
   }
 
   @Test

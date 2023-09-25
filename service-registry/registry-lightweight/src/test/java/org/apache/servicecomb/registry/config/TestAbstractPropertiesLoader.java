@@ -17,25 +17,23 @@
 
 package org.apache.servicecomb.registry.config;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
-
-import com.netflix.config.DynamicConfiguration;
-
 import org.apache.servicecomb.registry.lightweight.model.AbstractPropertiesLoader;
 import org.apache.servicecomb.registry.lightweight.model.MicroservicePropertiesLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestAbstractPropertiesLoader {
   @Test
   public void testExtendedClassCompatible() {
-    Configuration configuration = new DynamicConfiguration();
-    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_EXTENDED_CLASS, "invalidClass");
-
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_EXTENDED_CLASS))
+        .thenReturn("invalidClass");
     AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
     try {
-      loader.loadProperties(configuration);
+      loader.loadProperties(environment);
       Assertions.fail("Must throw exception");
     } catch (Error e) {
       Assertions.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
