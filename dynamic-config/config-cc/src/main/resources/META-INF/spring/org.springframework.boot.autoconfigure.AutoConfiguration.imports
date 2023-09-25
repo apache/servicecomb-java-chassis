@@ -15,4 +15,4 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-org.apache.servicecomb.config.ConfigCenterConfiguration
+org.apache.servicecomb.config.cc.ConfigCenterConfiguration
