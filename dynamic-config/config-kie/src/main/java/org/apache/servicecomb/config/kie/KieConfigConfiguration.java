@@ -18,10 +18,21 @@ package org.apache.servicecomb.config.kie;
 
 import org.apache.servicecomb.config.kie.collect.KieClientInformationCollector;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
 public class KieConfigConfiguration {
   @Bean
   public KieClientInformationCollector kieClientInformationCollector() {
     return new KieClientInformationCollector();
+  }
+
+  @Bean
+  public KieConfig kieConfig(Environment environment) {
+    return new KieConfig(environment);
+  }
+
+  @Bean
+  public KieDynamicPropertiesSource kieDynamicPropertiesSource() {
+    return new KieDynamicPropertiesSource();
   }
 }
