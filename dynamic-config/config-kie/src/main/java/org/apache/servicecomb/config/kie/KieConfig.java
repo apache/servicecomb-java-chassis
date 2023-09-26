@@ -17,22 +17,13 @@
 
 package org.apache.servicecomb.config.kie;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.springframework.core.env.Environment;
 
 public class KieConfig {
-
-  public static final KieConfig INSTANCE = new KieConfig();
-
-  private static ConcurrentCompositeConfiguration finalConfig;
-
   public static final String SSL_TAG = "kie.consumer";
 
   private static final String SERVER_URL_KEY = "servicecomb.kie.serverUri";
@@ -75,114 +66,86 @@ public class KieConfig {
 
   private static final String CUSTOM_LABEL_VALUE_DEFAULT = "";
 
-  private KieConfig() {
-  }
+  private final Environment environment;
 
-  public static ConcurrentCompositeConfiguration getFinalConfig() {
-    return finalConfig;
-  }
-
-  public static void setFinalConfig(ConcurrentCompositeConfiguration finalConfig) {
-    KieConfig.finalConfig = finalConfig;
+  public KieConfig(Environment environment) {
+    this.environment = environment;
   }
 
   @SuppressWarnings("unchecked")
   public List<String> getFileSources() {
-    Object property = finalConfig.getProperty(FILE_SOURCE);
-    if (property instanceof String) {
-      return new ArrayList<>(Arrays.asList(((String) property).split(",")));
-    }
-    if (property instanceof List) {
-      return (List<String>) property;
-    }
-    return Collections.EMPTY_LIST;
-  }
-
-  public String getVersion() {
-    return BootStrapProperties.readServiceVersion(finalConfig);
-  }
-
-  public String getServiceName() {
-    return BootStrapProperties.readServiceName(finalConfig);
-  }
-
-  public String getEnvironment() {
-    return BootStrapProperties.readServiceEnvironment(finalConfig);
-  }
-
-  public String getAppName() {
-    return BootStrapProperties.readApplication(finalConfig);
+    return environment.getProperty(FILE_SOURCE, List.class, Collections.emptyList());
   }
 
   public String getDomainName() {
-    return finalConfig.getString(DOMAIN_NAME, "default");
+    return environment.getProperty(DOMAIN_NAME, "default");
   }
 
   public String getServerUri() {
-    return finalConfig.getString(SERVER_URL_KEY);
+    return environment.getProperty(SERVER_URL_KEY);
   }
 
   public int getRefreshInterval() {
-    return finalConfig.getInt(REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
+    return environment.getProperty(REFRESH_INTERVAL, int.class, DEFAULT_REFRESH_INTERVAL);
   }
 
   public int getFirstRefreshInterval() {
-    return finalConfig.getInt(FIRST_REFRESH_INTERVAL, DEFAULT_FIRST_REFRESH_INTERVAL);
+    return environment.getProperty(FIRST_REFRESH_INTERVAL, int.class, DEFAULT_FIRST_REFRESH_INTERVAL);
   }
 
   public boolean enableAppConfig() {
-    return finalConfig.getBoolean(ENABLE_APP_CONFIG, true);
+    return environment.getProperty(ENABLE_APP_CONFIG, boolean.class, true);
   }
 
   public boolean enableServiceConfig() {
-    return finalConfig.getBoolean(ENABLE_SERVICE_CONFIG, true);
+    return environment.getProperty(ENABLE_SERVICE_CONFIG, boolean.class, true);
   }
 
   public boolean enableVersionConfig() {
-    return finalConfig.getBoolean(ENABLE_VERSION_CONFIG, true);
+    return environment.getProperty(ENABLE_VERSION_CONFIG, boolean.class, true);
   }
 
   public boolean enableCustomConfig() {
-    return finalConfig.getBoolean(ENABLE_CUSTOM_CONFIG, true);
+    return environment.getProperty(ENABLE_CUSTOM_CONFIG, boolean.class, true);
   }
 
   public boolean enableLongPolling() {
-    return finalConfig.getBoolean(ENABLE_LONG_POLLING, DEFAULT_ENABLE_LONG_POLLING);
+    return environment.getProperty(ENABLE_LONG_POLLING, boolean.class, DEFAULT_ENABLE_LONG_POLLING);
   }
 
   public int getPollingWaitTime() {
-    return finalConfig.getInt(POLLING_WAIT_TIME, DEFAULT_POLLING_WAIT_TIME);
+    return environment.getProperty(POLLING_WAIT_TIME, int.class, DEFAULT_POLLING_WAIT_TIME);
   }
 
   public boolean firstPullRequired() {
-    return finalConfig.getBoolean(FIRST_PULL_REQUIRED, false);
+    return environment.getProperty(FIRST_PULL_REQUIRED, boolean.class, false);
   }
 
   public String getCustomLabel() {
-    return finalConfig.getString(CUSTOM_LABEL, CUSTOM_LABEL_DEFAULT);
+    return environment.getProperty(CUSTOM_LABEL, CUSTOM_LABEL_DEFAULT);
   }
 
   public String getCustomLabelValue() {
-    return finalConfig.getString(CUSTOM_LABEL_VALUE, CUSTOM_LABEL_VALUE_DEFAULT);
+    return environment.getProperty(CUSTOM_LABEL_VALUE, CUSTOM_LABEL_VALUE_DEFAULT);
   }
 
   public Boolean isProxyEnable() {
-    return finalConfig.getBoolean(VertxConst.PROXY_ENABLE, false);
+    return environment.getProperty(VertxConst.PROXY_ENABLE, boolean.class, false);
   }
 
   public String getProxyHost() {
-    return finalConfig.getString(VertxConst.PROXY_HOST, "127.0.0.1");
+    return environment.getProperty(VertxConst.PROXY_HOST, "127.0.0.1");
   }
 
   public int getProxyPort() {
-    return finalConfig.getInt(VertxConst.PROXY_PORT, 8080);
+    return environment.getProperty(VertxConst.PROXY_PORT, int.class, 8080);
   }
 
   public String getProxyUsername() {
-    return finalConfig.getString(VertxConst.PROXY_USERNAME, null);
+    return environment.getProperty(VertxConst.PROXY_USERNAME);
   }
 
   public String getProxyPasswd() {
-    return finalConfig.getString(VertxConst.PROXY_PASSWD, null);
+    return environment.getProperty(VertxConst.PROXY_PASSWD);
   }
 }
