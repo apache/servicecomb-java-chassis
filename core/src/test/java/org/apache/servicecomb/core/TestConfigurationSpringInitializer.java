@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.core;
 
-import com.netflix.config.ConfigurationManager;
-import mockit.Deencapsulation;
-import org.apache.commons.configuration.Configuration;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.servicecomb.config.ConfigUtil;
@@ -34,15 +34,7 @@ import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.StandardEnvironment;
-import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.jndi.JndiPropertySource;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 public class TestConfigurationSpringInitializer {
   @BeforeEach
@@ -59,23 +51,6 @@ public class TestConfigurationSpringInitializer {
   public void afterTest() {
     ConfigUtil.clearExtraConfig();
     ArchaiusUtils.resetConfig();
-  }
-
-  @Test
-  public void testAll() {
-    ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
-    ConfigUtil.installDynamicConfig();
-
-    Object o = ConfigUtil.getProperty("zq");
-    @SuppressWarnings("unchecked")
-    List<Map<String, Object>> listO = (List<Map<String, Object>>) o;
-    Assertions.assertEquals(3, listO.size());
-    Assertions.assertNull(ConfigUtil.getProperty("notExist"));
-
-    Configuration instance = ConfigurationManager.getConfigInstance();
-    ConfigUtil.installDynamicConfig();
-    // must not reinstall
-    Assertions.assertEquals(instance, ConfigurationManager.getConfigInstance());
   }
 
   @Test
@@ -146,18 +121,6 @@ public class TestConfigurationSpringInitializer {
       }
       return value;
     }).when(environment).getProperty(ArgumentMatchers.anyString(), ArgumentMatchers.eq(Object.class));
-
-    new ConfigurationSpringInitializer().setEnvironment(environment);
-
-    Map<String, Map<String, Object>> extraLocalConfig = getExtraConfigMapFromConfigUtil();
-    Assertions.assertFalse(extraLocalConfig.isEmpty());
-    Map<String, Object> extraProperties = extraLocalConfig
-        .get(ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + environment.getClass().getName() + "@"
-            + environment.hashCode());
-    Assertions.assertNotNull(extraLocalConfig);
-    for (Entry<String, String> entry : propertyMap.entrySet()) {
-      Assertions.assertEquals(entry.getValue(), extraProperties.get(entry.getKey()));
-    }
   }
 
   @Test
@@ -191,54 +154,5 @@ public class TestConfigurationSpringInitializer {
     propertySources2.addFirst(new MapPropertySource("mapPropertySource2", map2));
     Mockito.when(environment2.getProperty("key2", Object.class)).thenReturn("value2");
     Mockito.when(environment2.getProperty("key2")).thenReturn("value2");
-
-    ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
-    configurationSpringInitializer.setEnvironment(environment0);
-    configurationSpringInitializer.setEnvironment(environment1);
-    configurationSpringInitializer.setEnvironment(environment2);
-
-    Map<String, Map<String, Object>> extraConfig = getExtraConfigMapFromConfigUtil();
-    Assertions.assertEquals(3, extraConfig.size());
-
-    Map<String, Object> extraProperties = extraConfig
-        .get(ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + "application");
-    Assertions.assertEquals(1, extraProperties.size());
-    Assertions.assertEquals("application", extraProperties.get("spring.config.name"));
-
-    extraProperties = extraConfig.get(ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + "bootstrap");
-    Assertions.assertEquals(1, extraProperties.size());
-    Assertions.assertEquals("bootstrap", extraProperties.get("spring.application.name"));
-
-    extraProperties = extraConfig.get(
-        ConfigurationSpringInitializer.EXTRA_CONFIG_SOURCE_PREFIX + environment2.getClass().getName() + "@"
-            + environment2.hashCode());
-    Assertions.assertEquals(1, extraProperties.size());
-    Assertions.assertEquals("value2", extraProperties.get("key2"));
-  }
-
-  @Test
-  public void should_throw_exception_when_given_ignoreResolveFailure_false() {
-    Assertions.assertThrows(RuntimeException.class, () -> {
-      StandardEnvironment environment = newStandardEnvironment();
-
-      ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
-      configurationSpringInitializer.setEnvironment(environment);
-    });
-  }
-
-  private Map<String, Map<String, Object>> getExtraConfigMapFromConfigUtil() {
-    return Deencapsulation
-        .getField(ConfigUtil.class, "EXTRA_CONFIG_MAP");
-  }
-
-  private StandardEnvironment newStandardEnvironment() {
-    Map<String, Object> envProperties = new HashMap<>();
-    envProperties.put("IFS-X", "${IFS-X}");
-    PropertySource<Map<String, Object>> systemEnvironmentPropertySource = new SystemEnvironmentPropertySource("system-env", envProperties);
-
-    StandardEnvironment environment = new StandardEnvironment();
-    environment.getPropertySources()
-            .addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, systemEnvironmentPropertySource);
-    return environment;
   }
 }

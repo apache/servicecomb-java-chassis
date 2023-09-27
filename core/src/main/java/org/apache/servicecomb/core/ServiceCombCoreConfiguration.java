@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.core;
 
+import java.util.List;
+
+import org.apache.servicecomb.config.DynamicPropertiesSource;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
@@ -33,8 +36,9 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("unused")
 public class ServiceCombCoreConfiguration {
   @Bean
-  public ConfigurationSpringInitializer configurationSpringInitializer() {
-    return new ConfigurationSpringInitializer();
+  public ConfigurationSpringInitializer configurationSpringInitializer(
+      List<DynamicPropertiesSource<?>> dynamicPropertiesSources) {
+    return new ConfigurationSpringInitializer(dynamicPropertiesSources);
   }
 
   @Bean
