@@ -15,23 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.nacos.client;
+package org.apache.servicecomb.config.nacos;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl;
-import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.nacos.NacosDynamicPropertiesSource.UpdateHandler;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class NacosClientTest {
-  @BeforeAll
-  public static void setUpClass() {
-    NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
-  }
 
   @Test
   public void testCompareChangedConfig() {
@@ -39,7 +32,7 @@ public class NacosClientTest {
     Map<String, Object> before = new HashMap<>();
     Map<String, Object> after = new HashMap<>();
 
-    NacosConfigurationSourceImpl impl = new NacosConfigurationSourceImpl();
+    NacosDynamicPropertiesSource impl = new NacosDynamicPropertiesSource();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     NacosClient nacosClient = new NacosClient(updateHandler);
 

@@ -14,25 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.config.nacos;
 
-package org.apache.servicecomb.config.nacos.client;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-
-public class NacosConfigTest {
-  @BeforeAll
-  public static void setUpClass() {
-    NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
+public class NacosConfigConfiguration {
+  @Bean
+  public NacosConfig nacosConfig(Environment environment) {
+    return new NacosConfig(environment);
   }
 
-  @Test
-  public void getServiceName() {
-    NacosConfig instance = NacosConfig.INSTANCE;
-    Assertions.assertEquals("DEFAULT_GROUP", instance.getGroup());
-    Assertions.assertEquals("127.0.0.1:8848", instance.getServerAddr());
-    Assertions.assertEquals("example", instance.getDataId());
+  @Bean
+  public NacosDynamicPropertiesSource nacosDynamicPropertiesSource() {
+    return new NacosDynamicPropertiesSource();
   }
 }

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.nacos.client;
+package org.apache.servicecomb.config.nacos;
 
-import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.CREATE;
-import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.DELETE;
-import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.SET;
+import static org.apache.servicecomb.config.nacos.ConfigurationAction.CREATE;
+import static org.apache.servicecomb.config.nacos.ConfigurationAction.DELETE;
+import static org.apache.servicecomb.config.nacos.ConfigurationAction.SET;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,10 +28,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.nacos.NacosDynamicPropertiesSource.UpdateHandler;
 import org.apache.servicecomb.config.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -45,8 +46,15 @@ public class NacosClient {
 
   private final UpdateHandler updateHandler;
 
+  private NacosConfig nacosConfig;
+
   public NacosClient(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
+  }
+
+  @Autowired
+  public void setNacosConfig(NacosConfig nacosConfig) {
+    this.nacosConfig = nacosConfig;
   }
 
   public void refreshNacosConfig() {
@@ -54,10 +62,10 @@ public class NacosClient {
   }
 
   class ConfigRefresh {
-    Parser contentParser = Parser.findParser(NacosConfig.INSTANCE.getContentType());
+    Parser contentParser = Parser.findParser(nacosConfig.getContentType());
 
-    String keyPrefix = NacosConfig.INSTANCE.getGroup() + "." +
-        NacosConfig.INSTANCE.getDataId();
+    String keyPrefix = nacosConfig.getGroup() + "." +
+        nacosConfig.getDataId();
 
     ConfigRefresh() {
     }
@@ -65,16 +73,16 @@ public class NacosClient {
     @SuppressWarnings("unchecked")
     void refreshConfig() {
       Properties properties = new Properties();
-      properties.put("serverAddr", NacosConfig.INSTANCE.getServerAddr());
-      properties.put("namespace", NacosConfig.INSTANCE.getNameSpace());
+      properties.put("serverAddr", nacosConfig.getServerAddr());
+      properties.put("namespace", nacosConfig.getNameSpace());
 
       try {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        String content = configService.getConfig(NacosConfig.INSTANCE.getDataId(),
-            NacosConfig.INSTANCE.getGroup(), 5000);
+        String content = configService.getConfig(nacosConfig.getDataId(),
+            nacosConfig.getGroup(), 5000);
         processContent(content);
-        configService.addListener(NacosConfig.INSTANCE.getDataId(),
-            NacosConfig.INSTANCE.getGroup(), new Listener() {
+        configService.addListener(nacosConfig.getDataId(),
+            nacosConfig.getGroup(), new Listener() {
               @Override
               public void receiveConfigInfo(String configInfo) {
                 LOGGER.info("receive from nacos:" + configInfo);
@@ -96,7 +104,7 @@ public class NacosClient {
         return;
       }
 
-      refreshConfigItems(contentParser.parse(content, keyPrefix, NacosConfig.INSTANCE.getAddPrefix()));
+      refreshConfigItems(contentParser.parse(content, keyPrefix, nacosConfig.getAddPrefix()));
     }
 
     private void refreshConfigItems(Map<String, Object> map) {

@@ -116,7 +116,7 @@ public class RestServerCodecFilter implements ProviderFilter {
   public static CompletableFuture<Response> encodeResponse(Response response, boolean download,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
     responseEx.setStatus(response.getStatusCode());
-    copyHeadersToHttpResponse(response.getHeaders(), responseEx);
+      copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
     if (download) {
       return CompletableFuture.completedFuture(response);
