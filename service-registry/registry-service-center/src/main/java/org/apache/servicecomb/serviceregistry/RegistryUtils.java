@@ -36,7 +36,6 @@ import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.api.MicroserviceKey;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -98,12 +97,7 @@ public final class RegistryUtils {
     executeOnEachServiceRegistry(serviceRegistries::add);
     aggregateServiceRegistryCache = new AggregateServiceRegistryCache(serviceRegistries);
     aggregateServiceRegistryCache
-        .setCacheRefreshedWatcher(refreshedCaches -> {
-          MicroserviceKey microserviceKey = new MicroserviceKey();
-          microserviceKey.setAppId(refreshedCaches.get(0).getKey().getAppId());
-          microserviceKey.setServiceName(refreshedCaches.get(0).getKey().getServiceName());
-          DiscoveryManager.INSTANCE.getAppManager().onMicroserviceInstancesChanged(microserviceKey);
-        });
+        .setCacheRefreshedWatcher(refreshedCaches -> DiscoveryManager.INSTANCE.getAppManager().pullInstances());
 
     executeOnEachServiceRegistry(
         serviceRegistry -> serviceRegistry

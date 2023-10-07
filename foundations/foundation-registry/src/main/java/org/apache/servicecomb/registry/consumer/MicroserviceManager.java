@@ -18,12 +18,11 @@
 package org.apache.servicecomb.registry.consumer;
 
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.vertx.executor.SinglePoolBlockingExecutor;
-import org.apache.servicecomb.registry.api.MicroserviceKey;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,15 +128,12 @@ public class MicroserviceManager {
   /**
    * Update instance information triggered by event, called when instance list changed.
    */
-  public void onMicroserviceInstancesChanged(MicroserviceKey microserviceKey) {
+  public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
     synchronized (lock) {
-      for (Entry<String, MicroserviceVersions> item : versionsByName.entrySet()) {
-        if (item.getKey().equals(microserviceKey.getServiceName())) {
-          versionsByName.remove(item.getKey());
-          item.getValue().destroy();
-          LOGGER.info("remove microservice version when instance changed, appId={}, microserviceName={}.",
-              appId, item.getKey());
-        }
+      for (MicroserviceVersions microserviceVersions : versionsByName.values()) {
+        microserviceVersions.onMicroserviceInstanceChanged(changedEvent);
+
+        tryRemoveInvalidMicroservice(microserviceVersions);
       }
     }
   }
