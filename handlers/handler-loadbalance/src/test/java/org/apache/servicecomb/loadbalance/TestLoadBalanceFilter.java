@@ -31,7 +31,6 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
@@ -124,7 +123,6 @@ public class TestLoadBalanceFilter {
   @After
   public void teardown() {
     scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

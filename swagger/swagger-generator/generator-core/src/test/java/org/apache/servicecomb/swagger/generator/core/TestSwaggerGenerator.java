@@ -38,6 +38,7 @@ public class TestSwaggerGenerator {
 
   @Test
   public void testBasePathPlaceHolder() {
+    // TODO: fix PlaceholderResolver
     ArchaiusUtils.setProperty("var", "varValue");
 
     PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);

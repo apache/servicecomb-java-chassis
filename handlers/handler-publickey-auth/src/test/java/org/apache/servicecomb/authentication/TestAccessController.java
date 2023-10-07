@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.authentication.provider.AccessController;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -135,7 +134,6 @@ public class TestAccessController {
     Mockito.when(service.getServiceName()).thenReturn("Customer_trust_not");
     Assertions.assertTrue(controller.isAllowed(service));
 
-    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "trust");
     Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.black.list1.rule"))
         .thenReturn("trust");
     latest = new HashMap<>();

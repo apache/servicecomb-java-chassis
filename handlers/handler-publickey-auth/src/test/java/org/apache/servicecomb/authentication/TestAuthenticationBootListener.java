@@ -27,7 +27,6 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -55,7 +54,6 @@ public class TestAuthenticationBootListener {
   @AfterEach
   public void teardown() {
     engine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

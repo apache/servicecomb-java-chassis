@@ -20,7 +20,6 @@ package org.apache.servicecomb.config.kie.collect;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,18 +28,17 @@ import org.junit.jupiter.api.Test;
 public class TestKieCenterDefaultDeploymentProvider {
   @BeforeEach
   public void start() {
-    ArchaiusUtils.resetConfig();
   }
 
   @AfterEach
   public void tearDown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testConfiguration() {
     KieCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(KieCenterDefaultDeploymentProvider.SYSTEM_KEY_KIE_CENTER);
+    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
+        KieCenterDefaultDeploymentProvider.SYSTEM_KEY_KIE_CENTER);
     Assertions.assertEquals("https://172.16.8.7:30110", info.getAccessURL().get(0));
     Assertions.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
   }
@@ -49,7 +47,8 @@ public class TestKieCenterDefaultDeploymentProvider {
   public void testConfigurationEnv() {
     System.setProperty("servicecomb.kie.serverUri", "https://localhost:30110");
     KieCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(KieCenterDefaultDeploymentProvider.SYSTEM_KEY_KIE_CENTER);
+    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
+        KieCenterDefaultDeploymentProvider.SYSTEM_KEY_KIE_CENTER);
     Assertions.assertEquals("https://localhost:30110", info.getAccessURL().get(0));
     System.getProperties().remove("servicecomb.kie.serverUri");
   }
@@ -59,7 +58,8 @@ public class TestKieCenterDefaultDeploymentProvider {
     System.setProperty("servicecomb.kie.serverUri", "http://127.0.0.1:30110,http://127.0.0.2:30110");
     KieCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
 
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(KieCenterDefaultDeploymentProvider.SYSTEM_KEY_KIE_CENTER);
+    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
+        KieCenterDefaultDeploymentProvider.SYSTEM_KEY_KIE_CENTER);
     Assertions.assertEquals(2, info.getAccessURL().size());
     Assertions.assertEquals("http://127.0.0.1:30110", info.getAccessURL().get(0));
     Assertions.assertEquals("http://127.0.0.2:30110", info.getAccessURL().get(1));

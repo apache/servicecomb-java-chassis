@@ -23,7 +23,6 @@ import java.util.List;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.Test;
@@ -237,11 +236,9 @@ public class TestLoadBalanceCreator {
 
     long time = Deencapsulation.getField(rule, "lastAccessedTime");
     Deencapsulation.setField(rule, "lastAccessedTime", time - 1000 * 300);
-    ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
     s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
 
-    ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.successiveFailedTimes", 5);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);

@@ -37,7 +37,6 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -97,7 +96,6 @@ public class RestProducerInvocationCreatorTest {
   @AfterAll
   public static void afterClass() {
     engine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @BeforeEach

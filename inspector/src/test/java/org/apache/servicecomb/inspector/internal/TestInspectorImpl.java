@@ -24,27 +24,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
-import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -62,8 +54,6 @@ import org.junit.jupiter.api.condition.EnabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
-
-import com.netflix.config.DynamicProperty;
 
 import io.vertx.core.file.impl.FileResolverImpl;
 import jakarta.servlet.http.Part;
@@ -116,7 +106,6 @@ public class TestInspectorImpl {
 
   @AfterAll
   public static void teardown() {
-    ArchaiusUtils.resetConfig();
     SCBEngine.getInstance().destroy();
     ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
@@ -264,39 +253,6 @@ public class TestInspectorImpl {
     try (InputStream is = part.getInputStream()) {
       Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
     }
-  }
-
-  @Test
-  public void dynamicProperties() {
-    DynamicProperty.getInstance("zzz");
-    ArchaiusUtils.setProperty("zzz", "abc");
-    DynamicProperty.getInstance("yyy").addCallback(() -> {
-    });
-
-    List<DynamicPropertyView> views = inspector.dynamicProperties();
-    Map<String, DynamicPropertyView> viewMap = views.stream()
-        .collect(Collectors.toMap(DynamicPropertyView::getKey, Function.identity()));
-    Assertions.assertEquals(1, viewMap.get("yyy").getCallbackCount());
-    Assertions.assertEquals(0, viewMap.get("zzz").getCallbackCount());
-
-    int count = ConfigUtil.getAllDynamicProperties().size();
-    ConfigUtil.getAllDynamicProperties().remove("yyy");
-    ConfigUtil.getAllDynamicProperties().remove("zzz");
-    Assertions.assertEquals(count - 2, ConfigUtil.getAllDynamicProperties().size());
-  }
-
-  @Test
-  public void priorityProperties() {
-    PriorityPropertyFactory propertyFactory = new PriorityPropertyFactory();
-    inspector.setPropertyFactory(propertyFactory);
-
-    propertyFactory.getOrCreate(int.class, 0, 0, "high", "low");
-
-    List<PriorityPropertyView> views = inspector.priorityProperties();
-    Assertions.assertEquals(1, views.size());
-    MatcherAssert.assertThat(
-        views.get(0).getDynamicProperties().stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
-        Matchers.contains("high", "low"));
   }
 
   @Test

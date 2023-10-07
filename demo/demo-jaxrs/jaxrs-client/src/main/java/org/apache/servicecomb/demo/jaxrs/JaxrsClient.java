@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
@@ -35,7 +36,6 @@ import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceC
 import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -105,7 +105,7 @@ public class JaxrsClient {
   private static void testOnlyRest(RestTemplate template) {
     String microserviceName = "jaxrs";
     String cseUrlPrefix = "cse://" + microserviceName;
-    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, "rest");
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, "rest");
 
     testGetRest(template, cseUrlPrefix);
     testSpringMvcDefaultValuesJavaPrimitiveRest(templateNew);
@@ -114,7 +114,7 @@ public class JaxrsClient {
   private static void testCompute(RestTemplate template) throws Exception {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+      InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       String cseUrlPrefix = "cse://" + microserviceName;
@@ -131,7 +131,7 @@ public class JaxrsClient {
   private static void testValidator(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+      InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       String cseUrlPrefix = "cse://" + microserviceName + "/validator/";
@@ -198,7 +198,7 @@ public class JaxrsClient {
   private static void testJaxRSDefaultValuesAllTransport(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+      InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";

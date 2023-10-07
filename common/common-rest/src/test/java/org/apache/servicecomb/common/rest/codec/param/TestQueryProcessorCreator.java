@@ -19,7 +19,6 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -96,6 +95,5 @@ public class TestQueryProcessorCreator {
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
     result = (String) processor.getValue(request);
     Assertions.assertNull(result);
-    ArchaiusUtils.resetConfig();
   }
 }

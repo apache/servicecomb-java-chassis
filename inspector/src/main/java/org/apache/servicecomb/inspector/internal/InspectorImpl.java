@@ -19,14 +19,7 @@ package org.apache.servicecomb.inspector.internal;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.ZipEntry;
@@ -35,16 +28,11 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.resource.ClassPathStaticResourceHandler;
 import org.apache.servicecomb.common.rest.resource.StaticResourceHandler;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.priority.PriorityProperty;
-import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
-import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -54,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicProperty;
 
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -73,20 +60,11 @@ import jakarta.ws.rs.core.Response.Status;
 public class InspectorImpl {
   private static final Logger LOGGER = LoggerFactory.getLogger(InspectorImpl.class);
 
-  private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
   private final StaticResourceHandler resourceHandler = new ClassPathStaticResourceHandler();
 
   private Map<String, String> schemas;
 
-  private PriorityPropertyFactory propertyFactory;
-
   private String serviceName;
-
-  public InspectorImpl setPropertyFactory(PriorityPropertyFactory propertyFactory) {
-    this.propertyFactory = propertyFactory;
-    return this;
-  }
 
   @VisibleForTesting
   public Map<String, String> getSchemas() {
@@ -205,58 +183,5 @@ public class InspectorImpl {
   @Content(schema = @Schema(type = "string", format = "binary")))
   public Response getStaticResource(@PathParam("path") String path) {
     return resourceHandler.handle(path);
-  }
-
-  @Path("/dynamicProperties")
-  @GET
-  public List<DynamicPropertyView> dynamicProperties() {
-    List<DynamicPropertyView> views = new ArrayList<>();
-    for (DynamicProperty property : ConfigUtil.getAllDynamicProperties().values()) {
-      views.add(createDynamicPropertyView(property));
-    }
-
-    // show more callback first, because maybe there is memory leak problem
-    // show recently changed second
-    // and sort by key
-    views.sort(Comparator
-        .comparing(DynamicPropertyView::getCallbackCount)
-        .thenComparing(DynamicPropertyView::getChangedTime).reversed()
-        .thenComparing(DynamicPropertyView::getKey));
-    return views;
-  }
-
-  private DynamicPropertyView createDynamicPropertyView(DynamicProperty property) {
-    DynamicPropertyView view = new DynamicPropertyView();
-    view.setKey(property.getName());
-    view.setValue(property.getString());
-
-    if (property.getChangedTimestamp() != 0) {
-      LocalDateTime localDatetime = LocalDateTime
-          .ofInstant(Instant.ofEpochMilli(property.getChangedTimestamp()), ZoneId.systemDefault());
-      view.setChangedTime(localDatetime.format(FORMATTER));
-    }
-
-    view.setCallbackCount(ConfigUtil.getCallbacks(property).size());
-    return view;
-  }
-
-  @Path("/priorityProperties")
-  @GET
-  public List<PriorityPropertyView> priorityProperties() {
-    List<PriorityPropertyView> views = new ArrayList<>();
-    propertyFactory.getProperties()
-        .forEach(p -> views.add(createPriorityPropertyView(p)));
-    return views;
-  }
-
-  private PriorityPropertyView createPriorityPropertyView(PriorityProperty<?> priorityProperty) {
-    PriorityPropertyView view = new PriorityPropertyView();
-    view.setDynamicProperties(new ArrayList<>());
-    for (DynamicProperty property : priorityProperty.getProperties()) {
-      view.getDynamicProperties().add(createDynamicPropertyView(property));
-    }
-    view.setDefaultValue(String.valueOf(priorityProperty.getDefaultValue()));
-    view.setValue(String.valueOf(priorityProperty.getValue()));
-    return view;
   }
 }

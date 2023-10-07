@@ -49,7 +49,6 @@ import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -180,7 +179,6 @@ public class TestRestServerVerticle {
     instance = null;
     startPromise = null;
     SCBEngine.getInstance().destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
@@ -31,7 +32,6 @@ import org.apache.servicecomb.demo.springmvc.client.CodeFirstRestTemplateSpringm
 import org.apache.servicecomb.demo.springmvc.client.ThirdSvc.ThirdSvcClient;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -83,7 +83,7 @@ public class SpringmvcClient {
   }
 
   private static void changeTransport(String microserviceName, String transport) {
-    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
   }
 

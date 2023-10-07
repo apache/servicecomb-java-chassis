@@ -41,7 +41,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -99,7 +98,6 @@ public class RestServerCodecFilterTest {
 
   @BeforeAll
   public static void beforeClass() {
-    ArchaiusUtils.resetConfig();
     ConfigUtil.installDynamicConfig();
 
     engine = SCBBootstrap.createSCBEngineForTest();
@@ -113,7 +111,6 @@ public class RestServerCodecFilterTest {
   @AfterAll
   public static void afterClass() {
     engine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @BeforeEach

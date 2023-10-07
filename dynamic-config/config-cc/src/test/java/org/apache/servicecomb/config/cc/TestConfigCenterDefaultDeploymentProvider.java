@@ -18,10 +18,8 @@
 package org.apache.servicecomb.config.cc;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.cc.ConfigCenterDefaultDeploymentProvider;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,18 +28,17 @@ import org.junit.jupiter.api.Test;
 public class TestConfigCenterDefaultDeploymentProvider {
   @BeforeEach
   public void start() {
-    ArchaiusUtils.resetConfig();
   }
 
   @AfterEach
   public void tearDown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testConfiguration() {
     ConfigCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
+    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
+        ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
     Assertions.assertEquals("https://172.16.8.7:30103", info.getAccessURL().get(0));
     Assertions.assertNull(Deployment.getSystemBootStrapInfo("wrong"));
   }
@@ -50,7 +47,8 @@ public class TestConfigCenterDefaultDeploymentProvider {
   public void testConfigurationEnv() {
     System.setProperty("servicecomb.config.client.serverUri", "https://localhost:9988");
     ConfigCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
+    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
+        ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
     Assertions.assertEquals("https://localhost:9988", info.getAccessURL().get(0));
     System.getProperties().remove("servicecomb.config.client.serverUri");
   }
@@ -59,7 +57,8 @@ public class TestConfigCenterDefaultDeploymentProvider {
   public void testConfigurationEnvTwo() {
     System.setProperty("servicecomb.config.client.serverUri", "https://localhost:9988,https://localhost:9987");
     ConfigCenterDefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
+    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
+        ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
     Assertions.assertEquals(2, info.getAccessURL().size());
     Assertions.assertEquals("https://localhost:9988", info.getAccessURL().get(0));
     Assertions.assertEquals("https://localhost:9987", info.getAccessURL().get(1));

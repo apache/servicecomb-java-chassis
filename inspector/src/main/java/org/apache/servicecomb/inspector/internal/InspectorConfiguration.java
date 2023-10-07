@@ -16,16 +16,14 @@
  */
 package org.apache.servicecomb.inspector.internal;
 
-import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class InspectorConfiguration {
   @Bean
-  public InspectorBootListener inspectorBootListener(InspectorConfig inspectorConfig,
-      PriorityPropertyFactory propertyFactory) {
-    return new InspectorBootListener(inspectorConfig, propertyFactory);
+  public InspectorBootListener inspectorBootListener(InspectorConfig inspectorConfig) {
+    return new InspectorBootListener(inspectorConfig);
   }
 
   @Bean

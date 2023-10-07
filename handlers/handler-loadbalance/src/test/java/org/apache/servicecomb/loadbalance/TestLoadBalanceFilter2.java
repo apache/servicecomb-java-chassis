@@ -35,7 +35,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -244,7 +243,6 @@ public class TestLoadBalanceFilter2 {
 
   @Test
   public void testZoneAwareFilterWorksEmptyInstanceProtectionEnabled() {
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled", "true");
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
@@ -261,7 +259,6 @@ public class TestLoadBalanceFilter2 {
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
     Mockito.when(scbEngine.getEnvironment()).thenReturn(environment);
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
     DataCenterProperties myself = new DataCenterProperties();
@@ -455,12 +452,9 @@ public class TestLoadBalanceFilter2 {
 
   @Test
   public void testStatusFilterUsingMockedInvocationWorks() {
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.status.enabled", "false");
-
     Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName");
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
     SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
     Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
     Mockito.when(scbEngine.getEnvironment()).thenReturn(environment);

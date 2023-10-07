@@ -50,7 +50,7 @@ public class CodeFirstRestTemplate {
   }
 
   protected void changeTransport(String microserviceName, String transport) {
-    InMemoryDynamicPropertiesSource.DYNAMIC.put("servicecomb.references.transport." + microserviceName, transport);
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
   }
 

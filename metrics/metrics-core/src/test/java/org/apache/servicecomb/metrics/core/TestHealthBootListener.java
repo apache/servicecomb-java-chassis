@@ -24,7 +24,6 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -38,12 +37,10 @@ public class TestHealthBootListener {
 
   @Before
   public void setUp() {
-    ArchaiusUtils.resetConfig();
   }
 
   @After
   public void tearDown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

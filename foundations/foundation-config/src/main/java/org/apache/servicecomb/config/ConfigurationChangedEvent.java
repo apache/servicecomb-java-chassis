@@ -68,9 +68,13 @@ public class ConfigurationChangedEvent {
     return event;
   }
 
-  private static ConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
+  public static ConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
       Map<String, Object> deleted, boolean changed) {
     return new ConfigurationChangedEvent(added, updated, deleted, changed);
+  }
+
+  public static ConfigurationChangedEvent createIncremental(Map<String, Object> updated) {
+    return new ConfigurationChangedEvent(new HashMap<>(), updated, new HashMap<>(), true);
   }
 
   public final Map<String, Object> getAdded() {

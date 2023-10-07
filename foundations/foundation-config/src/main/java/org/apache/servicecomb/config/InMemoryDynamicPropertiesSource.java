@@ -19,14 +19,18 @@ package org.apache.servicecomb.config;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
+/**
+ * This DynamicPropertiesSource is created for easier system tests.
+ */
 public class InMemoryDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
   public static final String SOURCE_NAME = "in-memory";
 
-  public static final Map<String, Object> DYNAMIC = new HashMap<>();
+  private static final Map<String, Object> DYNAMIC = new HashMap<>();
 
   @Override
   public EnumerablePropertySource<Map<String, Object>> create(Environment environment) {
@@ -36,5 +40,17 @@ public class InMemoryDynamicPropertiesSource implements DynamicPropertiesSource<
   @Override
   public int getOrder() {
     return -100;
+  }
+
+  public static void update(String key, Object value) {
+    DYNAMIC.put(key, value);
+
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(key, value);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
+  }
+
+  public static void reset() {
+    DYNAMIC.clear();
   }
 }

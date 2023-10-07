@@ -32,6 +32,7 @@ public class QpsControllerManagerTest {
 
   @BeforeEach
   public void beforeTest() {
+    // TODO: fix DynamicProperty
     ArchaiusUtils.resetConfig();
   }
 

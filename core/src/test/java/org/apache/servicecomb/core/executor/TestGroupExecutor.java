@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -55,7 +54,6 @@ public class TestGroupExecutor {
 
   @AfterAll
   public static void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   Environment environment = Mockito.mock(Environment.class);
