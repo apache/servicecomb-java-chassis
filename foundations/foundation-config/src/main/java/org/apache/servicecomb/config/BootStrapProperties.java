@@ -193,13 +193,15 @@ public class BootStrapProperties {
   }
 
   private static Map<String, String> readProperties(Environment environment, String newKey, String oldKey) {
-    Set<String> keys = ConfigUtil.propertiesWithPrefix(environment, newKey);
+    String prefix = newKey;
+    Set<String> keys = ConfigUtil.propertiesWithPrefix(environment, prefix);
     if (keys.isEmpty()) {
+      prefix = oldKey;
       keys = ConfigUtil.propertiesWithPrefix(environment, oldKey);
     }
     Map<String, String> result = new HashMap<>(keys.size());
     for (String key : keys) {
-      result.put(key, environment.getProperty(key));
+      result.put(key.substring(prefix.length() + 1), environment.getProperty(key));
     }
     return result;
   }

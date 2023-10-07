@@ -75,4 +75,9 @@ public class FoundationConfigConfiguration {
   public LegacyPropertyFactory legacyPropertyFactory(Environment environment) {
     return new LegacyPropertyFactory(environment);
   }
+
+  @Bean
+  public InMemoryDynamicPropertiesSource inMemoryDynamicPropertiesSource() {
+    return new InMemoryDynamicPropertiesSource();
+  }
 }

@@ -14,28 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.config;
 
-package org.apache.servicecomb.registry.lightweight.model;
-
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.config.BootStrapProperties;
+import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 
-public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader {
+public class InMemoryDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
+  public static final String SOURCE_NAME = "in-memory";
 
-  public static final MicroservicePropertiesLoader INSTANCE = new MicroservicePropertiesLoader();
+  public static final Map<String, Object> DYNAMIC = new HashMap<>();
 
-  private MicroservicePropertiesLoader() {
+  @Override
+  public EnumerablePropertySource<Map<String, Object>> create(Environment environment) {
+    return new MapPropertySource(SOURCE_NAME, DYNAMIC);
   }
 
   @Override
-  protected Map<String, String> readProperties(Environment environment) {
-    return BootStrapProperties.readServiceProperties(environment);
-  }
-
-  @Override
-  protected String readPropertiesExtendedClass(Environment environment) {
-    return BootStrapProperties.readServiceExtendedClass(environment);
+  public int getOrder() {
+    return -100;
   }
 }

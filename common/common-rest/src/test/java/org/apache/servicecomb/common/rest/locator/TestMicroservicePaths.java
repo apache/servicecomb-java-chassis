@@ -25,12 +25,12 @@ import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterAll;
@@ -47,12 +47,14 @@ public class TestMicroservicePaths {
 
   @BeforeAll
   public static void setup() {
-    ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest();
     Environment environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
+        .thenReturn(false);
     List<BootListener> listeners = new ArrayList<>();
     listeners.add(new RestEngineSchemaListener());
     ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);

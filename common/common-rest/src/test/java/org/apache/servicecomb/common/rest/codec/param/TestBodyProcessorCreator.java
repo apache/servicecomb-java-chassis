@@ -21,9 +21,13 @@ import java.util.HashMap;
 
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -32,6 +36,15 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class TestBodyProcessorCreator {
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  public void before() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
+        .thenReturn(false);
+  }
+
   @Test
   public void testCreateNormal() {
     ParamValueProcessorCreator creator =

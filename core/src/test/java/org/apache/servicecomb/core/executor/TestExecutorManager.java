@@ -21,7 +21,6 @@ import java.util.concurrent.Executor;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,12 +42,10 @@ public class TestExecutorManager {
   @Before
   public void setup() {
     executorManager.setEnvironment(environment);
-    ArchaiusUtils.resetConfig();
   }
 
   @After
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -70,7 +67,7 @@ public class TestExecutorManager {
     String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
     Mockito.when(environment.getProperty(
-        ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, String.class)).thenReturn(opBeanId);
+        ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName)).thenReturn(opBeanId);
     new Expectations(BeanUtils.class) {
       {
         operationMeta.getMicroserviceQualifiedName();
@@ -90,7 +87,7 @@ public class TestExecutorManager {
     String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
     Mockito.when(environment.getProperty(
-        ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, String.class)).thenReturn(opBeanId);
+        ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName)).thenReturn(opBeanId);
     new Expectations(BeanUtils.class) {
       {
         operationMeta.getMicroserviceQualifiedName();
@@ -115,8 +112,8 @@ public class TestExecutorManager {
     String microserviceName = "serviceName";
     String schemaName = "schemaId";
     String opBeanId = "opBeanId";
-    Mockito.when(environment.getProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceName + "." + schemaName
-        , String.class)).thenReturn(opBeanId);
+    Mockito.when(environment.getProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceName + "." + schemaName))
+        .thenReturn(opBeanId);
     new Expectations(BeanUtils.class) {
       {
         operationMeta.getSchemaId();
@@ -135,8 +132,7 @@ public class TestExecutorManager {
       @Mocked SchemaMeta schemaMeta,
       @Mocked OperationMeta operationMeta) {
     String beanId = "beanId";
-    Mockito.when(environment.getProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT
-        , String.class)).thenReturn(beanId);
+    Mockito.when(environment.getProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT)).thenReturn(beanId);
     new Expectations(BeanUtils.class) {
       {
         BeanUtils.getBean(beanId);

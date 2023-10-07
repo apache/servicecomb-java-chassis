@@ -26,16 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.HeaderProcessor;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -44,6 +45,7 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class TestHeaderProcessor {
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -69,6 +71,15 @@ public class TestHeaderProcessor {
       headerParameter.schema(new ArraySchema());
     }
     return new HeaderProcessor(headerParameter, javaType);
+  }
+
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck"
+        , boolean.class, false)).thenReturn(false);
   }
 
   @Test

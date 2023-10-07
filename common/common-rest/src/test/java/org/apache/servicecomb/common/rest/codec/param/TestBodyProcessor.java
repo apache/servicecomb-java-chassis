@@ -30,12 +30,14 @@ import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyP
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -54,6 +56,7 @@ import jakarta.ws.rs.core.MediaType;
 
 
 public class TestBodyProcessor {
+  Environment environment = Mockito.mock(Environment.class);
 
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
@@ -112,6 +115,9 @@ public class TestBodyProcessor {
 
   @BeforeEach
   public void before() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
+        .thenReturn(false);
     headers = new HeadersMultiMap();
     value = "value";
   }
