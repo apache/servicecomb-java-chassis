@@ -32,7 +32,6 @@ import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -62,7 +61,6 @@ public class TestServicePathManager {
   @AfterEach
   public void tearDown() {
     scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
     ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 

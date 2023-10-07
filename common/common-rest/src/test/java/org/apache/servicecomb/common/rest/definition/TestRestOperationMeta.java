@@ -35,7 +35,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -191,7 +190,6 @@ public class TestRestOperationMeta {
   @AfterAll
   public static void classTeardown() {
     scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   private void findOperation(String operationId) {

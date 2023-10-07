@@ -32,7 +32,6 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -71,7 +70,6 @@ public class TestRestEngineSchemaListener {
   @AfterAll
   public static void teardown() {
     scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

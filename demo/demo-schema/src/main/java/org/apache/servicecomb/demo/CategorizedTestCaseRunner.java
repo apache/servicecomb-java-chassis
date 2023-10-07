@@ -19,8 +19,8 @@ package org.apache.servicecomb.demo;
 
 import java.util.Map;
 
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class CategorizedTestCaseRunner {
   }
 
   public static void changeTransport(String microserviceName, String transport) {
-    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
   }
 }

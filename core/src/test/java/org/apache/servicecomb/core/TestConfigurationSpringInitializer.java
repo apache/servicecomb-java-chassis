@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +41,6 @@ public class TestConfigurationSpringInitializer {
     Configurator.setRootLevel(Level.OFF);
 
     ConfigUtil.clearExtraConfig();
-    ArchaiusUtils.resetConfig();
 
     Configurator.setRootLevel(Level.INFO);
   }
@@ -50,7 +48,6 @@ public class TestConfigurationSpringInitializer {
   @AfterEach
   public void afterTest() {
     ConfigUtil.clearExtraConfig();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

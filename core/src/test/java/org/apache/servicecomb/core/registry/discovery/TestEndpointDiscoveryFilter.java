@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.core.registry.discovery;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.jupiter.api.AfterEach;
@@ -42,13 +40,11 @@ public class TestEndpointDiscoveryFilter {
 
   @BeforeEach
   public void setup() {
-    ArchaiusUtils.resetConfig();
-    ConfigUtil.installDynamicConfig();
+
   }
 
   @AfterEach
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

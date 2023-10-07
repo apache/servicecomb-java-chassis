@@ -17,10 +17,8 @@
 
 package org.apache.servicecomb.provider.pojo.reference;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.Person;
 import org.apache.servicecomb.provider.pojo.PersonReference;
@@ -34,12 +32,10 @@ public class TestRpcReferenceProcessor {
 
   @BeforeEach
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
   }
 
   @AfterEach
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

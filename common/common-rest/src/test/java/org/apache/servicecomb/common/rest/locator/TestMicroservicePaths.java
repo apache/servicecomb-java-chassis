@@ -32,7 +32,6 @@ import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -72,7 +71,6 @@ public class TestMicroservicePaths {
   @AfterAll
   public static void teardown() {
     scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

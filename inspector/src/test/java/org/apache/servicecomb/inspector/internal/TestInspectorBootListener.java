@@ -45,13 +45,13 @@ public class TestInspectorBootListener {
 
   @Test
   public void getOrder() {
-    Assertions.assertEquals(Short.MAX_VALUE, new InspectorBootListener(null, null).getOrder());
+    Assertions.assertEquals(Short.MAX_VALUE, new InspectorBootListener(null).getOrder());
   }
 
   @Test
   public void filterEvent() {
     BootEvent event = new BootEvent();
-    InspectorBootListener listener = new InspectorBootListener(new InspectorConfig(), null);
+    InspectorBootListener listener = new InspectorBootListener(new InspectorConfig());
 
     try (LogCollector logCollector = new LogCollector()) {
       for (EventType eventType : EventType.values()) {
@@ -73,7 +73,7 @@ public class TestInspectorBootListener {
 
     InspectorConfig inspectorConfig = new InspectorConfig()
         .setEnabled(false);
-    new InspectorBootListener(inspectorConfig, null)
+    new InspectorBootListener(inspectorConfig)
         .onAfterTransport(new BootEvent(scbEngine, EventType.AFTER_TRANSPORT));
 
     Assertions.assertNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));

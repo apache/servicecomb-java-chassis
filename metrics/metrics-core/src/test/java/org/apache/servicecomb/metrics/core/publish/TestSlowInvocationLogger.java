@@ -26,17 +26,16 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.tracing.TraceIdLogger;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestSlowInvocationLogger {
   @Mocked
@@ -70,14 +69,12 @@ public class TestSlowInvocationLogger {
   public void setup() {
     logger = new SlowInvocationLogger(scbEngine);
     event = new InvocationFinishEvent(invocation, response);
-    ArchaiusUtils.resetConfig();
     logCollector = new LogCollector();
   }
 
   @After
   public void teardown() {
     logCollector.teardown();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

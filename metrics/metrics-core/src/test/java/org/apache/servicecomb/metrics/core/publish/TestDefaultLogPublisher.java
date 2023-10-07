@@ -32,7 +32,6 @@ import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
@@ -87,7 +86,6 @@ public class TestDefaultLogPublisher {
   @After
   public void teardown() {
     collector.teardown();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -116,8 +114,6 @@ public class TestDefaultLogPublisher {
       }
     };
 
-    ArchaiusUtils.setProperty(DefaultLogPublisher.ENABLED, true);
-
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertTrue(registered.value);
   }
@@ -132,8 +128,6 @@ public class TestDefaultLogPublisher {
         registered.value = true;
       }
     };
-
-    ArchaiusUtils.setProperty(DefaultLogPublisher.ENABLED, false);
 
     publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertNull(registered.value);

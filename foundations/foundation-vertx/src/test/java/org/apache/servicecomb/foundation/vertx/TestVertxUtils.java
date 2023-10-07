@@ -26,7 +26,6 @@ import java.util.concurrent.CountDownLatch;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,8 +85,6 @@ public class TestVertxUtils {
     VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingTrue", null);
     Assertions.assertFalse(isCacheFileExists());
     VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingTrue");
-
-    ArchaiusUtils.resetConfig();
   }
 
   private void deleteCacheFile() {

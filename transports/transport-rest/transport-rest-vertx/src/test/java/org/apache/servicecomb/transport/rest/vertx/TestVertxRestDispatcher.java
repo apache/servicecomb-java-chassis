@@ -19,11 +19,10 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -75,7 +74,6 @@ public class TestVertxRestDispatcher {
   @After
   public void teardown() {
     SCBEngine.getInstance().destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

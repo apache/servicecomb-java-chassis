@@ -34,7 +34,6 @@ import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,21 +68,22 @@ public class TestPrometheusPublisher {
 
   @AfterAll
   public static void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testBadPublishAddress() {
+    Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
+        .thenReturn("a:b:c");
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      ArchaiusUtils.setProperty(METRICS_PROMETHEUS_ADDRESS, "a:b:c");
       publisher.init(globalRegistry, null, null);
     });
   }
 
   @Test
   public void testBadPublishAddress_BadPort() {
+    Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
+        .thenReturn("localhost:xxxx");
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      ArchaiusUtils.setProperty(METRICS_PROMETHEUS_ADDRESS, "localhost:xxxx");
       publisher.init(globalRegistry, null, null);
     });
   }

@@ -19,11 +19,9 @@ package org.apache.servicecomb.provider.pojo.reference;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
@@ -34,12 +32,10 @@ import org.junit.jupiter.api.Test;
 public class PojoReferenceMetaTest {
   @BeforeEach
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
   }
 
   @AfterEach
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

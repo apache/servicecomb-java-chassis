@@ -17,7 +17,6 @@
 package org.apache.servicecomb.authentication.provider;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.endsWith;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,6 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.utils.KeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -40,7 +38,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 
 import com.google.common.cache.Cache;
@@ -55,7 +52,6 @@ public class TestProviderTokenManager {
 
   @AfterEach
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

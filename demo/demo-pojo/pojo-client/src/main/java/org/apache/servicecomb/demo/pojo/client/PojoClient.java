@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
@@ -38,7 +39,6 @@ import org.apache.servicecomb.demo.smartcare.Application;
 import org.apache.servicecomb.demo.smartcare.Group;
 import org.apache.servicecomb.demo.smartcare.SmartCare;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
@@ -115,7 +115,7 @@ public class PojoClient {
     String microserviceName = "pojo";
 
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+      InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 
@@ -125,9 +125,9 @@ public class PojoClient {
 
       // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
       // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
-      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "WeightedResponse");
+      InMemoryDynamicPropertiesSource.update("servicecomb.loadbalance.strategy.name", "WeightedResponse");
       testStringArray(test);
-      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "RoundRobin");
+      InMemoryDynamicPropertiesSource.update("servicecomb.loadbalance.strategy.name", "RoundRobin");
       testStringArray(test);
 
       boolean checkerDestroyed = true;

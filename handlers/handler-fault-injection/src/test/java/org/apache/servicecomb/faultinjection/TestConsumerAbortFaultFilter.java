@@ -25,7 +25,6 @@ import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -36,8 +35,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
-
-import com.netflix.config.DynamicProperty;
 
 public class TestConsumerAbortFaultFilter {
   private Invocation invocation;
@@ -140,17 +137,6 @@ public class TestConsumerAbortFaultFilter {
 
   @Test
   public void injectFaultNoError() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
-    ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "0");
-
-    Assertions.assertEquals("421", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
-        .getString());
-    Assertions.assertEquals("0", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
-        .getString());
-
     ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);
     Mockito.when(filterNode.onFilter(invocation))
@@ -161,13 +147,6 @@ public class TestConsumerAbortFaultFilter {
 
   @Test
   public void injectFaultNoPercentageConfig() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", null);
-
-    Assertions.assertNull(DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
-        .getString());
-
     ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);
     Mockito.when(filterNode.onFilter(invocation))
@@ -178,13 +157,6 @@ public class TestConsumerAbortFaultFilter {
 
   @Test
   public void injectFaultNoErrorCodeConfig() throws Exception {
-    ArchaiusUtils
-        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
-
-    Assertions.assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
-        .getString());
-
     ConsumerAbortFaultFilter abortFault = new ConsumerAbortFaultFilter();
     FilterNode filterNode = Mockito.mock(FilterNode.class);
     Mockito.when(filterNode.onFilter(invocation))

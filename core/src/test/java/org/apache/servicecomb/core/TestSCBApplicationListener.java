@@ -21,7 +21,6 @@ import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAI
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,6 @@ public class TestSCBApplicationListener {
 
   @AfterAll
   public static void classTeardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
