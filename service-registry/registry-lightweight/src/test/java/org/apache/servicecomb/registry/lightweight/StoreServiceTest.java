@@ -21,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.test.scaffolding.time.MockTicker;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.lightweight.model.Microservice;
@@ -30,12 +31,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 
 import com.google.common.eventbus.EventBus;
 
 import io.vertx.core.json.Json;
 
-class StoreServiceTest extends TestBase {
+public class StoreServiceTest {
+  static Endpoint endpoint = Mockito.mock(Endpoint.class);
+
+  static class MockRegisterRequest extends RegisterRequest {
+    @Override
+    public Endpoint selectFirstEndpoint() {
+      return endpoint;
+    }
+  }
+
+  static ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+
+  Self self;
+
   EventBus eventBus = new EventBus();
 
   MockTicker ticker = new MockTicker();
@@ -48,6 +65,26 @@ class StoreServiceTest extends TestBase {
 
   @BeforeEach
   void setUp() {
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    EnumerablePropertySource<?> propertySource = Mockito.mock(EnumerablePropertySource.class);
+    mutablePropertySources.addLast(propertySource);
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {});
+    Mockito.when(environment.getProperty("servicecomb.service.application")).thenReturn("app");
+    Mockito.when(environment.getProperty("servicecomb.service.name")).thenReturn("svc");
+    Mockito.when(environment.getProperty("servicecomb.service.version")).thenReturn("1.0.0.0");
+    Mockito.when(environment.getProperty("servicecomb.instance.initialStatus")).thenReturn("UP");
+
+    self = new Self() {
+      @Override
+      protected RegisterRequest createRegisterRequest() {
+        return new MockRegisterRequest();
+      }
+    }
+        .init(environment)
+        .addSchema("schema-1", "s1")
+        .addEndpoint("rest://1.1.1.1:80");
+
     Mockito.when(discoveryClient.getInfoAsync(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(CompletableFuture.completedFuture(self.getMicroserviceInfo()));
     Mockito.when(discoveryClient.getInstanceAsync(ArgumentMatchers.any(), ArgumentMatchers.any()))

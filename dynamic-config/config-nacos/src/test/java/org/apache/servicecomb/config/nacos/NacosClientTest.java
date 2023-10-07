@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.config.nacos.NacosDynamicPropertiesSource.UpdateHandler;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class NacosClientTest {
 
@@ -35,6 +36,9 @@ public class NacosClientTest {
     NacosDynamicPropertiesSource impl = new NacosDynamicPropertiesSource();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     NacosClient nacosClient = new NacosClient(updateHandler);
+    NacosConfig nacosConfig = Mockito.mock(NacosConfig.class);
+    Mockito.when(nacosConfig.getContentType()).thenReturn("yaml");
+    nacosClient.setNacosConfig(nacosConfig);
 
     NacosClient.ConfigRefresh cr = nacosClient.new ConfigRefresh();
 

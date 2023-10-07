@@ -23,12 +23,20 @@ import org.apache.servicecomb.registry.lightweight.model.MicroservicePropertiesL
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 
 public class TestAbstractPropertiesLoader {
   @Test
   public void testExtendedClassCompatible() {
-    Environment environment = Mockito.mock(Environment.class);
+    ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    EnumerablePropertySource<?> propertySource = Mockito.mock(EnumerablePropertySource.class);
+    mutablePropertySources.addLast(propertySource);
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {});
+
     Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_EXTENDED_CLASS))
         .thenReturn("invalidClass");
     AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
