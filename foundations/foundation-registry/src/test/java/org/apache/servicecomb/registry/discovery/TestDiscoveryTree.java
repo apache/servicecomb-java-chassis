@@ -24,7 +24,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -44,7 +43,7 @@ public class TestDiscoveryTree {
 
   @BeforeEach
   public void before() {
-    ConfigUtil.installDynamicConfig();
+
   }
 
   @AfterEach

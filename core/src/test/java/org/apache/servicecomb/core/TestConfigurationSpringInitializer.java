@@ -21,7 +21,6 @@ import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,14 +39,12 @@ public class TestConfigurationSpringInitializer {
   public void beforeTest() {
     Configurator.setRootLevel(Level.OFF);
 
-    ConfigUtil.clearExtraConfig();
-
     Configurator.setRootLevel(Level.INFO);
   }
 
   @AfterEach
   public void afterTest() {
-    ConfigUtil.clearExtraConfig();
+
   }
 
   @Test

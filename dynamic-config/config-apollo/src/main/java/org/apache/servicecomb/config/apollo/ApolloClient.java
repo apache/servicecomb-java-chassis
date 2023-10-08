@@ -29,7 +29,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.config.apollo.ApolloDynamicPropertiesSource.UpdateHandler;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.slf4j.Logger;
@@ -41,6 +40,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.annotations.VisibleForTesting;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 
@@ -48,34 +48,19 @@ public class ApolloClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApolloClient.class);
 
-  private static final ApolloConfig APOLLO_CONFIG = ApolloConfig.INSTANCE;
-
   private static final Map<String, Object> originalConfigMap = new ConcurrentHashMap<>();
 
   private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
 
-  private final int refreshInterval = APOLLO_CONFIG.getRefreshInterval();
-
-  private final int firstRefreshInterval = APOLLO_CONFIG.getFirstRefreshInterval();
-
-  private final String serviceUri = APOLLO_CONFIG.getServerUri();
-
-  private final String serviceName = APOLLO_CONFIG.getServiceName();
-
-  private final String token = APOLLO_CONFIG.getToken();
-
-  private final String env = APOLLO_CONFIG.getEnv();
-
-  private final String clusters = APOLLO_CONFIG.getServerClusters();
-
-  private final String namespace = APOLLO_CONFIG.getNamespace();
+  private final ApolloConfig apolloConfig;
 
   private final UpdateHandler updateHandler;
 
   private static RestTemplate rest = new RestTemplate();
 
-  public ApolloClient(UpdateHandler updateHandler) {
+  public ApolloClient(UpdateHandler updateHandler, ApolloConfig apolloConfig) {
     this.updateHandler = updateHandler;
+    this.apolloConfig = apolloConfig;
   }
 
   @VisibleForTesting
@@ -89,8 +74,9 @@ public class ApolloClient {
   }
 
   public void refreshApolloConfig() {
-    EXECUTOR
-        .scheduleWithFixedDelay(new ConfigRefresh(serviceUri), firstRefreshInterval, refreshInterval, TimeUnit.SECONDS);
+    EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(apolloConfig.getServerUri()),
+        apolloConfig.getFirstRefreshInterval(),
+        apolloConfig.getRefreshInterval(), TimeUnit.SECONDS);
   }
 
   class ConfigRefresh implements Runnable {
@@ -113,7 +99,7 @@ public class ApolloClient {
     void refreshConfig() {
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-Type", "application/json;charset=UTF-8");
-      headers.add("Authorization", token);
+      headers.add("Authorization", apolloConfig.getToken());
       HttpEntity<String> entity = new HttpEntity<>(headers);
       ResponseEntity<String> exchange = rest.exchange(composeAPI(), HttpMethod.GET, entity, String.class);
       if (HttpResponseStatus.OK.code() == exchange.getStatusCode().value()) {
@@ -133,10 +119,10 @@ public class ApolloClient {
     }
 
     private String composeAPI() {
-      String api = serviceUri + "/openapi/v1/envs/" + env +
-          "/apps/" + serviceName +
-          "/clusters/" + clusters +
-          "/namespaces/" + namespace +
+      String api = serviceUri + "/openapi/v1/envs/" + apolloConfig.getEnv() +
+          "/apps/" + apolloConfig.getServiceName() +
+          "/clusters/" + apolloConfig.getServerClusters() +
+          "/namespaces/" + apolloConfig.getNamespace() +
           "/releases/latest";
       return api;
     }

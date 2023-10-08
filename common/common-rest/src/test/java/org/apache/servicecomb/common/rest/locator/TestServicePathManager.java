@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
@@ -55,7 +54,7 @@ public class TestServicePathManager {
 
   @BeforeEach
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
+
   }
 
   @AfterEach

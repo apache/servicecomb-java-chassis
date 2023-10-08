@@ -19,7 +19,6 @@ package org.apache.servicecomb.core;
 import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
 import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -32,7 +31,6 @@ import org.springframework.core.env.Environment;
 public class TestSCBApplicationListener {
   @BeforeEach
   public void before() {
-    ConfigUtil.installDynamicConfig();
   }
 
   @AfterAll

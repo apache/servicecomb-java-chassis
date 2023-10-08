@@ -38,12 +38,11 @@ public class ApolloClientTest {
   @BeforeAll
   public static void setUpClass() {
 
-    ApolloConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
   }
 
   @Test
   public void refreshApolloConfig() {
-    ApolloConfig apolloConfig = ApolloConfig.INSTANCE;
+    ApolloConfig apolloConfig = Mockito.mock(ApolloConfig.class);
     RestTemplate rest = Mockito.mock(RestTemplate.class);
     ApolloClient.setRest(rest);
 
@@ -56,7 +55,7 @@ public class ApolloClientTest {
         ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
     ApolloDynamicPropertiesSource impl = new ApolloDynamicPropertiesSource();
     UpdateHandler updateHandler = impl.new UpdateHandler();
-    ApolloClient apolloClient = new ApolloClient(updateHandler);
+    ApolloClient apolloClient = new ApolloClient(updateHandler, apolloConfig);
     ConfigRefresh cr = apolloClient.new ConfigRefresh(apolloConfig.getServerUri());
     cr.run();
 
@@ -65,13 +64,14 @@ public class ApolloClientTest {
 
   @Test
   public void testCompareChangedConfig() {
+    ApolloConfig apolloConfig = Mockito.mock(ApolloConfig.class);
     boolean status = true;
     Map<String, Object> before = new HashMap<>();
     Map<String, Object> after = new HashMap<>();
 
     ApolloDynamicPropertiesSource impl = new ApolloDynamicPropertiesSource();
     UpdateHandler updateHandler = impl.new UpdateHandler();
-    ApolloClient apolloClient = new ApolloClient(updateHandler);
+    ApolloClient apolloClient = new ApolloClient(updateHandler, apolloConfig);
 
     ConfigRefresh cr = apolloClient.new ConfigRefresh("");
 

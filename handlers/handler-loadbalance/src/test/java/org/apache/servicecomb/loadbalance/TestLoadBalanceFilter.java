@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -74,7 +73,6 @@ public class TestLoadBalanceFilter {
 
   @Before
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest();
     Environment environment = Mockito.mock(Environment.class);
     scbEngine.setEnvironment(environment);

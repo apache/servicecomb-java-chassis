@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -72,7 +71,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
     requestBuilder.setSocketTimeout(10000);
 
     HttpTransport httpTransport = createHttpTransport(addressManager, requestBuilder.build(),
-        ConfigUtil.createLocalConfig());
+        environment);
 
     dashboardClient = new DashboardClient(addressManager, httpTransport);
   }
@@ -90,7 +89,7 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   }
 
   private HttpTransport createHttpTransport(DashboardAddressManager addressManager, RequestConfig requestConfig,
-      Configuration localConfiguration) {
+      Environment environment) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
     if (monitorConstant.isProxyEnable()) {
@@ -108,14 +107,14 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
       return HttpTransportFactory
           .createHttpTransport(
               TransportUtils
-                  .createSSLProperties(addressManager.sslEnabled(), localConfiguration, SSL_KEY),
+                  .createSSLProperties(addressManager.sslEnabled(), environment, SSL_KEY),
               getRequestAuthHeaderProvider(authHeaderProviders), httpClientBuilder);
     }
 
     return HttpTransportFactory
         .createHttpTransport(
             TransportUtils
-                .createSSLProperties(monitorConstant.sslEnabled(), localConfiguration, SSL_KEY),
+                .createSSLProperties(monitorConstant.sslEnabled(), environment, SSL_KEY),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 

@@ -27,7 +27,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
-import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -40,7 +39,7 @@ import com.netflix.config.WatchedUpdateListener;
 public class NacosDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
   public static final String SOURCE_NAME = "kie";
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterConfigurationSource.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(NacosDynamicPropertiesSource.class);
 
   private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
