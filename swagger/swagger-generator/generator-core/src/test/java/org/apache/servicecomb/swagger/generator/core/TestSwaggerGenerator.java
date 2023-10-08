@@ -17,29 +17,26 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestSwaggerGenerator {
-  @BeforeClass
-  public static void setup() {
-    ArchaiusUtils.resetConfig();
-  }
+  Environment environment = Mockito.mock(Environment.class);
 
-  @AfterClass
-  public static void teardown() {
-    ArchaiusUtils.resetConfig();
+  @BeforeEach
+  public void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
   public void testBasePathPlaceHolder() {
-    // TODO: fix PlaceholderResolver
-    ArchaiusUtils.setProperty("var", "varValue");
+    Mockito.when(environment.getProperty("var")).thenReturn("varValue");
 
     PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
     swaggerGenerator.setBasePath("/a/${var}/b");

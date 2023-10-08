@@ -17,23 +17,26 @@
 
 package org.apache.servicecomb.qps;
 
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
 import org.apache.servicecomb.qps.strategy.IStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicProperty;
+import com.google.common.eventbus.Subscribe;
 
 public class QpsControllerManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(QpsControllerManager.class);
@@ -60,7 +63,10 @@ public class QpsControllerManager {
 
   private final String globalBucketKey;
 
-  public QpsControllerManager(boolean isProvider) {
+  private final Environment environment;
+
+  public QpsControllerManager(boolean isProvider, Environment environment) {
+    this.environment = environment;
     if (isProvider) {
       limitKeyPrefix = Config.PROVIDER_LIMIT_KEY_PREFIX;
       bucketKeyPrefix = Config.PROVIDER_BUCKET_KEY_PREFIX;
@@ -74,6 +80,24 @@ public class QpsControllerManager {
     }
 
     initGlobalQpsController();
+    EventManager.register(this);
+  }
+
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    Map<String, Object> changed = new HashMap<>();
+    changed.putAll(event.getDeleted());
+    changed.putAll(event.getAdded());
+    changed.putAll(event.getUpdated());
+
+    for (Entry<String, Object> entry : changed.entrySet()) {
+      if (entry.getKey().startsWith(Config.CONFIG_PREFIX)) {
+        configQpsControllerMap.clear();
+        qualifiedNameControllerMap.clear();
+        initGlobalQpsController();
+        break;
+      }
+    }
   }
 
   @VisibleForTesting
@@ -172,74 +196,19 @@ public class QpsControllerManager {
     }
 
     LOGGER.info("Create qpsController, configKey = [{}]", configKey);
-    DynamicProperty limitProperty = DynamicProperty.getInstance(limitKeyPrefix + configKey);
-    DynamicProperty bucketProperty = DynamicProperty.getInstance(bucketKeyPrefix + configKey);
-    DynamicProperty strategyProperty = DynamicProperty.getInstance(Config.STRATEGY_KEY);
-    AbstractQpsStrategy qpsStrategy = chooseStrategy(configKey, limitProperty.getLong(),
-        bucketProperty.getLong(), strategyProperty.getString());
-
-    strategyProperty.addCallback(() -> {
-      AbstractQpsStrategy innerQpsStrategy = chooseStrategy(configKey, limitProperty.getLong(),
-          bucketProperty.getLong(), strategyProperty.getString());
-      configQpsControllerMap.put(configKey, innerQpsStrategy);
-      LOGGER.info("Global flow control strategy update, value = [{}]",
-          strategyProperty.getString());
-      updateObjMap();
-    });
-    limitProperty.addCallback(() -> {
-      qpsStrategy.setQpsLimit(limitProperty.getLong());
-      LOGGER.info("Qps limit updated, configKey = [{}], value = [{}]", configKey,
-          limitProperty.getString());
-      updateObjMap();
-    });
-    bucketProperty.addCallback(() -> {
-      qpsStrategy.setBucketLimit(bucketProperty.getLong());
-      LOGGER.info("bucket limit updated, configKey = [{}], value = [{}]", configKey,
-          bucketProperty.getString());
-      updateObjMap();
-    });
+    AbstractQpsStrategy qpsStrategy = chooseStrategy(configKey,
+        environment.getProperty(limitKeyPrefix + configKey, Long.class),
+        environment.getProperty(bucketKeyPrefix + configKey, Long.class),
+        environment.getProperty(Config.STRATEGY_KEY));
 
     configQpsControllerMap.put(configKey, qpsStrategy);
   }
 
-  protected void updateObjMap() {
-    Iterator<Entry<String, AbstractQpsStrategy>> it = qualifiedNameControllerMap.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry<String, AbstractQpsStrategy> entry = it.next();
-      AbstractQpsStrategy qpsStrategy = searchQpsController(entry.getKey());
-      if (qpsStrategy == null) {
-        it.remove();
-        continue;
-      }
-      if (qpsStrategy != entry.getValue()) {
-        entry.setValue(qpsStrategy);
-        LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
-            entry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
-      }
-    }
-  }
-
   private void initGlobalQpsController() {
-    DynamicProperty globalLimitProperty = DynamicProperty.getInstance(globalLimitKey);
-    DynamicProperty globalBucketProperty = DynamicProperty.getInstance(globalBucketKey);
-    DynamicProperty globalStrategyProperty = DynamicProperty
-        .getInstance(Config.STRATEGY_KEY);
-    globalQpsStrategy = chooseStrategy(globalLimitKey, globalLimitProperty.getLong((long) Integer.MAX_VALUE),
-        globalBucketProperty.getLong(), globalStrategyProperty.getString());
-    globalStrategyProperty.addCallback(() -> {
-      globalQpsStrategy = chooseStrategy(globalLimitKey, globalLimitProperty.getLong((long) Integer.MAX_VALUE),
-          globalBucketProperty.getLong(), globalStrategyProperty.getString());
-      LOGGER.info("Global flow control strategy update, value = [{}]",
-          globalStrategyProperty.getString());
-    });
-    globalLimitProperty.addCallback(() -> {
-      globalQpsStrategy.setQpsLimit(globalLimitProperty.getLong((long) Integer.MAX_VALUE));
-      LOGGER.info("Global qps limit update, value = [{}]", globalLimitProperty.getLong());
-    });
-    globalBucketProperty.addCallback(() -> {
-      globalQpsStrategy.setBucketLimit(globalBucketProperty.getLong());
-      LOGGER.info("Global bucket limit update, value = [{}]", globalBucketProperty.getLong());
-    });
+    globalQpsStrategy = chooseStrategy(globalLimitKey,
+        environment.getProperty(globalLimitKey, Long.class, (long) Integer.MAX_VALUE),
+        environment.getProperty(globalBucketKey, Long.class),
+        environment.getProperty(Config.STRATEGY_KEY));
   }
 
   private AbstractQpsStrategy chooseStrategy(String configKey, Long limit, Long bucket,

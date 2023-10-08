@@ -29,11 +29,16 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
 
 public class ConsumerFlowControlFilter implements ConsumerFilter {
-  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(false);
+  private final QpsControllerManager qpsControllerMgr;
+
+  public ConsumerFlowControlFilter(Environment environment) {
+    qpsControllerMgr = new QpsControllerManager(false, environment);
+  }
 
   @VisibleForTesting
   public QpsControllerManager getQpsControllerMgr() {
