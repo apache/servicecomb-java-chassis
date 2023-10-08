@@ -23,10 +23,6 @@ import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
 public interface DynamicProperties {
-
-  DynamicProperties DEFAULT_PROPERTY_OBSERVATION = new DynamicProperties() {
-  };
-
   default String getStringProperty(String propertyName, Consumer<String> consumer, String defaultValue) {
     return defaultValue;
   }

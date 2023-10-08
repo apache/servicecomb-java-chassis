@@ -90,13 +90,6 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- ServiceComb： deployment -->
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
       <!-- ServiceComb： dynamic-config -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>

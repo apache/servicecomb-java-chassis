@@ -60,12 +60,6 @@ cse:
 service_description:
   name: testDemo
 
-
-servicecomb:
-  cse:
-    servicecomb:
-      file: value # this is a config for TestConfigUtil.testCreateLocalConfigWithExtraConfig()
-
 holder: b,c,d
 test:
   commonSeparatedString: a,b,c

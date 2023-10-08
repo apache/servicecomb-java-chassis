@@ -37,7 +37,6 @@ import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequ
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 import org.apache.servicecomb.config.common.ConfigConverter;
 import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
-import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -182,8 +181,7 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
 
   private ConfigCenterAddressManager configKieAddressManager() {
     return new ConfigCenterAddressManager(configCenterConfig.getDomainName(),
-        Deployment
-            .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL(),
+        configCenterConfig.getServerUri(),
         EventManager.getEventBus());
   }
 

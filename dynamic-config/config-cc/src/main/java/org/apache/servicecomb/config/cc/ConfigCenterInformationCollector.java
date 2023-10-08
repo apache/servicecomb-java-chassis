@@ -18,24 +18,24 @@
 package org.apache.servicecomb.config.cc;
 
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-
-import java.util.Objects;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class ConfigCenterInformationCollector implements BootUpInformationCollector {
+  private ConfigCenterConfig configCenterConfig;
+
+  @Autowired
+  public void setConfigCenterConfig(ConfigCenterConfig configCenterConfig) {
+    this.configCenterConfig = configCenterConfig;
+  }
+
   @Override
   public String collect() {
-    return "Config Center: " + getCenterInfo(Deployment.getSystemBootStrapInfo("ConfigCenter"));
+    return "Config Center: " + configCenterConfig.getServerUri();
   }
 
   @Override
   public int getOrder() {
     return 1;
-  }
-
-  private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
-    return Objects.isNull(systemBootstrapInfo) ? "not exist" : systemBootstrapInfo.getAccessURL().toString();
   }
 }

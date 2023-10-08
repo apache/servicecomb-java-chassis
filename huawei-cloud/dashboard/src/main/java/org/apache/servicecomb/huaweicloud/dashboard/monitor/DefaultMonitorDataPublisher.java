@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +32,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.dashboard.client.DashboardAddressManager;
 import org.apache.servicecomb.dashboard.client.DashboardClient;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -45,6 +42,7 @@ import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   private static final String SSL_KEY = "mc.consumer";
@@ -53,9 +51,16 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
 
   private MonitorConstant monitorConstant;
 
+  private Environment environment;
+
   @Autowired
   public void setMonitorConstant(MonitorConstant monitorConstant) {
     this.monitorConstant = monitorConstant;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   @Override
@@ -72,13 +77,10 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
     dashboardClient = new DashboardClient(addressManager, httpTransport);
   }
 
+  @SuppressWarnings("unchecked")
   private DashboardAddressManager createDashboardAddressManager() {
-    List<String> addresses = new ArrayList<>();
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
-        MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE);
-    if (info != null && info.getAccessURL() != null) {
-      addresses.addAll(info.getAccessURL());
-    }
+    List<String> addresses = ConfigUtil.parseArrayValue(
+        environment.getProperty(MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE, ""));
 
     if (addresses.isEmpty()) {
       throw new IllegalStateException("dashboard address is not configured.");
