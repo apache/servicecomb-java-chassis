@@ -16,24 +16,31 @@
  */
 package org.apache.servicecomb.config.priority;
 
-import com.netflix.config.DynamicPropertyFactory;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public class TestPriorityPropertyBase {
   protected PriorityPropertyManager priorityPropertyManager;
 
   protected PriorityPropertyFactory propertyFactory;
 
+  protected Environment environment;
+
   @BeforeEach
   public void setup() {
     // avoid write too many logs
     Configurator.setRootLevel(Level.OFF);
 
-    ArchaiusUtils.resetConfig();
+    environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
 
     // make sure create a DynamicPropertyFactory instance
     // otherwise will cause wrong order of configurationListeners

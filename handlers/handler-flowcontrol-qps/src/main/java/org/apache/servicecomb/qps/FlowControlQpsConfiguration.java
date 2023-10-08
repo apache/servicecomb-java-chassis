@@ -19,6 +19,7 @@ package org.apache.servicecomb.qps;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 @ConditionalOnProperty(value = FlowControlQpsConfiguration.FLOW_CONTROL_ENABLED,
@@ -29,12 +30,12 @@ public class FlowControlQpsConfiguration {
   public static final String FLOW_CONTROL_ENABLED = FLOW_CONTROL_PREFIX + ".enabled";
 
   @Bean
-  public ProviderFlowControlFilter providerFlowControlFilter() {
-    return new ProviderFlowControlFilter();
+  public ProviderFlowControlFilter providerFlowControlFilter(Environment environment) {
+    return new ProviderFlowControlFilter(environment);
   }
 
   @Bean
-  public ConsumerFlowControlFilter consumerFlowControlFilter() {
-    return new ConsumerFlowControlFilter();
+  public ConsumerFlowControlFilter consumerFlowControlFilter(Environment environment) {
+    return new ConsumerFlowControlFilter(environment);
   }
 }

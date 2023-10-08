@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 /**
  * <pre>
@@ -203,7 +203,7 @@ public class PlaceholderResolver {
   private Object findValue(Map<String, Object> parameters, String key) {
     Object value = parameters.get(key);
     if (value == null) {
-      value = ConfigUtil.getProperty(key);
+      value = LegacyPropertyFactory.getStringProperty(key);
     }
     return value;
   }

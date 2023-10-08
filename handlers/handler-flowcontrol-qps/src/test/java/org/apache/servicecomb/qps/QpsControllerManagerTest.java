@@ -17,28 +17,36 @@
 
 package org.apache.servicecomb.qps;
 
+import java.util.HashMap;
+
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class QpsControllerManagerTest {
+  static Environment environment = Mockito.mock(Environment.class);
 
   @BeforeEach
   public void beforeTest() {
-    // TODO: fix DynamicProperty
-    ArchaiusUtils.resetConfig();
+    Mockito.when(environment.getProperty(Config.PROVIDER_LIMIT_KEY_GLOBAL, Long.class, (long) Integer.MAX_VALUE))
+        .thenReturn((long) Integer.MAX_VALUE);
+    Mockito.when(environment.getProperty(Config.CONSUMER_LIMIT_KEY_GLOBAL, Long.class, (long) Integer.MAX_VALUE))
+        .thenReturn((long) Integer.MAX_VALUE);
   }
 
   @AfterEach
   public void afterTest() {
-    ArchaiusUtils.resetConfig();
+
   }
 
   @Test
@@ -49,7 +57,7 @@ public class QpsControllerManagerTest {
     Mockito.when(invocation.getSchemaId()).thenReturn("server");
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
 
-    QpsControllerManager testQpsControllerManager = new QpsControllerManager(false);
+    QpsControllerManager testQpsControllerManager = new QpsControllerManager(false, environment);
     initTestQpsControllerManager(false, testQpsControllerManager, invocation, operationMeta);
 
     // pojo
@@ -65,12 +73,23 @@ public class QpsControllerManagerTest {
     Assertions.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
-    ArchaiusUtils.setProperty("servicecomb.flowcontrol.Consumer.qps.limit.poj.server", 10000);
+    Mockito.when(environment.getProperty("servicecomb.flowcontrol.Consumer.qps.limit.poj.server",
+        Long.class)).thenReturn(Long.valueOf(10000));
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put("servicecomb.flowcontrol.Consumer.qps.limit.poj.server", Long.valueOf(10000));
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
+
     qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
     Assertions.assertEquals("poj.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(((AbstractQpsStrategy) qpsStrategy).getQpsLimit(), (Long) 10000L);
 
-    ArchaiusUtils.setProperty("servicecomb.flowcontrol.Consumer.qps.limit.poj.server.test", 20000);
+    InMemoryDynamicPropertiesSource.update("servicecomb.flowcontrol.Consumer.qps.limit.poj.server.test", 20000);
+    Mockito.when(environment.getProperty("servicecomb.flowcontrol.Consumer.qps.limit.poj.server.test",
+        Long.class)).thenReturn(Long.valueOf(20000));
+    updated = new HashMap<>();
+    updated.put("servicecomb.flowcontrol.Consumer.qps.limit.poj.server.test", Long.valueOf(20000));
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
+
     qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
     Assertions.assertEquals("poj.server.test", ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(((AbstractQpsStrategy) qpsStrategy).getQpsLimit(), (Long) 20000L);
@@ -86,10 +105,15 @@ public class QpsControllerManagerTest {
     Mockito.when(invocation.getSchemaId()).thenReturn("server");
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("server.test");
 
-    QpsControllerManager testQpsControllerManager = new QpsControllerManager(true);
+    QpsControllerManager testQpsControllerManager = new QpsControllerManager(true, environment);
 
     // global
-    setConfig(Config.PROVIDER_LIMIT_KEY_GLOBAL, 50);
+    Mockito.when(environment.getProperty(Config.PROVIDER_LIMIT_KEY_GLOBAL, Long.class,
+        (long) Integer.MAX_VALUE)).thenReturn(50L);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(Config.PROVIDER_LIMIT_KEY_GLOBAL, 50L);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
+
     QpsStrategy qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
     Assertions.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
     Assertions.assertEquals(50, (long) ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
@@ -122,7 +146,7 @@ public class QpsControllerManagerTest {
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
     Mockito.when(invocation.getSchemaId()).thenReturn("schema");
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("schema.opr");
-    QpsControllerManager qpsControllerManager = new QpsControllerManager(true);
+    QpsControllerManager qpsControllerManager = new QpsControllerManager(true, environment);
     QpsStrategy qpsStrategy = qpsControllerManager.getOrCreate("service", invocation);
     Assertions.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
         ((AbstractQpsStrategy) qpsStrategy).getKey());
@@ -316,17 +340,16 @@ public class QpsControllerManagerTest {
     return operationMeta;
   }
 
-  public static void setConfig(String key, int value) {
-    ArchaiusUtils.setProperty(key, value);
-  }
-
   private static void setConfigWithDefaultPrefix(boolean isProvider, String key, int value) {
     String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
     if (isProvider) {
       configKey = Config.PROVIDER_LIMIT_KEY_PREFIX + key;
     }
 
-    ArchaiusUtils.setProperty(configKey, value);
+    Mockito.when(environment.getProperty(configKey, Long.class)).thenReturn(Long.valueOf(value));
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(configKey, value);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
   }
 
   private static void deleteConfigWithDefaultPrefix(boolean isProvider, String key) {
@@ -335,7 +358,10 @@ public class QpsControllerManagerTest {
       configKey = Config.PROVIDER_LIMIT_KEY_PREFIX + key;
     }
 
-    ArchaiusUtils.setProperty(configKey, null);
+    Mockito.when(environment.getProperty(configKey, Long.class)).thenReturn(null);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(configKey, null);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
   }
 
   @Test
@@ -346,7 +372,7 @@ public class QpsControllerManagerTest {
     final String operationId = "add";
     final String configKey = "springmvcClient.controller.add";
 
-    QpsControllerManager testManager = new QpsControllerManager(true);
+    QpsControllerManager testManager = new QpsControllerManager(true, environment);
     Invocation testInvocation = getMockInvocation(microserviceName, schemaId, operationId);
     Mockito.when(testInvocation.getSchemaId()).thenReturn(schemaId);
 
@@ -358,6 +384,8 @@ public class QpsControllerManagerTest {
 
     QpsStrategy strategy2 = testManager.getOrCreate(microserviceName, testInvocation);
 
-    Assertions.assertEquals(strategy1, strategy2);
+    Assertions.assertEquals(((AbstractQpsStrategy) strategy1).getQpsLimit(),
+        ((AbstractQpsStrategy) strategy2).getQpsLimit());
+    Assertions.assertEquals(((AbstractQpsStrategy) strategy1).getQpsLimit(), Long.valueOf(Integer.MAX_VALUE));
   }
 }

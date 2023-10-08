@@ -30,11 +30,16 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
 
 public class ProviderFlowControlFilter implements ProviderFilter {
-  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
+  private final QpsControllerManager qpsControllerMgr;
+
+  public ProviderFlowControlFilter(Environment environment) {
+    qpsControllerMgr = new QpsControllerManager(true, environment);
+  }
 
   @Override
   public int getOrder(InvocationType invocationType, String application, String serviceName) {

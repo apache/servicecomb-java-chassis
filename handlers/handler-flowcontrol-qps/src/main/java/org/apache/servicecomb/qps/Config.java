@@ -20,6 +20,8 @@ package org.apache.servicecomb.qps;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 public final class Config {
+  public static final String CONFIG_PREFIX = "servicecomb.flowcontrol.";
+
   public static final String STRATEGY_KEY = "servicecomb.flowcontrol.strategy";
 
   public static final String ANY_SERVICE = "ANY";
