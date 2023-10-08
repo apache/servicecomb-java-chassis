@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
 import org.apache.servicecomb.config.YAMLUtil;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import org.apache.servicecomb.config.file.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;

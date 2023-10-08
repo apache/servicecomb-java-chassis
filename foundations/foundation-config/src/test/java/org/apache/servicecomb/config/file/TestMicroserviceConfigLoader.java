@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.config.file;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,6 +25,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.config.file.ConfigModel;
+import org.apache.servicecomb.config.file.MicroserviceConfigLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
