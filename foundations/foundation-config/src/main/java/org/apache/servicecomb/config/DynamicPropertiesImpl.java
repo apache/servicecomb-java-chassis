@@ -17,108 +17,185 @@
 
 package org.apache.servicecomb.config;
 
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.LongConsumer;
 
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicDoubleProperty;
-import com.netflix.config.DynamicFloatProperty;
-import com.netflix.config.DynamicIntProperty;
-import com.netflix.config.DynamicLongProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
+import com.google.common.eventbus.Subscribe;
 
 public class DynamicPropertiesImpl implements DynamicProperties {
-  public DynamicPropertiesImpl() {
+  private final Map<String, Set<Consumer<String>>> stringCallbacks = new HashMap<>();
+
+  private final Map<String, Set<IntConsumer>> intCallbacks = new HashMap<>();
+
+  private final Map<String, Set<LongConsumer>> longCallbacks = new HashMap<>();
+
+  private final Map<String, Set<DoubleConsumer>> floatCallbacks = new HashMap<>();
+
+  private final Map<String, Set<DoubleConsumer>> doubleCallbacks = new HashMap<>();
+
+  private final Map<String, Set<Consumer<Boolean>>> booleanCallbacks = new HashMap<>();
+
+  private final Environment environment;
+
+  public DynamicPropertiesImpl(Environment environment) {
+    this.environment = environment;
+    EventManager.register(this);
   }
 
-  public DynamicPropertiesImpl(AbstractConfiguration... configurations) {
-    ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
-    Arrays.stream(configurations).forEach(configuration::addConfiguration);
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    for (Entry<String, Object> entry : event.getAdded().entrySet()) {
+      updateValue(entry);
+    }
 
-    ConfigurationManager.install(configuration);
+    for (Entry<String, Object> entry : event.getUpdated().entrySet()) {
+      updateValue(entry);
+    }
+
+    for (Entry<String, Object> entry : event.getDeleted().entrySet()) {
+      updateDefault(entry);
+    }
+  }
+
+  private void updateDefault(Entry<String, Object> entry) {
+    if (stringCallbacks.containsKey(entry.getKey())) {
+      for (Consumer<String> callbacks : stringCallbacks.get(entry.getKey())) {
+        callbacks.accept(null);
+      }
+    }
+    if (intCallbacks.containsKey(entry.getKey())) {
+      for (IntConsumer callbacks : intCallbacks.get(entry.getKey())) {
+        callbacks.accept(0);
+      }
+    }
+    if (longCallbacks.containsKey(entry.getKey())) {
+      for (LongConsumer callbacks : longCallbacks.get(entry.getKey())) {
+        callbacks.accept(0L);
+      }
+    }
+    if (floatCallbacks.containsKey(entry.getKey())) {
+      for (DoubleConsumer callbacks : floatCallbacks.get(entry.getKey())) {
+        callbacks.accept(0F);
+      }
+    }
+    if (doubleCallbacks.containsKey(entry.getKey())) {
+      for (DoubleConsumer callbacks : doubleCallbacks.get(entry.getKey())) {
+        callbacks.accept(0D);
+      }
+    }
+    if (booleanCallbacks.containsKey(entry.getKey())) {
+      for (Consumer<Boolean> callbacks : booleanCallbacks.get(entry.getKey())) {
+        callbacks.accept(false);
+      }
+    }
+  }
+
+  private void updateValue(Entry<String, Object> entry) {
+    if (stringCallbacks.containsKey(entry.getKey())) {
+      for (Consumer<String> callbacks : stringCallbacks.get(entry.getKey())) {
+        callbacks.accept((String) entry.getValue());
+      }
+    }
+    if (intCallbacks.containsKey(entry.getKey())) {
+      for (IntConsumer callbacks : intCallbacks.get(entry.getKey())) {
+        callbacks.accept((int) entry.getValue());
+      }
+    }
+    if (longCallbacks.containsKey(entry.getKey())) {
+      for (LongConsumer callbacks : longCallbacks.get(entry.getKey())) {
+        callbacks.accept((long) entry.getValue());
+      }
+    }
+    if (floatCallbacks.containsKey(entry.getKey())) {
+      for (DoubleConsumer callbacks : floatCallbacks.get(entry.getKey())) {
+        callbacks.accept((float) entry.getValue());
+      }
+    }
+    if (doubleCallbacks.containsKey(entry.getKey())) {
+      for (DoubleConsumer callbacks : doubleCallbacks.get(entry.getKey())) {
+        callbacks.accept((double) entry.getValue());
+      }
+    }
+    if (booleanCallbacks.containsKey(entry.getKey())) {
+      for (Consumer<Boolean> callbacks : booleanCallbacks.get(entry.getKey())) {
+        callbacks.accept((boolean) entry.getValue());
+      }
+    }
   }
 
   @Override
   public String getStringProperty(String propertyName, Consumer<String> consumer, String defaultValue) {
-    DynamicStringProperty prop = propertyFactoryInstance().getStringProperty(propertyName, defaultValue);
-    prop.addCallback(() -> consumer.accept(prop.get()));
-    return prop.get();
+    stringCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    return environment.getProperty(propertyName, defaultValue);
   }
 
   @Override
   public String getStringProperty(String propertyName, String defaultValue) {
-    return propertyFactoryInstance().getStringProperty(propertyName, defaultValue).get();
+    return environment.getProperty(propertyName, defaultValue);
   }
 
   @Override
   public int getIntProperty(String propertyName, IntConsumer consumer, int defaultValue) {
-    DynamicIntProperty prop = propertyFactoryInstance().getIntProperty(propertyName, defaultValue);
-    prop.addCallback(() -> consumer.accept(prop.get()));
-    return prop.get();
+    intCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    return environment.getProperty(propertyName, int.class, defaultValue);
   }
 
   @Override
   public int getIntProperty(String propertyName, int defaultValue) {
-    return propertyFactoryInstance().getIntProperty(propertyName, defaultValue).get();
+    return environment.getProperty(propertyName, int.class, defaultValue);
   }
 
   @Override
   public long getLongProperty(String propertyName, LongConsumer consumer, long defaultValue) {
-    DynamicLongProperty prop = propertyFactoryInstance().getLongProperty(propertyName, defaultValue);
-    prop.addCallback(() -> consumer.accept(prop.get()));
-    return prop.get();
+    longCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    return environment.getProperty(propertyName, long.class, defaultValue);
   }
 
   @Override
   public long getLongProperty(String propertyName, long defaultValue) {
-    return propertyFactoryInstance().getLongProperty(propertyName, defaultValue).get();
+    return environment.getProperty(propertyName, long.class, defaultValue);
   }
 
   @Override
   public float getFloatProperty(String propertyName, DoubleConsumer consumer, float defaultValue) {
-    DynamicFloatProperty prop = propertyFactoryInstance().getFloatProperty(propertyName, defaultValue);
-    prop.addCallback(() -> consumer.accept(prop.get()));
-    return prop.get();
+    floatCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    return environment.getProperty(propertyName, float.class, defaultValue);
   }
 
   @Override
   public float getFloatProperty(String propertyName, float defaultValue) {
-    return propertyFactoryInstance().getFloatProperty(propertyName, defaultValue).get();
+    return environment.getProperty(propertyName, float.class, defaultValue);
   }
 
   @Override
   public double getDoubleProperty(String propertyName, DoubleConsumer consumer, double defaultValue) {
-    DynamicDoubleProperty prop = propertyFactoryInstance().getDoubleProperty(propertyName, defaultValue);
-    prop.addCallback(() -> consumer.accept(prop.get()));
-    return prop.get();
+    doubleCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    return environment.getProperty(propertyName, double.class, defaultValue);
   }
 
   @Override
   public double getDoubleProperty(String propertyName, double defaultValue) {
-    return propertyFactoryInstance().getDoubleProperty(propertyName, defaultValue).get();
+    return environment.getProperty(propertyName, double.class, defaultValue);
   }
 
   @Override
   public boolean getBooleanProperty(String propertyName, Consumer<Boolean> consumer, boolean defaultValue) {
-    DynamicBooleanProperty prop = propertyFactoryInstance().getBooleanProperty(propertyName, defaultValue);
-    prop.addCallback(() -> consumer.accept(prop.get()));
-    return prop.get();
+    booleanCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    return environment.getProperty(propertyName, boolean.class, defaultValue);
   }
 
   @Override
   public boolean getBooleanProperty(String propertyName, boolean defaultValue) {
-    return propertyFactoryInstance().getBooleanProperty(propertyName, defaultValue).get();
-  }
-
-  private DynamicPropertyFactory propertyFactoryInstance() {
-    return DynamicPropertyFactory.getInstance();
+    return environment.getProperty(propertyName, boolean.class, defaultValue);
   }
 }

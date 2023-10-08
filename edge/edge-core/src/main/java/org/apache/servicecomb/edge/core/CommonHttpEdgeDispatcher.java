@@ -19,7 +19,6 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.MicroserviceProperties;
@@ -128,13 +127,8 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Subscribe
   public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
-    Map<String, Object> changed = new HashMap<>();
-    changed.putAll(event.getDeleted());
-    changed.putAll(event.getAdded());
-    changed.putAll(event.getUpdated());
-
-    for (Entry<String, Object> entry : changed.entrySet()) {
-      if (entry.getKey().startsWith(KEY_MAPPING_PREFIX)) {
+    for (String changed : event.getChanged()) {
+      if (changed.startsWith(KEY_MAPPING_PREFIX)) {
         loadConfigurations();
         break;
       }

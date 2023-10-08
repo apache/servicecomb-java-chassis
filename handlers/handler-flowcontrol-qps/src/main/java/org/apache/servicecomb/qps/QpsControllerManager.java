@@ -17,10 +17,8 @@
 
 package org.apache.servicecomb.qps;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
@@ -85,13 +83,8 @@ public class QpsControllerManager {
 
   @Subscribe
   public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
-    Map<String, Object> changed = new HashMap<>();
-    changed.putAll(event.getDeleted());
-    changed.putAll(event.getAdded());
-    changed.putAll(event.getUpdated());
-
-    for (Entry<String, Object> entry : changed.entrySet()) {
-      if (entry.getKey().startsWith(Config.CONFIG_PREFIX)) {
+    for (String changed : event.getChanged()) {
+      if (changed.startsWith(Config.CONFIG_PREFIX)) {
         configQpsControllerMap.clear();
         qualifiedNameControllerMap.clear();
         initGlobalQpsController();

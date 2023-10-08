@@ -50,8 +50,8 @@ public class FoundationConfigConfiguration {
   }
 
   @Bean
-  public DynamicPropertiesImpl dynamicProperties() {
-    return new DynamicPropertiesImpl();
+  public DynamicPropertiesImpl dynamicProperties(Environment environment) {
+    return new DynamicPropertiesImpl(environment);
   }
 
   @Bean

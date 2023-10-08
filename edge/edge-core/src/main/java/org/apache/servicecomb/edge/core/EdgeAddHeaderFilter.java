@@ -18,10 +18,7 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
@@ -69,13 +66,8 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
 
   @Subscribe
   public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
-    Map<String, Object> changed = new HashMap<>();
-    changed.putAll(event.getDeleted());
-    changed.putAll(event.getAdded());
-    changed.putAll(event.getUpdated());
-
-    for (Entry<String, Object> entry : changed.entrySet()) {
-      if (entry.getKey().startsWith(PREFIX)) {
+    for (String changed : event.getChanged()) {
+      if (changed.startsWith(PREFIX)) {
         init();
         break;
       }
