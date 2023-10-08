@@ -106,7 +106,7 @@ public class TestRestServerVerticle {
         .thenReturn(true);
     Mockito.when(environment.getProperty(SERVICECOMB_CORS_CONFIG_BASE + ".enabled", boolean.class, false))
         .thenReturn(false);
-    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, String.class, ""))
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, ""))
         .thenReturn("");
     Mockito.when(environment.getProperty(
             RestConst.UPLOAD_MAX_SIZE, long.class, -1L))
@@ -266,7 +266,7 @@ public class TestRestServerVerticle {
     Mockito.when(environment.getProperty("servicecomb.cors.enabled", boolean.class,
             false))
         .thenReturn(true);
-    Mockito.when(environment.getProperty("servicecomb.cors.origin", String.class,
+    Mockito.when(environment.getProperty("servicecomb.cors.origin",
             "*"))
         .thenReturn("*");
     Mockito.when(environment.getProperty("servicecomb.cors.allowedMethod"))

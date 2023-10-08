@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
 import static org.mockito.ArgumentMatchers.any;
 
 import java.util.HashMap;
@@ -23,8 +25,8 @@ import java.util.Map;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.KeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
@@ -33,21 +35,35 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.discovery.MicroserviceInstanceCache;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 
 import com.google.common.cache.Cache;
 
 public class TestProviderTokenManager {
+  static Environment environment = Mockito.mock(Environment.class);
 
+  @BeforeAll
+  public static void setUpClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA"))
+        .thenReturn("RSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA"))
+        .thenReturn("SHA256withRSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keySize", int.class, 2048))
+        .thenReturn(2048);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+  }
 
   @BeforeEach
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
   }
 
   @AfterEach

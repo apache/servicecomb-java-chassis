@@ -17,13 +17,27 @@
 
 package org.apache.servicecomb.provider.rest.common;
 
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestRestProducers {
   @RestSchema(schemaId = "test")
   public static class RestSchemaForTest {
+  }
+
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void setUpClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, boolean.class, true))
+        .thenReturn(true);
   }
 
   RestProducers producer = new RestProducers();

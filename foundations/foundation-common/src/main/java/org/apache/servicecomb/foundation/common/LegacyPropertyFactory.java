@@ -63,7 +63,7 @@ public class LegacyPropertyFactory {
   }
 
   public static String getStringProperty(String key, String defaultValue) {
-    return environment.getProperty(key, String.class, defaultValue);
+    return environment.getProperty(key, defaultValue);
   }
 
   public static Environment getEnvironment() {

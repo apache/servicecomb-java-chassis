@@ -22,12 +22,11 @@ import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public class RestProducers implements BeanPostProcessor {
   private final List<ProducerMeta> producerMetaList = new ArrayList<>();
@@ -35,9 +34,6 @@ public class RestProducers implements BeanPostProcessor {
   @SuppressWarnings("unchecked")
   private final Class<? extends Annotation> restControllerCls = (Class<? extends Annotation>) ReflectUtils
       .getClassByName("org.springframework.web.bind.annotation.RestController");
-
-  private final boolean scanRestController = restControllerCls != null &&
-      DynamicPropertyFactory.getInstance().getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true).get();
 
   public List<ProducerMeta> getProducerMetaList() {
     return producerMetaList;
@@ -70,7 +66,9 @@ public class RestProducers implements BeanPostProcessor {
       return;
     }
 
-    if (scanRestController && beanCls.getAnnotation(restControllerCls) != null) {
+    if (restControllerCls != null &&
+        LegacyPropertyFactory.getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true)
+        && beanCls.getAnnotation(restControllerCls) != null) {
       ProducerMeta producerMeta = new ProducerMeta(beanCls.getName(), bean);
       producerMetaList.add(producerMeta);
     }
