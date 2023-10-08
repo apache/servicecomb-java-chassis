@@ -216,14 +216,8 @@
         <artifactId>handler-tracing-zipkin</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- ServiceComb： inspector -->
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>inspector</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- ServiceComb： metrics -->
 
+      <!-- ServiceComb： metrics -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>metrics-core</artifactId>
