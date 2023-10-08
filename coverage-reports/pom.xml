@@ -177,12 +177,6 @@
       <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
 
-    <!-- inspector -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
-    </dependency>
-
     <!-- metrics -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

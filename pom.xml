@@ -151,7 +151,6 @@
     <module>metrics</module>
     <module>dynamic-config</module>
     <module>spring-boot</module>
-    <module>inspector</module>
     <module>solutions</module>
     <module>clients</module>
     <module>governance</module>
