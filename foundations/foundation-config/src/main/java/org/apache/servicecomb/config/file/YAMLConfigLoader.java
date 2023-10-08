@@ -15,18 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.event;
+package org.apache.servicecomb.config.file;
 
-import com.netflix.config.WatchedUpdateResult;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Map;
 
-public class DynamicConfigurationChangedEvent {
-  private final WatchedUpdateResult event;
+import org.apache.servicecomb.config.YAMLUtil;
 
-  public DynamicConfigurationChangedEvent(WatchedUpdateResult event) {
-    this.event = event;
-  }
-
-  public WatchedUpdateResult getEvent() {
-    return this.event;
+public class YAMLConfigLoader extends AbstractConfigLoader {
+  @Override
+  protected Map<String, Object> loadData(URL url) throws IOException {
+    try (InputStream inputStream = url.openStream()) {
+      return YAMLUtil.yaml2Properties(inputStream);
+    }
   }
 }

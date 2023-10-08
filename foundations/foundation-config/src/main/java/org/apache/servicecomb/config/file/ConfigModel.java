@@ -15,18 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.event;
+package org.apache.servicecomb.config.file;
 
-import com.netflix.config.WatchedUpdateResult;
+import java.net.URL;
+import java.util.Map;
 
-public class RefreshGovernanceConfigurationEvent {
-  private final WatchedUpdateResult event;
+import org.apache.servicecomb.foundation.common.utils.IOUtils;
 
-  public RefreshGovernanceConfigurationEvent(WatchedUpdateResult event) {
-    this.event = event;
+public class ConfigModel {
+
+  private URL url;
+
+  private int order;
+
+  private Map<String, Object> config;
+
+  public URL getUrl() {
+    return url;
   }
 
-  public WatchedUpdateResult getEvent() {
-    return this.event;
+  public void setUrl(URL url) {
+    this.url = url;
   }
+
+  public int getOrder() {
+    return order;
+  }
+
+  public void setOrder(int order) {
+    this.order = order;
+  }
+
+  public Map<String, Object> getConfig() {
+    return config;
+  }
+
+  public void setConfig(Map<String, Object> config) {
+    this.config = config;
+  }
+
+  @Override
+  public String toString() {
+    return url == null ? "" : IOUtils.anonymousPath(url.toString());
+  }
+
 }
