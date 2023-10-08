@@ -17,13 +17,9 @@
 
 package org.apache.servicecomb.config.apollo;
 
-import org.apache.commons.configuration.Configuration;
+import org.springframework.core.env.Environment;
 
 public class ApolloConfig {
-  public static final ApolloConfig INSTANCE = new ApolloConfig();
-
-  private static Configuration finalConfig;
-
   private static final String SERVER_URL_KEY = "apollo.config.serverUri";
 
   private static final String SERVER_NAMESPACE = "apollo.config.namespace";
@@ -44,46 +40,41 @@ public class ApolloConfig {
 
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
 
-  private ApolloConfig() {
-  }
+  private final Environment environment;
 
-  public static void setConcurrentCompositeConfiguration(Configuration config) {
-    finalConfig = config;
-  }
-
-  public Configuration getConcurrentCompositeConfiguration() {
-    return finalConfig;
+  public ApolloConfig(Environment environment) {
+    this.environment = environment;
   }
 
   public String getServiceName() {
-    return finalConfig.getString(APOLLO_SERVICE_NAME);
+    return environment.getProperty(APOLLO_SERVICE_NAME);
   }
 
   public String getServerUri() {
-    return finalConfig.getString(SERVER_URL_KEY);
+    return environment.getProperty(SERVER_URL_KEY);
   }
 
   public String getToken() {
-    return finalConfig.getString(TOKEN);
+    return environment.getProperty(TOKEN);
   }
 
   public String getEnv() {
-    return finalConfig.getString(SERVER_ENV);
+    return environment.getProperty(SERVER_ENV);
   }
 
   public String getNamespace() {
-    return finalConfig.getString(SERVER_NAMESPACE);
+    return environment.getProperty(SERVER_NAMESPACE);
   }
 
   public String getServerClusters() {
-    return finalConfig.getString(SERVER_CLUSTERS);
+    return environment.getProperty(SERVER_CLUSTERS);
   }
 
   public int getRefreshInterval() {
-    return finalConfig.getInt(REFRESH_INTERVAL, DEFAULT_REFRESH_INTERVAL);
+    return environment.getProperty(REFRESH_INTERVAL, int.class, DEFAULT_REFRESH_INTERVAL);
   }
 
   public int getFirstRefreshInterval() {
-    return finalConfig.getInt(FIRST_REFRESH_INTERVAL, DEFAULT_FIRST_REFRESH_INTERVAL);
+    return environment.getProperty(FIRST_REFRESH_INTERVAL, int.class, DEFAULT_FIRST_REFRESH_INTERVAL);
   }
 }

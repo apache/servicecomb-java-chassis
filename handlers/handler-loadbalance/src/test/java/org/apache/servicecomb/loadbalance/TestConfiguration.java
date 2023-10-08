@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.After;
 import org.junit.Before;
@@ -25,8 +24,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
 
 /**
  *
@@ -68,26 +65,6 @@ public class TestConfiguration {
   @Test
   public void testGetSessionTimeoutInSeconds() {
     Assertions.assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
-  }
-
-
-  /**
-   * The property key of  timerIntervalInMilis  changed from <code>servicecomb.loadbalance.stats.timerIntervalInMilis</code>
-   * to <code>servicecomb.loadbalance.stats.timerIntervalInMillis</code>, check the compatibility
-   */
-  @Test
-  public void testGetTimerIntervalInMillis() {
-    System.setProperty(Configuration.TIMER_INTERVAL_IN_MILLIS, "100");
-    ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
-    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
-
-    System.clearProperty(Configuration.TIMER_INTERVAL_IN_MILLIS);
-    localConfiguration = ConfigUtil.createLocalConfig();
-    Assertions.assertNull(localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
-
-    System.setProperty("servicecomb.loadbalance.stats.timerIntervalInMilis", "100");
-    localConfiguration = ConfigUtil.createLocalConfig();
-    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
   }
 
   @Test

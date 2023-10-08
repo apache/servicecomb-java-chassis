@@ -29,7 +29,6 @@ import java.util.concurrent.ExecutionException;
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -98,8 +97,6 @@ public class RestServerCodecFilterTest {
 
   @BeforeAll
   public static void beforeClass() {
-    ConfigUtil.installDynamicConfig();
-
     engine = SCBBootstrap.createSCBEngineForTest();
     Environment environment = Mockito.mock(Environment.class);
     engine.setEnvironment(environment);

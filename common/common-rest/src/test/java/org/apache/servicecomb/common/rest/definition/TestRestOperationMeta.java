@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
@@ -167,7 +166,6 @@ public class TestRestOperationMeta {
 
   @BeforeAll
   public static void classSetup() {
-    ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest();
     ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);

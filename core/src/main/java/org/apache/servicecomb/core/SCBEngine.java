@@ -25,7 +25,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
@@ -463,8 +462,7 @@ public class SCBEngine {
       LOGGER.error("wait all invocation finished interrupted", e);
     }
 
-    //Step 5: destroy config center source
-    ConfigUtil.destroyConfigCenterConfigurationSource();
+    //Step 5: destroy config source
     // only be null for some test cases
     if (priorityPropertyManager != null) {
       priorityPropertyManager.close();

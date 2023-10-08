@@ -27,6 +27,7 @@ import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -41,13 +42,20 @@ public class ApolloDynamicPropertiesSource implements DynamicPropertiesSource<Ma
   private final ApolloDynamicPropertiesSource.UpdateHandler updateHandler =
       new ApolloDynamicPropertiesSource.UpdateHandler();
 
+  private ApolloConfig apolloConfig;
+
+  @Autowired
+  public void setApolloConfig(ApolloConfig apolloConfig) {
+    this.apolloConfig = apolloConfig;
+  }
+
   @Override
   public int getOrder() {
     return 300;
   }
 
   private void init() {
-    ApolloClient apolloClient = new ApolloClient(updateHandler);
+    ApolloClient apolloClient = new ApolloClient(updateHandler, apolloConfig);
     apolloClient.refreshApolloConfig();
   }
 
