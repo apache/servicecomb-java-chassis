@@ -138,19 +138,14 @@ public class AccessController {
 
   @Subscribe
   public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
-    Map<String, Object> changed = new HashMap<>();
-    changed.putAll(event.getDeleted());
-    changed.putAll(event.getAdded());
-    changed.putAll(event.getUpdated());
-
-    for (Entry<String, Object> entry : changed.entrySet()) {
-      if (entry.getKey().startsWith(KEY_WHITE_LIST_PREFIX)) {
+    for (String changed : event.getChanged()) {
+      if (changed.startsWith(KEY_WHITE_LIST_PREFIX)) {
         loadConfigurations(KEY_WHITE_LIST_PREFIX);
         break;
       }
     }
-    for (Entry<String, Object> entry : changed.entrySet()) {
-      if (entry.getKey().startsWith(KEY_BLACK_LIST_PREFIX)) {
+    for (String changed : event.getChanged()) {
+      if (changed.startsWith(KEY_BLACK_LIST_PREFIX)) {
         loadConfigurations(KEY_BLACK_LIST_PREFIX);
         break;
       }

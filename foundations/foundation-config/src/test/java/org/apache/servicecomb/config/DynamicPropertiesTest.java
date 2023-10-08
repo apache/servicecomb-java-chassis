@@ -23,13 +23,16 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.number.IsCloseTo.closeTo;
 
+import java.util.HashMap;
 import java.util.Objects;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 import com.seanyinx.github.unit.scaffolding.Poller;
@@ -38,7 +41,6 @@ import com.seanyinx.github.unit.scaffolding.Randomness;
 import mockit.Deencapsulation;
 
 public class DynamicPropertiesTest {
-
   private static final String stringPropertyName = uniquify("stringPropertyName");
 
   private static final String intPropertyName = uniquify("intPropertyName");
@@ -57,7 +59,7 @@ public class DynamicPropertiesTest {
 
   private static final long longOldValue = Randomness.nextLong();
 
-  private static final double floatOldValue = Randomness.nextDouble();
+  private static final float floatOldValue = Double.valueOf(Randomness.nextDouble()).floatValue();
 
   private static final double doubleOldValue = Randomness.nextDouble();
 
@@ -65,9 +67,9 @@ public class DynamicPropertiesTest {
 
   private static final double ERROR = 0.0000001;
 
-  private static DynamicProperties dynamicProperties;
+  private static Environment environment;
 
-  private static ConcurrentMapConfiguration configuration;
+  private static DynamicProperties dynamicProperties;
 
   private final Poller poller = new Poller(2000, 100);
 
@@ -86,10 +88,9 @@ public class DynamicPropertiesTest {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-    tearDown();
-    configuration = new ConcurrentMapConfiguration();
+    environment = Mockito.mock(Environment.class);
     writeInitialConfig();
-    dynamicProperties = new DynamicPropertiesImpl(configuration);
+    dynamicProperties = new DynamicPropertiesImpl(environment);
   }
 
   @AfterClass
@@ -100,12 +101,13 @@ public class DynamicPropertiesTest {
   }
 
   private static void writeInitialConfig() throws Exception {
-    configuration.setProperty(stringPropertyName, stringOldValue);
-    configuration.setProperty(intPropertyName, String.valueOf(intOldValue));
-    configuration.setProperty(longPropertyName, String.valueOf(longOldValue));
-    configuration.setProperty(floatPropertyName, String.valueOf(floatOldValue));
-    configuration.setProperty(doublePropertyName, String.valueOf(doubleOldValue));
-    configuration.setProperty(booleanPropertyName, String.valueOf(booleanOldValue));
+    Mockito.when(environment.getProperty(stringPropertyName, (String) null)).thenReturn(stringOldValue);
+    Mockito.when(environment.getProperty(intPropertyName, int.class, 0)).thenReturn(intOldValue);
+    Mockito.when(environment.getProperty(longPropertyName, long.class, 0L)).thenReturn(longOldValue);
+    Mockito.when(environment.getProperty(floatPropertyName, float.class, 0F)).thenReturn(floatOldValue);
+    Mockito.when(environment.getProperty(doublePropertyName, double.class, 0D)).thenReturn(doubleOldValue);
+    Mockito.when(environment.getProperty(booleanPropertyName, boolean.class, false))
+        .thenReturn(booleanOldValue);
   }
 
   @Test
@@ -118,7 +120,10 @@ public class DynamicPropertiesTest {
 
     String newValue = uniquify("newValue");
 
-    configuration.setProperty(stringPropertyName, newValue);
+    Mockito.when(environment.getProperty(stringPropertyName, stringOldValue)).thenReturn(newValue);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(stringPropertyName, newValue);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
     poller.assertEventually(() -> Objects.equals(stringPropertyValue, newValue));
   }
@@ -133,7 +138,10 @@ public class DynamicPropertiesTest {
 
     int newValue = Randomness.nextInt();
 
-    configuration.setProperty(intPropertyName, String.valueOf(newValue));
+    Mockito.when(environment.getProperty(intPropertyName, int.class, intOldValue)).thenReturn(newValue);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(intPropertyName, newValue);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
     poller.assertEventually(() -> intPropertyValue == newValue);
   }
@@ -148,7 +156,10 @@ public class DynamicPropertiesTest {
 
     long newValue = Randomness.nextLong();
 
-    configuration.setProperty(longPropertyName, String.valueOf(newValue));
+    Mockito.when(environment.getProperty(longPropertyName, long.class, longOldValue)).thenReturn(newValue);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(longPropertyName, newValue);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
     poller.assertEventually(() -> longPropertyValue == newValue);
   }
@@ -161,9 +172,12 @@ public class DynamicPropertiesTest {
     property = dynamicProperties.getFloatProperty(floatPropertyName, value -> floatPropertyValue = value, 0);
     assertThat(property, closeTo(floatOldValue, ERROR));
 
-    double newValue = Randomness.nextDouble();
+    float newValue = Double.valueOf(Randomness.nextDouble()).floatValue();
 
-    configuration.setProperty(floatPropertyName, String.valueOf(newValue));
+    Mockito.when(environment.getProperty(floatPropertyName, float.class, floatOldValue)).thenReturn(newValue);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(floatPropertyName, newValue);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
     poller.assertEventually(() -> Math.abs(floatPropertyValue - newValue) < ERROR);
   }
@@ -178,7 +192,10 @@ public class DynamicPropertiesTest {
 
     double newValue = Randomness.nextDouble();
 
-    configuration.setProperty(doublePropertyName, String.valueOf(newValue));
+    Mockito.when(environment.getProperty(doublePropertyName, double.class, doubleOldValue)).thenReturn(newValue);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(doublePropertyName, newValue);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
     poller.assertEventually(() -> Math.abs(doublePropertyValue - newValue) < ERROR);
   }
@@ -196,7 +213,10 @@ public class DynamicPropertiesTest {
 
     boolean newValue = !booleanOldValue;
 
-    configuration.setProperty(booleanPropertyName, String.valueOf(newValue));
+    Mockito.when(environment.getProperty(booleanPropertyName, boolean.class, booleanOldValue)).thenReturn(newValue);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put(booleanPropertyName, newValue);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
     poller.assertEventually(() -> booleanPropertyValue == newValue);
   }
