@@ -20,7 +20,7 @@ package org.apache.servicecomb.config.cc;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 import org.springframework.core.env.Environment;
 
@@ -32,6 +32,8 @@ public final class ConfigCenterConfig {
   private static ConcurrentCompositeConfiguration finalConfig;
 
   private static final String AUTO_DISCOVERY_ENABLED = "servicecomb.service.registry.autodiscovery";
+
+  private static final String ADDRESS = "servicecomb.config.client.serverUri";
 
   private static final String DOMAIN_NAME = "servicecomb.config.client.domainName";
 
@@ -96,11 +98,6 @@ public final class ConfigCenterConfig {
   }
 
   public List<String> getServerUri() {
-    return Deployment.getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER)
-        .getAccessURL();
-  }
-
-  public boolean getAutoDiscoveryEnabled() {
-    return environment.getProperty(AUTO_DISCOVERY_ENABLED, boolean.class, false);
+    return ConfigUtil.parseArrayValue(environment.getProperty(ADDRESS, ""));
   }
 }

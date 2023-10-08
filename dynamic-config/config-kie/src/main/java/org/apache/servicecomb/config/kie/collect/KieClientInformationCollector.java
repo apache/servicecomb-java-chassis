@@ -17,25 +17,26 @@
 
 package org.apache.servicecomb.config.kie.collect;
 
+import org.apache.servicecomb.config.kie.KieConfig;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.SystemBootstrapInfo;
-
-import java.util.Objects;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 public class KieClientInformationCollector implements BootUpInformationCollector {
+  private KieConfig kieConfig;
+
+  @Autowired
+  public void setKieConfig(KieConfig kieConfig) {
+    this.kieConfig = kieConfig;
+  }
+
   @Override
   public String collect() {
-    return "Kie Center: " + getCenterInfo(Deployment.getSystemBootStrapInfo("KieCenter"));
+    return "Kie Center: " + kieConfig.getServerUri();
   }
 
   @Override
   public int getOrder() {
     return 2;
-  }
-
-  private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
-    return Objects.isNull(systemBootstrapInfo) ? "not exist" : systemBootstrapInfo.getAccessURL().toString();
   }
 }

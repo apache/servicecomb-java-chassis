@@ -139,7 +139,6 @@
     <module>parents</module>
     <module>common</module>
     <module>foundations</module>
-    <module>deployment</module>
     <module>handlers</module>
     <module>providers</module>
     <module>transports</module>

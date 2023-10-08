@@ -17,25 +17,29 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
-
-import java.util.Objects;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class MonitorInformationCollector implements BootUpInformationCollector {
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public String collect() {
-    return "monitor center: " + getCenterInfo(Deployment.getSystemBootStrapInfo(MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE));
+    return "monitor center: " +
+        ConfigUtil.parseArrayValue(
+            environment.getProperty(MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE, ""));
   }
 
   @Override
   public int getOrder() {
     return 100;
-  }
-
-  private String getCenterInfo(SystemBootstrapInfo systemBootstrapInfo) {
-    return Objects.isNull(systemBootstrapInfo) ? "not exist" : systemBootstrapInfo.getAccessURL().toString();
   }
 }
