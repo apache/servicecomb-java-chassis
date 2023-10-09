@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -79,15 +80,16 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
   private Environment environment;
 
   public CommonHttpEdgeDispatcher() {
-    if (this.enabled()) {
-      loadConfigurations();
-    }
+
   }
 
   // though this is an SPI, but add as beans.
   @Autowired
   public void setEnvironment(Environment environment) {
     this.environment = environment;
+    if (this.enabled()) {
+      loadConfigurations();
+    }
   }
 
   // Maybe future change to beans
@@ -107,7 +109,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public int getOrder() {
-    return environment.getProperty(KEY_ORDER, int.class, 40_000);
+    return LegacyPropertyFactory.getIntProperty(KEY_ORDER, 40_000);
   }
 
   @Override

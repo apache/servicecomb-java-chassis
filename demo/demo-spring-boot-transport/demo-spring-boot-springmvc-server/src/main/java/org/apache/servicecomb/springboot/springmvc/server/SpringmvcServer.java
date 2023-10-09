@@ -39,10 +39,13 @@ public class SpringmvcServer {
   }
 
   private static void assertPropertyCorrect() {
-    String result = LegacyPropertyFactory.getStringProperty("test.unresolved.placeholder");
-    if (!"jdbc:postgresql://${ip}:${port}/pt".equals(result)) {
-      LOGGER.error("tests for configuration error, stop");
-      SCBEngine.getInstance().destroy();
+    // spring environment will fail for unresolved placeholder property
+    try {
+      LegacyPropertyFactory.getStringProperty("test.unresolved.placeholder");
+    } catch (IllegalArgumentException e) {
+      return;
     }
+    LOGGER.error("tests for configuration error, stop");
+    SCBEngine.getInstance().destroy();
   }
 }

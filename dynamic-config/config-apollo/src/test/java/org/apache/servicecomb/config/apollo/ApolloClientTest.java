@@ -20,7 +20,6 @@ package org.apache.servicecomb.config.apollo;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.apollo.ApolloClient.ConfigRefresh;
 import org.apache.servicecomb.config.apollo.ApolloDynamicPropertiesSource.UpdateHandler;
 import org.junit.jupiter.api.Assertions;

@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
@@ -81,7 +82,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public int getOrder() {
-    return environment.getProperty(KEY_ORDER, int.class, 30_000);
+    return LegacyPropertyFactory.getIntProperty(KEY_ORDER, 30_000);
   }
 
   @Override
