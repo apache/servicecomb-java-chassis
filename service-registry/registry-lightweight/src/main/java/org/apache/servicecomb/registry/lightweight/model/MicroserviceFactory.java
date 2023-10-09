@@ -23,8 +23,6 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.EnvironmentConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.Version;
@@ -40,23 +38,22 @@ public class MicroserviceFactory {
   private Microservice createMicroserviceFromConfiguration(Environment environment) {
     Microservice microservice = new Microservice();
 
-    EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
-    if (!StringUtils.isEmpty(envConfig.getString(APP_MAPPING)) &&
-        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(APP_MAPPING)))) {
-      microservice.setAppId(envConfig.getString(envConfig.getString(APP_MAPPING)));
+    if (!StringUtils.isEmpty(environment.getProperty(APP_MAPPING)) &&
+        !StringUtils.isEmpty(environment.getProperty(environment.getProperty(APP_MAPPING)))) {
+      microservice.setAppId(environment.getProperty(environment.getProperty(APP_MAPPING)));
     } else {
       microservice.setAppId(BootStrapProperties.readApplication(environment));
     }
-    if (!StringUtils.isEmpty(envConfig.getString(SERVICE_MAPPING)) &&
-        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(SERVICE_MAPPING)))) {
-      microservice.setServiceName(envConfig.getString(envConfig.getString(SERVICE_MAPPING)));
+    if (!StringUtils.isEmpty(environment.getProperty(SERVICE_MAPPING)) &&
+        !StringUtils.isEmpty(environment.getProperty(environment.getProperty(SERVICE_MAPPING)))) {
+      microservice.setServiceName(environment.getProperty(environment.getProperty(SERVICE_MAPPING)));
     } else {
       microservice.setServiceName(BootStrapProperties.readServiceName(environment));
     }
     String version;
-    if (!StringUtils.isEmpty(envConfig.getString(VERSION_MAPPING)) &&
-        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(VERSION_MAPPING)))) {
-      version = envConfig.getString(envConfig.getString(VERSION_MAPPING));
+    if (!StringUtils.isEmpty(environment.getProperty(VERSION_MAPPING)) &&
+        !StringUtils.isEmpty(environment.getProperty(environment.getProperty(VERSION_MAPPING)))) {
+      version = environment.getProperty(environment.getProperty(VERSION_MAPPING));
     } else {
       version = BootStrapProperties.readServiceVersion(environment);
     }

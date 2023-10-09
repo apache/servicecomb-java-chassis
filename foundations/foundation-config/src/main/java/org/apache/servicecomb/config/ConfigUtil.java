@@ -17,13 +17,13 @@
 
 package org.apache.servicecomb.config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.PropertyConverter;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -34,7 +34,15 @@ public final class ConfigUtil {
   }
 
   public static List<String> parseArrayValue(String value) {
-    return PropertyConverter.split(value, ',', true);
+    if (value == null) {
+      return new ArrayList<>(0);
+    }
+    String[] tokens = value.split(",");
+    List<String> result = new ArrayList<>(tokens.length);
+    for (String t : tokens) {
+      result.add(t.trim());
+    }
+    return result;
   }
 
   public static Set<String> propertiesWithPrefix(Environment environment, String prefix) {

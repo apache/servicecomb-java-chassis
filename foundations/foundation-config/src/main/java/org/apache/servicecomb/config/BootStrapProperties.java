@@ -18,11 +18,9 @@
 package org.apache.servicecomb.config;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 
@@ -50,14 +48,10 @@ public class BootStrapProperties {
 
   public static final String OLD_CONFIG_SERVICE_PROPERTIES = "service_description.properties";
 
-  public static final String OLD_CONFIG_SERVICE_PATHS = "service_description.paths";
-
   // service instance definition keys of old version
   public static final String OLD_CONFIG_SERVICE_INSTANCE_PROPERTIES = "instance_description.properties";
 
   public static final String OLD_CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS = "instance_description.propertyExtendedClass";
-
-  public static final String OLD_CONFIG_SERVICE_INSTANCE_ENVIRONMENT = "instance_description.environment";
 
   public static final String OLD_CONFIG_SERVICE_INSTANCE_INITIAL_STATUS = "instance_description.initialStatus";
 
@@ -78,16 +72,10 @@ public class BootStrapProperties {
 
   public static final String CONFIG_SERVICE_PROPERTIES = "servicecomb.service.properties";
 
-  public static final String CONFIG_SERVICE_PATHS = "servicecomb.service.paths";
-
-  public static final String CONFIG_SERVICE_ALIAS = "servicecomb.service.alias";
-
   // service instance definition keys of new version
   public static final String CONFIG_SERVICE_INSTANCE_PROPERTIES = "servicecomb.instance.properties";
 
   public static final String CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS = "servicecomb.instance.propertyExtendedClass";
-
-  public static final String CONFIG_SERVICE_INSTANCE_ENVIRONMENT = "servicecomb.instance.environment";
 
   public static final String CONFIG_SERVICE_INSTANCE_INITIAL_STATUS = "servicecomb.instance.initialStatus";
 
@@ -101,8 +89,6 @@ public class BootStrapProperties {
   public static final String DEFAULT_MICROSERVICE_ROLE = "FRONT";
 
   public static final String DEFAULT_MICROSERVICE_ENVIRONMENT = "";
-
-  public static final String DEFAULT_MICROSERVICE_INSTANCE_ENVIRONMENT = "production";
 
   public static final String DEFAULT_MICROSERVICE_INSTANCE_INITIAL_STATUS = "UP";
 
@@ -157,14 +143,6 @@ public class BootStrapProperties {
 
   public static Map<String, String> readServiceProperties(Environment environment) {
     return readProperties(environment, CONFIG_SERVICE_PROPERTIES, OLD_CONFIG_SERVICE_PROPERTIES);
-  }
-
-  public static List<Object> readServicePaths(Configuration configuration) {
-    List<Object> result = configuration.getList(CONFIG_SERVICE_PATHS);
-    if (result == null || result.isEmpty()) {
-      result = configuration.getList(OLD_CONFIG_SERVICE_PATHS);
-    }
-    return result;
   }
 
   public static Map<String, String> readServiceInstanceProperties(Environment environment) {

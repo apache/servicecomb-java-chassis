@@ -22,23 +22,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.concurrent.ExecutionException;
 
-import jakarta.servlet.http.Part;
-
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream.ReadResult;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.Context;
 import io.vertx.core.Promise;
 import io.vertx.core.impl.SyncContext;
+import jakarta.servlet.http.Part;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
-import org.junit.jupiter.api.Assertions;
 
 public class TestPumpFromPart {
   String src = RandomStringUtils.random(100, true, true);
