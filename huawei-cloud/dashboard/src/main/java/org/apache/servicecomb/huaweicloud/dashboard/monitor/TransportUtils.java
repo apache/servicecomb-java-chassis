@@ -19,7 +19,6 @@ package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
 import static org.apache.servicecomb.foundation.ssl.SSLOption.DEFAULT_OPTION;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;

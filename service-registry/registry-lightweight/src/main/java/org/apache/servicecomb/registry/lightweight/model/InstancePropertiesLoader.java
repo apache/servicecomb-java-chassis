@@ -19,7 +19,6 @@ package org.apache.servicecomb.registry.lightweight.model;
 
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.springframework.core.env.Environment;
 

@@ -32,14 +32,12 @@
   <properties>
     <!-- Dependency versions: sort by alphabetic order -->
     <activation.version>1.2.2</activation.version>
-    <archaius.version>0.7.7</archaius.version>
     <asciidoctorj.version>2.5.3</asciidoctorj.version>
     <aspectj.version>1.9.19</aspectj.version>
     <assertj.version>3.24.2</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <brave.version>5.16.0</brave.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
-    <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.11.0</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -296,12 +294,6 @@
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
         <version>${commons-beanutils.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>commons-configuration</groupId>
-        <artifactId>commons-configuration</artifactId>
-        <version>${commons-configuration.version}</version>
       </dependency>
 
       <dependency>

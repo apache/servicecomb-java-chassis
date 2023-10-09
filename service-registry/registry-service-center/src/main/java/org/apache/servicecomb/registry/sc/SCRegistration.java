@@ -33,6 +33,7 @@ import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.apache.servicecomb.service.center.client.model.ServiceCenterConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
@@ -60,6 +61,8 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
 
   private DataCenterProperties dataCenterProperties;
 
+  private Environment environment;
+
   private CountDownLatch readyWaiter = new CountDownLatch(1);
 
   @Autowired
@@ -80,11 +83,19 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
     this.dataCenterProperties = dataCenterProperties;
   }
 
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
 
   @Override
   public void init() {
-    microservice = MicroserviceHandler.createMicroservice(configurationProperties, microserviceProperties);
-    microserviceInstance = MicroserviceHandler.createMicroserviceInstance(configurationProperties,
+    microservice = MicroserviceHandler.createMicroservice(
+        environment, configurationProperties, microserviceProperties);
+    microserviceInstance = MicroserviceHandler.createMicroserviceInstance(
+        environment,
+        configurationProperties,
         microserviceProperties,
         dataCenterProperties);
     serviceCenterRegistration = new ServiceCenterRegistration(serviceCenterClient,
