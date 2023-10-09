@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
@@ -59,7 +57,6 @@ public class RestServerCodecFilter implements ProviderFilter {
 
   public static final String NAME = "rest-server-codec";
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;
@@ -116,7 +113,7 @@ public class RestServerCodecFilter implements ProviderFilter {
   public static CompletableFuture<Response> encodeResponse(Response response, boolean download,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
     responseEx.setStatus(response.getStatusCode());
-      copyHeadersToHttpResponse(response.getHeaders(), responseEx);
+    copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
     if (download) {
       return CompletableFuture.completedFuture(response);

@@ -18,8 +18,6 @@ package org.apache.servicecomb.faultinjection;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -43,7 +41,6 @@ public class ConsumerAbortFaultFilter implements ConsumerFilter {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1020;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "consumer-abort-fault";

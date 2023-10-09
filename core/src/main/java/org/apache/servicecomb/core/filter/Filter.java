@@ -18,8 +18,6 @@ package org.apache.servicecomb.core.filter;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -70,7 +68,6 @@ public interface Filter {
     return 0;
   }
 
-  @Nonnull
   default String getName() {
     throw new IllegalStateException("must provide unique filter name.");
   }

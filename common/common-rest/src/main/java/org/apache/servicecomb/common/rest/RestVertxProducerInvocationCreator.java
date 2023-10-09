@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -29,9 +27,9 @@ import io.vertx.ext.web.RoutingContext;
 public class RestVertxProducerInvocationCreator extends RestProducerInvocationCreator {
   private final RoutingContext routingContext;
 
-  public RestVertxProducerInvocationCreator(@Nonnull RoutingContext routingContext,
+  public RestVertxProducerInvocationCreator(RoutingContext routingContext,
       MicroserviceMeta microserviceMeta, Endpoint endpoint,
-      @Nonnull HttpServletRequestEx requestEx, @Nonnull HttpServletResponseEx responseEx) {
+      HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
     super(microserviceMeta, endpoint, requestEx, responseEx);
     this.routingContext = routingContext;
   }

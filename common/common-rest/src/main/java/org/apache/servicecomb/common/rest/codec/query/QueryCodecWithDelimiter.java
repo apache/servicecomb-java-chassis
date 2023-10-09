@@ -19,11 +19,10 @@ package org.apache.servicecomb.common.rest.codec.query;
 import java.util.Collection;
 import java.util.StringJoiner;
 
-import javax.annotation.Nonnull;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * can not support value with delimiter<br>
@@ -44,7 +43,7 @@ public class QueryCodecWithDelimiter extends AbstractQueryCodec {
   }
 
   @Override
-  public void encode(URLPathStringBuilder builder, String name, @Nonnull Collection<Object> values) throws Exception {
+  public void encode(URLPathStringBuilder builder, String name, Collection<Object> values) throws Exception {
     String joined = join(values);
     if (joined == null) {
       return;

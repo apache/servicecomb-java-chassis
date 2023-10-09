@@ -18,8 +18,6 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.CoreConst;
@@ -41,7 +39,6 @@ public class HighwayClientFilter implements ConsumerFilter {
 
   public static final String NAME = "highway-client";
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;

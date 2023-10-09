@@ -18,8 +18,6 @@ package org.apache.servicecomb.core.filter.impl;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -27,7 +25,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 
 // just for test
 public class EmptyFilter implements Filter {
-  @Nonnull
   @Override
   public String getName() {
     return "empty";

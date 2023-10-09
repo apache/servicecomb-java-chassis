@@ -20,12 +20,11 @@ import static jakarta.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_CLIENT;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_SERVER;
 
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 public interface ExceptionConverter<T extends Throwable> extends SPIOrder {
   static boolean isClient(StatusType status) {
@@ -50,5 +49,5 @@ public interface ExceptionConverter<T extends Throwable> extends SPIOrder {
    * @param genericStatus if can not determine the status type, then use this input value
    * @return converted invocation exception
    */
-  InvocationException convert(@Nullable Invocation invocation, T throwable, StatusType genericStatus);
+  InvocationException convert(Invocation invocation, T throwable, StatusType genericStatus);
 }

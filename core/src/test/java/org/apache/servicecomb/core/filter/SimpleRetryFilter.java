@@ -19,8 +19,6 @@ package org.apache.servicecomb.core.filter;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -29,7 +27,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 public class SimpleRetryFilter implements ConsumerFilter {
   protected int maxRetry = 3;
 
-  @Nonnull
   @Override
   public String getName() {
     return "simple-retry";

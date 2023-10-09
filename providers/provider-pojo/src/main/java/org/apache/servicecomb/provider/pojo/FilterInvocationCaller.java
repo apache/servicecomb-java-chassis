@@ -21,8 +21,6 @@ import static org.apache.servicecomb.core.provider.consumer.InvokerUtils.isAsync
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 
@@ -38,7 +36,7 @@ public class FilterInvocationCaller implements InvocationCaller {
     return isAsyncMethod(method) ? future : InvokerUtils.toSync(future, invocation.getWaitTime());
   }
 
-  protected CompletableFuture<Object> doCall(@Nonnull PojoInvocation invocation) {
+  protected CompletableFuture<Object> doCall(PojoInvocation invocation) {
     return InvokerUtils.invoke(invocation)
         .thenApply(response -> {
           if (response.isSucceed()) {

@@ -29,9 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
 import org.apache.servicecomb.core.Invocation;
@@ -105,13 +102,13 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public InvocationException convert(@Nonnull Invocation invocation, Throwable throwable) {
+  public InvocationException convert(Invocation invocation, Throwable throwable) {
     StatusType genericStatus = CONSUMER.equals(invocation.getInvocationType()) ? BAD_REQUEST : INTERNAL_SERVER_ERROR;
     return convert(invocation, throwable, genericStatus);
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
+  public InvocationException convert(Invocation invocation, Throwable throwable, StatusType genericStatus) {
     Throwable unwrapped = ExceptionFactory.unwrap(throwable);
     try {
       ExceptionConverter<Throwable> converter =
@@ -149,7 +146,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public void logConsumerException(@Nonnull Invocation invocation, @Nonnull InvocationException exception) {
+  public void logConsumerException(Invocation invocation, InvocationException exception) {
     if (isIgnoreLog(invocation, exception)) {
       return;
     }
@@ -171,7 +168,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public boolean isIgnoreLog(@Nonnull Invocation invocation, @Nonnull InvocationException exception) {
+  public boolean isIgnoreLog(Invocation invocation, InvocationException exception) {
     if (!isPrintRateLimit() && exception.getStatusCode() == TOO_MANY_REQUESTS.getStatusCode()) {
       return true;
     }
@@ -180,7 +177,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public Response toProducerResponse(@Nullable Invocation invocation, Throwable exception) {
+  public Response toProducerResponse(Invocation invocation, Throwable exception) {
     InvocationException invocationException = convert(invocation, exception, INTERNAL_SERVER_ERROR);
     if (invocation != null) {
       logProducerException(invocation, invocationException);
@@ -190,7 +187,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public void logProducerException(@Nonnull Invocation invocation, @Nonnull InvocationException exception) {
+  public void logProducerException(Invocation invocation, InvocationException exception) {
     if (isIgnoreLog(invocation, exception)) {
       return;
     }

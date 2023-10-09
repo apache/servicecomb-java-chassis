@@ -23,9 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
 
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -34,6 +31,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.Test;
 
 import io.vertx.core.json.Json;
+import jakarta.ws.rs.core.Response.StatusType;
 
 class ExceptionsTest {
   @Test
@@ -82,7 +80,7 @@ class ExceptionsTest {
     }
 
     @Override
-    public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
+    public InvocationException convert(Invocation invocation, Throwable throwable, StatusType genericStatus) {
       throw new RuntimeExceptionWithoutStackTrace("mock exception when convert");
     }
   }

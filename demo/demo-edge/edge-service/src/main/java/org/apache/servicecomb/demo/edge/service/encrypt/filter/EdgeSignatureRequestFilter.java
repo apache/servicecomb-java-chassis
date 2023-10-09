@@ -22,8 +22,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -49,7 +47,6 @@ public class EdgeSignatureRequestFilter implements ConsumerFilter {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1800;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "test-edge-signature-request";

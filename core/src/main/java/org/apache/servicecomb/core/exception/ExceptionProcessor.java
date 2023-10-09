@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.core.exception;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.core.Ordered;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 /**
  * will select the min order instance
@@ -37,17 +35,17 @@ public interface ExceptionProcessor extends Ordered {
 
   boolean isPrintStackTrace();
 
-  InvocationException convert(@Nonnull Invocation invocation, Throwable throwable);
+  InvocationException convert(Invocation invocation, Throwable throwable);
 
-  InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus);
+  InvocationException convert(Invocation invocation, Throwable throwable, StatusType genericStatus);
 
-  boolean isIgnoreLog(@Nonnull Invocation invocation, @Nonnull InvocationException exception);
+  boolean isIgnoreLog(Invocation invocation, InvocationException exception);
 
   Response toConsumerResponse(Invocation invocation, Throwable throwable);
 
-  void logConsumerException(@Nonnull Invocation invocation, @Nonnull InvocationException exception);
+  void logConsumerException(Invocation invocation, InvocationException exception);
 
-  Response toProducerResponse(@Nullable Invocation invocation, Throwable exception);
+  Response toProducerResponse(Invocation invocation, Throwable exception);
 
-  void logProducerException(@Nonnull Invocation invocation, @Nonnull InvocationException exception);
+  void logProducerException(Invocation invocation, InvocationException exception);
 }

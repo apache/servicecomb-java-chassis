@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -62,7 +60,7 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   protected ProduceProcessor produceProcessor;
 
   public RestProducerInvocationCreator(MicroserviceMeta microserviceMeta, Endpoint endpoint,
-      @Nonnull HttpServletRequestEx requestEx, @Nonnull HttpServletResponseEx responseEx) {
+      HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
     this.microserviceMeta = microserviceMeta;
     this.endpoint = endpoint;
     this.requestEx = requestEx;

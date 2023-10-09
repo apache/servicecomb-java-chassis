@@ -17,13 +17,12 @@
 
 package org.apache.servicecomb.demo.edge.business.error;
 
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class CustomExceptionToProducerResponseConverter implements
     ExceptionConverter<IllegalStateException> {
@@ -38,7 +37,7 @@ public class CustomExceptionToProducerResponseConverter implements
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, IllegalStateException e,
+  public InvocationException convert(Invocation invocation, IllegalStateException e,
       StatusType genericStatus) {
     IllegalStateErrorData data = new IllegalStateErrorData();
     data.setId(500);

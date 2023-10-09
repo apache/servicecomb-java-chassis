@@ -21,8 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
@@ -113,7 +111,6 @@ public class LoadBalanceFilter implements ConsumerFilter {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "load-balance";

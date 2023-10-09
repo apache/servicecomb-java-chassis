@@ -19,8 +19,6 @@ package org.apache.servicecomb.core.filter.impl;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.Filter;
@@ -35,7 +33,6 @@ import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 public class ProviderOperationFilter implements ProviderFilter {
   public static final String NAME = "producer-operation";
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;

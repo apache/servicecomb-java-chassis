@@ -19,8 +19,6 @@ package org.apache.servicecomb.qps;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
@@ -46,7 +44,6 @@ public class ProviderFlowControlFilter implements ProviderFilter {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1990;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "provider-flow-control";

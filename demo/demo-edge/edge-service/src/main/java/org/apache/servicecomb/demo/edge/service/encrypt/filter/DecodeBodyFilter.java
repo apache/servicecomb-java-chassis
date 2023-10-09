@@ -19,8 +19,6 @@ package org.apache.servicecomb.demo.edge.service.encrypt.filter;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
@@ -45,7 +43,6 @@ public class DecodeBodyFilter implements ConsumerFilter {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1790;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "test-edge-decode-body";

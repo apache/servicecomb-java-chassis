@@ -21,9 +21,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -43,6 +40,7 @@ import io.github.resilience4j.bulkhead.Bulkhead;
 import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
+import jakarta.ws.rs.core.Response.Status;
 
 public class ConsumerInstanceBulkheadFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInstanceBulkheadFilter.class);
@@ -59,7 +57,6 @@ public class ConsumerInstanceBulkheadFilter implements ConsumerFilter {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1060;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "instance-bulkhead";

@@ -26,15 +26,13 @@ import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class Exceptions {
   private static ExceptionProcessor processor = new DefaultExceptionProcessor();
@@ -102,7 +100,7 @@ public class Exceptions {
     return producer(GENERIC_SERVER, msg, cause);
   }
 
-  public static StatusType getGenericStatus(@Nonnull Invocation invocation) {
+  public static StatusType getGenericStatus(Invocation invocation) {
     return CONSUMER.equals(invocation.getInvocationType()) ? BAD_REQUEST : INTERNAL_SERVER_ERROR;
   }
 
@@ -110,15 +108,15 @@ public class Exceptions {
     return processor.toConsumerResponse(invocation, throwable);
   }
 
-  public static Response toProducerResponse(@Nullable Invocation invocation, Throwable exception) {
+  public static Response toProducerResponse(Invocation invocation, Throwable exception) {
     return processor.toProducerResponse(invocation, exception);
   }
 
-  public static InvocationException convert(@Nonnull Invocation invocation, Throwable throwable) {
+  public static InvocationException convert(Invocation invocation, Throwable throwable) {
     return processor.convert(invocation, throwable);
   }
 
-  public static InvocationException convert(@Nullable Invocation invocation, Throwable throwable,
+  public static InvocationException convert(Invocation invocation, Throwable throwable,
       StatusType genericStatus) {
     return processor.convert(invocation, throwable, genericStatus);
   }

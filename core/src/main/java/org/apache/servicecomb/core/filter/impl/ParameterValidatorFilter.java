@@ -20,8 +20,6 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -63,7 +61,6 @@ public class ParameterValidatorFilter implements ProviderFilter, InitializingBea
     this.environment = environment;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;

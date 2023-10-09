@@ -16,13 +16,9 @@
  */
 package org.apache.servicecomb.core.exception.converter;
 
-import javax.annotation.Nullable;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import jakarta.ws.rs.core.Response.StatusType;
 
@@ -39,8 +35,6 @@ import jakarta.ws.rs.core.Response.StatusType;
  * </pre>
  */
 public class DefaultExceptionConverter implements ExceptionConverter<Throwable> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionConverter.class);
-
   public static final int ORDER = Integer.MAX_VALUE;
 
   @Override
@@ -54,7 +48,7 @@ public class DefaultExceptionConverter implements ExceptionConverter<Throwable> 
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
+  public InvocationException convert(Invocation invocation, Throwable throwable, StatusType genericStatus) {
     String msg = String.format("Unexpected exception when processing %s. %s",
         invocation == null ? "none" : invocation.getMicroserviceQualifiedName(), throwable.getMessage());
     return new InvocationException(genericStatus, ExceptionConverter.getGenericCode(genericStatus),
