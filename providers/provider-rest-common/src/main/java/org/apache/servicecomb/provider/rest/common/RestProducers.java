@@ -22,13 +22,14 @@ import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
-public class RestProducers implements BeanPostProcessor {
+public class RestProducers implements BeanPostProcessor, EnvironmentAware {
   private final List<ProducerMeta> producerMetaList = new ArrayList<>();
 
   @SuppressWarnings("unchecked")
@@ -38,6 +39,8 @@ public class RestProducers implements BeanPostProcessor {
   public List<ProducerMeta> getProducerMetaList() {
     return producerMetaList;
   }
+
+  private Environment environment;
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -67,10 +70,15 @@ public class RestProducers implements BeanPostProcessor {
     }
 
     if (restControllerCls != null &&
-        LegacyPropertyFactory.getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true)
+        environment.getProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, boolean.class, true)
         && beanCls.getAnnotation(restControllerCls) != null) {
       ProducerMeta producerMeta = new ProducerMeta(beanCls.getName(), bean);
       producerMetaList.add(producerMeta);
     }
+  }
+
+  @Override
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 }

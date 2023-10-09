@@ -128,7 +128,7 @@ public class DynamicPropertiesImpl implements DynamicProperties {
     }
     if (booleanCallbacks.containsKey(entry.getKey())) {
       for (Consumer<Boolean> callbacks : booleanCallbacks.get(entry.getKey())) {
-        callbacks.accept((boolean) entry.getValue());
+        callbacks.accept((Boolean) entry.getValue());
       }
     }
   }

@@ -19,6 +19,7 @@ package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
@@ -59,7 +60,8 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public int getOrder() {
-    return environment.getProperty(KEY_ORDER, int.class, 20_000);
+    // can not use environment, add as beans is later than instantiate SPI
+    return LegacyPropertyFactory.getIntProperty(KEY_ORDER, 20_000);
   }
 
   @Override

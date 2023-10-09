@@ -25,8 +25,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.config.file.ConfigModel;
-import org.apache.servicecomb.config.file.MicroserviceConfigLoader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
