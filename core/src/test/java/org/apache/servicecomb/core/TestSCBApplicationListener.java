@@ -40,8 +40,8 @@ public class TestSCBApplicationListener {
   @Test
   public void onApplicationEvent_close() {
     ContextClosedEvent contextClosedEvent = Mockito.mock(ContextClosedEvent.class);
-    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     Environment environment = Mockito.mock(Environment.class);
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);

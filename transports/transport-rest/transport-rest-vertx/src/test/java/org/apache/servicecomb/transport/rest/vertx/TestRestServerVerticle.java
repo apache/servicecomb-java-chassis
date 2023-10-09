@@ -171,7 +171,7 @@ public class TestRestServerVerticle {
     instance = new RestServerVerticle();
     startPromise = Promise.promise();
 
-    SCBBootstrap.createSCBEngineForTest();
+    SCBBootstrap.createSCBEngineForTest(environment);
   }
 
   @After

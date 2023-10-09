@@ -68,7 +68,7 @@ public class TestVertxRestDispatcher {
     dispatcher = new VertxRestDispatcher();
     dispatcher.init(mainRouter);
 
-    SCBBootstrap.createSCBEngineForTest().setTransportManager(transportManager);
+    SCBBootstrap.createSCBEngineForTest(environment).setTransportManager(transportManager);
   }
 
   @After

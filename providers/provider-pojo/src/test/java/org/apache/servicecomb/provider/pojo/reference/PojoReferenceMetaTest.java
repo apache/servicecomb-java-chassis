@@ -28,8 +28,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class PojoReferenceMetaTest {
+  static Environment environment = Mockito.mock(Environment.class);
+
   @BeforeEach
   public void setUp() {
   }
@@ -40,7 +44,7 @@ public class PojoReferenceMetaTest {
 
   @Test
   public void testHasConsumerInterface() {
-    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
 
     PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
     pojoReferenceMeta.setMicroserviceName("test");

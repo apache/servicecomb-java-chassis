@@ -20,10 +20,8 @@ import static org.apache.servicecomb.config.nacos.ConfigurationAction.CREATE;
 import static org.apache.servicecomb.config.nacos.ConfigurationAction.DELETE;
 import static org.apache.servicecomb.config.nacos.ConfigurationAction.SET;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
@@ -34,7 +32,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.WatchedUpdateListener;
 
 public class NacosDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
   public static final String SOURCE_NAME = "kie";
@@ -42,8 +39,6 @@ public class NacosDynamicPropertiesSource implements DynamicPropertiesSource<Map
   private static final Logger LOGGER = LoggerFactory.getLogger(NacosDynamicPropertiesSource.class);
 
   private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
-
-  private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   public NacosDynamicPropertiesSource() {
   }

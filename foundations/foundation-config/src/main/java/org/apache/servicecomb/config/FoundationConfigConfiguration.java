@@ -40,8 +40,8 @@ public class FoundationConfigConfiguration {
   }
 
   @Bean
-  public PriorityPropertyFactory priorityPropertyFactory() {
-    return new PriorityPropertyFactory();
+  public PriorityPropertyFactory priorityPropertyFactory(Environment environment) {
+    return new PriorityPropertyFactory(environment);
   }
 
   @Bean

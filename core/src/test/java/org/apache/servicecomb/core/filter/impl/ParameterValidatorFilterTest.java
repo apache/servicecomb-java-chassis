@@ -100,8 +100,9 @@ public class ParameterValidatorFilterTest {
 
   @Before
   public void setUp() throws Exception {
-    SCBEngine engine = SCBBootstrap.createSCBEngineForTest();
     environment = Mockito.mock(Environment.class);
+    SCBEngine engine = SCBBootstrap.createSCBEngineForTest(environment);
+
     Mockito.when(environment.getProperty(ENABLE_EL, boolean.class, false)).thenReturn(false);
     filter.setEnvironment(environment);
     filter.afterPropertiesSet();

@@ -30,21 +30,23 @@ import org.apache.servicecomb.core.filter.impl.EmptyFilter;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.springframework.core.env.Environment;
 
 /**
  * not depend on remote service registry and spring context
  */
 public class SCBEngineForTest extends SCBEngine {
-  public SCBEngineForTest() {
+  public SCBEngineForTest(Environment environment) {
     List<Filter> filters = Arrays.asList(
         new EmptyFilter()
     );
     setFilterChainsManager(new FilterChainsManager()
         .addFilters(filters));
 
-    PriorityPropertyFactory propertyFactory = new PriorityPropertyFactory();
+    PriorityPropertyFactory propertyFactory = new PriorityPropertyFactory(environment);
     ConfigObjectFactory configObjectFactory = new ConfigObjectFactory(propertyFactory);
     setPriorityPropertyManager(new PriorityPropertyManager(configObjectFactory));
+    setEnvironment(environment);
   }
 
   @Override

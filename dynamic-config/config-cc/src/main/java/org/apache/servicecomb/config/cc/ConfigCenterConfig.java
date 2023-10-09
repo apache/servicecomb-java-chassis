@@ -24,14 +24,8 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-
 public final class ConfigCenterConfig {
   public static final String SSL_TAG = "cc.consumer";
-
-  private static ConcurrentCompositeConfiguration finalConfig;
-
-  private static final String AUTO_DISCOVERY_ENABLED = "servicecomb.service.registry.autodiscovery";
 
   private static final String ADDRESS = "servicecomb.config.client.serverUri";
 
@@ -39,15 +33,11 @@ public final class ConfigCenterConfig {
 
   private static final String REFRESH_INTERVAL = "servicecomb.config.client.refresh_interval";
 
-  private static final String FIRST_REFRESH_INTERVAL = "servicecomb.config.client.first_refresh_interval";
-
   private static final String FIRST_PULL_REQUIRED = "servicecomb.config.client.firstPullRequired";
 
   public static final String FILE_SOURCE = "servicecomb.config.client.fileSource";
 
   private static final int DEFAULT_REFRESH_INTERVAL = 15000;
-
-  private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
 
   private final Environment environment;
 
@@ -71,10 +61,6 @@ public final class ConfigCenterConfig {
   public long getRefreshInterval() {
     return environment.getProperty(
         REFRESH_INTERVAL, long.class, (long) DEFAULT_REFRESH_INTERVAL);
-  }
-
-  public int getFirstRefreshInterval() {
-    return environment.getProperty(FIRST_REFRESH_INTERVAL, int.class, DEFAULT_FIRST_REFRESH_INTERVAL);
   }
 
   public Boolean isProxyEnable() {

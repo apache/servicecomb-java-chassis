@@ -56,7 +56,7 @@ public class TestRestServlet {
     LegacyPropertyFactory.setEnvironment(environment);
     restservlet = new RestServlet();
 
-    SCBBootstrap.createSCBEngineForTest();
+    SCBBootstrap.createSCBEngineForTest(environment);
   }
 
   @After

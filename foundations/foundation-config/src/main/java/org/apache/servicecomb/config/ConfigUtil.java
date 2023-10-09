@@ -17,8 +17,10 @@
 
 package org.apache.servicecomb.config;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.configuration.PropertyConverter;
@@ -42,6 +44,20 @@ public final class ConfigUtil {
         for (String key : ((EnumerablePropertySource<?>) propertySource).getPropertyNames()) {
           if (key.startsWith(prefix)) {
             result.add(key);
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  public static Map<String, String> stringPropertiesWithPrefix(Environment environment, String prefix) {
+    Map<String, String> result = new HashMap<>();
+    for (PropertySource<?> propertySource : ((ConfigurableEnvironment) environment).getPropertySources()) {
+      if (propertySource instanceof EnumerablePropertySource) {
+        for (String key : ((EnumerablePropertySource<?>) propertySource).getPropertyNames()) {
+          if (key.startsWith(prefix)) {
+            result.put(key, environment.getProperty(key));
           }
         }
       }

@@ -65,8 +65,8 @@ public class TestServicePathManager {
 
   @Test
   public void testBuildProducerPathsNoPrefix() {
-    scbEngine = SCBBootstrap.createSCBEngineForTest();
     Environment environment = Mockito.mock(Environment.class);
+    scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
@@ -90,8 +90,8 @@ public class TestServicePathManager {
   @Test
   public void testBuildProducerPathsHasPrefix() {
     ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root/rest");
-    scbEngine = SCBBootstrap.createSCBEngineForTest();
     Environment environment = Mockito.mock(Environment.class);
+    scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);

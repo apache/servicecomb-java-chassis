@@ -21,8 +21,6 @@ import static org.apache.servicecomb.swagger.invocation.InvocationType.PROVIDER;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.Filter;
@@ -41,7 +39,6 @@ public class ZipkinTracingFilter implements Filter {
 
   private ZipkinProviderDelegate producer;
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;
