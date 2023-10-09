@@ -97,8 +97,8 @@ public class RestServerCodecFilterTest {
 
   @BeforeAll
   public static void beforeClass() {
-    engine = SCBBootstrap.createSCBEngineForTest();
     Environment environment = Mockito.mock(Environment.class);
+    engine = SCBBootstrap.createSCBEngineForTest(environment);
     engine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);

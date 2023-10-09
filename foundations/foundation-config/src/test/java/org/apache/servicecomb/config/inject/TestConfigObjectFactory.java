@@ -17,11 +17,15 @@
 package org.apache.servicecomb.config.inject;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.priority.TestPriorityPropertyBase;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestConfigObjectFactory extends TestPriorityPropertyBase {
   public static class ConfigNoAnnotation {
@@ -193,33 +197,33 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
   @Test
   public void noAnnotation_initValue() {
-    ArchaiusUtils.setProperty("strValue", "strValue");
-    ArchaiusUtils.setProperty("strValue1", "strValue1");
+    Mockito.when(environment.getProperty("strValue")).thenReturn("strValue");
+    Mockito.when(environment.getProperty("strValue1")).thenReturn("strValue1");
 
-    ArchaiusUtils.setProperty("intValue", 1);
-    ArchaiusUtils.setProperty("intValue1", 2);
-    ArchaiusUtils.setProperty("intValueObj", 3);
-    ArchaiusUtils.setProperty("intValueObj1", 4);
+    Mockito.when(environment.getProperty("intValue", Integer.class)).thenReturn(1);
+    Mockito.when(environment.getProperty("intValue1", Integer.class)).thenReturn(2);
+    Mockito.when(environment.getProperty("intValueObj", Integer.class)).thenReturn(3);
+    Mockito.when(environment.getProperty("intValueObj1", Integer.class)).thenReturn(4);
 
-    ArchaiusUtils.setProperty("longValue", 5);
-    ArchaiusUtils.setProperty("longValue1", 6);
-    ArchaiusUtils.setProperty("longValueObj", 7);
-    ArchaiusUtils.setProperty("longValueObj1", 8);
+    Mockito.when(environment.getProperty("longValue", Long.class)).thenReturn(5L);
+    Mockito.when(environment.getProperty("longValue1", Long.class)).thenReturn(6L);
+    Mockito.when(environment.getProperty("longValueObj", Long.class)).thenReturn(7L);
+    Mockito.when(environment.getProperty("longValueObj1", Long.class)).thenReturn(8L);
 
-    ArchaiusUtils.setProperty("floatValue", 9.0);
-    ArchaiusUtils.setProperty("floatValue1", 10.0);
-    ArchaiusUtils.setProperty("floatValueObj", 11.0);
-    ArchaiusUtils.setProperty("floatValueObj1", 12.0);
+    Mockito.when(environment.getProperty("floatValue", Float.class)).thenReturn(9.0F);
+    Mockito.when(environment.getProperty("floatValue1", Float.class)).thenReturn(10.0F);
+    Mockito.when(environment.getProperty("floatValueObj", Float.class)).thenReturn(11.0F);
+    Mockito.when(environment.getProperty("floatValueObj1", Float.class)).thenReturn(12.0F);
 
-    ArchaiusUtils.setProperty("doubleValue", 13.0);
-    ArchaiusUtils.setProperty("doubleValue1", 14.0);
-    ArchaiusUtils.setProperty("doubleValueObj", 15.0);
-    ArchaiusUtils.setProperty("doubleValueObj1", 16.0);
+    Mockito.when(environment.getProperty("doubleValue", Double.class)).thenReturn(13.0D);
+    Mockito.when(environment.getProperty("doubleValue1", Double.class)).thenReturn(14.0D);
+    Mockito.when(environment.getProperty("doubleValueObj", Double.class)).thenReturn(15.0D);
+    Mockito.when(environment.getProperty("doubleValueObj1", Double.class)).thenReturn(16.0D);
 
-    ArchaiusUtils.setProperty("booleanValue", true);
-    ArchaiusUtils.setProperty("booleanValue1", true);
-    ArchaiusUtils.setProperty("booleanValueObj", true);
-    ArchaiusUtils.setProperty("booleanValueObj1", true);
+    Mockito.when(environment.getProperty("booleanValue", Boolean.class)).thenReturn(true);
+    Mockito.when(environment.getProperty("booleanValue1", Boolean.class)).thenReturn(true);
+    Mockito.when(environment.getProperty("booleanValueObj", Boolean.class)).thenReturn(true);
+    Mockito.when(environment.getProperty("booleanValueObj1", Boolean.class)).thenReturn(true);
 
     ConfigNoAnnotation config = priorityPropertyManager.createConfigObject(ConfigNoAnnotation.class);
 
@@ -256,33 +260,64 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
   public void noAnnotation_updateValue() {
     ConfigNoAnnotation config = priorityPropertyManager.createConfigObject(ConfigNoAnnotation.class);
 
-    ArchaiusUtils.setProperty("strValue", "strValue");
-    ArchaiusUtils.setProperty("strValue1", "strValue1");
+    Mockito.when(environment.getProperty("strValue")).thenReturn("strValue");
+    Mockito.when(environment.getProperty("strValue1")).thenReturn("strValue1");
 
-    ArchaiusUtils.setProperty("intValue", 1);
-    ArchaiusUtils.setProperty("intValue1", 2);
-    ArchaiusUtils.setProperty("intValueObj", 3);
-    ArchaiusUtils.setProperty("intValueObj1", 4);
+    Mockito.when(environment.getProperty("intValue", Integer.class)).thenReturn(1);
+    Mockito.when(environment.getProperty("intValue1", Integer.class)).thenReturn(2);
+    Mockito.when(environment.getProperty("intValueObj", Integer.class)).thenReturn(3);
+    Mockito.when(environment.getProperty("intValueObj1", Integer.class)).thenReturn(4);
 
-    ArchaiusUtils.setProperty("longValue", 5);
-    ArchaiusUtils.setProperty("longValue1", 6);
-    ArchaiusUtils.setProperty("longValueObj", 7);
-    ArchaiusUtils.setProperty("longValueObj1", 8);
+    Mockito.when(environment.getProperty("longValue", Long.class)).thenReturn(5L);
+    Mockito.when(environment.getProperty("longValue1", Long.class)).thenReturn(6L);
+    Mockito.when(environment.getProperty("longValueObj", Long.class)).thenReturn(7L);
+    Mockito.when(environment.getProperty("longValueObj1", Long.class)).thenReturn(8L);
 
-    ArchaiusUtils.setProperty("floatValue", 9.0);
-    ArchaiusUtils.setProperty("floatValue1", 10.0);
-    ArchaiusUtils.setProperty("floatValueObj", 11.0);
-    ArchaiusUtils.setProperty("floatValueObj1", 12.0);
+    Mockito.when(environment.getProperty("floatValue", Float.class)).thenReturn(9.0F);
+    Mockito.when(environment.getProperty("floatValue1", Float.class)).thenReturn(10.0F);
+    Mockito.when(environment.getProperty("floatValueObj", Float.class)).thenReturn(11.0F);
+    Mockito.when(environment.getProperty("floatValueObj1", Float.class)).thenReturn(12.0F);
 
-    ArchaiusUtils.setProperty("doubleValue", 13.0);
-    ArchaiusUtils.setProperty("doubleValue1", 14.0);
-    ArchaiusUtils.setProperty("doubleValueObj", 15.0);
-    ArchaiusUtils.setProperty("doubleValueObj1", 16.0);
+    Mockito.when(environment.getProperty("doubleValue", Double.class)).thenReturn(13.0D);
+    Mockito.when(environment.getProperty("doubleValue1", Double.class)).thenReturn(14.0D);
+    Mockito.when(environment.getProperty("doubleValueObj", Double.class)).thenReturn(15.0D);
+    Mockito.when(environment.getProperty("doubleValueObj1", Double.class)).thenReturn(16.0D);
 
-    ArchaiusUtils.setProperty("booleanValue", true);
-    ArchaiusUtils.setProperty("booleanValue1", true);
-    ArchaiusUtils.setProperty("booleanValueObj", true);
-    ArchaiusUtils.setProperty("booleanValueObj1", true);
+    Mockito.when(environment.getProperty("booleanValue", Boolean.class)).thenReturn(true);
+    Mockito.when(environment.getProperty("booleanValue1", Boolean.class)).thenReturn(true);
+    Mockito.when(environment.getProperty("booleanValueObj", Boolean.class)).thenReturn(true);
+    Mockito.when(environment.getProperty("booleanValueObj1", Boolean.class)).thenReturn(true);
+
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put("strValue", "strValue");
+    updated.put("strValue1", "strValue1");
+
+    updated.put("intValue", 0);
+    updated.put("intValue1", 1);
+    updated.put("intValueObj", 2);
+    updated.put("intValueObj1", 3);
+
+    updated.put("longValue", 5L);
+    updated.put("longValue1", 6L);
+    updated.put("longValueObj", 7L);
+    updated.put("longValueObj1", 8L);
+
+    updated.put("floatValue", 9.0F);
+    updated.put("floatValue1", 10.0F);
+    updated.put("floatValueObj", 11.0F);
+    updated.put("floatValueObj1", 12.0F);
+
+    updated.put("doubleValue", 13.0D);
+    updated.put("doubleValue1", 14.0D);
+    updated.put("doubleValueObj", 15.0D);
+    updated.put("doubleValueObj1", 16.0D);
+
+    updated.put("booleanValue", true);
+    updated.put("booleanValue1", true);
+    updated.put("booleanValueObj", true);
+    updated.put("booleanValueObj1", true);
+
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
     Assertions.assertEquals("strValue", config.strValue);
     Assertions.assertEquals("strValue1", config.getStrValue1());
@@ -370,16 +405,29 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     Assertions.assertEquals(0, config.longValue);
 
-    ArchaiusUtils.setProperty("root.low-2.a.high-2.b", Long.MAX_VALUE);
+    Mockito.when(environment.getProperty("root.low-2.a.high-2.b", Long.class)).thenReturn(Long.MAX_VALUE);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put("root.low-2.a.high-2.b", Long.MAX_VALUE);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertEquals(Long.MAX_VALUE, config.longValue);
 
-    ArchaiusUtils.setProperty("root.low-2.a.high-1.b", Long.MAX_VALUE - 1);
+    Mockito.when(environment.getProperty("root.low-2.a.high-1.b", Long.class)).thenReturn(Long.MAX_VALUE - 1);
+    updated = new HashMap<>();
+    updated.put("root.low-2.a.high-1.b", Long.MAX_VALUE - 1);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
+
     Assertions.assertEquals(Long.MAX_VALUE - 1, config.longValue);
 
-    ArchaiusUtils.setProperty("root.low-1.a.high-2.b", Long.MAX_VALUE - 2);
+    Mockito.when(environment.getProperty("root.low-1.a.high-2.b", Long.class)).thenReturn(Long.MAX_VALUE - 2);
+    updated = new HashMap<>();
+    updated.put("root.low-1.a.high-2.b", Long.MAX_VALUE - 2);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertEquals(Long.MAX_VALUE - 2, config.longValue);
 
-    ArchaiusUtils.setProperty("root.low-1.a.high-1.b", Long.MAX_VALUE - 3);
+    Mockito.when(environment.getProperty("root.low-1.a.high-1.b", Long.class)).thenReturn(Long.MAX_VALUE - 3);
+    updated = new HashMap<>();
+    updated.put("root.low-1.a.high-1.b", Long.MAX_VALUE - 3);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertEquals(Long.MAX_VALUE - 3, config.longValue);
   }
 
@@ -390,11 +438,19 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     Assertions.assertEquals(0, config.floatValue, 0);
 
-    ArchaiusUtils.setProperty("root.l1-2", String.valueOf(1f));
-    Assertions.assertEquals(1f, config.floatValue, 0);
+    Mockito.when(environment.getProperty("root.l1-2", Float.class)).thenReturn(1F);
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put("root.l1-2", 1F);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
 
-    ArchaiusUtils.setProperty("root.l1-1", String.valueOf(2f));
-    Assertions.assertEquals(2f, config.floatValue, 0);
+    Assertions.assertEquals(1F, config.floatValue, 0);
+
+    Mockito.when(environment.getProperty("root.l1-1", Float.class)).thenReturn(2F);
+    updated = new HashMap<>();
+    updated.put("root.l1-1", 2F);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
+
+    Assertions.assertEquals(2F, config.floatValue, 0);
   }
 
   @Test
@@ -403,7 +459,10 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     Assertions.assertEquals(0, config.intValue);
 
-    ArchaiusUtils.setProperty("root.k.value", "1");
+    Mockito.when(environment.getProperty("root.k.value", Integer.class)).thenReturn(1);
+    Map<String, Object> updated = new HashMap<>();
+    updated.put("root.k.value", 1);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertEquals(1, config.intValue);
   }
 
@@ -411,16 +470,28 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
   public void overridePrefix() {
     ConfigWithAnnotation config = priorityPropertyManager.createConfigObject(ConfigWithAnnotation.class);
 
-    ArchaiusUtils.setProperty("override.high", "high");
+    Mockito.when(environment.getProperty("override.high")).thenReturn("high");
+    HashMap<String, Object> updated = new HashMap<>();
+    updated.put("override.high", "high");
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertEquals("high", config.strValue);
 
-    ArchaiusUtils.setProperty("override.high", null);
+    Mockito.when(environment.getProperty("override.high")).thenReturn(null);
+    updated = new HashMap<>();
+    updated.put("override.high", null);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertNull(config.strValue);
 
-    ArchaiusUtils.setProperty("override.low", "low");
+    Mockito.when(environment.getProperty("override.low")).thenReturn("low");
+    updated = new HashMap<>();
+    updated.put("override.low", "low");
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertEquals("low", config.strValue);
 
-    ArchaiusUtils.setProperty("override.low", null);
+    Mockito.when(environment.getProperty("override.low")).thenReturn(null);
+    updated = new HashMap<>();
+    updated.put("override.low", null);
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
     Assertions.assertNull(config.strValue);
   }
 
@@ -447,8 +518,14 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
 
     Assertions.assertEquals(4, config.index);
     Assertions.assertEquals("h", config.model.name);
-    ArchaiusUtils.setProperty("root.index", "5");
-    ArchaiusUtils.setProperty("root.model.name", "w");
+
+    Mockito.when(environment.getProperty("root.index", Integer.class)).thenReturn(5);
+    Mockito.when(environment.getProperty("root.model.name")).thenReturn("w");
+    Map<String, Object> updated = new HashMap<>();
+    updated.put("root.index", 5);
+    updated.put("root.model.name", "w");
+    EventManager.post(ConfigurationChangedEvent.createIncremental(updated));
+
     Assertions.assertEquals(5, config.index);
     Assertions.assertEquals("w", config.model.name);
   }

@@ -26,8 +26,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestRpcReferenceProcessor {
+  static Environment environment = Mockito.mock(Environment.class);
+
   RpcReferenceProcessor consumers = new RpcReferenceProcessor();
 
   @BeforeEach
@@ -46,7 +50,7 @@ public class TestRpcReferenceProcessor {
 
   @Test
   public void testReference() {
-    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
 
     PersonReference bean = new PersonReference();
 

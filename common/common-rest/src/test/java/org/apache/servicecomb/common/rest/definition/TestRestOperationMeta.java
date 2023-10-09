@@ -166,12 +166,12 @@ public class TestRestOperationMeta {
 
   @BeforeAll
   public static void classSetup() {
-    scbEngine = SCBBootstrap.createSCBEngineForTest();
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
     ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     scbEngine.setTransportManager(transportManager);
     scbEngine.setExecutorManager(executorManager);
-    Environment environment = Mockito.mock(Environment.class);
     scbEngine.setEnvironment(environment);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);

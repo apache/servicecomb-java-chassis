@@ -24,18 +24,13 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.configuration.event.ConfigurationEvent;
-import org.apache.commons.configuration.event.ConfigurationListener;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.ConfigurationManager;
+import com.google.common.eventbus.Subscribe;
 
 public class PriorityPropertyManager {
-  private final AbstractConfiguration configuration;
-
-  private final ConfigurationListener configurationListener = this::configurationListener;
-
   private final ConfigObjectFactory configObjectFactory;
 
   // key is config object instance
@@ -43,10 +38,8 @@ public class PriorityPropertyManager {
   private final Map<Object, List<ConfigObjectProperty>> configObjectMap = synchronizedMap(new WeakHashMap<>());
 
   public PriorityPropertyManager(ConfigObjectFactory configObjectFactory) {
-    this.configuration = ConfigurationManager.getConfigInstance();
-    this.configuration.addConfigurationListener(configurationListener);
-
     this.configObjectFactory = configObjectFactory;
+    EventManager.register(this);
   }
 
   public PriorityPropertyFactory getPropertyFactory() {
@@ -54,20 +47,20 @@ public class PriorityPropertyManager {
   }
 
   public void close() {
-    configuration.removeConfigurationListener(configurationListener);
+
   }
 
-  public synchronized void configurationListener(ConfigurationEvent event) {
-    if (event.isBeforeUpdate()) {
-      return;
-    }
-
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
     // just loop all properties, it's very fast, no need to do any optimize
     for (Entry<Object, List<ConfigObjectProperty>> entry : configObjectMap.entrySet()) {
       Object instance = entry.getKey();
-      entry.getValue()
-          .forEach(
-              configObjectProperty -> configObjectProperty.updateValueWhenChanged(instance, event.getPropertyName()));
+      entry.getValue().forEach(
+          configObjectProperty -> {
+            for (String updatedKey : event.getChanged()) {
+              configObjectProperty.updateValueWhenChanged(instance, updatedKey);
+            }
+          });
     }
   }
 

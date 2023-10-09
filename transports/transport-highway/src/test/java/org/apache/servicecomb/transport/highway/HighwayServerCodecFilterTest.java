@@ -89,8 +89,7 @@ public class HighwayServerCodecFilterTest {
         .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);
 
-    engine = SCBBootstrap.createSCBEngineForTest();
-    engine.setEnvironment(environment);
+    engine = SCBBootstrap.createSCBEngineForTest(environment);
     engine.setStatus(SCBStatus.UP);
     invocation = InvocationFactory.forProvider(endpoint, operationMeta, null);
   }

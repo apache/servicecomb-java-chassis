@@ -21,51 +21,29 @@ import java.lang.reflect.Type;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PreDestroy;
-
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.configuration.event.ConfigurationEvent;
-import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConfigurationManager;
+import com.google.common.annotations.VisibleForTesting;
 
 public class PriorityPropertyFactory {
-  private final AbstractConfiguration configuration;
-
-  private final ConfigurationListener configurationListener = this::configurationListener;
-
-  // same to com.netflix.config.DynamicProperty.ALL_PROPS
-  // the set is finite
-  // will not cause OOM exception
   private final Map<PriorityPropertyType<?>, PriorityProperty<?>> properties = new ConcurrentHashMapEx<>();
 
-  public PriorityPropertyFactory() {
-    this.configuration = ConfigurationManager.getConfigInstance();
-    this.configuration.addConfigurationListener(configurationListener);
+  private final Environment environment;
+
+  public PriorityPropertyFactory(Environment environment) {
+    this.environment = environment;
   }
 
-  @PreDestroy
-  public void onDestroy() {
-    this.configuration.removeConfigurationListener(configurationListener);
-  }
-
+  @VisibleForTesting
   public Stream<PriorityProperty<?>> getProperties() {
     return properties.values().stream();
-  }
-
-  private void configurationListener(ConfigurationEvent event) {
-    if (event.isBeforeUpdate()) {
-      return;
-    }
-
-    // just update all properties, it's very fast, no need to do any optimize
-    getProperties().forEach(PriorityProperty::updateValue);
   }
 
   @SuppressWarnings("unchecked")
   public <T> PriorityProperty<T> getOrCreate(Type type, T invalidValue, T defaultValue, String... priorityKeys) {
     PriorityPropertyType<T> propertyType = new PriorityPropertyType<>(type, invalidValue, defaultValue, priorityKeys);
-    return (PriorityProperty<T>) properties.computeIfAbsent(propertyType, PriorityProperty::new);
+    return (PriorityProperty<T>) properties.computeIfAbsent(propertyType,
+        key -> new PriorityProperty<>(environment, key));
   }
 }

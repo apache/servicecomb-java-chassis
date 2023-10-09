@@ -23,8 +23,7 @@ import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicProperty;
+import org.springframework.core.env.Environment;
 
 /**
  * must create by PriorityPropertyManager<br>
@@ -44,19 +43,19 @@ public class PriorityProperty<T> {
 
   private T finalValue;
 
-  public PriorityProperty(PriorityPropertyType<T> propertyType) {
+  public PriorityProperty(Environment environment, PriorityPropertyType<T> propertyType) {
     this.propertyType = propertyType;
     this.joinedPriorityKeys = Arrays.toString(propertyType.getPriorityKeys());
     this.internalValueReader = collectReader(propertyType.getType());
-    this.properties = createProperties(propertyType.getPriorityKeys());
+    this.properties = createProperties(environment, propertyType.getPriorityKeys());
     initValue();
   }
 
-  private DynamicProperty[] createProperties(String[] priorityKeys) {
+  private DynamicProperty[] createProperties(Environment environment, String[] priorityKeys) {
     DynamicProperty[] properties = new DynamicProperty[priorityKeys.length];
     for (int idx = 0; idx < priorityKeys.length; idx++) {
       String key = priorityKeys[idx].trim();
-      properties[idx] = DynamicProperty.getInstance(key);
+      properties[idx] = new DynamicProperty(environment, key);
     }
     return properties;
   }

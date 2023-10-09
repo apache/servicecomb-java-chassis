@@ -16,29 +16,43 @@
  */
 package org.apache.servicecomb.config.priority;
 
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-public class TestPriorityPropertyBase {
-  protected PriorityPropertyManager priorityPropertyManager;
+public class DynamicProperty {
+  private final Environment environment;
 
-  protected PriorityPropertyFactory propertyFactory;
+  private final String propName;
 
-  protected Environment environment;
-
-  @BeforeEach
-  public void setup() {
-    environment = Mockito.mock(Environment.class);
-    LegacyPropertyFactory.setEnvironment(environment);
-
-    propertyFactory = new PriorityPropertyFactory(environment);
-    priorityPropertyManager = new PriorityPropertyManager(new ConfigObjectFactory(propertyFactory));
+  public DynamicProperty(Environment environment, String propName) {
+    this.environment = environment;
+    this.propName = propName;
   }
 
-  @AfterEach
-  public void teardown() {
+  public Integer getInteger() {
+    return environment.getProperty(propName, Integer.class);
+  }
+
+  public Long getLong() {
+    return environment.getProperty(propName, Long.class);
+  }
+
+  public String getString() {
+    return environment.getProperty(propName);
+  }
+
+  public Boolean getBoolean() {
+    return environment.getProperty(propName, Boolean.class);
+  }
+
+  public Double getDouble() {
+    return environment.getProperty(propName, Double.class);
+  }
+
+  public Float getFloat() {
+    return environment.getProperty(propName, Float.class);
+  }
+
+  public String getName() {
+    return propName;
   }
 }

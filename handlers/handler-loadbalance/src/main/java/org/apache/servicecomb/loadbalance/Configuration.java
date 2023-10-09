@@ -19,8 +19,8 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.Map;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 
 /**
  * configuration items
@@ -188,7 +188,7 @@ public final class Configuration {
 
   public Map<String, String> getFlowsplitFilterOptions(String microservice) {
     String keyPrefix = String.format(TRANSACTIONCONTROL_OPTIONS_PREFIX_PATTERN, microservice);
-    return ConfigurePropertyUtils.getPropertiesWithPrefix(keyPrefix);
+    return ConfigUtil.stringPropertiesWithPrefix(LegacyPropertyFactory.getEnvironment(), keyPrefix);
   }
 
   public static String getStringProperty(String defaultValue, String... keys) {

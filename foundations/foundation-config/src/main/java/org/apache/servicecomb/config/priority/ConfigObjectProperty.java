@@ -36,6 +36,7 @@ public class ConfigObjectProperty {
 
   public void updateValueWhenChanged(Object instance, @Nullable String changedKey) {
     if (property.isChangedKey(changedKey)) {
+      property.updateValue();
       setter.set(instance, property.getValue());
     }
   }

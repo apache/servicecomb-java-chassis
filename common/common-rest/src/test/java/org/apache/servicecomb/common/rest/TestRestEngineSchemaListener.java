@@ -47,12 +47,12 @@ public class TestRestEngineSchemaListener {
 
   @BeforeAll
   public static void setup() {
-    scbEngine = SCBBootstrap.createSCBEngineForTest();
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
     ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     scbEngine.setTransportManager(transportManager);
     scbEngine.setExecutorManager(executorManager);
-    Environment environment = Mockito.mock(Environment.class);
     scbEngine.setEnvironment(environment);
     LegacyPropertyFactory.setEnvironment(environment);
     Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))

@@ -58,8 +58,7 @@ public class TestAuthenticationBootListener {
 
   @BeforeEach
   public void setUp() {
-    engine = SCBBootstrap.createSCBEngineForTest();
-    engine.setEnvironment(environment);
+    engine = SCBBootstrap.createSCBEngineForTest(environment);
     engine.run();
   }
 

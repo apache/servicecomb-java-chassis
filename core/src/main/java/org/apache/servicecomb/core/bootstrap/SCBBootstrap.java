@@ -26,9 +26,10 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
+import org.springframework.core.env.Environment;
 
 public class SCBBootstrap {
-  public static SCBEngine createSCBEngineForTest() {
+  public static SCBEngine createSCBEngineForTest(Environment environment) {
     RegistrationManager registrationManager = new RegistrationManager(Collections.emptyList());
     DiscoveryManager discoveryManager = new DiscoveryManager(Collections.emptyList(),
         List.of(new TelnetInstancePing()));
@@ -39,7 +40,7 @@ public class SCBBootstrap {
     microserviceProperties.setName("test");
     microserviceProperties.setVersion("0.0.1");
 
-    SCBEngine result = new SCBEngineForTest();
+    SCBEngine result = new SCBEngineForTest(environment);
     result.setDiscoveryManager(discoveryManager);
     result.setRegistrationManager(registrationManager);
     result.setBootListeners(Collections.emptyList());

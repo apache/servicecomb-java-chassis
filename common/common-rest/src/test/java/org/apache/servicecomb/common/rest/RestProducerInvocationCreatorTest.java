@@ -82,9 +82,9 @@ public class RestProducerInvocationCreatorTest {
 
   @BeforeAll
   public static void beforeClass() {
-    engine = SCBBootstrap.createSCBEngineForTest();
-    engine.setStatus(SCBStatus.UP);
     Environment environment = Mockito.mock(Environment.class);
+    engine = SCBBootstrap.createSCBEngineForTest(environment);
+    engine.setStatus(SCBStatus.UP);
     LegacyPropertyFactory.setEnvironment(environment);
     Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
         .thenReturn(false);
