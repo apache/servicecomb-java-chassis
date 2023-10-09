@@ -22,8 +22,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.Invocation;
@@ -83,7 +81,6 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
     }
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;

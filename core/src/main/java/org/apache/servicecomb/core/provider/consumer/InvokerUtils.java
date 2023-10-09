@@ -35,8 +35,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
@@ -255,11 +253,11 @@ public final class InvokerUtils {
     }
   }
 
-  public static boolean isSyncMethod(@Nonnull Method method) {
+  public static boolean isSyncMethod(Method method) {
     return !isAsyncMethod(method);
   }
 
-  public static boolean isAsyncMethod(@Nonnull Method method) {
+  public static boolean isAsyncMethod(Method method) {
     // currently only support CompletableFuture for async method definition
     return method.getReturnType().equals(CompletableFuture.class);
   }

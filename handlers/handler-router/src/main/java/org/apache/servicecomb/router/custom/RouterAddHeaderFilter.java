@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
@@ -92,7 +90,6 @@ public class RouterAddHeaderFilter implements Filter {
     return true;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "router-add-header";

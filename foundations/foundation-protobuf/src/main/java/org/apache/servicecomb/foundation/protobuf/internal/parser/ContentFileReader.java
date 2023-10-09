@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.parser;
 
-import javax.annotation.Nullable;
-
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 
@@ -25,6 +23,7 @@ import io.protostuff.compiler.parser.FileReader;
 
 public class ContentFileReader implements FileReader {
   private final FileReader importReader;
+
   private final String content;
 
   private boolean contentReaded;
@@ -34,7 +33,6 @@ public class ContentFileReader implements FileReader {
     this.content = content;
   }
 
-  @Nullable
   @Override
   public CharStream read(String contentOrName) {
     if (!contentReaded) {

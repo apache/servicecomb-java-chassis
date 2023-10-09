@@ -19,8 +19,6 @@ package org.apache.servicecomb.demo.springmvc.filter;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -36,7 +34,6 @@ public class ProviderTestFilter implements ProviderFilter {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1800;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "test-provider";

@@ -20,25 +20,23 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.springframework.core.Ordered;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 /**
  * bigger order will override the same name codec
  */
 public interface QueryCodec extends Ordered {
-  static String encodeValue(@Nonnull Object value) throws UnsupportedEncodingException {
+  static String encodeValue(Object value) throws UnsupportedEncodingException {
     return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.name());
   }
 
   // can not replaced by value.toString() because of date serialize
-  static String convertToString(@Nonnull Object value) throws Exception {
+  static String convertToString(Object value) throws Exception {
     return RestObjectMapperFactory.getRestObjectMapper().convertToString(value);
   }
 
@@ -49,7 +47,7 @@ public interface QueryCodec extends Ordered {
 
   String getCodecName();
 
-  void encode(URLPathStringBuilder builder, String name, @Nullable Object value) throws Exception;
+  void encode(URLPathStringBuilder builder, String name, Object value) throws Exception;
 
   Object decode(QueryProcessor processor, HttpServletRequest request);
 }

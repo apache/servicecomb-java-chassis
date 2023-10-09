@@ -21,8 +21,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -58,7 +56,6 @@ public class ProviderBulkheadFilter implements ProviderFilter {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1880;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "provider-bulkhead";

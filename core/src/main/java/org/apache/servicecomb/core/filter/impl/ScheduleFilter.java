@@ -19,8 +19,6 @@ package org.apache.servicecomb.core.filter.impl;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.Filter;
@@ -33,7 +31,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 public class ScheduleFilter implements ProviderFilter {
   public static final String NAME = "schedule";
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;

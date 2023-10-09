@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.config.priority;
 
-import javax.annotation.Nullable;
-
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 
 /**
@@ -34,7 +32,7 @@ public class ConfigObjectProperty {
     this.property = property;
   }
 
-  public void updateValueWhenChanged(Object instance, @Nullable String changedKey) {
+  public void updateValueWhenChanged(Object instance, String changedKey) {
     if (property.isChangedKey(changedKey)) {
       property.updateValue();
       setter.set(instance, property.getValue());

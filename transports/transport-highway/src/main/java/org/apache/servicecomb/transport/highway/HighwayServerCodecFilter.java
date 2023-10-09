@@ -20,8 +20,6 @@ import static org.apache.servicecomb.core.exception.Exceptions.toProducerRespons
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.CoreConst;
@@ -39,7 +37,6 @@ import io.vertx.core.buffer.Buffer;
 public class HighwayServerCodecFilter implements ProviderFilter {
   public static final String NAME = "highway-server-codec";
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;

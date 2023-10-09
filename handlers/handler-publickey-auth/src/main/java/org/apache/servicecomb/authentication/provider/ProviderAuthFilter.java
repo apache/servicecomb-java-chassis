@@ -18,8 +18,6 @@ package org.apache.servicecomb.authentication.provider;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
@@ -45,7 +43,6 @@ public class ProviderAuthFilter implements ProviderFilter {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1010;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "provider-public-key";

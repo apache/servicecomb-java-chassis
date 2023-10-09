@@ -16,12 +16,9 @@
  */
 package org.apache.servicecomb.core.filter;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
 public interface ProviderFilter extends Filter {
-  @Nonnull
   @Override
   default boolean enabledForInvocationType(InvocationType invocationType) {
     return invocationType == InvocationType.PROVIDER;

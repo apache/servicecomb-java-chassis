@@ -21,8 +21,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -58,7 +56,6 @@ public class ProviderRateLimitingFilter implements ProviderFilter {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1900;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "provider-rate-limiting";

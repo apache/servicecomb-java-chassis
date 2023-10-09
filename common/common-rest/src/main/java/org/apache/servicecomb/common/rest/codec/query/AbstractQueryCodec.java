@@ -20,9 +20,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 
 public abstract class AbstractQueryCodec implements QueryCodec {
@@ -39,7 +36,7 @@ public abstract class AbstractQueryCodec implements QueryCodec {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void encode(URLPathStringBuilder builder, String name, @Nullable Object value) throws Exception {
+  public void encode(URLPathStringBuilder builder, String name, Object value) throws Exception {
     if (value == null) {
       // not write query key to express "null"
       return;
@@ -58,5 +55,5 @@ public abstract class AbstractQueryCodec implements QueryCodec {
     encode(builder, name, Collections.singletonList(value));
   }
 
-  abstract void encode(URLPathStringBuilder builder, String name, @Nonnull Collection<Object> values) throws Exception;
+  abstract void encode(URLPathStringBuilder builder, String name, Collection<Object> values) throws Exception;
 }

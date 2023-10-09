@@ -19,8 +19,6 @@ package org.apache.servicecomb.qps;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -50,7 +48,6 @@ public class ConsumerFlowControlFilter implements ConsumerFilter {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1990;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "consumer-flow-control";

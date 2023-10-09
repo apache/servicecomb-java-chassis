@@ -26,9 +26,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
@@ -103,7 +100,7 @@ public class RestClientEncoder {
           .argsToRest(invocation.getSwaggerArguments(), transportContext.getRestOperationMeta(), requestParameters);
     }
 
-    protected void writeCookies(@Nullable Map<String, String> cookieMap) {
+    protected void writeCookies(Map<String, String> cookieMap) {
       if (CollectionUtils.isEmpty(cookieMap)) {
         return;
       }
@@ -130,7 +127,7 @@ public class RestClientEncoder {
           RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(invocation.getContext()));
     }
 
-    protected void writeForm(@Nullable Map<String, Object> formMap) throws Exception {
+    protected void writeForm(Map<String, Object> formMap) throws Exception {
       if (requestParameters.getUploads() == null) {
         writeUrlEncodedForm(formMap);
         return;
@@ -139,7 +136,7 @@ public class RestClientEncoder {
       writeChunkedForm(formMap);
     }
 
-    protected void writeUrlEncodedForm(@Nullable Map<String, Object> formMap) throws Exception {
+    protected void writeUrlEncodedForm(Map<String, Object> formMap) throws Exception {
       if (formMap == null) {
         return;
       }
@@ -150,7 +147,7 @@ public class RestClientEncoder {
       requestParameters.setBodyBuffer(bodyBuffer);
     }
 
-    protected Buffer genUrlEncodedFormBuffer(@Nonnull Map<String, Object> formMap) throws Exception {
+    protected Buffer genUrlEncodedFormBuffer(Map<String, Object> formMap) throws Exception {
       // 2x faster than UriComponentsBuilder
       ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
       for (Entry<String, Object> entry : formMap.entrySet()) {
@@ -169,7 +166,7 @@ public class RestClientEncoder {
       return Buffer.buffer(byteBuf);
     }
 
-    protected void writeChunkedForm(@Nullable Map<String, Object> formMap) throws Exception {
+    protected void writeChunkedForm(Map<String, Object> formMap) throws Exception {
       String boundary = transportContext.getOrCreateBoundary();
 
       httpClientRequest.setChunked(true);
@@ -183,7 +180,7 @@ public class RestClientEncoder {
       requestParameters.setBodyBuffer(bodyBuffer);
     }
 
-    protected Buffer genChunkedFormBuffer(@Nonnull Map<String, Object> formMap, String boundary) throws Exception {
+    protected Buffer genChunkedFormBuffer(Map<String, Object> formMap, String boundary) throws Exception {
       ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
       for (Entry<String, Object> entry : formMap.entrySet()) {
         writeCharSequence(byteBuf, "\r\n--");

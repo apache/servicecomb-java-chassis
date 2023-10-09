@@ -19,8 +19,6 @@ package org.apache.servicecomb.common.rest.codec.query;
 import java.util.Collection;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
@@ -39,7 +37,7 @@ public class QueryCodecMulti extends AbstractQueryCodec {
   }
 
   @Override
-  public void encode(URLPathStringBuilder builder, String name, @Nonnull Collection<Object> values) throws Exception {
+  public void encode(URLPathStringBuilder builder, String name, Collection<Object> values) throws Exception {
     for (Object value : values) {
       if (value == null) {
         continue;

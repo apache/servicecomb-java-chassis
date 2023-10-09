@@ -33,12 +33,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
 import com.seanyinx.github.unit.scaffolding.Poller;
 import com.seanyinx.github.unit.scaffolding.Randomness;
-
-import mockit.Deencapsulation;
 
 public class DynamicPropertiesTest {
   private static final String stringPropertyName = uniquify("stringPropertyName");
@@ -95,9 +91,7 @@ public class DynamicPropertiesTest {
 
   @AfterClass
   public static void tearDown() throws Exception {
-    Deencapsulation.setField(ConfigurationManager.class, "instance", null);
-    Deencapsulation.setField(ConfigurationManager.class, "customConfigurationInstalled", false);
-    Deencapsulation.setField(DynamicPropertyFactory.class, "config", null);
+
   }
 
   private static void writeInitialConfig() throws Exception {

@@ -20,9 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import jakarta.servlet.http.Part;
-
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +29,7 @@ import com.google.common.collect.Multimap;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import jakarta.servlet.http.Part;
 
 public class RestClientRequestParametersImpl implements RestClientRequestParameters {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientRequestParametersImpl.class);
@@ -46,7 +44,7 @@ public class RestClientRequestParametersImpl implements RestClientRequestParamet
 
   protected Buffer bodyBuffer;
 
-  public RestClientRequestParametersImpl(@Nonnull MultiMap headers) {
+  public RestClientRequestParametersImpl(MultiMap headers) {
     this.headers = headers;
   }
 

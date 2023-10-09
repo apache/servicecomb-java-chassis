@@ -19,8 +19,6 @@ package org.apache.servicecomb.demo.springboot.pojo.server.handler;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -44,7 +42,6 @@ public class MyHandler implements ProviderFilter {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 100;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "test-my-filter";

@@ -19,14 +19,13 @@ package org.apache.servicecomb.core.exception.converter;
 
 import java.util.concurrent.TimeoutException;
 
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.Status;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class ServiceCombExceptionConverter implements ExceptionConverter<ServiceCombException> {
   public static final int ORDER = Byte.MAX_VALUE;
@@ -44,7 +43,7 @@ public class ServiceCombExceptionConverter implements ExceptionConverter<Service
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, ServiceCombException throwable,
+  public InvocationException convert(Invocation invocation, ServiceCombException throwable,
       StatusType genericStatus) {
     if (throwable.getCause() instanceof TimeoutException) {
       return timeoutExceptionConverter.convert(invocation, (TimeoutException) throwable.getCause(), genericStatus);

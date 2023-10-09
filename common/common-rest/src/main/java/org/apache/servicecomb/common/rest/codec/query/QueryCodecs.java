@@ -21,9 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +45,7 @@ public class QueryCodecs {
     defaultCodec = codecs.get(QueryCodecMulti.CODEC_NAME);
   }
 
-  private void register(@Nonnull QueryCodec codec) {
+  private void register(QueryCodec codec) {
     QueryCodec exists = codecs.put(codec.getCodecName(), codec);
     if (exists != null) {
       LOGGER.info("override QueryCodec, exists={}, new={}.",
@@ -56,8 +53,7 @@ public class QueryCodecs {
     }
   }
 
-  @Nonnull
-  public QueryCodec find(@Nullable String name) {
+  public QueryCodec find(String name) {
     if (name == null) {
       return defaultCodec;
     }

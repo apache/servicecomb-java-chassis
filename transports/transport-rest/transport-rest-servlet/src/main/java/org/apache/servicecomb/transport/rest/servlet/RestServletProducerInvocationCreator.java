@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.transport.rest.servlet;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestProducerInvocationCreator;
 import org.apache.servicecomb.core.Endpoint;
@@ -27,8 +25,8 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 
 public class RestServletProducerInvocationCreator extends RestProducerInvocationCreator {
-  public RestServletProducerInvocationCreator(@Nonnull MicroserviceMeta microserviceMeta, @Nonnull Endpoint endpoint,
-      @Nonnull HttpServletRequestEx requestEx, @Nonnull HttpServletResponseEx responseEx) {
+  public RestServletProducerInvocationCreator(MicroserviceMeta microserviceMeta, Endpoint endpoint,
+      HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
     super(microserviceMeta, endpoint, requestEx, responseEx);
   }
 

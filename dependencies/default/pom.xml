@@ -192,18 +192,6 @@
       </dependency>
 
       <dependency>
-        <groupId>com.netflix.archaius</groupId>
-        <artifactId>archaius-core</artifactId>
-        <version>${archaius.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>annotations</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
         <groupId>com.netflix.governator</groupId>
         <artifactId>governator-annotations</artifactId>
         <version>${governator-annotations.version}</version>
@@ -212,12 +200,6 @@
         <groupId>com.netflix.governator</groupId>
         <artifactId>governator-api</artifactId>
         <version>${governator-api.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.netflix.hystrix</groupId>
-        <artifactId>hystrix-core</artifactId>
-        <version>${hystrix.version}</version>
       </dependency>
 
       <dependency>

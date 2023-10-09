@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.common.rest.codec.query;
 
-import javax.annotation.Nonnull;
-
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
 
@@ -29,7 +27,6 @@ public class QueryCodecsUtils {
     QueryCodecsUtils.queryCodecs = queryCodecs;
   }
 
-  @Nonnull
   public static QueryCodec find(Parameter.StyleEnum styleEnum, Boolean explode) {
     return queryCodecs.find(formatName(styleEnum, explode));
   }

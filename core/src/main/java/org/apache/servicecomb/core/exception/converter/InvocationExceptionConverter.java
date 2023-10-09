@@ -16,12 +16,11 @@
  */
 package org.apache.servicecomb.core.exception.converter;
 
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class InvocationExceptionConverter implements ExceptionConverter<InvocationException> {
   public static final int ORDER = Byte.MAX_VALUE;
@@ -37,7 +36,7 @@ public class InvocationExceptionConverter implements ExceptionConverter<Invocati
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, InvocationException throwable,
+  public InvocationException convert(Invocation invocation, InvocationException throwable,
       StatusType genericStatus) {
     return throwable;
   }

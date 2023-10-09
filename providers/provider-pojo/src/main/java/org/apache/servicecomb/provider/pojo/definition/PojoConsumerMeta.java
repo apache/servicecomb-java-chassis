@@ -20,8 +20,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -67,7 +65,6 @@ public class PojoConsumerMeta {
     return schemaMeta;
   }
 
-  @Nonnull
   public PojoConsumerOperationMeta ensureFindOperationMeta(Method method) {
     PojoConsumerOperationMeta pojoConsumerOperationMeta = operationMetas.get(method);
     if (pojoConsumerOperationMeta == null) {

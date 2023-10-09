@@ -16,12 +16,11 @@
  */
 package org.apache.servicecomb.core.exception.converter;
 
-import javax.annotation.Nullable;
-import jakarta.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class IllegalArgumentExceptionConverter implements ExceptionConverter<IllegalArgumentException> {
   public static final int ORDER = Short.MAX_VALUE;
@@ -37,7 +36,7 @@ public class IllegalArgumentExceptionConverter implements ExceptionConverter<Ill
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, IllegalArgumentException throwable,
+  public InvocationException convert(Invocation invocation, IllegalArgumentException throwable,
       StatusType genericStatus) {
     return new InvocationException(genericStatus, ExceptionConverter.getGenericCode(genericStatus),
         "Parameters not valid or types not match.", throwable);

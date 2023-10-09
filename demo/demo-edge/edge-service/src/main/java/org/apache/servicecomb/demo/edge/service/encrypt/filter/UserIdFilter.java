@@ -18,8 +18,6 @@ package org.apache.servicecomb.demo.edge.service.encrypt.filter;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -37,7 +35,6 @@ public class UserIdFilter implements ConsumerFilter {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1790;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "test-edge-user-id";
