@@ -32,6 +32,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
@@ -232,13 +233,19 @@ public class MicroserviceVersions {
     synchronized (lock) {
       MergedInstances mergedInstances = mergeInstances(pulledInstances, instances);
       instances = mergedInstances.instanceIdMap.values();
-      // clear cache
-      versions.forEach((key, value) -> value.setInstances(new ArrayList<>()));
+
+      // set instances to empty for no instance versions
+      versions.forEach((key, value) -> {
+        if (!mergedInstances.microserviceIdMap.containsKey(key)) {
+          value.setInstances(new ArrayList<>());
+        }
+      });
+
+      // update instances
       for (Entry<String, List<MicroserviceInstance>> entry : mergedInstances.microserviceIdMap.entrySet()) {
-        // always update microservice versions, because we allow microservice info override, like schema info
-        MicroserviceVersion newVersion = createMicroserviceVersion(entry.getKey(), entry.getValue());
-        newVersion.setInstances(entry.getValue());
-        versions.put(entry.getKey(), newVersion);
+        versions.computeIfAbsent(entry.getKey(),
+                microserviceId -> createMicroserviceVersion(microserviceId, entry.getValue()))
+            .setInstances(entry.getValue());
       }
 
       for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
@@ -295,6 +302,32 @@ public class MicroserviceVersions {
         new MicroserviceVersionRule(appId, microserviceName, strVersionRule);
     microserviceVersionRule.update(versions, instances);
     return microserviceVersionRule;
+  }
+
+  public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
+    if (!isEventAccept(changedEvent)) {
+      return;
+    }
+    // pull instances always replace old instances, not append
+    //
+    // pull result and watch event sequence is not defined even inside SC.
+    // it's not safe to trust the event, so we just send a new pull request
+    //
+    // CREATE/UPDATE:
+    //   if pull 1/2/3, and then add 4, but "add 4" received before pull result, will lost 4.
+    // DELETE:
+    //   if pull 1/2/3, and then delete 3, but "delete 3" received before pull result, will have wrong 3.
+    // EXPIRE::
+    //   black/white config in SC changed, we must refresh all data from sc.
+    pullInstances();
+  }
+
+  protected boolean isEventAccept(MicroserviceInstanceChangedEvent changedEvent) {
+    return (appId.equals(changedEvent.getKey().getAppId()) &&
+        microserviceName.equals(changedEvent.getKey().getServiceName())) ||
+        microserviceName.equals(
+            changedEvent.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + changedEvent.getKey()
+                .getServiceName());
   }
 
   public void destroy() {
