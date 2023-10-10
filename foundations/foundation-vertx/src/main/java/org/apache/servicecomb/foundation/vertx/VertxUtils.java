@@ -25,7 +25,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import io.vertx.core.file.impl.FileResolverImpl;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -44,6 +43,7 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.impl.FileResolverImpl;
 import io.vertx.core.impl.VertxBuilder;
 import io.vertx.core.impl.VertxThread;
 import io.vertx.core.spi.VertxThreadFactory;
@@ -192,7 +192,7 @@ public final class VertxUtils {
   public static void blockCloseVertxByName(String name) {
     CompletableFuture<Void> future = closeVertxByName(name);
     try {
-      future.get();
+      future.get(30, TimeUnit.SECONDS);
     } catch (Throwable e) {
       LOGGER.error("Failed to wait close vertx {}.", name, e);
     }
@@ -211,8 +211,8 @@ public final class VertxUtils {
     });
 
     try {
-      latch.await();
-    } catch (InterruptedException e) {
+      latch.await(30, TimeUnit.SECONDS);
+    } catch (Throwable e) {
       LOGGER.info("Failed to wait close vertx {}.", vertx);
     }
   }
