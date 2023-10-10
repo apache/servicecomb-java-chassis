@@ -191,7 +191,7 @@ public final class VertxUtils {
   public static void blockCloseVertxByName(String name) {
     CompletableFuture<Void> future = closeVertxByName(name);
     try {
-      future.get();
+      future.get(30, TimeUnit.SECONDS);
     } catch (Throwable e) {
       LOGGER.error("Failed to wait close vertx {}.", name, e);
     }
@@ -210,8 +210,8 @@ public final class VertxUtils {
     });
 
     try {
-      latch.await();
-    } catch (InterruptedException e) {
+      latch.await(30, TimeUnit.SECONDS);
+    } catch (Throwable e) {
       LOGGER.info("Failed to wait close vertx {}.", vertx);
     }
   }
