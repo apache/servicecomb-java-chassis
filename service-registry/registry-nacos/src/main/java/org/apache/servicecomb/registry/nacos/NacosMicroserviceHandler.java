@@ -23,8 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.configuration.EnvironmentConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.springframework.core.env.Environment;
@@ -59,12 +59,11 @@ public class NacosMicroserviceHandler {
     metadata.put("alias", microserviceProperties.getAlias());
     metadata.put("description", microserviceProperties.getDescription());
     metadata.put("secure", String.valueOf(properties.isSecure()));
-    EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
-    if (!StringUtils.isEmpty(envConfig.getString(VERSION_MAPPING)) &&
-        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(VERSION_MAPPING)))) {
-      metadata.put("version", envConfig.getString(VERSION_MAPPING));
+    if (!StringUtils.isEmpty(environment.getProperty(VERSION_MAPPING)) &&
+        !StringUtils.isEmpty(environment.getProperty(environment.getProperty(VERSION_MAPPING)))) {
+      metadata.put("version", environment.getProperty(environment.getProperty(VERSION_MAPPING)));
     }
-    metadata.putAll(genCasProperties());
+    metadata.putAll(genCasProperties(environment));
     instance.setMetadata(metadata);
     instance.setClusterName(properties.getClusterName());
     instance.setEphemeral(properties.isEphemeral());
@@ -80,26 +79,26 @@ public class NacosMicroserviceHandler {
     return Integer.parseInt(environment.getProperty("server.port"));
   }
 
-  private static Map<String, String> genCasProperties() {
+  private static Map<String, String> genCasProperties(Environment environment) {
     Map<String, String> properties = new HashMap<>();
-    EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
-    if (!StringUtils.isEmpty(envConfig.getString(CAS_APPLICATION_ID))) {
-      properties.put(CAS_APPLICATION_ID, envConfig.getString(CAS_APPLICATION_ID));
+    if (!StringUtils.isEmpty(environment.getProperty(CAS_APPLICATION_ID))) {
+      properties.put(CAS_APPLICATION_ID, environment.getProperty(CAS_APPLICATION_ID));
     }
-    if (!StringUtils.isEmpty(envConfig.getString(CAS_COMPONENT_NAME))) {
-      properties.put(CAS_COMPONENT_NAME, envConfig.getString(CAS_COMPONENT_NAME));
+    if (!StringUtils.isEmpty(environment.getProperty(CAS_COMPONENT_NAME))) {
+      properties.put(CAS_COMPONENT_NAME, environment.getProperty(CAS_COMPONENT_NAME));
     }
-    if (!StringUtils.isEmpty(envConfig.getString(CAS_INSTANCE_VERSION))) {
-      properties.put(CAS_INSTANCE_VERSION, envConfig.getString(CAS_INSTANCE_VERSION));
+    if (!StringUtils.isEmpty(environment.getProperty(CAS_INSTANCE_VERSION))) {
+      properties.put(CAS_INSTANCE_VERSION, environment.getProperty(CAS_INSTANCE_VERSION));
     }
-    if (!StringUtils.isEmpty(envConfig.getString(CAS_INSTANCE_ID))) {
-      properties.put(CAS_INSTANCE_ID, envConfig.getString(CAS_INSTANCE_ID));
+    if (!StringUtils.isEmpty(environment.getProperty(CAS_INSTANCE_ID))) {
+      properties.put(CAS_INSTANCE_ID, environment.getProperty(CAS_INSTANCE_ID));
     }
-    if (!StringUtils.isEmpty(envConfig.getString(CAS_ENVIRONMENT_ID))) {
-      properties.put(CAS_ENVIRONMENT_ID, envConfig.getString(CAS_ENVIRONMENT_ID));
+    if (!StringUtils.isEmpty(environment.getProperty(CAS_ENVIRONMENT_ID))) {
+      properties.put(CAS_ENVIRONMENT_ID, environment.getProperty(CAS_ENVIRONMENT_ID));
     }
 
-    String[] instancePropArray = envConfig.getStringArray(INSTANCE_PROPS);
+    String[] instancePropArray = ConfigUtil.parseArrayValue(environment.getProperty(INSTANCE_PROPS))
+        .toArray(new String[0]);
     if (instancePropArray.length != 0) {
       properties.putAll(parseProps(instancePropArray));
     }
