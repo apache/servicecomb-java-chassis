@@ -132,8 +132,6 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
     serviceCenterDiscovery = new ServiceCenterDiscovery(serviceCenterClient, eventBus);
     serviceCenterDiscovery.setPollInterval(configurationProperties.getPollIntervalInMillis());
 
-    // TODO: add prefetch services
-
     eventBus.register(this);
   }
 

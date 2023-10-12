@@ -48,15 +48,6 @@ public class QueryParamWithListSchema {
     return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
-  // TODO: Open API 3.0 not support tsv
-//  @Path("queryListTSV")
-//  @GET
-//  public String queryListTSV(
-//      @Parameter(name = "queryList", in = ParameterIn.QUERY, style = ParameterStyle.SPACEDELIMITED, explode = Explode.FALSE)
-//      @QueryParam("queryList") List<String> queryList) {
-//    return queryList == null ? "null" : queryList.size() + ":" + queryList;
-//  }
-
   @Path("queryListPIPES")
   @GET
   public String queryListPIPES(

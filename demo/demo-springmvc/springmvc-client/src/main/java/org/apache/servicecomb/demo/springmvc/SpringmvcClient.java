@@ -292,29 +292,6 @@ public class SpringmvcClient {
       TestMgr.check(e.getStatusCode(), 400);
     }
 
-    // TODO: May be not support this feature anymore.
-    // Code definition and swagger definition is different for provider, and swagger override code.
-    // This feature may cause many mis-understanding to code but do not have real benefits.
-//    TestMgr.check("hi world [world]",
-//        template.getForObject(prefix + "/controller/sayhi?name=world",
-//            String.class));
-//
-//    TestMgr.check("hi world1 [world1]",
-//        template.getForObject(prefix + "/controller/sayhi?name={name}",
-//            String.class,
-//            "world1"));
-//    TestMgr.check("hi hi 中国 [hi 中国]",
-//        template.getForObject(prefix + "/controller/sayhi?name={name}",
-//            String.class,
-//            "hi 中国"));
-//
-//    Map<String, String> params = new HashMap<>();
-//    params.put("name", "world2");
-//    TestMgr.check("hi world2 [world2]",
-//        template.getForObject(prefix + "/controller/sayhi?name={name}",
-//            String.class,
-//            params));
-
     TestMgr.check("hello world",
         template.postForObject(prefix + "/controller/sayhello/{name}",
             null,
@@ -356,11 +333,6 @@ public class SpringmvcClient {
   }
 
   private static void testController() {
-    // TODO: May be not support this feature any more.
-    // Code definition and swagger definition is different for provider, and swagger override code.
-    // This feature may cause many mis-understanding to code but do not have real benefits.
-//    TestMgr.check("hi world [world]", controller.sayHi("world"));
-
     Person user = new Person();
     user.setName("world");
     TestMgr.check("ha world", controller.saySomething("ha", user));

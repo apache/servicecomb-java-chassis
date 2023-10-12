@@ -50,10 +50,8 @@ public interface SwaggerGenerator {
   SwaggerGeneratorContext getSwaggerGeneratorContext();
 
   /**
-   * support placeholder
-   * @param basePath
+   * base path contains application server context-path, and schema base path.
    */
-  // TODO: should be set serverss
   void setBasePath(String basePath);
 
   void scanClassAnnotation();

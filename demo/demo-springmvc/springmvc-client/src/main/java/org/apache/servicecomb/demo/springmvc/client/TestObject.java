@@ -151,7 +151,7 @@ public class TestObject {
     TestMgr.check(true, List.class.isAssignableFrom(result.getClass()));
 
     // generic
-    // TODO: Notice: This test case for HIGHWAY is not stable.
+    // This test case for HIGHWAY is not stable.
     // When proto schema contains Holder message, the result type is Map. Or the result is Holder(using json).
     Holder<String> holder = new Holder<>("v");
     result = intf.testObject(holder);

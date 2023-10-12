@@ -26,4 +26,9 @@ public class ServiceStageConfiguration {
   public AKSKAuthHeaderProvider akskAuthHeaderProvider(Environment environment) {
     return new AKSKAuthHeaderProvider(environment);
   }
+
+  @Bean
+  public CasEnvVariablesAdapter casEnvVariablesAdapter() {
+    return new CasEnvVariablesAdapter();
+  }
 }

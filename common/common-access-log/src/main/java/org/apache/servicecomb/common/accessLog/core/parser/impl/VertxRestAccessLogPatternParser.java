@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.accessLog.core.element.impl.PlainTextAccessItem;
 import org.apache.servicecomb.common.accessLog.core.parser.AccessLogItemMeta;
@@ -32,6 +31,8 @@ import org.apache.servicecomb.common.accessLog.core.parser.VertxRestAccessLogIte
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -173,7 +174,6 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
       AccessLogItemLocation candidate = null;
       for (VertxRestAccessLogItemMeta meta : metaList) {
         if (null != candidate && null == meta.getSuffix()) {
-          // TODO:
           // if user define item("%{","}ab") and item("%{_","}abc") and the pattern is "%{_var}ab}abc"
           // currently the result is item("%{","_var","}ab"), plaintext("}abc")
           // is this acceptable?
