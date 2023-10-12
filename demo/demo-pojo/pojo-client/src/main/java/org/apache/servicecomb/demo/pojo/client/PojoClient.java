@@ -63,7 +63,6 @@ public class PojoClient {
   @RpcReference(microserviceName = "notExist")
   public static Test notExist;
 
-  // TODO: not support x-java-interface lookup. while in the near plan, do not need schemaId.
   @RpcReference(microserviceName = "pojo", schemaId = "server")
   public static Test test;
 
