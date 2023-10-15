@@ -22,14 +22,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.AfterAll;
@@ -37,9 +35,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Response.Status;
 
 public class TestRestCodec {
 
@@ -55,15 +57,29 @@ public class TestRestCodec {
 
   private static List<RestParam> paramList = null;
 
+  static Environment environment = Mockito.mock(Environment.class);
+
   @BeforeAll
   public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+
     Parameter hp = new HeaderParameter();
     hp.setName("header");
-    RestParam restParam = new RestParam(hp, int.class);
+    hp.setSchema(new Schema());
+    RestParam restParam = new RestParam(null, hp, int.class);
 
     restOperation = Mockito.mock(RestOperationMeta.class);
     paramList = new ArrayList<>();
-
 
     paramList.add(restParam);
     Mockito.when(restOperation.getParamList()).thenReturn(paramList);
@@ -131,7 +147,7 @@ public class TestRestCodec {
       success = true;
     } catch (InvocationException e) {
       Assertions.assertEquals(400, e.getStatusCode());
-      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"));
+      Assertions.assertTrue(e.getMessage().contains("Parameter is not valid"));
     }
     Assertions.assertFalse(success);
   }
@@ -160,6 +176,8 @@ public class TestRestCodec {
       success = true;
     } catch (InvocationException e) {
       Assertions.assertEquals(e.getStatusCode(), Status.BAD_REQUEST.getStatusCode());
+      Assertions.assertTrue(((CommonExceptionData) e.getErrorData()).getMessage()
+          .contains("Parameter is not valid for operation"));
     }
     Assertions.assertFalse(success);
   }

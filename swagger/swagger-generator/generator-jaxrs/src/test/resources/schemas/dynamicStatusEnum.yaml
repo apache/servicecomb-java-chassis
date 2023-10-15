@@ -16,66 +16,50 @@
 ## ---------------------------------------------------------------------------
 
 ---
-swagger: "2.0"
+openapi: 3.0.1
 info:
-  version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.Echo"
-  x-java-interface: "gen.cse.ms.ut.EchoIntf"
-basePath: "/Echo"
-consumes:
-- "application/json"
-produces:
-- "application/json"
+  title: swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.Echo
+  version: 1.0.0
+servers:
+- url: Echo
 paths:
   /dynamicStatusEnum:
     post:
-      operationId: "dynamicStatusEnum"
+      operationId: dynamicStatusEnum
       parameters:
-      - name: "status-aggr"
-        in: "query"
-        description: "dynamic desc aggr\n- 400: dynamic bad request\n- 404: dynamic\
-          \ not found\n"
-        required: false
-        type: "integer"
-        format: "int32"
-        enum:
-        - 400
-        - 404
-      - name: "status"
-        in: "query"
-        description: "dynamic desc direct\n- 400: dynamic bad request\n- 404: dynamic\
-          \ not found\n"
-        required: false
-        type: "integer"
-        format: "int32"
-        enum:
-        - 400
-        - 404
-      - in: "body"
-        name: "model"
-        required: false
-        schema:
-          $ref: "#/definitions/DynamicStatusModel"
+      - name: status-aggr
+        in: query
+        description: |
+          dynamic desc aggr
+          - 400: dynamic bad request
+          - 404: dynamic not found
+      - name: status
+        in: query
+        description: |
+          dynamic desc direct
+          - 400: dynamic bad request
+          - 404: dynamic not found
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DynamicStatusModel'
       responses:
         "200":
-          description: "response of 200"
-          schema:
-            type: "integer"
-            format: "int32"
-            description: "- 400: dynamic bad request\n- 404: dynamic not found\n"
-            enum:
-            - "400"
-            - "404"
-definitions:
-  DynamicStatusModel:
-    type: "object"
-    properties:
-      status:
-        type: "integer"
-        format: "int32"
-        description: "dynamic status model\n- 400: dynamic bad request\n- 404: dynamic\
-          \ not found\n"
-        enum:
-        - 400
-        - 404
-    x-java-class: "org.apache.servicecomb.swagger.generator.jaxrs.model.enums.DynamicStatusModel"
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: integer
+                description: |
+                  - 400: dynamic bad request
+                  - 404: dynamic not found
+                format: int32
+components:
+  schemas:
+    DynamicStatusModel:
+      type: object
+      properties:
+        status:
+          type: integer
+          format: int32

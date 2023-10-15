@@ -88,7 +88,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://service30100:30100
+                          -Dservicecomb.registry.sc.address=http://service30100:30100
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/filter-server-${project.version}.jar</JAR_PATH>
                       </env>
@@ -96,7 +96,7 @@
                         <link>service30100:service30100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>8080</port>
@@ -116,7 +116,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://service30100:30100
+                          -Dservicecomb.registry.sc.address=http://service30100:30100
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/filter-client-${project.version}.jar</JAR_PATH>
                       </env>
@@ -124,7 +124,7 @@
                         <link>service30100:service30100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>8082</port>
@@ -144,8 +144,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://service30100:30100
-                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                          -Dservicecomb.registry.sc.address=http://service30100:30100
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/filter-edge-${project.version}.jar</JAR_PATH>
                       </env>
@@ -153,7 +152,7 @@
                         <link>service30100:service30100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>9090</port>

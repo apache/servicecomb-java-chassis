@@ -26,22 +26,21 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-public class RestProducers implements BeanPostProcessor {
+public class RestProducers implements BeanPostProcessor, EnvironmentAware {
   private final List<ProducerMeta> producerMetaList = new ArrayList<>();
 
   @SuppressWarnings("unchecked")
   private final Class<? extends Annotation> restControllerCls = (Class<? extends Annotation>) ReflectUtils
       .getClassByName("org.springframework.web.bind.annotation.RestController");
 
-  private final boolean scanRestController = restControllerCls != null &&
-      DynamicPropertyFactory.getInstance().getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true).get();
-
   public List<ProducerMeta> getProducerMetaList() {
     return producerMetaList;
   }
+
+  private Environment environment;
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -70,9 +69,16 @@ public class RestProducers implements BeanPostProcessor {
       return;
     }
 
-    if (scanRestController && beanCls.getAnnotation(restControllerCls) != null) {
+    if (restControllerCls != null &&
+        environment.getProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, boolean.class, true)
+        && beanCls.getAnnotation(restControllerCls) != null) {
       ProducerMeta producerMeta = new ProducerMeta(beanCls.getName(), bean);
       producerMetaList.add(producerMeta);
     }
+  }
+
+  @Override
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 }

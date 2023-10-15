@@ -19,11 +19,9 @@ package org.apache.servicecomb.common.rest;
 
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.definition.CoreMetaUtils;
+import org.apache.servicecomb.core.SCBEngine.CreateMicroserviceMetaEvent;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.registry.api.event.CreateMicroserviceVersionEvent;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -42,9 +40,8 @@ public class RestEngineSchemaListener implements BootListener {
 
   @EnableExceptionPropagation
   @Subscribe
-  public void onCreateMicroserviceVersion(CreateMicroserviceVersionEvent event) {
-    MicroserviceVersion microserviceVersion = event.getMicroserviceVersion();
-    MicroserviceMeta microserviceMeta = CoreMetaUtils.getMicroserviceMeta(microserviceVersion);
+  public void onCreateMicroserviceMetaEvent(CreateMicroserviceMetaEvent event) {
+    MicroserviceMeta microserviceMeta = event.getMicroserviceMeta();
     createServicePathManager(microserviceMeta);
   }
 

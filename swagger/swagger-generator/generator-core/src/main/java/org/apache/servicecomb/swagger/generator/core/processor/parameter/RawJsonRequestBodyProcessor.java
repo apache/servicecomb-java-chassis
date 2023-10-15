@@ -17,43 +17,47 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
-import com.fasterxml.jackson.databind.JavaType;
+import jakarta.ws.rs.core.MediaType;
 
-import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.BodyParameter;
-
-public class RawJsonRequestBodyProcessor implements ParameterProcessor<BodyParameter, RawJsonRequestBody> {
+public class RawJsonRequestBodyProcessor extends
+    SwaggerParameterAnnotationProcessor<RawJsonRequestBody> {
   @Override
   public Class<?> getProcessType() {
     return RawJsonRequestBody.class;
   }
 
   @Override
-  public String getParameterName(RawJsonRequestBody rawJsonRequestBody) {
-    if (StringUtils.isNotEmpty(rawJsonRequestBody.value())) {
-      return rawJsonRequestBody.value();
-    }
-    if (StringUtils.isNotEmpty(rawJsonRequestBody.name())) {
-      return rawJsonRequestBody.name();
+  public String getParameterName(RawJsonRequestBody annotation) {
+    if (StringUtils.isNotEmpty(annotation.value())) {
+      return annotation.value();
+    } else if (StringUtils.isNotEmpty(annotation.name())) {
+      return annotation.name();
     }
     return null;
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(RawJsonRequestBody parameterAnnotation) {
-    return HttpParameterType.BODY;
-  }
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RawJsonRequestBody annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
 
-  @Override
-  public void fillParameter(Swagger swagger, Operation operation, BodyParameter parameter, JavaType type,
-      RawJsonRequestBody annotation) {
-    parameter.setVendorExtension("x-raw-json", true);
-    parameter.setRequired(annotation.required());
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
+    }
+
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
+    parameterGenerator.getParameterGeneratorContext().setRawJson(true);
+    parameterGenerator.getParameterGeneratorContext().updateConsumes(Arrays.asList(MediaType.APPLICATION_JSON,
+        MediaType.TEXT_PLAIN));
   }
 }

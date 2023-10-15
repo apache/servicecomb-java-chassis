@@ -19,44 +19,48 @@ package org.apache.servicecomb.demo.jaxrs.server;
 
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.Explode;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.enums.ParameterStyle;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 
 @RestSchema(schemaId = "QueryParamWithListSchema")
 @Path("/queryList")
 public class QueryParamWithListSchema {
   @Path("queryListCSV")
   @GET
-  public String queryListCSV(@ApiParam(collectionFormat = "csv") @QueryParam("queryList") List<String> queryList) {
+  public String queryListCSV(
+      @Parameter(name = "queryList", in = ParameterIn.QUERY, style = ParameterStyle.FORM, explode = Explode.FALSE)
+      @QueryParam("queryList") List<String> queryList) {
     return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
   @Path("queryListSSV")
   @GET
-  public String queryListSSV(@ApiParam(collectionFormat = "ssv") @QueryParam("queryList") List<String> queryList) {
-    return queryList == null ? "null" : queryList.size() + ":" + queryList;
-  }
-
-  @Path("queryListTSV")
-  @GET
-  public String queryListTSV(@ApiParam(collectionFormat = "tsv") @QueryParam("queryList") List<String> queryList) {
+  public String queryListSSV(
+      @Parameter(name = "queryList", in = ParameterIn.QUERY, style = ParameterStyle.SPACEDELIMITED, explode = Explode.FALSE)
+      @QueryParam("queryList") List<String> queryList) {
     return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
   @Path("queryListPIPES")
   @GET
-  public String queryListPIPES(@ApiParam(collectionFormat = "pipes") @QueryParam("queryList") List<String> queryList) {
+  public String queryListPIPES(
+      @Parameter(name = "queryList", in = ParameterIn.QUERY, style = ParameterStyle.PIPEDELIMITED, explode = Explode.FALSE)
+      @QueryParam("queryList") List<String> queryList) {
     return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 
   @Path("queryListMULTI")
   @GET
-  public String queryListMULTI(@ApiParam(collectionFormat = "multi") @QueryParam("queryList") List<String> queryList) {
+  public String queryListMULTI(
+      @Parameter(name = "queryList", in = ParameterIn.QUERY, style = ParameterStyle.FORM, explode = Explode.TRUE)
+      @QueryParam("queryList") List<String> queryList) {
     return queryList == null ? "null" : queryList.size() + ":" + queryList;
   }
 }

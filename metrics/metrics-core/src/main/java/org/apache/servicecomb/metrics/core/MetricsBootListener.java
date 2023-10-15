@@ -18,19 +18,21 @@ package org.apache.servicecomb.metrics.core;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class MetricsBootListener implements BootListener {
-  private final MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
+  private final MetricsBootstrap metricsBootstrap;
 
   private SlowInvocationLogger slowInvocationLogger;
+
+  private MetricsRestPublisher metricsRestPublisher;
+
+  private Environment environment;
 
   public MetricsBootstrap getMetricsBootstrap() {
     return metricsBootstrap;
@@ -40,14 +42,26 @@ public class MetricsBootListener implements BootListener {
     return slowInvocationLogger;
   }
 
+  public MetricsBootListener(MetricsBootstrap metricsBootstrap) {
+    this.metricsBootstrap = metricsBootstrap;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  @Autowired
+  public void setMetricsRestPublisher(MetricsRestPublisher metricsRestPublisher) {
+    this.metricsRestPublisher = metricsRestPublisher;
+  }
+
   @Override
   public void onBeforeProducerProvider(BootEvent event) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.metrics.endpoint.enabled", true).get()) {
+    if (!environment.getProperty("servicecomb.metrics.endpoint.enabled", boolean.class, true)) {
       return;
     }
 
-    MetricsRestPublisher metricsRestPublisher =
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
     event.getScbEngine().getProducerProviderManager()
         .addProducerMeta("metricsEndpoint", metricsRestPublisher);
   }

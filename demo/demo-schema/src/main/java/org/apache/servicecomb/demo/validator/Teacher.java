@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.validator;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public class Teacher {
 

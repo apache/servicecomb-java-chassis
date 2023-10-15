@@ -18,14 +18,14 @@
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
 public class TraceIdAccessItem extends InvocationContextAccessItem {
 
-  public static final String TRACE_ID = Const.TRACE_ID_NAME;
+  public static final String TRACE_ID = CoreConst.TRACE_ID_NAME;
 
   public TraceIdAccessItem() {
     super(TRACE_ID);

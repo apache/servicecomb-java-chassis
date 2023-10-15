@@ -54,6 +54,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>service-center-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-nacos</artifactId>
+    </dependency>
 
     <!-- common -->
     <dependency>
@@ -73,12 +77,6 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-core</artifactId>
-    </dependency>
-
-    <!-- deployment -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>deployment</artifactId>
     </dependency>
 
     <!-- dynamic-config -->
@@ -179,12 +177,6 @@
       <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
 
-    <!-- inspector -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
-    </dependency>
-
     <!-- metrics -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -221,10 +213,6 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-schema-discovery</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

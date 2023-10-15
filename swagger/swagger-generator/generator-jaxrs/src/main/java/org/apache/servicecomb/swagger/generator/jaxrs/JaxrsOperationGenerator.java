@@ -22,18 +22,12 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.BeanParam;
-
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.rest.RestOperationGenerator;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.google.common.base.Defaults;
-
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.AbstractSerializableParameter;
+import jakarta.ws.rs.BeanParam;
 
 public class JaxrsOperationGenerator extends RestOperationGenerator {
   public JaxrsOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
@@ -52,24 +46,5 @@ public class JaxrsOperationGenerator extends RestOperationGenerator {
   @Override
   protected boolean isAggregatedParameter(ParameterGenerator parameterGenerator, Parameter methodParameter) {
     return methodParameter.getAnnotation(BeanParam.class) != null;
-  }
-
-  @Override
-  protected void fillParameter(Swagger swagger, io.swagger.models.parameters.Parameter parameter, String parameterName,
-      JavaType type, List<Annotation> annotations) {
-    super.fillParameter(swagger, parameter, parameterName, type, annotations);
-
-    if (!(parameter instanceof AbstractSerializableParameter)) {
-      return;
-    }
-
-    if (!type.isPrimitive()) {
-      return;
-    }
-
-    AbstractSerializableParameter<?> serializableParameter = (AbstractSerializableParameter<?>) parameter;
-    if (serializableParameter.getDefault() == null && !parameter.getRequired()) {
-      serializableParameter.setDefaultValue(String.valueOf(Defaults.defaultValue(type.getRawClass())));
-    }
   }
 }

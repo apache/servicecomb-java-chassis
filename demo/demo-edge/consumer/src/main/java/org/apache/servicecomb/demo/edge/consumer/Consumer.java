@@ -26,24 +26,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
 import org.apache.servicecomb.demo.edge.model.DependTypeB;
 import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -58,13 +55,17 @@ public class Consumer {
 
   String edgePrefix;
 
-  List<ResultWithInstance> addV1Result = new ArrayList<>();
+//  List<ResultWithInstance> addV1Result = new ArrayList<>();
 
-  List<ResultWithInstance> decV1Result = new ArrayList<>();
+//  List<ResultWithInstance> decV1Result = new ArrayList<>();
 
   List<ResultWithInstance> addV2Result = new ArrayList<>();
 
   List<ResultWithInstance> decV2Result = new ArrayList<>();
+
+  DiscoveryManager discoveryManager = BeanUtils.getBean(DiscoveryManager.class);
+
+  MicroserviceProperties microserviceProperties = BeanUtils.getBean(MicroserviceProperties.class);
 
   public Consumer() {
     request.setDeviceId("2a5cc42ff60006ac");
@@ -92,14 +93,14 @@ public class Consumer {
     testDownload();
     testDownloadBigFile();
     testErrorCode();
-
-    invoke("/v1/add", 2, 1, addV1Result);
-    invoke("/v1/add", 3, 1, addV1Result);
-    invoke("/v1/add", 4, 1, addV1Result);
-    invoke("/v1/add", 5, 1, addV1Result);
-
-    invoke("/v1/dec", 2, 1, decV1Result);
-    invoke("/v1/dec", 3, 1, decV1Result);
+    // TODO: we use router to test this feature.
+//    invoke("/v1/add", 2, 1, addV1Result);
+//    invoke("/v1/add", 3, 1, addV1Result);
+//    invoke("/v1/add", 4, 1, addV1Result);
+//    invoke("/v1/add", 5, 1, addV1Result);
+//
+//    invoke("/v1/dec", 2, 1, decV1Result);
+//    invoke("/v1/dec", 3, 1, decV1Result);
 
     invoke("/v2/add", 2, 1, addV2Result);
     invoke("/v2/add", 3, 1, addV2Result);
@@ -107,13 +108,14 @@ public class Consumer {
     invoke("/v2/dec", 2, 1, decV2Result);
     invoke("/v2/dec", 3, 1, decV2Result);
 
-    printResults("v1/add", addV1Result);
-    printResults("v1/dec", decV1Result);
+    // TODO: we use router to test this feature.
+//    printResults("v1/add", addV1Result);
+//    printResults("v1/dec", decV1Result);
     printResults("v2/add", addV2Result);
     printResults("v2/dec", decV2Result);
 
-    checkResult("v1/add", addV1Result, "1.0.0", "1.1.0");
-    checkResult("v1/dec", decV1Result, "1.1.0");
+//    checkResult("v1/add", addV1Result, "1.0.0", "1.1.0");
+//    checkResult("v1/dec", decV1Result, "1.1.0");
     checkResult("v2/add", addV2Result, "2.0.0");
     checkResult("v2/dec", decV2Result, "2.0.0");
   }
@@ -172,7 +174,7 @@ public class Consumer {
     try {
       Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
     } catch (HttpServerErrorException e) {
-      Assert.isTrue(e.getRawStatusCode() == 500, "x99");
+      Assert.isTrue(e.getStatusCode().value() == 500, "x99");
       Assert.isTrue(e.getResponseBodyAsString().contains("un expected NPE test."), "x99");
     }
 
@@ -180,14 +182,14 @@ public class Consumer {
       template.getForObject(url + "?x=88&y=3", Map.class);
       Assert.isTrue(false, "x88");
     } catch (HttpClientErrorException e) {
-      Assert.isTrue(e.getRawStatusCode() == 403, "x88");
+      Assert.isTrue(e.getStatusCode().value() == 403, "x88");
       Assert.isTrue(e.getResponseBodyAsString().equals("{\"id\":12,\"message\":\"not allowed id.\"}"), "x88");
     }
     try {
       template.getForObject(url + "?x=77&y=3", Map.class);
       Assert.isTrue(false, "x77");
     } catch (HttpServerErrorException e) {
-      Assert.isTrue(e.getRawStatusCode() == 500, "x77");
+      Assert.isTrue(e.getStatusCode().value() == 500, "x77");
       Assert.isTrue(e.getResponseBodyAsString().equals("{\"id\":500,\"message\":\"77\",\"state\":\"77\"}"), "x77");
     }
   }
@@ -268,32 +270,31 @@ public class Consumer {
   }
 
   private URIEndpointObject prepareEdge(String prefix) {
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) DiscoveryManager.INSTANCE
-        .getAppManager()
-        .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "edge", DefinitionConst.VERSION_RULE_ALL)
-        .getVersionedCache()
-        .mapData()
-        .values()
+    DiscoveryInstance instance = discoveryManager.findServiceInstances(microserviceProperties.getApplication(), "edge")
         .stream()
         .findFirst()
         .get();
-    URIEndpointObject edgeAddress = new URIEndpointObject(microserviceInstance.getEndpoints().get(0));
+    URIEndpointObject edgeAddress = new URIEndpointObject(instance.getEndpoints().get(0));
     edgePrefix = String.format("http://%s:%d/%s/business", edgeAddress.getHostOrIp(), edgeAddress.getPort(), prefix);
     return edgeAddress;
   }
 
   protected void invokeBusiness(String urlPrefix, ChannelRequestBase request) {
-    for (int i = 0; i < 3; i++) {
-      String url = urlPrefix + "/channel/news/subscribe";
+    // since 3.0.0, do not support this feature.
+    // after 3.0.0, the client will load schema once after startup and will never change, and there
+    // isn't version rule concept.
 
-      HttpHeaders headers = new HttpHeaders();
-      headers.setContentType(MediaType.APPLICATION_JSON);
-
-      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
-
-      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
-      Assert.isTrue(response.getBody().getRsp().equals("result from 1.1.0"), response.getBody().getRsp());
-    }
+    // TODO: we use router to test this feature.
+//    for (int i = 0; i < 3; i++) {
+//      String url = urlPrefix + "/channel/news/subscribe";
+//
+//      HttpHeaders headers = new HttpHeaders();
+//      headers.setContentType(MediaType.APPLICATION_JSON);
+//
+//      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
+//
+//      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
+//      Assert.isTrue(response.getBody().getRsp().equals("result from 1.1.0"), response.getBody().getRsp());
+//    }
   }
 }

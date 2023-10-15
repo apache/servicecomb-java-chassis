@@ -16,15 +16,25 @@
  */
 package org.apache.servicecomb.swagger.converter.property;
 
-import org.apache.servicecomb.swagger.converter.Converter;
+import java.util.Map;
+
+import org.apache.servicecomb.swagger.converter.AbstractConverter;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
-public class ObjectPropertyConverter implements Converter {
+@SuppressWarnings("rawtypes")
+public class ObjectPropertyConverter extends AbstractConverter {
+
   @Override
-  public JavaType convert(Swagger swagger, Object def) {
+  protected Map<String, Object> findVendorExtensions(Object def) {
+    return ((Schema) def).getExtensions();
+  }
+
+  @Override
+  protected JavaType doConvert(OpenAPI swagger, Schema def) {
     return OBJECT_JAVA_TYPE;
   }
 }

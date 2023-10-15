@@ -44,11 +44,11 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 public class ConfigObjectFactory {
   private final PriorityPropertyFactory propertyFactory;
 
-  private static final Map<Class<?>, JavaType> classCache = new ConcurrentHashMapEx<>();
+  private final Map<Class<?>, JavaType> classCache = new ConcurrentHashMapEx<>();
 
-  private static final Map<JavaType, BeanDescription> javaTypeCache = new ConcurrentHashMapEx<>();
+  private final Map<JavaType, BeanDescription> javaTypeCache = new ConcurrentHashMapEx<>();
 
-  private static final Map<BeanPropertyDefinition, Setter<Object, Object>> beanDescriptionCache = new ConcurrentHashMapEx<>();
+  private final Map<BeanPropertyDefinition, Setter<Object, Object>> beanDescriptionCache = new ConcurrentHashMapEx<>();
 
   public ConfigObjectFactory(PriorityPropertyFactory propertyFactory) {
     this.propertyFactory = propertyFactory;
@@ -100,10 +100,13 @@ public class ConfigObjectFactory {
         continue;
       }
 
-      Setter<Object, Object> setter = beanDescriptionCache.computeIfAbsent(propertyDefinition,
-          LambdaMetafactoryUtils::createObjectSetter);
       PriorityProperty<?> priorityProperty = createPriorityProperty(propertyDefinition.getField().getAnnotated(),
           prefix, parameters);
+      if (priorityProperty == null) {
+        continue;
+      }
+      Setter<Object, Object> setter = beanDescriptionCache.computeIfAbsent(propertyDefinition,
+          LambdaMetafactoryUtils::createObjectSetter);
       setter.set(instance, priorityProperty.getValue());
       properties.add(new ConfigObjectProperty(setter, priorityProperty));
     }
@@ -138,7 +141,7 @@ public class ConfigObjectFactory {
       case "java.lang.Boolean":
         return createBooleanProperty(field, keys, null);
       default:
-        throw new IllegalStateException("not support, field=" + field);
+        return null;
     }
   }
 

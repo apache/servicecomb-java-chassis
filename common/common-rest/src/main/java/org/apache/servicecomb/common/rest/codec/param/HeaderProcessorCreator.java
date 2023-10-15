@@ -21,39 +21,40 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.netflix.config.DynamicPropertyFactory;
 
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.Response.Status;
 
-public class HeaderProcessorCreator implements ParamValueProcessorCreator {
+public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parameter> {
   private static final Logger LOGGER = LoggerFactory.getLogger(HeaderProcessorCreator.class);
 
   public static final String PARAMTYPE = "header";
 
   public static class HeaderProcessor extends AbstractParamProcessor {
     // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-    private final boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false).get();
+    private final boolean ignoreRequiredCheck = LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false);
 
     private final boolean repeatedType;
 
     public HeaderProcessor(HeaderParameter headerParameter, JavaType targetType) {
-      super(headerParameter.getName(), targetType, headerParameter.getDefaultValue(), headerParameter.getRequired());
+      super(headerParameter.getName(), targetType, headerParameter.getSchema().getDefault(),
+          headerParameter.getRequired() != null && headerParameter.getRequired());
 
-      this.repeatedType = ArrayProperty.isType(headerParameter.getType());
+      this.repeatedType = headerParameter.getSchema() instanceof ArraySchema;
     }
 
     @Override
@@ -103,7 +104,8 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   }
 
   @Override
-  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(OperationMeta operationMeta,
+      String parameterName, Parameter parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new HeaderProcessor((HeaderParameter) parameter, targetType);

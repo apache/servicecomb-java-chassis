@@ -16,74 +16,43 @@
  */
 package org.apache.servicecomb.core.provider.consumer;
 
-import java.util.Objects;
-import java.util.function.Supplier;
-
 import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
-import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 
 /**
- * <pre>
- *   when the list data changed, MicroserviceReferenceConfig should rebuild:
- *     1.versionRule
- *     2.latestMicroserviceMeta
- *     3.microservice deleted
- * </pre>
+ * microservice meta data for consumer.
  */
 public class MicroserviceReferenceConfig {
+  private final String appId;
+
+  private final String microserviceName;
+
   private final ConsumerMicroserviceVersionsMeta microserviceVersionsMeta;
 
-  private final MicroserviceVersionRule microserviceVersionRule;
+  private final MicroserviceMeta microserviceMeta;
 
-  private final MicroserviceVersion latestMicroserviceVersion;
-
-  private final MicroserviceMeta latestMicroserviceMeta;
-
-  private final String versionRule;
-
-  // return true means changed
-  private final Supplier<Boolean> versionRuleChangedChecker;
-
-  public MicroserviceReferenceConfig(ConsumerMicroserviceVersionsMeta microserviceVersionsMeta, String versionRule) {
+  public MicroserviceReferenceConfig(
+      String appId,
+      String microserviceName,
+      ConsumerMicroserviceVersionsMeta microserviceVersionsMeta,
+      MicroserviceMeta microserviceMeta) {
+    this.appId = appId;
+    this.microserviceName = microserviceName;
     this.microserviceVersionsMeta = microserviceVersionsMeta;
-
-    this.versionRule =
-        versionRule != null ? versionRule : microserviceVersionsMeta.getMicroserviceConfig().getVersionRule();
-    this.versionRuleChangedChecker = this.versionRule != null ? this::checkByConfig : this::notChange;
-
-    microserviceVersionRule = microserviceVersionsMeta.getMicroserviceVersions()
-        .getOrCreateMicroserviceVersionRule(this.versionRule);
-    latestMicroserviceVersion = microserviceVersionRule.getLatestMicroserviceVersion();
-    latestMicroserviceMeta =
-        latestMicroserviceVersion != null ? CoreMetaUtils.getMicroserviceMeta(latestMicroserviceVersion) : null;
+    this.microserviceMeta = microserviceMeta;
   }
 
-  private Boolean notChange() {
-    return false;
-  }
-
-  private Boolean checkByConfig() {
-    return !Objects.equals(versionRule, microserviceVersionsMeta.getMicroserviceConfig().getVersionRule());
-  }
-
-  public MicroserviceMeta getLatestMicroserviceMeta() {
-    if (latestMicroserviceVersion == null) {
+  public MicroserviceMeta getMicroserviceMeta() {
+    if (microserviceMeta == null) {
       throw new IllegalStateException(
           String.format(
-              "Probably invoke a service before it is registered, or no instance found for it, appId=%s, name=%s, versionRule=%s.",
-              microserviceVersionRule.getAppId(),
-              microserviceVersionRule.getMicroserviceName(),
-              versionRule));
+              "Probably invoke a service before it is registered, or no instance found for it, appId=%s, name=%s.",
+              appId,
+              microserviceName));
     }
 
-    return latestMicroserviceMeta;
+    return microserviceMeta;
   }
 
   public ReferenceConfig createReferenceConfig(OperationMeta operationMeta) {
@@ -94,25 +63,7 @@ public class MicroserviceReferenceConfig {
     if (transport == null) {
       transport = operationMeta.getConfig().getTransport();
     }
-    final ReferenceConfig referenceConfig = new ReferenceConfig(transport, versionRule);
-    mark3rdPartyService(operationMeta, referenceConfig);
+    final ReferenceConfig referenceConfig = new ReferenceConfig(transport);
     return referenceConfig;
-  }
-
-  private void mark3rdPartyService(OperationMeta operationMeta, ReferenceConfig referenceConfig) {
-    final MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE
-        .getOrCreateMicroserviceVersions(
-            operationMeta.getMicroserviceMeta().getAppId(),
-            operationMeta.getMicroserviceName());
-    referenceConfig.setThirdPartyService(microserviceVersions instanceof StaticMicroserviceVersions);
-  }
-
-  public boolean isExpired() {
-    // 1.microservice deleted
-    // 2.latest version changed
-    // 3.versionRule configuration changed
-    return microserviceVersionsMeta.getMicroserviceVersions().isWaitingDelete() ||
-        latestMicroserviceVersion != microserviceVersionRule.getLatestMicroserviceVersion() ||
-        versionRuleChangedChecker.get();
   }
 }

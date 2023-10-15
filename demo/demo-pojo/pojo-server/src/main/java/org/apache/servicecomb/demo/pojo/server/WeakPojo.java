@@ -22,13 +22,13 @@ import java.util.List;
 import org.apache.servicecomb.demo.server.GenericsModel;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 @RpcSchema(schemaId = "WeakPojo")
 public class WeakPojo {
-  @ApiOperation(value = "differentName", nickname = "differentName")
-  public int diffNames(@ApiParam(name = "x") int a, @ApiParam(name = "y") int b) {
+  @Operation(summary = "differentName", operationId = "differentName")
+  public int diffNames(@Parameter(name = "x") int a, @Parameter(name = "y") int b) {
     return a * 2 + b;
   }
 

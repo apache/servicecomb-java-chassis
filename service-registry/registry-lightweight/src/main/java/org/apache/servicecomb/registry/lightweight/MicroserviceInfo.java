@@ -19,8 +19,8 @@ package org.apache.servicecomb.registry.lightweight;
 
 import java.util.Map;
 
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 
 public class MicroserviceInfo {
   private Microservice microservice;

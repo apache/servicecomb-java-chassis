@@ -21,12 +21,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
@@ -43,7 +41,7 @@ import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
-public class ProviderRateLimitingFilter implements ProducerFilter {
+public class ProviderRateLimitingFilter implements ProviderFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderRateLimitingFilter.class);
 
   private final RateLimitingHandler rateLimitingHandler;
@@ -54,11 +52,10 @@ public class ProviderRateLimitingFilter implements ProducerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER - 1900;
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1900;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "provider-rate-limiting";

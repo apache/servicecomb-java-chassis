@@ -31,23 +31,22 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public class KeyPairUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KeyPairUtils.class);
 
-  private static final String KEY_GENERATOR_ALGORITHM = DynamicPropertyFactory.getInstance()
-      .getStringProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA").get();;
+  private static final String KEY_GENERATOR_ALGORITHM = LegacyPropertyFactory.getStringProperty(
+      "servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA");
 
-  private static final String SIGN_ALG = DynamicPropertyFactory.getInstance()
-      .getStringProperty("servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA").get();
+  private static final String SIGN_ALG = LegacyPropertyFactory.getStringProperty(
+      "servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA");
 
-  private static final int KEY_SIZE = DynamicPropertyFactory.getInstance()
-      .getIntProperty("servicecomb.publicKey.accessControl.keySize", 2048).get();
+  private static final int KEY_SIZE = LegacyPropertyFactory.getIntProperty(
+      "servicecomb.publicKey.accessControl.keySize", 2048);
 
   private static final Base64.Encoder encoder = Base64.getEncoder();
 

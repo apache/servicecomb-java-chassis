@@ -28,12 +28,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,22 +39,25 @@ import com.google.common.hash.Hashing;
 
 import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.Proto;
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.vertx.core.json.Json;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class SwaggerToProtoGenerator {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerToProtoGenerator.class);
 
   private final String protoPackage;
 
-  private final Swagger swagger;
+  private final OpenAPI swagger;
 
   private final StringBuilder msgStringBuilder = new StringBuilder();
 
@@ -70,7 +71,7 @@ public class SwaggerToProtoGenerator {
 
   // not java package
   // better to be: app_${app}.mid_{microservice}.sid_{schemaId}
-  public SwaggerToProtoGenerator(String protoPackage, Swagger swagger) {
+  public SwaggerToProtoGenerator(String protoPackage, OpenAPI swagger) {
     this.protoPackage = escapePackageName(protoPackage);
     this.swagger = swagger;
   }
@@ -78,22 +79,19 @@ public class SwaggerToProtoGenerator {
   public Proto convert() {
     convertDefinitions();
     convertOperations();
-    for (; ; ) {
+    do {
       List<Runnable> oldPending = pending;
       pending = new ArrayList<>();
       for (Runnable runnable : oldPending) {
         runnable.run();
       }
-      if (pending.isEmpty()) {
-        break;
-      }
-    }
+    } while (!pending.isEmpty());
 
     return createProto();
   }
 
   public static String escapePackageName(String name) {
-    return name.replaceAll("[\\-\\:]", "_");
+    return name.replaceAll("[\\-:]", "_");
   }
 
   public static String escapeMessageName(String name) {
@@ -101,34 +99,31 @@ public class SwaggerToProtoGenerator {
   }
 
   public static boolean isValidEnum(String name) {
-    if (name.contains(".") || name.contains("-")) {
-      return false;
-    }
-    return true;
+    return !name.contains(".") && !name.contains("-");
   }
 
   private void convertDefinitions() {
-    if (swagger.getDefinitions() == null) {
+    if (swagger.getComponents() == null || swagger.getComponents().getSchemas() == null) {
       return;
     }
 
-    for (Entry<String, Model> entry : swagger.getDefinitions().entrySet()) {
-      convertDefinition(entry.getKey(), (ModelImpl) entry.getValue());
+    for (Entry<String, Schema> entry : swagger.getComponents().getSchemas().entrySet()) {
+      convertDefinition(entry.getKey(), entry.getValue());
     }
   }
 
   @SuppressWarnings("unchecked")
-  private void convertDefinition(String modelName, ModelImpl model) {
-    Map<String, Property> properties = model.getProperties();
+  private void convertDefinition(String modelName, Schema model) {
+    Map<String, Schema> properties = model.getProperties();
     if (properties == null) {
       // it's a empty message
       properties = Collections.emptyMap();
     }
 
-    createMessage(modelName, (Map<String, Object>) (Object) properties);
+    createMessage(modelName, properties);
   }
 
-  private void createMessage(String protoName, Map<String, Object> properties, String... annotations) {
+  private void createMessage(String protoName, Map<String, Schema> properties, String... annotations) {
     if (!messages.add(protoName)) {
       // already created
       return;
@@ -140,8 +135,8 @@ public class SwaggerToProtoGenerator {
     }
     appendLine(msgStringBuilder, "message %s {", protoName);
     int tag = 1;
-    for (Entry<String, Object> entry : properties.entrySet()) {
-      Object property = entry.getValue();
+    for (Entry<String, Schema> entry : properties.entrySet()) {
+      Schema property = entry.getValue();
       String propertyType = convertSwaggerType(property);
 
       appendLine(msgStringBuilder, "  %s %s = %d;", propertyType, entry.getKey(), tag);
@@ -177,10 +172,10 @@ public class SwaggerToProtoGenerator {
 
     type = adapter.getRefType();
     if (type != null) {
-      return type;
+      return type.substring(Components.COMPONENTS_SCHEMAS_REF.length());
     }
 
-    Property itemProperty = adapter.getArrayItem();
+    Schema itemProperty = adapter.getArrayItem();
     if (itemProperty != null) {
       return "repeated " + convertArrayOrMapItem(itemProperty);
     }
@@ -200,7 +195,7 @@ public class SwaggerToProtoGenerator {
             Json.encode(swaggerType)));
   }
 
-  private String convertArrayOrMapItem(Property itemProperty) {
+  private String convertArrayOrMapItem(Schema itemProperty) {
     SwaggerTypeAdapter itemAdapter = SwaggerTypeAdapter.create(itemProperty);
     // List<List<>>, need to wrap
     if (itemAdapter.getArrayItem() != null) {
@@ -219,7 +214,7 @@ public class SwaggerToProtoGenerator {
     return convertSwaggerType(itemProperty);
   }
 
-  private String generateWrapPropertyName(String prefix, Property property) {
+  private String generateWrapPropertyName(String prefix, Schema property) {
     SwaggerTypeAdapter adapter = SwaggerTypeAdapter.create(property);
     // List<List<>>, need to wrap
     if (adapter.getArrayItem() != null) {
@@ -235,7 +230,7 @@ public class SwaggerToProtoGenerator {
     return prefix + StringUtils.capitalize(escapeMessageName(convertSwaggerType(adapter)));
   }
 
-  private void wrapPropertyToMessage(String protoName, Object property) {
+  private void wrapPropertyToMessage(String protoName, Schema property) {
     createMessage(protoName, Collections.singletonMap("value", property), ProtoConst.ANNOTATION_WRAP_PROPERTY);
   }
 
@@ -269,47 +264,32 @@ public class SwaggerToProtoGenerator {
 
   private String findBaseType(String swaggerType, String swaggerFmt) {
     String key = swaggerType + ":" + swaggerFmt;
-    switch (key) {
-      case "boolean:null":
-        return "bool";
-      // there is no int8/int16 in protobuf
-      case "integer:null":
-        return "int64";
-      case "integer:int8":
-      case "integer:int16":
-      case "integer:int32":
-        return "int32";
-      case "integer:int64":
-        return "int64";
-      case "number:null":
-        return "double";
-      case "number:float":
-        return "float";
-      case "number:double":
-        return "double";
-      case "string:null":
-        return "string";
-      case "string:byte":
-        return "bytes";
-      case "string:date": // LocalDate
-      case "string:date-time": // Date
-        return "int64";
-      case "file:null":
-        throw new IllegalStateException("not support swagger type: " + swaggerType);
-      default:
-        return null;
-    }
+    return switch (key) {
+      case "boolean:null" -> "bool";
+      case "integer:int32" -> "sint32";
+      case "integer:int64" -> "sint64";
+      case "integer:null" -> "string";  // BigInteger like values
+      case "number:double" -> "double";
+      case "number:float" -> "float";
+      case "number:null" -> "string";  // BigDecimal like values
+      case "string:null" -> "string";
+      case "string:byte" -> "bytes";
+      case "string:date" -> "int64";
+      case "string:date-time" -> "int64";
+      case "string:binary" -> throw new IllegalArgumentException("proto buffer not support file upload/download");
+      default -> null;
+    };
   }
 
   private void convertOperations() {
-    Map<String, Path> paths = swagger.getPaths();
+    Paths paths = swagger.getPaths();
     if (paths == null || paths.isEmpty()) {
       return;
     }
 
     appendLine(serviceBuilder, "service MainService {");
-    for (Path path : paths.values()) {
-      for (Operation operation : path.getOperationMap().values()) {
+    for (PathItem path : paths.values()) {
+      for (Operation operation : path.readOperations()) {
         if (isUpload(operation)) {
           LOGGER.warn("Not support operation for highway {}.{}, {}", this.protoPackage, operation.getOperationId(),
               "file upload not supported");
@@ -333,17 +313,15 @@ public class SwaggerToProtoGenerator {
   }
 
   private boolean isUpload(Operation operation) {
-    return operation.getConsumes() != null && operation.getConsumes().contains(MediaType.MULTIPART_FORM_DATA);
+    return operation.getRequestBody() != null && operation.getRequestBody().getContent() != null
+        && operation.getRequestBody().getContent().get(MediaType.MULTIPART_FORM_DATA) != null;
   }
 
   private boolean isDownload(Operation operation) {
-    if (operation.getResponses().get("200").getResponseSchema() instanceof ModelImpl) {
-      ModelImpl model = (ModelImpl) operation.getResponses().get("200").getResponseSchema();
-      if ("file".equals(model.getType())) {
-        return true;
-      }
-    }
-    return false;
+    return operation.getResponses().get(SwaggerConst.SUCCESS_KEY) != null &&
+        operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent() != null &&
+        operation.getResponses().get(SwaggerConst.SUCCESS_KEY).getContent().get(MediaType.MULTIPART_FORM_DATA)
+            != null;
   }
 
   private void convertOperation(Operation operation) {
@@ -358,15 +336,15 @@ public class SwaggerToProtoGenerator {
   }
 
   private void fillRequestType(Operation operation, ProtoMethod protoMethod) {
-    List<Parameter> parameters = operation.getParameters();
-    if (parameters.isEmpty()) {
+    int parametersCount = parametersCount(operation);
+    if (parametersCount == 0) {
       addImports(ProtoConst.EMPTY_PROTO);
       protoMethod.setArgTypeName(ProtoConst.EMPTY.getCanonicalName());
       return;
     }
 
-    if (parameters.size() == 1) {
-      String type = convertSwaggerType(parameters.get(0));
+    if (parametersCount == 1) {
+      String type = convertSwaggerType(oneSchema(operation));
       if (messages.contains(type)) {
         protoMethod.setArgTypeName(type);
         return;
@@ -374,14 +352,67 @@ public class SwaggerToProtoGenerator {
     }
 
     String wrapName = StringUtils.capitalize(operation.getOperationId()) + "RequestWrap";
-    createWrapArgs(wrapName, parameters);
+    createWrapArgs(wrapName, wrapSchema(operation));
 
     protoMethod.setArgTypeName(wrapName);
   }
 
+  private Map<String, Schema> wrapSchema(Operation operation) {
+    Map<String, Schema> properties = new LinkedHashMap<>();
+    if (operation.getParameters() != null) {
+      for (Parameter parameter : operation.getParameters()) {
+        properties.put(parameter.getName(), parameter.getSchema());
+      }
+    }
+    if (operation.getRequestBody() != null
+        && operation.getRequestBody().getContent().size() != 0) {
+      if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+        operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties()
+            .forEach((k, v) -> properties.put((String) k, (Schema) v));
+      } else {
+        properties.put((String) operation.getRequestBody().getExtensions().get(SwaggerConst.EXT_BODY_NAME),
+            operation.getRequestBody().getContent().get(
+                operation.getRequestBody().getContent().keySet().iterator().next()).getSchema());
+      }
+    }
+    return properties;
+  }
+
+  private Schema oneSchema(Operation operation) {
+    if (operation.getParameters() != null && operation.getParameters().size() == 1) {
+      return operation.getParameters().get(0).getSchema();
+    }
+    if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      return (Schema) operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema()
+          .getProperties()
+          .values().iterator().next();
+    }
+    return operation.getRequestBody().getContent().get(
+        operation.getRequestBody().getContent().keySet().iterator().next()).getSchema();
+  }
+
+  private int parametersCount(Operation operation) {
+    int parameters = operation.getParameters() == null ? 0 : operation.getParameters().size();
+    if (operation.getRequestBody() != null) {
+      if (operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+        parameters = parameters + operation.getRequestBody()
+            .getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().size();
+      } else if (operation.getRequestBody().getContent().size() != 0) {
+        parameters = parameters + 1;
+      }
+    }
+    return parameters;
+  }
+
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
-    for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
-      String type = convertSwaggerType(entry.getValue().getResponseSchema());
+    for (Entry<String, ApiResponse> entry : operation.getResponses().entrySet()) {
+      Schema schema = null;
+      if (entry.getValue().getContent() != null &&
+          entry.getValue().getContent().size() != 0) {
+        schema = entry.getValue().getContent().get(
+            entry.getValue().getContent().keySet().iterator().next()).getSchema();
+      }
+      String type = convertSwaggerType(schema);
       boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
@@ -389,7 +420,7 @@ public class SwaggerToProtoGenerator {
 
       if (wrapped) {
         String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
-        wrapPropertyToMessage(wrapName, entry.getValue().getResponseSchema());
+        wrapPropertyToMessage(wrapName, schema);
 
         protoResponse.setTypeName(wrapName);
       }
@@ -397,11 +428,7 @@ public class SwaggerToProtoGenerator {
     }
   }
 
-  private void createWrapArgs(String wrapName, List<Parameter> parameters) {
-    Map<String, Object> properties = new LinkedHashMap<>();
-    for (Parameter parameter : parameters) {
-      properties.put(parameter.getName(), parameter);
-    }
+  private void createWrapArgs(String wrapName, Map<String, Schema> properties) {
     createMessage(wrapName, properties, ProtoConst.ANNOTATION_WRAP_ARGUMENTS);
   }
 

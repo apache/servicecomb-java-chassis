@@ -156,4 +156,12 @@ public class MicroserviceInstance {
   public String getApplicationName() {
     return this.microservice.getAppId();
   }
+
+  public void addEndpoint(String endpoint) {
+    this.endpoints.add(endpoint);
+  }
+
+  public void addProperty(String key, String value) {
+    this.properties.put(key, value);
+  }
 }

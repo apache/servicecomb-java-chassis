@@ -30,7 +30,7 @@ public class LocalRegistryIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    Application.main(new String[0]);
+    LocalRegistryClientApplication.main(new String[0]);
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }

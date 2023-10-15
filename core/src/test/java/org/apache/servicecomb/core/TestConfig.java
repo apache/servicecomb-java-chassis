@@ -20,8 +20,8 @@ package org.apache.servicecomb.core;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
@@ -35,11 +35,11 @@ import org.junit.jupiter.api.Test;
 public class TestConfig {
   @Test
   public void testConstants() {
-    Assertions.assertEquals("x-cse-context", Const.CSE_CONTEXT);
-    Assertions.assertEquals("rest", Const.RESTFUL);
-    Assertions.assertEquals("", Const.ANY_TRANSPORT);
-    Assertions.assertEquals("latest", Const.VERSION_RULE_LATEST);
-    Assertions.assertEquals("0.0.0.0+", Const.DEFAULT_VERSION_RULE);
+    Assertions.assertEquals("x-cse-context", CoreConst.CSE_CONTEXT);
+    Assertions.assertEquals("rest", CoreConst.RESTFUL);
+    Assertions.assertEquals("", CoreConst.ANY_TRANSPORT);
+    Assertions.assertEquals("latest", CoreConst.VERSION_RULE_LATEST);
+    Assertions.assertEquals("0.0.0.0+", CoreConst.DEFAULT_VERSION_RULE);
   }
 
   @Test

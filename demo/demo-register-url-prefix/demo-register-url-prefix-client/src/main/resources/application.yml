@@ -18,15 +18,13 @@
 server:
   port: 8082
 
-# java-chassis configurations
-
-APPLICATION_ID: demo-register-url-prefix
-service_description:
-  name: demo-register-url-prefix-client
-  version: 0.0.1
 servicecomb:
   service:
-    registry:
+    application: demo-register-url-prefix
+    name: demo-register-url-prefix-client
+    version: 0.0.1
+  registry:
+    sc:
       address: http://127.0.0.1:30100
   handler:
     chain:

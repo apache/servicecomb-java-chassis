@@ -34,7 +34,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
 
 /**
  * 根据传递的SSLOption构造SSL上下文。请参考JSSE获取相关API的层次参考。

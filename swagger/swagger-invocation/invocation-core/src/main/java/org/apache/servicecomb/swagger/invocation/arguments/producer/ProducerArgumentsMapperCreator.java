@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
@@ -38,6 +39,9 @@ import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
 
+import io.swagger.v3.oas.models.parameters.RequestBody;
+
+@SuppressWarnings("unchecked")
 public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreator {
   // swagger parameter types relate to producer
   // because features of @BeanParam/query, and rpc mode parameter wrapper
@@ -66,29 +70,44 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
       String parameterName) {
     throw new IllegalStateException(String
         .format("failed to find producer parameter in contract, method=%s:%s, parameter name=%s.",
-            providerMethod.getDeclaringClass().getName(), providerMethod.getName(), parameterName));
+            providerMethod.getDeclaringClass().getSimpleName(), providerMethod.getName(), parameterName));
   }
 
   @Override
-  protected void processPendingSwaggerParameter(io.swagger.models.parameters.Parameter parameter) {
+  protected void processPendingSwaggerParameter(io.swagger.v3.oas.models.parameters.Parameter parameter) {
     swaggerParameterTypes.put(parameter.getName(), Object.class);
   }
 
   @Override
-  protected ArgumentMapper createKnownParameterMapper(int providerParamIdx, Integer swaggerIdx) {
-    String swaggerArgumentName = swaggerParameters.get(swaggerIdx).getName();
+  protected void processPendingBodyParameter(RequestBody bodyParameter) {
+    if (bodyParameter.getContent().get(SwaggerConst.DEFAULT_MEDIA_TYPE) != null
+        && !processedSwaggerParameters.contains(
+        (String) bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
+      swaggerParameterTypes.put((String) bodyParameter
+          .getExtensions().get(SwaggerConst.EXT_BODY_NAME), Object.class);
+    }
+    if (bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE) != null) {
+      bodyParameter.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().getProperties().forEach((k, v) -> {
+        if (!processedSwaggerParameters.contains((String) k)) {
+          swaggerParameterTypes.put((String) k, Object.class);
+        }
+      });
+    }
+  }
+
+  @Override
+  protected ArgumentMapper createKnownParameterMapper(int providerParamIdx, String invocationArgumentName) {
     Type providerType = TypeToken.of(providerClass)
         .resolveType(providerMethod.getGenericParameterTypes()[providerParamIdx])
         .getType();
     swaggerParameterTypes
-        .put(swaggerArgumentName, providerType);
-    return new ProducerArgumentSame(providerMethod.getParameters()[providerParamIdx].getName(), swaggerArgumentName);
+        .put(invocationArgumentName, providerType);
+    return new ProducerArgumentSame(providerMethod.getParameters()[providerParamIdx].getName(), invocationArgumentName);
   }
 
   @Override
-  protected ArgumentMapper createSwaggerBodyFieldMapper(int producerParamIdx, String parameterName,
-      int swaggerBodyIdx) {
-    String swaggerArgumentName = swaggerParameters.get(swaggerBodyIdx).getName();
+  protected ArgumentMapper createSwaggerBodyFieldMapper(int producerParamIdx, String parameterName) {
+    String swaggerArgumentName = (String) this.bodyParameter.getExtensions().get(SwaggerConst.EXT_BODY_NAME);
     swaggerParameterTypes.put(swaggerArgumentName, Object.class);
     Type parameterType = TypeToken.of(providerClass)
         .resolveType(providerMethod.getGenericParameterTypes()[producerParamIdx])
@@ -106,23 +125,21 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
     }
     ProducerBeanParamMapper mapper = new ProducerBeanParamMapper(
         providerMethod.getParameters()[producerParamIdx].getName(), producerParameter.getType());
-    JavaType producerType = TypeFactory.defaultInstance().constructType(producerParameter.getParameterizedType());
-    for (BeanPropertyDefinition propertyDefinition : serializationConfig.introspect(producerType)
+    boolean result = false;
+    for (BeanPropertyDefinition propertyDefinition : serializationConfig.introspect(providerType)
         .findProperties()) {
       String parameterName = collectParameterName(providerMethod, propertyDefinition);
 
-      Integer swaggerIdx = findSwaggerParameterIndex(parameterName);
-      if (swaggerIdx == null) {
-        throw new IllegalStateException(String
-            .format("failed to find producer parameter in contract, method=%s:%s, bean parameter name=%s.",
-                providerMethod.getDeclaringClass().getName(), providerMethod.getName(), parameterName));
+      if (!parameterNameExistsInSwagger(parameterName)) {
+        continue;
       }
 
       swaggerParameterTypes.put(parameterName, propertyDefinition.getPrimaryType());
       mapper.addField(parameterName, LambdaMetafactoryUtils.createObjectSetter(propertyDefinition));
-      processedSwaggerParamters.add(parameterName);
+      processedSwaggerParameters.add(parameterName);
+      result = true;
     }
     mappers.add(mapper);
-    return true;
+    return result;
   }
 }

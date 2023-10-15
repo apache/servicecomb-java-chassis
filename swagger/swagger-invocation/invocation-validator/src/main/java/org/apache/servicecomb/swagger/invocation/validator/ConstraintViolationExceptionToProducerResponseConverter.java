@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.swagger.invocation.validator;
 
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.core.Response.Status;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;

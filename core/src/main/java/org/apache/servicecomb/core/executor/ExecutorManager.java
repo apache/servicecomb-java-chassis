@@ -23,24 +23,35 @@ import java.util.concurrent.Executor;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class ExecutorManager {
   public static final String KEY_EXECUTORS_PREFIX = "servicecomb.executors.Provider.";
 
   public static final String KEY_EXECUTORS_DEFAULT = "servicecomb.executors.default";
 
-  public static final String EXECUTOR_GROUP_THREADPOOL = "servicecomb.executor.groupThreadPool";
+  public static final String EXECUTOR_GROUP_THREAD_POOL = "servicecomb.executor.groupThreadPool";
 
   public static final String EXECUTOR_REACTIVE = "servicecomb.executor.reactive";
 
-  public static final String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREADPOOL;
-
   private final Map<String, Executor> executors = new ConcurrentHashMapEx<>();
+
+  static String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREAD_POOL;
+
+  public static void setExecutorDefault(String executorDefault) {
+    EXECUTOR_DEFAULT = executorDefault;
+  }
+
+  private Environment environment;
 
   public ExecutorManager() {
     registerExecutor(EXECUTOR_REACTIVE, new ReactiveExecutor());
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   public void registerExecutor(String id, Executor executor) {
@@ -101,7 +112,7 @@ public class ExecutorManager {
   }
 
   protected Executor findByKey(String configKey) {
-    String id = DynamicPropertyFactory.getInstance().getStringProperty(configKey, null).get();
+    String id = environment.getProperty(configKey);
     if (id == null) {
       return null;
     }

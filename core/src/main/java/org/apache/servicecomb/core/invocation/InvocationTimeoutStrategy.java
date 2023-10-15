@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.invocation;
 
-import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
+import static jakarta.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionCodes;

@@ -149,20 +149,6 @@ public class TestAbstractHttpServletResponse {
     checkError(error);
   }
 
-  @SuppressWarnings("deprecation")
-  @Test
-  public void testEncodeUrl() {
-    Error error = Assertions.assertThrows(Error.class, () -> response.encodeUrl(null));
-    checkError(error);
-  }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void testEncodeRedirectUrl() {
-    Error error = Assertions.assertThrows(Error.class, () -> response.encodeRedirectUrl(null));
-    checkError(error);
-  }
-
   @Test
   public void testSendErrorScAndMsg() {
     Error error = Assertions.assertThrows(Error.class, () -> response.sendError(0, null));
@@ -220,13 +206,6 @@ public class TestAbstractHttpServletResponse {
   @Test
   public void testSetStatusSc() {
     Error error = Assertions.assertThrows(Error.class, () -> response.setStatus(0));
-    checkError(error);
-  }
-
-  @SuppressWarnings("deprecation")
-  @Test
-  public void testSetStatusScAndSm() {
-    Error error = Assertions.assertThrows(Error.class, () -> response.setStatus(0, ""));
     checkError(error);
   }
 

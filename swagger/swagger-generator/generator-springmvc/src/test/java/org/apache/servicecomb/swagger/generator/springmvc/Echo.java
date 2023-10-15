@@ -25,90 +25,87 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
+import jakarta.ws.rs.core.MediaType;
+
 @RequestMapping(
     path = "Echo",
     method = {RequestMethod.PUT},
-    consumes = {"a", "b"},
-    produces = {"a", "b"})
+    consumes = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN},
+    produces = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
 public class Echo {
 
-  @RequestMapping
+  @RequestMapping("emptyPath")
   public void emptyPath() {
   }
 
-  @RequestMapping(method = {RequestMethod.GET, RequestMethod.POST})
-  public void multiHttpMethod() {
-  }
-
-  @RequestMapping
+  @RequestMapping("inheritHttpMethod")
   public void inheritHttpMethod(int query) {
   }
 
-  @RequestMapping
+  @RequestMapping("cookie")
   public void cookie(@CookieValue(value = "cookie", required = false) int cookie) {
   }
 
-  @RequestMapping
+  @RequestMapping("rawJsonStringMethod")
   public void rawJsonStringMethod(@RawJsonRequestBody String jsonInput) {
   }
 
-  @RequestMapping
+  @RequestMapping("enumBody")
   public void enumBody(@RequestBody Color color) {
   }
 
-  @RequestMapping
+  @RequestMapping("asyncResponseEntity")
   public CompletableFuture<ResponseEntity<List<String>>> asyncResponseEntity() {
     return null;
   }
 
-  @RequestMapping
+  @RequestMapping("testResponseEntityOptional")
   public ResponseEntity<Optional<String>> testResponseEntityOptional() {
     return null;
   }
 
-  @RequestMapping
+  @RequestMapping("testCompletableFutureResponseEntityOptional")
   public CompletableFuture<ResponseEntity<Optional<String>>> testCompletableFutureResponseEntityOptional() {
     return null;
   }
 
-  @RequestMapping
-  public void part(MultipartFile part) {
+  @RequestMapping(value = "part", consumes = MediaType.MULTIPART_FORM_DATA)
+  public void part(@RequestPart MultipartFile part) {
 
   }
 
-  @RequestMapping
-  public void partArray(MultipartFile[] part) {
+  @RequestMapping(value = "partArray", consumes = MediaType.MULTIPART_FORM_DATA)
+  public void partArray(@RequestPart MultipartFile[] part) {
 
   }
 
-  @RequestMapping
-  public void partList(List<MultipartFile> part) {
+  @RequestMapping(value = "partList", consumes = MediaType.MULTIPART_FORM_DATA)
+  public void partList(@RequestPart List<MultipartFile> part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping(value = "partAnnotation", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partAnnotation(@RequestPart MultipartFile part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping(value = "partArrayAnnotation", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partArrayAnnotation(@RequestPart MultipartFile[] part) {
 
   }
 
-  @RequestMapping
+  @RequestMapping(value = "partListAnnotation", consumes = MediaType.MULTIPART_FORM_DATA)
   public void partListAnnotation(@RequestPart List<MultipartFile> part) {
 
   }
 
-  @PostMapping("nestedListString")
+  @RequestMapping("nestedListString")
   public List<List<String>> nestedListString(@RequestBody List<List<String>> param) {
     return param;
   }

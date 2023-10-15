@@ -17,15 +17,17 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
-import javax.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+
+import jakarta.ws.rs.core.MediaType;
 
 public class TestContentType {
 
@@ -35,6 +37,7 @@ public class TestContentType {
     testGlobalSetting();
     testApiOperation();
     testRequestMapping();
+    testProtoBuffer();
     testResponseTypeOverwrite();
   }
 
@@ -53,15 +56,15 @@ public class TestContentType {
 
   private void testApiOperation() {
     HttpHeaders requestHeaders = new HttpHeaders();
-    requestHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+    requestHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
     CseHttpEntity<String> requestEntity = new CseHttpEntity<>("from testApiOperation", requestHeaders);
     ResponseEntity<String> responseEntity = restTemplate
         .exchange("cse://springmvc/contentTypeSpringmvc/testApiOperation", HttpMethod.POST,
             requestEntity, String.class);
     TestMgr.check(
-        "testApiOperation: name=[from testApiOperation], request content-type=[" + MediaType.APPLICATION_JSON + "]",
+        "testApiOperation: name=[from testApiOperation], request content-type=[" + MediaType.TEXT_PLAIN + "]",
         responseEntity.getBody());
-    TestMgr.check(MediaType.APPLICATION_JSON, extractContentType(responseEntity.getHeaders().getContentType()));
+    TestMgr.check(MediaType.TEXT_PLAIN, extractContentType(responseEntity.getHeaders().getContentType()));
   }
 
   private void testRequestMapping() {
@@ -75,6 +78,24 @@ public class TestContentType {
         "testRequestMapping: name=[from testRequestMapping], request content-type=[" + MediaType.APPLICATION_JSON + "]",
         responseEntity.getBody());
     TestMgr.check(MediaType.APPLICATION_JSON, extractContentType(responseEntity.getHeaders().getContentType()));
+  }
+
+
+  private void testProtoBuffer() {
+    HttpHeaders requestHeaders = new HttpHeaders();
+    requestHeaders.add(HttpHeaders.CONTENT_TYPE, SwaggerConst.PROTOBUF_TYPE);
+    User user = new User();
+    user.setIndex(100);
+    user.setName("hello");
+    user.setNames(new String[] {"a1", "a2"});
+    CseHttpEntity<User> requestEntity = new CseHttpEntity<>(user, requestHeaders);
+    ResponseEntity<String> responseEntity = restTemplate
+        .exchange("cse://springmvc/contentTypeSpringmvc/testProtoBuffer", HttpMethod.POST,
+            requestEntity, String.class);
+    TestMgr.check(
+        "testRequestMapping: name=[hello:100:[a1, a2]], request content-type=[application/protobuf]",
+        responseEntity.getBody());
+    TestMgr.check(SwaggerConst.PROTOBUF_TYPE, extractContentType(responseEntity.getHeaders().getContentType()));
   }
 
   private void testResponseTypeOverwrite() {

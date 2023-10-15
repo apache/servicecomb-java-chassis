@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 
 /**
+ *
  * Configuration bean for local services. Bean configuration is token
  * same as `registry.yaml` file configuration.
  *
@@ -67,9 +68,15 @@ public class RegistryBean {
 
   private String appId;
 
-  private List<String> schemaIds = new ArrayList<>();
-
+  /**
+   * Schema ids configured from RegistryBean. Generate schema content from Class.
+   */
   private final Map<String, Class<?>> schemaInterfaces = new HashMap<>();
+
+  /**
+   * Schema ids configured in yaml. Will load contents from local file.
+   */
+  private List<String> schemaIds = new ArrayList<>();
 
   private Instances instances;
 
@@ -113,7 +120,7 @@ public class RegistryBean {
     if (!StringUtils.isEmpty(configAppId)) {
       return configAppId;
     }
-    return BootStrapProperties.readApplication();
+    return BootStrapProperties.DEFAULT_APPLICATION;
   }
 
   public String getId() {
@@ -152,8 +159,9 @@ public class RegistryBean {
     return this;
   }
 
-  public List<String> getSchemaIds() {
-    return schemaIds;
+  public RegistryBean addSchemaInterface(String schemaId, Class<?> schemaInterface) {
+    this.schemaInterfaces.put(schemaId, schemaInterface);
+    return this;
   }
 
   public RegistryBean addSchemaId(String schemaId) {
@@ -161,19 +169,17 @@ public class RegistryBean {
     return this;
   }
 
-  public RegistryBean addSchemaInterface(String schemaId, Class<?> schemaInterface) {
-    this.schemaInterfaces.put(schemaId, schemaInterface);
-    this.schemaIds.add(schemaId);
+  public RegistryBean setSchemaIds(List<String> schemaIds) {
+    this.schemaIds = schemaIds;
     return this;
+  }
+
+  public List<String> getSchemaIds() {
+    return this.schemaIds;
   }
 
   public Map<String, Class<?>> getSchemaInterfaces() {
     return this.schemaInterfaces;
-  }
-
-  public RegistryBean setSchemaIds(List<String> schemaIds) {
-    this.schemaIds = schemaIds;
-    return this;
   }
 
   public Instances getInstances() {

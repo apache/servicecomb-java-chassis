@@ -17,29 +17,62 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_ADDRESS;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.file.impl.FileResolverImpl;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestVertxRestTransport {
 
-  private final VertxRestTransport instance = new VertxRestTransport();
+  private VertxRestTransport instance;
+
+  Environment environment = Mockito.mock(Environment.class);
+
+  @Before
+  public void setUp() {
+    Mockito.when(environment.getProperty(
+            "servicecomb.request.timeout", long.class, (long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT))
+        .thenReturn((long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT);
+    Mockito.when(environment.getProperty("servicecomb.rest.client.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.client.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.http.dispatcher.rest.order", int.class, Integer.MAX_VALUE))
+        .thenReturn(Integer.MAX_VALUE);
+    Mockito.when(environment.getProperty("servicecomb.rest.publishPort", int.class, 0))
+        .thenReturn(0);
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, ""))
+        .thenReturn("");
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
+    instance = new VertxRestTransport();
+    instance.setEnvironment(environment);
+  }
 
   @Test
   public void testGetInstance() {
@@ -69,28 +102,10 @@ public class TestVertxRestTransport {
       };
       instance.init();
     } catch (Exception e) {
+      e.printStackTrace();
       status = true;
     }
     Assertions.assertFalse(status);
-  }
-
-  @Test
-  public void testSendException() {
-    boolean validAssert;
-    Invocation invocation = Mockito.mock(Invocation.class);
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    URIEndpointObject endpoint = Mockito.mock(URIEndpointObject.class);
-    Endpoint end = Mockito.mock(Endpoint.class);
-    Mockito.when(invocation.getEndpoint()).thenReturn(end);
-    Mockito.when(invocation.getEndpoint().getAddress()).thenReturn(endpoint);
-    try {
-      validAssert = true;
-      instance.send(invocation, asyncResp);
-    } catch (Exception e) {
-
-      validAssert = false;
-    }
-    Assertions.assertFalse(validAssert);
   }
 
   @Test
@@ -109,6 +124,8 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
+    Environment environment = Mockito.mock(Environment.class);
+    transport.setEnvironment(environment);
     Assertions.assertTrue(transport.canInit());
   }
 
@@ -125,6 +142,7 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
+    transport.setEnvironment(environment);
     Assertions.assertFalse(transport.canInit());
 
     ss.close();
@@ -144,6 +162,7 @@ public class TestVertxRestTransport {
     };
 
     VertxRestTransport transport = new VertxRestTransport();
+    transport.setEnvironment(environment);
     Assertions.assertTrue(transport.canInit());
   }
 }

@@ -97,7 +97,7 @@ interface SpecialNameModelInf {
 
 @Component
 public class TestWeakSpringmvc implements CategorizedTestCase {
-  @Value("${APPLICATION_ID}")
+  @Value("${servicecomb.service.application}")
   private String applicationName;
 
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
@@ -115,7 +115,7 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
   private SpecialNameModelInf specialNameModelInf;
 
-  @RpcReference(microserviceName = "${APPLICATION_ID}:springmvc", schemaId = "weakSpringmvc")
+  @RpcReference(microserviceName = "${servicecomb.service.application}:springmvc", schemaId = "weakSpringmvc")
   private SpecialNameModelInf specialNameModelInfWithAppId;
 
   private RestTemplate restTemplate = RestTemplateBuilder.create();
@@ -180,7 +180,6 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
     TestMgr.check("hello", nameListResult.get(0).get(0));
   }
 
-  @SuppressWarnings({"deprecation"})
   private void testDiffName() {
     TestMgr.check(7, diffNames.differentName(2, 3));
     TestMgr.check(8, diffNames2.differentName(2, 3));
@@ -192,8 +191,8 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
     args.put("x", 2);
     args.put("y", 3);
     TestMgr.check(7, InvokerUtils.syncInvoke("springmvc",
-        "weakSpringmvc", "differentName", args));
+        "weakSpringmvc", "differentName", args, Integer.class));
     TestMgr.check(7, InvokerUtils.syncInvoke(applicationName + ":springmvc",
-        "weakSpringmvc", "differentName", args));
+        "weakSpringmvc", "differentName", args, Integer.class));
   }
 }

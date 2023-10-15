@@ -19,17 +19,13 @@ package org.apache.servicecomb.core.invocation;
 
 import java.util.Map;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public final class InvocationFactory {
   private InvocationFactory() {
@@ -45,25 +41,27 @@ public final class InvocationFactory {
   }
 
   public static Invocation setSrcMicroservice(Invocation invocation) {
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-    invocation.addContext(Const.SRC_MICROSERVICE, microservice.getServiceName());
+    invocation.addContext(CoreConst.SRC_MICROSERVICE, SCBEngine.getInstance().getMicroserviceProperties().getName());
+    // TODO: hard code registry name here. This is an old feature not for all registry implementations.
     if (addSourceServiceId()) {
-      invocation.addContext(Const.SRC_SERVICE_ID, microservice.getServiceId());
+      invocation.addContext(CoreConst.SRC_SERVICE_ID,
+          SCBEngine.getInstance().getRegistrationManager().getServiceId("sc-registration"));
     }
     if (addSourceInstanceId()) {
-      invocation.addContext(Const.SRC_INSTANCE_ID, microservice.getInstance().getInstanceId());
+      invocation.addContext(CoreConst.SRC_INSTANCE_ID,
+          SCBEngine.getInstance().getRegistrationManager().getInstanceId("sc-registration"));
     }
     return invocation;
   }
 
   public static boolean addSourceServiceId() {
-    return DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.context.source.serviceId", true).get();
+    return SCBEngine.getInstance().getEnvironment().
+        getProperty("servicecomb.context.source.serviceId", boolean.class, true);
   }
 
   public static boolean addSourceInstanceId() {
-    return DynamicPropertyFactory.getInstance().
-        getBooleanProperty("servicecomb.context.source.instanceId", true).get();
+    return SCBEngine.getInstance().getEnvironment().
+        getProperty("servicecomb.context.source.instanceId", boolean.class, true);
   }
 
   /*

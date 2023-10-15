@@ -17,11 +17,10 @@
 
 package org.apache.servicecomb.swagger.engine;
 
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.models.PojoImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 public class TestSwaggerProducerOperation {
   private static final SwaggerEnvironment env = new SwaggerEnvironment();
@@ -29,18 +28,20 @@ public class TestSwaggerProducerOperation {
   private static SwaggerProducer producer;
 
   @Test
-  @EnabledForJreRange(min = JRE.JAVA_8, max = JRE.JAVA_11)
   public void testGetParameterType() {
     PojoImpl pojo = new PojoImpl();
     producer = env.createProducer(pojo, null);
 
     SwaggerProducerOperation swaggerProducerOperation = producer.findOperation("testBytes");
-    Assertions.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
-    Assertions.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType("bytes"));
+    Assertions.assertEquals(true,
+        swaggerProducerOperation.getSwaggerOperation().getOperation().getRequestBody() != null);
+    Assertions.assertEquals(null, swaggerProducerOperation.getSwaggerParameterType("bytes"));
 
     swaggerProducerOperation = producer.findOperation("testSimple");
-    Assertions.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
+    Assertions.assertEquals(true,
+        swaggerProducerOperation.getSwaggerOperation().getOperation().getRequestBody() != null);
     Assertions.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType(
-        swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().get(0).getName()));
+        (String) swaggerProducerOperation.getSwaggerOperation().getOperation().getRequestBody().getExtensions()
+            .get(SwaggerConst.EXT_BODY_NAME)));
   }
 }

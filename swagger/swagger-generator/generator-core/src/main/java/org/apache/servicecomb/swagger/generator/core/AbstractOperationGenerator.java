@@ -16,54 +16,17 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.common.reflect.TypeToken;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiParam;
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.AbstractSerializableParameter;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.CookieParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.StringProperty;
-import io.swagger.util.Json;
-import io.swagger.util.ReflectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.inject.PlaceholderResolver;
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.ParameterGenerator;
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
-import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -71,20 +34,46 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Comparator;
 import java.util.stream.Collectors;
 
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.inject.PlaceholderResolver;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterTypeProcessor;
+import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
+import com.fasterxml.jackson.databind.BeanDescription;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.reflect.TypeToken;
+
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.core.util.ReflectionUtils;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.headers.Header;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletResponse;
+
+@SuppressWarnings("rawtypes")
 public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected AbstractSwaggerGenerator swaggerGenerator;
 
-  protected Swagger swagger;
+  protected OpenAPI swagger;
 
   protected Class<?> clazz;
 
@@ -98,25 +87,22 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected Operation swaggerOperation;
 
-  // 根据方法上独立的ResponseHeader(s)标注生成的数据
-  // 如果Response中不存在对应的header，则会将这些header补充进去
-  protected Map<String, Property> methodResponseHeaders = new LinkedHashMap<>();
-
-  private static final List<String> NOT_NULL_ANNOTATIONS = Arrays.asList("NotBlank", "NotEmpty");
+  protected OperationGeneratorContext operationGeneratorContext;
 
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
-    this.swagger = swaggerGenerator.getSwagger();
+    this.swagger = swaggerGenerator.getOpenAPI();
     this.clazz = swaggerGenerator.getClazz();
     this.method = method;
     this.httpMethod = swaggerGenerator.getHttpMethod();
 
+    operationGeneratorContext = new OperationGeneratorContext(swaggerGenerator.getSwaggerGeneratorContext());
     swaggerOperation = new Operation();
   }
 
   @Override
-  public void addMethodResponseHeader(String name, Property header) {
-    methodResponseHeaders.put(name, header);
+  public OperationGeneratorContext getOperationGeneratorContext() {
+    return operationGeneratorContext;
   }
 
   @Override
@@ -125,7 +111,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       return;
     }
 
-    this.httpMethod = httpMethod.toLowerCase(Locale.US);
+    this.httpMethod = httpMethod.toUpperCase(Locale.US);
+  }
+
+  @Override
+  public OpenAPI getSwagger() {
+    return this.swagger;
   }
 
   @Override
@@ -151,27 +142,17 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     this.path = path;
   }
 
-  @Override
-  public void generateResponse() {
-    scanMethodAnnotation();
-    scanResponse();
-    correctOperation();
-  }
-
   public void generate() {
     scanMethodAnnotation();
     scanMethodParameters();
     scanResponse();
     correctOperation();
-
-    postProcessOperation(swaggerGenerator, this);
   }
 
   protected void scanMethodAnnotation() {
     for (Annotation annotation : Arrays.stream(method.getAnnotations())
-            .sorted(Comparator.comparing(a -> a.annotationType().getName()))
-            .collect(Collectors.toList())
-    ) {
+        .sorted(Comparator.comparing(a -> a.annotationType().getSimpleName()))
+        .collect(Collectors.toList())) {
       MethodAnnotationProcessor<Annotation> processor = findMethodAnnotationProcessor(annotation.annotationType());
       if (processor == null) {
         continue;
@@ -182,42 +163,38 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (StringUtils.isEmpty(swaggerOperation.getOperationId())) {
       swaggerOperation.setOperationId(MethodUtils.findSwaggerMethodName(method));
     }
-
-    setDefaultTag();
-  }
-
-  private void setDefaultTag() {
-    // if tag has been defined, do nothing
-    if (null != swaggerOperation.getTags()) {
-      for (String tag : swaggerOperation.getTags()) {
-        if (StringUtils.isNotEmpty(tag)) {
-          return;
-        }
-      }
-    }
-
-    // if there is no tag, set default tag
-    if (!swaggerGenerator.getDefaultTags().isEmpty()) {
-      swaggerOperation.setTags(new ArrayList<>(swaggerGenerator.getDefaultTags()));
-    }
   }
 
   protected void scanMethodParameters() {
+    // init generators
     initParameterGenerators();
 
+    // scan annotations and types
     Set<String> names = new HashSet<>();
+    int bodyCount = 0;
     for (ParameterGenerator parameterGenerator : parameterGenerators) {
       scanMethodParameter(parameterGenerator);
 
-      if (!names.add(parameterGenerator.getParameterName())) {
-        throw new IllegalStateException(
-            String.format("not support duplicated parameter, name=%s.", parameterGenerator.getParameterName()));
+      if (!names.add(parameterGenerator.getParameterGeneratorContext().getParameterName())) {
+        throw new IllegalArgumentException(
+            String.format("not support duplicated parameter, name=%s.",
+                parameterGenerator.getParameterGeneratorContext().getParameterName()));
       }
-      swaggerOperation.addParameter(parameterGenerator.getGeneratedParameter());
+      if (parameterGenerator.getHttpParameterType() == HttpParameterType.BODY) {
+        if (bodyCount > 0) {
+          throw new IllegalArgumentException(String.format("Defined %d body parameter.", bodyCount));
+        }
+        bodyCount++;
+      }
+    }
+
+    // generate
+    for (ParameterGenerator parameterGenerator : parameterGenerators) {
+      parameterGenerator.generate();
     }
   }
 
-  private void initParameterGenerators() {
+  protected void initParameterGenerators() {
     // 1.group method annotations by parameter name
     // key is parameter name
     Map<String, List<Annotation>> methodAnnotationMap = initMethodAnnotationByParameterName();
@@ -227,14 +204,6 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     // 3.create ParameterGenerators remains method annotations
     initRemainMethodAnnotationsParameterGenerators(methodAnnotationMap);
-
-    // 4.check
-    //   httpParameterType should not be null
-    long bodyCount = parameterGenerators.stream().filter(p -> p.getHttpParameterType().equals(HttpParameterType.BODY))
-        .count();
-    if (bodyCount > 1) {
-      throw new IllegalStateException(String.format("defined %d body parameter.", bodyCount));
-    }
   }
 
   protected void initMethodParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {
@@ -242,8 +211,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       Type genericType = TypeToken.of(clazz)
           .resolveType(methodParameter.getParameterizedType())
           .getType();
-      ParameterGenerator parameterGenerator = new ParameterGenerator(method, methodAnnotationMap, methodParameter,
-          genericType);
+      ParameterGenerator parameterGenerator = new ParameterGenerator(
+          this, methodAnnotationMap, methodParameter,
+          TypeFactory.defaultInstance().constructType(genericType));
       validateParameter(parameterGenerator.getGenericType());
       if (isContextParameter(parameterGenerator.getGenericType())) {
         continue;
@@ -261,12 +231,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected boolean isAggregatedParameter(ParameterGenerator parameterGenerator,
-                                          java.lang.reflect.Parameter methodParameter) {
+      java.lang.reflect.Parameter methodParameter) {
     return false;
   }
 
   protected void extractAggregatedParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap,
-                                                      java.lang.reflect.Parameter methodParameter) {
+      java.lang.reflect.Parameter methodParameter) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(methodParameter.getParameterizedType());
     BeanDescription beanDescription = Json.mapper().getSerializationConfig().introspect(javaType);
     for (BeanPropertyDefinition propertyDefinition : beanDescription.findProperties()) {
@@ -275,7 +245,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       }
 
       Annotation[] annotations = collectAnnotations(propertyDefinition);
-      ParameterGenerator propertyParameterGenerator = new ParameterGenerator(method,
+      ParameterGenerator propertyParameterGenerator = new ParameterGenerator(this,
           methodAnnotationMap,
           propertyDefinition.getName(),
           annotations,
@@ -286,7 +256,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected void initRemainMethodAnnotationsParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {
     for (Entry<String, List<Annotation>> entry : methodAnnotationMap.entrySet()) {
-      ParameterGenerator parameterGenerator = new ParameterGenerator(entry.getKey(), entry.getValue());
+      ParameterGenerator parameterGenerator = new ParameterGenerator(this, entry.getKey(), entry.getValue());
       parameterGenerators.add(parameterGenerator);
     }
   }
@@ -294,22 +264,24 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   private Map<String, List<Annotation>> initMethodAnnotationByParameterName() {
     Map<String, List<Annotation>> methodAnnotations = new LinkedHashMap<>();
     for (Annotation annotation : method.getAnnotations()) {
-      if (annotation instanceof ApiImplicitParams) {
-        for (ApiImplicitParam apiImplicitParam : ((ApiImplicitParams) annotation).value()) {
+      if (annotation instanceof io.swagger.v3.oas.annotations.Parameters) {
+        for (io.swagger.v3.oas.annotations.Parameter apiImplicitParam
+            : ((io.swagger.v3.oas.annotations.Parameters) annotation).value()) {
           addMethodAnnotationByParameterName(methodAnnotations, apiImplicitParam.name(), apiImplicitParam);
         }
         continue;
       }
 
-      if (annotation instanceof ApiParam) {
-        addMethodAnnotationByParameterName(methodAnnotations, ((ApiParam) annotation).name(), annotation);
+      if (annotation instanceof io.swagger.v3.oas.annotations.Parameter) {
+        addMethodAnnotationByParameterName(methodAnnotations,
+            ((io.swagger.v3.oas.annotations.Parameter) annotation).name(), annotation);
       }
     }
     return methodAnnotations;
   }
 
   private void addMethodAnnotationByParameterName(Map<String, List<Annotation>> methodAnnotations, String name,
-                                                  Annotation annotation) {
+      Annotation annotation) {
     if (StringUtils.isEmpty(name)) {
       throw new IllegalStateException(String.format("%s.name should not be empty. method=%s:%s",
           annotation.annotationType().getSimpleName(),
@@ -330,150 +302,45 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void scanMethodParameter(ParameterGenerator parameterGenerator) {
-    Parameter parameter = createParameter(parameterGenerator);
-
-    try {
-      fillParameter(swagger,
-          parameter,
-          parameterGenerator.getParameterName(),
-          parameterGenerator.getGenericType(),
-          parameterGenerator.getAnnotations());
-    } catch (Throwable e) {
-      throw new IllegalStateException(
-          String.format("failed to fill parameter, parameterName=%s.",
-              parameterGenerator.getParameterName()),
-          e);
-    }
-  }
-
-  protected Parameter createParameter(ParameterGenerator parameterGenerator) {
-    if (parameterGenerator.getGeneratedParameter() == null) {
-      Parameter parameter = createParameter(parameterGenerator.getHttpParameterType());
-      parameterGenerator.setGeneratedParameter(parameter);
-    }
-    parameterGenerator.getGeneratedParameter().setName(parameterGenerator.getParameterName());
-    return parameterGenerator.getGeneratedParameter();
-  }
-
-  protected Parameter createParameter(HttpParameterType httpParameterType) {
-    switch (httpParameterType) {
-      case PATH:
-        return new PathParameter();
-      case QUERY:
-        return new QueryParameter();
-      case HEADER:
-        return new HeaderParameter();
-      case FORM:
-        return new FormParameter();
-      case COOKIE:
-        return new CookieParameter();
-      case BODY:
-        return new BodyParameter();
-      default:
-        throw new IllegalStateException("not support httpParameterType " + httpParameterType);
-    }
-  }
-
-  protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, JavaType type,
-                               List<Annotation> annotations) {
-    for (Annotation annotation : annotations) {
-      ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
+    for (Annotation annotation : parameterGenerator.getAnnotations()) {
+      ParameterAnnotationProcessor<Annotation> processor = SwaggerGeneratorUtils
+          .findParameterAnnotationProcessor(annotation.annotationType());
       if (processor != null) {
-        processor.fillParameter(swagger, swaggerOperation, parameter, type, annotation);
+        processor.process(this.swaggerGenerator, this, parameterGenerator, annotation);
       }
     }
 
-    if (type == null) {
-      return;
-    }
-
-    ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(type);
-    if (processor != null) {
-      processor.fillParameter(swagger, swaggerOperation, parameter, type, null);
-    }
-
-    if (parameter instanceof AbstractSerializableParameter) {
-      io.swagger.util.ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
-      annotations.stream().forEach(annotation -> {
-        if (NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName())){
-          parameter.setRequired(true);
-        }
-      });
-      return;
-    }
-
-    fillBodyParameter(swagger, parameter, type, annotations);
-  }
-
-  protected void fillBodyParameter(Swagger swagger, Parameter parameter, Type type, List<Annotation> annotations) {
-    // so strange, for bodyParameter, swagger return a new instance
-    // that will cause lost some information
-    // so we must merge them
-    BodyParameter newBodyParameter = (BodyParameter) io.swagger.util.ParameterProcessor.applyAnnotations(
-        swagger, parameter, type, annotations);
-
-    // swagger missed enum data, fix it
-    ModelImpl model = SwaggerUtils.getModelImpl(swagger, newBodyParameter);
-    if (model != null) {
-      Property property = ModelConverters.getInstance().readAsProperty(type);
-      if (property instanceof StringProperty) {
-        model.setEnum(((StringProperty) property).getEnum());
+    Schema<?> schema = parameterGenerator.getParameterGeneratorContext().getSchema();
+    if (schema == null) {
+      JavaType parameterType = parameterGenerator.getGenericType();
+      ParameterTypeProcessor processor = SwaggerGeneratorUtils.findParameterTypeProcessor(parameterType);
+      if (processor != null) {
+        processor.process(this.swaggerGenerator, this, parameterGenerator);
+      } else {
+        parameterGenerator.getParameterGeneratorContext().setSchema(SwaggerUtils.resolveTypeSchemas(this.swagger,
+            parameterType));
       }
     }
-
-    // swagger 2.0 do not support NotBlank and NotEmpty annotations, fix it
-    if (((JavaType) type).getBindings().getTypeParameters().isEmpty()) {
-      convertAnnotationProperty(((JavaType) type).getRawClass());
-    } else {
-      ((JavaType) type).getBindings().getTypeParameters().
-              forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
-    }
-
-    mergeBodyParameter((BodyParameter) parameter, newBodyParameter);
   }
 
-  private void convertAnnotationProperty(Class<?> beanClass) {
-    Map<String, Model> definitions = swagger.getDefinitions();
-    if (definitions == null){
-      return;
+  @Override
+  public boolean isForm() {
+    for (ParameterGenerator parameterGenerator : parameterGenerators) {
+      if (parameterGenerator.isForm()) {
+        return true;
+      }
     }
-    Field[] fields = beanClass.getDeclaredFields();
-    Model model = definitions.get(beanClass.getSimpleName());
-    if (model == null) {
-      return;
-    }
-    Map<String, Property> properties = model.getProperties();
-    if (properties != null) {
-      Arrays.stream(fields).forEach(field -> {
-        boolean requireItem = Arrays.stream(field.getAnnotations()).
-                anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
-        if (requireItem) {
-          Property property = properties.get(field.getName());
-          if (property != null) {
-            property.setRequired(true);
-          }
-        }
-      });
-    }
+    return false;
   }
 
-
-  private void mergeBodyParameter(BodyParameter bodyParameter, BodyParameter fromBodyParameter) {
-    if (fromBodyParameter.getExamples() != null) {
-      bodyParameter.setExamples(fromBodyParameter.getExamples());
+  @Override
+  public boolean isBinary() {
+    for (ParameterGenerator parameterGenerator : parameterGenerators) {
+      if (parameterGenerator.isBinary()) {
+        return true;
+      }
     }
-    if (fromBodyParameter.getRequired()) {
-      bodyParameter.setRequired(true);
-    }
-    if (StringUtils.isNotEmpty(fromBodyParameter.getDescription())) {
-      bodyParameter.setDescription(fromBodyParameter.getDescription());
-    }
-    if (StringUtils.isNotEmpty(fromBodyParameter.getAccess())) {
-      bodyParameter.setAccess(fromBodyParameter.getAccess());
-    }
-    if (fromBodyParameter.getSchema() != null) {
-      bodyParameter.setSchema(fromBodyParameter.getSchema());
-    }
+    return false;
   }
 
   @Override
@@ -482,68 +349,68 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       return;
     }
 
-    Path pathObj = swagger.getPath(path);
-    if (pathObj == null) {
-      pathObj = new Path();
-      swagger.path(path, pathObj);
+    if (swagger.getPaths() == null) {
+      swagger.setPaths(new Paths());
     }
 
-    HttpMethod hm = HttpMethod.valueOf(httpMethod.toUpperCase(Locale.US));
-    if (pathObj.getOperationMap().get(hm) != null) {
-      throw new IllegalStateException(String.format("Only allowed one default path. method=%s:%s.",
+    PathItem pathObj = swagger.getPaths().get(path);
+    if (pathObj == null) {
+      pathObj = new PathItem();
+      swagger.path(path, pathObj);
+    } else if (SwaggerUtils.methodExists(pathObj, httpMethod)) {
+      throw new IllegalStateException(String.format("Duplicate operation path detected. method=%s:%s.",
           method.getDeclaringClass().getName(),
           method.getName()));
     }
-    pathObj.set(httpMethod, swaggerOperation);
+
+    pathObj.operation(PathItem.HttpMethod.valueOf(httpMethod), swaggerOperation);
   }
 
   public void correctOperation() {
-    if (swaggerOperation.getConsumes() == null) {
-      if (swaggerOperation.getParameters().stream()
-          .anyMatch(SwaggerUtils::isFileParameter)) {
-        swaggerOperation.addConsumes(MediaType.MULTIPART_FORM_DATA);
-      }
-    }
-
     SwaggerUtils.correctResponses(swaggerOperation);
-    addHeaderToResponse();
-  }
-
-  private void addHeaderToResponse() {
-    for (Entry<String, Response> responseEntry : swaggerOperation.getResponses().entrySet()) {
-      Response response = responseEntry.getValue();
-
-      for (Entry<String, Property> entry : methodResponseHeaders.entrySet()) {
-        if (response.getHeaders() != null && response.getHeaders().containsKey(entry.getKey())) {
-          continue;
-        }
-
-        response.addHeader(entry.getKey(), entry.getValue());
-      }
-    }
   }
 
   public void scanResponse() {
-    if (swaggerOperation.getResponses() != null) {
-      Response successResponse = swaggerOperation.getResponses().get(SwaggerConst.SUCCESS_KEY);
-      if (successResponse != null) {
-        if (successResponse.getResponseSchema() == null) {
-          // 标注已经定义了response，但是是void，这可能是在标注上未定义
-          // 根据函数原型来处理response
-          Model model = createResponseModel();
-          successResponse.setResponseSchema(model);
-        }
-        return;
+    operationGeneratorContext.updateProduces();
+    swaggerOperation.setResponses(new ApiResponses());
+    for (Entry<String, Schema<?>> response : operationGeneratorContext.getResponses().entrySet()) {
+      ApiResponse apiResponse = new ApiResponse();
+      if (StringUtils.isNotEmpty(operationGeneratorContext.getResponseDescriptions().get(response.getKey()))) {
+        apiResponse.setDescription(operationGeneratorContext.getResponseDescriptions().get(response.getKey()));
       }
-    }
+      if (operationGeneratorContext.getResponseHeaders().get(response.getKey()) != null) {
+        operationGeneratorContext.getResponseHeaders().get(response.getKey()).forEach((k, v) -> {
+          Header header = new Header();
+          header.setSchema(v);
+          apiResponse.addHeaderObject(k, header);
+        });
+      }
+      Schema<?> schema = response.getValue() != null ? response.getValue() :
+          createResponseModel();
 
-    Model model = createResponseModel();
-    Response response = new Response();
-    response.setResponseSchema(model);
-    swaggerOperation.addResponse(SwaggerConst.SUCCESS_KEY, response);
+      if (schema == null) {
+        swaggerOperation.getResponses().addApiResponse(response.getKey(), apiResponse);
+        continue;
+      }
+
+      apiResponse.setContent(new Content());
+      // file download using WILDCARD content-type
+      if ("string".equals(schema.getType()) && "binary".equals(schema.getFormat())) {
+        MediaType mediaType = new MediaType();
+        mediaType.setSchema(schema);
+        apiResponse.getContent().addMediaType(jakarta.ws.rs.core.MediaType.WILDCARD, mediaType);
+      } else {
+        for (String produce : operationGeneratorContext.getSupportedProduces()) {
+          MediaType mediaType = new MediaType();
+          mediaType.setSchema(schema);
+          apiResponse.getContent().addMediaType(produce, mediaType);
+        }
+      }
+      swaggerOperation.getResponses().addApiResponse(response.getKey(), apiResponse);
+    }
   }
 
-  protected Model createResponseModel() {
+  protected Schema createResponseModel() {
     Type responseType =
         TypeToken.of(clazz)
             .resolveType(method.getGenericReturnType())

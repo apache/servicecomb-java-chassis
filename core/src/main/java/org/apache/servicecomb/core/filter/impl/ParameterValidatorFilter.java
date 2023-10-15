@@ -20,18 +20,10 @@ import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
-import javax.validation.executable.ExecutableValidator;
-import javax.validation.groups.Default;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -43,27 +35,40 @@ import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicPropertyFactory;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.executable.ExecutableValidator;
+import jakarta.validation.groups.Default;
 
-public class ParameterValidatorFilter implements ProducerFilter, InitializingBean {
+public class ParameterValidatorFilter implements ProviderFilter, InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 
   public static final String NAME = "validator";
 
-  private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
+  public static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
   protected ExecutableValidator validator;
 
-  @Nonnull
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public String getName() {
     return NAME;
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 1000;
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1000;
   }
 
   @Override
@@ -88,7 +93,7 @@ public class ParameterValidatorFilter implements ProducerFilter, InitializingBea
   }
 
   private boolean useResourceBundleMessageInterpolator() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_EL, false).get();
+    return environment.getProperty(ENABLE_EL, boolean.class, false);
   }
 
   @Override

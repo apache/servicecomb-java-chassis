@@ -17,27 +17,20 @@
 package org.apache.servicecomb.core.filter;
 
 import org.apache.servicecomb.core.filter.impl.ParameterValidatorFilter;
-import org.apache.servicecomb.core.filter.impl.ProducerOperationFilter;
+import org.apache.servicecomb.core.filter.impl.ProviderOperationFilter;
 import org.apache.servicecomb.core.filter.impl.ScheduleFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class CoreFilterConfiguration {
-  //TODO: need remove all component scan or will cause bean conflict with load balance module
-//  @Bean
-//  @ConditionalOnMissingBean(name = "loadBalanceFilter")
-//  public ConsumerFilter loadBalanceFilter() {
-//    return new SimpleLoadBalanceFilter();
-//  }
-
   @Bean
-  public ProducerFilter producerOperationFilter() {
-    return new ProducerOperationFilter();
+  public ProviderFilter producerOperationFilter() {
+    return new ProviderOperationFilter();
   }
 
   @Bean
-  public ProducerFilter scheduleFilter() {
+  public ProviderFilter scheduleFilter() {
     return new ScheduleFilter();
   }
 
@@ -47,7 +40,7 @@ public class CoreFilterConfiguration {
   }
 
   @Bean
-  public ProducerFilter parameterValidatorFilter() {
+  public ProviderFilter parameterValidatorFilter() {
     return new ParameterValidatorFilter();
   }
 }

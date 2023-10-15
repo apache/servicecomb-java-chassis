@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.apache.servicecomb.swagger.converter.AbstractConverter;
 
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.Schema;
 
 public abstract class AbstractPropertyConverter extends AbstractConverter {
   protected Map<String, Object> findVendorExtensions(Object def) {
-    return ((Property) def).getVendorExtensions();
+    return ((Schema) def).getExtensions();
   }
 }

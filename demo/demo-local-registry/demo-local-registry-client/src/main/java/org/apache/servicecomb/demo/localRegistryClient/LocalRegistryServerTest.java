@@ -24,20 +24,42 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class LocalRegistryServerTest implements CategorizedTestCase {
+  // demo-local-registry-server-bean use yaml to register service, and register schema by
+  // local file loading
   @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstService;
 
+  @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "ServerEndpoint")
+  private ServerService serverService;
+
+  // demo-local-registry-server-bean use bean to register service, and register schema part by
+  // local file loading, part by bean class
   @RpcReference(microserviceName = "demo-local-registry-server-bean", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstServiceBean;
 
+  @RpcReference(microserviceName = "demo-local-registry-server-bean", schemaId = "ServerEndpoint")
+  private ServerService serverServiceBean;
+
+  // demo-local-registry-server-bean2 use bean to register service and schema
   @RpcReference(microserviceName = "demo-local-registry-server-bean2", schemaId = "CodeFirstEndpoint2")
   private CodeFirstService codeFirstServiceBean2;
+
+  @RpcReference(microserviceName = "demo-local-registry-server-bean2", schemaId = "ServerEndpoint")
+  private ServerService serverServiceBean2;
+
+  private DiscoveryManager discoveryManager;
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
 
   @Override
   public void testRestTransport() throws Exception {
@@ -47,17 +69,18 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   }
 
   private void testGetAllMicroservice() {
-    List<Microservice> microserviceList = DiscoveryManager.INSTANCE.getAllMicroservices();
-    int expectedCount = 0;
-
-    for (Microservice m : microserviceList) {
-      if (m.getServiceName().equals("demo-local-registry-client")
-          || m.getServiceName().equals("demo-local-registry-server")
-          || m.getServiceName().equals("demo-local-registry-server-bean")) {
-        expectedCount++;
-      }
-    }
-    TestMgr.check(3, expectedCount);
+    List<? extends DiscoveryInstance> microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-client");
+    TestMgr.check(1, microserviceList.size());
+    microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-server");
+    TestMgr.check(1, microserviceList.size());
+    microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-server-bean");
+    TestMgr.check(1, microserviceList.size());
+    microserviceList = discoveryManager
+        .findServiceInstances("demo-local-registry", "demo-local-registry-server-bean2");
+    TestMgr.check(1, microserviceList.size());
   }
 
   private void testCodeFirstGetName() {
@@ -74,5 +97,11 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
     TestMgr.check("2", template
         .getForObject("cse://demo-local-registry-server-bean/register/url/prefix/getName?name=2",
             String.class));
+    TestMgr.check("2", template
+        .getForObject("cse://demo-local-registry-server-bean2/register/url/prefix/getName?name=2",
+            String.class));
+    TestMgr.check("2", serverService.getName("2"));
+    TestMgr.check("2", serverServiceBean.getName("2"));
+    TestMgr.check("2", serverServiceBean2.getName("2"));
   }
 }

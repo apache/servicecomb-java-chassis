@@ -21,9 +21,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
@@ -35,9 +32,7 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -45,9 +40,11 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class LoadBalanceFilter implements ConsumerFilter {
   public static final String CONTEXT_KEY_LAST_SERVER = "x-context-last-server";
@@ -59,15 +56,9 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   public static final String SERVICECOMB_SERVER_ENDPOINT = "scb-endpoint";
 
-  // set endpoint in invocation.localContext
-  // ignore logic of loadBalance
-  public static final boolean supportDefinedEndpoint =
-      DynamicPropertyFactory.getInstance()
-          .getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
-
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalanceFilter.class);
 
-  private DiscoveryTree discoveryTree = new DiscoveryTree();
+  private final DiscoveryTree discoveryTree;
 
   // key为grouping filter qualified name
   private final Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
@@ -78,32 +69,35 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private String strategy = null;
 
-  @VisibleForTesting
-  public LoadBalanceFilter(DiscoveryTree discoveryTree, ExtensionsManager extensionsManager) {
+  private final SCBEngine scbEngine;
+
+  // set endpoint in invocation.localContext
+  // ignore logic of loadBalance
+  public boolean supportDefinedEndpoint;
+
+  @Autowired
+  public LoadBalanceFilter(ExtensionsManager extensionsManager,
+      DiscoveryTree discoveryTree, SCBEngine scbEngine) {
+    preCheck(scbEngine);
+    this.scbEngine = scbEngine;
+    this.supportDefinedEndpoint = this.scbEngine.getEnvironment()
+        .getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",
+            boolean.class, false);
+    this.extensionsManager = extensionsManager;
     this.discoveryTree = discoveryTree;
-    this.extensionsManager = extensionsManager;
   }
 
-  public LoadBalanceFilter(ExtensionsManager extensionsManager) {
-    preCheck();
-    this.extensionsManager = extensionsManager;
-    discoveryTree.loadFromSPI(DiscoveryFilter.class);
-    discoveryTree.addFilter(new ServerDiscoveryFilter());
-    discoveryTree.sort();
-  }
-
-  private void preCheck() {
+  private void preCheck(SCBEngine scbEngine) {
     // Old configurations check.Just print an error, because configurations may given in dynamic and fail on runtime.
-
-    String policyName = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName", null)
-        .get();
+    String policyName = scbEngine.getEnvironment()
+        .getProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName");
     if (!StringUtils.isEmpty(policyName)) {
       LOGGER.error("[servicecomb.loadbalance.NFLoadBalancerRuleClassName] is not supported anymore." +
           "use [servicecomb.loadbalance.strategy.name] instead.");
     }
 
-    String filterNames = Configuration.getStringProperty(null, "servicecomb.loadbalance.serverListFilters");
+    String filterNames = scbEngine.getEnvironment()
+        .getProperty("servicecomb.loadbalance.serverListFilters");
     if (!StringUtils.isEmpty(filterNames)) {
       LOGGER.error(
           "Server list implementation changed to SPI. Configuration [servicecomb.loadbalance.serverListFilters]" +
@@ -113,11 +107,10 @@ public class LoadBalanceFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "load-balance";
@@ -166,7 +159,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   private Endpoint parseEndpoint(String endpointUri) throws Exception {
     URI formatUri = new URI(endpointUri);
-    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(formatUri.getScheme());
+    Transport transport = scbEngine.getTransportManager().findTransport(formatUri.getScheme());
     if (transport == null) {
       LOGGER.error("not deployed transport {}, ignore {}.", formatUri.getScheme(), endpointUri);
       throw new InvocationException(Status.BAD_REQUEST,
@@ -199,7 +192,9 @@ public class LoadBalanceFilter implements ConsumerFilter {
     ServiceCombServer server = chooseServer(invocation, chosenLB);
     if (null == server) {
       return CompletableFuture.failedFuture(
-          new InvocationException(Status.INTERNAL_SERVER_ERROR, "No available address found."));
+          new InvocationException(Status.INTERNAL_SERVER_ERROR,
+              String.format("No available address found for %s/%s.", invocation.getAppId(),
+                  invocation.getMicroserviceName())));
     }
     chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());
@@ -271,8 +266,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
     context.setInputParameters(invocation);
     VersionedCache serversVersionedCache = discoveryTree.discovery(context,
         invocation.getAppId(),
-        invocation.getMicroserviceName(),
-        invocation.getMicroserviceVersionRule());
+        invocation.getMicroserviceName());
     invocation.addLocalContext(CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
 
     return loadBalancerMap

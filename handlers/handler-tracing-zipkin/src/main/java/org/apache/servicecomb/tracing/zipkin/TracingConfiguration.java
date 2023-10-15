@@ -31,6 +31,7 @@ import org.apache.servicecomb.config.DynamicProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import brave.Tracing;
 import brave.context.slf4j.MDCScopeDecorator;
@@ -86,9 +87,9 @@ public class TracingConfiguration {
 
   @Bean
   Tracing tracing(Sender sender, DynamicProperties dynamicProperties,
-      CurrentTraceContext currentTraceContext) {
+      CurrentTraceContext currentTraceContext, Environment environment) {
     return Tracing.newBuilder()
-        .localServiceName(BootStrapProperties.readServiceName())
+        .localServiceName(BootStrapProperties.readServiceName(environment))
         .currentTraceContext(currentTraceContext) // puts trace IDs into logs
         .addSpanHandler(AsyncZipkinSpanHandler.create(sender))
         .build();

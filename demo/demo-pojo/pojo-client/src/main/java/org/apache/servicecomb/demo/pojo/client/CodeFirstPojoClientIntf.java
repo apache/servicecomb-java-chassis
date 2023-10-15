@@ -20,10 +20,10 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 public interface CodeFirstPojoClientIntf extends CodeFirstPojoIntf {
-  @ApiOperation(nickname = "sayHi", value = "")
+  @Operation(operationId = "sayHi", summary = "")
   CompletableFuture<String> sayHiAsync(String name);
 
   String sayHi2(String name);

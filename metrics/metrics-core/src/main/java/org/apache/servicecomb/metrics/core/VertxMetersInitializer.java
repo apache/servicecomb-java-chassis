@@ -45,7 +45,7 @@ public class VertxMetersInitializer implements MetricsInitializer {
     Id endpointsId = registry.createId(VERTX_ENDPOINTS);
     VertxEndpointsMeter clientMeter = new HttpClientEndpointsMeter(
         endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_CLINET),
-        SharedVertxFactory.getMetricsFactory()
+        SharedVertxFactory.getMetricsFactory(config.getEnvironment())
             .getVertxMetrics()
             .getClientEndpointMetricManager()
             .getClientEndpointMetricMap());
@@ -53,7 +53,7 @@ public class VertxMetersInitializer implements MetricsInitializer {
 
     VertxEndpointsMeter serverMeter = new ServerEndpointsMeter(
         endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_SERVER),
-        SharedVertxFactory.getMetricsFactory()
+        SharedVertxFactory.getMetricsFactory(config.getEnvironment())
             .getVertxMetrics()
             .getServerEndpointMetricMap());
     SpectatorUtils.registerMeter(registry, serverMeter);

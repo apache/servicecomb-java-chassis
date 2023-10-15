@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.dashboard.client;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,10 +36,13 @@ class AddressManagerTest {
   private static DashboardAddressManager addressManager1;
 
   @Test
-  public void kieAddressManagerTest() {
+  public void kieAddressManagerTest() throws IllegalAccessException, NoSuchFieldException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
     addressManager1 = new DashboardAddressManager(addresses, new EventBus());
+    Field addressManagerField = addressManager1.getClass().getSuperclass().getDeclaredField("index");
+    addressManagerField.setAccessible(true);
+    addressManagerField.set(addressManager1, 0);
 
     Assertions.assertNotNull(addressManager1);
 
@@ -49,7 +53,6 @@ class AddressManagerTest {
     Assertions.assertEquals("https://127.0.0.2:30103", addressManager1.address());
     Assertions.assertEquals("http://127.0.0.1:30103", addressManager1.address());
   }
-
 
   @Test
   public void onRefreshEndpointEvent() {

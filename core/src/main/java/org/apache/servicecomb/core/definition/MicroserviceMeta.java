@@ -16,20 +16,15 @@
  */
 package org.apache.servicecomb.core.definition;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.swagger.SwaggerUtils;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 /**
  * should named MicroserviceVersionMeta<br>
@@ -42,22 +37,10 @@ public class MicroserviceMeta {
 
   private final String appId;
 
-  // always not include appId
-  private final String shortName;
-
-  // inside app: equals to shortName
-  // cross app: appId:shortName
   private final String microserviceName;
 
   // key is schemaId, this is all schemas
   private final Map<String, SchemaMeta> schemaMetas = new HashMap<>();
-
-  // key is schema interface
-  // only when list have only one element, then allow query by interface
-  // otherwise must query by schemaId
-  //
-  // value is synchronizedList, only for low frequency query
-  private final Map<Class<?>, List<SchemaMeta>> intfSchemaMetas = new HashMap<>();
 
   // key is OperationMeta.getMicroserviceQualifiedName()
   private final Map<String, OperationMeta> operationMetas = new HashMap<>();
@@ -68,17 +51,11 @@ public class MicroserviceMeta {
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
-  public MicroserviceMeta(SCBEngine scbEngine, String microserviceName, boolean consumer) {
+  public MicroserviceMeta(SCBEngine scbEngine, String application, String serviceName, boolean consumer) {
     this.scbEngine = scbEngine;
-    MicroserviceNameParser parser = scbEngine.parseMicroserviceName(microserviceName);
-    this.appId = parser.getAppId();
-    this.shortName = parser.getShortName();
-    this.microserviceName = parser.getMicroserviceName();
+    this.appId = application;
+    this.microserviceName = serviceName;
     this.consumer = consumer;
-  }
-
-  public MicroserviceConfig getMicroserviceConfig() {
-    return microserviceVersionsMeta.getMicroserviceConfig();
   }
 
   public MicroserviceVersionsMeta getMicroserviceVersionsMeta() {
@@ -105,11 +82,7 @@ public class MicroserviceMeta {
     return appId;
   }
 
-  public String getShortName() {
-    return shortName;
-  }
-
-  public SchemaMeta registerSchemaMeta(String schemaId, Swagger swagger) {
+  public SchemaMeta registerSchemaMeta(String schemaId, OpenAPI swagger) {
     SchemaMeta schemaMeta = new SchemaMeta(this, schemaId, swagger);
 
     if (schemaMetas.putIfAbsent(schemaMeta.getSchemaId(), schemaMeta) != null) {
@@ -118,14 +91,7 @@ public class MicroserviceMeta {
           appId, microserviceName, schemaMeta.getSchemaId()));
     }
 
-    Class<?> intf = SwaggerUtils.getInterface(schemaMeta.getSwagger());
-    if (intf != null) {
-      intfSchemaMetas
-          .computeIfAbsent(intf, k -> Collections.synchronizedList(new ArrayList<>()))
-          .add(schemaMeta);
-    }
-
-    schemaMeta.getOperations().values().stream()
+    schemaMeta.getOperations().values()
         .forEach(operationMeta -> operationMetas.put(operationMeta.getMicroserviceQualifiedName(), operationMeta));
 
     return schemaMeta;
@@ -152,23 +118,6 @@ public class MicroserviceMeta {
 
   public SchemaMeta findSchemaMeta(String schemaId) {
     return schemaMetas.get(schemaId);
-  }
-
-  public SchemaMeta findSchemaMeta(Class<?> schemaIntf) {
-    List<SchemaMeta> schemaList = intfSchemaMetas.get(schemaIntf);
-    if (schemaList == null) {
-      return null;
-    }
-
-    if (schemaList.size() > 1) {
-      throw new IllegalStateException(String.format(
-          "failed to find SchemaMeta by interface cause there are multiple SchemaMeta relate to the interface, "
-              + "please use schemaId to choose a SchemaMeta, "
-              + "appId=%s, microserviceName=%s, interface=%s.",
-          appId, microserviceName, schemaIntf.getName()));
-    }
-
-    return schemaList.get(0);
   }
 
   public Map<String, SchemaMeta> getSchemaMetas() {

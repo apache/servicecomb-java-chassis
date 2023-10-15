@@ -18,15 +18,13 @@
 server:
   port: 8082
 
-# java-chassis configurations
-
-APPLICATION_ID: demo-multi-service-center
-service_description:
-  name: demo-multi-service-center-serverB
-  version: 0.0.2
 servicecomb:
   service:
-    registry:
+    application: demo-multi-service-center
+    name: demo-multi-service-center-serverB
+    version: 0.0.2
+  registry:
+    sc:
       address: http://127.0.0.1:40100
   rest:
     address: 0.0.0.0:8082

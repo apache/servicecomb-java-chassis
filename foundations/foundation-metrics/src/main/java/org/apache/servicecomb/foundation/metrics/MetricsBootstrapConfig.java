@@ -16,24 +16,52 @@
  */
 package org.apache.servicecomb.foundation.metrics;
 
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.Environment;
 
 public class MetricsBootstrapConfig {
   public static final String METRICS_WINDOW_TIME = "servicecomb.metrics.window_time";
+
+  public static final String CONFIG_LATENCY_DISTRIBUTION = "servicecomb.metrics.invocation.latencyDistribution";
+
+  public static final String CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN =
+      "servicecomb.metrics.publisher.defaultLog.invocation.latencyDistribution.minScopeLength";
 
   public static final int DEFAULT_METRICS_WINDOW_TIME = 60000;
 
   private long msPollInterval;
 
-  public MetricsBootstrapConfig() {
+  private String latencyDistribution;
+
+  private int minScopeLength;
+
+  private Environment environment;
+
+  public MetricsBootstrapConfig(Environment environment) {
+    this.environment = environment;
     msPollInterval =
-        DynamicPropertyFactory.getInstance().getIntProperty(METRICS_WINDOW_TIME, DEFAULT_METRICS_WINDOW_TIME).get();
+        environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME);
     if (msPollInterval < 1000) {
       msPollInterval = 1000;
     }
+
+    latencyDistribution = environment.getProperty(CONFIG_LATENCY_DISTRIBUTION, String.class);
+    minScopeLength = environment.getProperty(
+        CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7);
+  }
+
+  public Environment getEnvironment() {
+    return environment;
   }
 
   public long getMsPollInterval() {
     return msPollInterval;
+  }
+
+  public String getLatencyDistribution() {
+    return latencyDistribution;
+  }
+
+  public int getMinScopeLength() {
+    return minScopeLength;
   }
 }

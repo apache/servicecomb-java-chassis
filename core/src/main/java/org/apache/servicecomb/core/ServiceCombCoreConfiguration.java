@@ -16,21 +16,78 @@
  */
 package org.apache.servicecomb.core;
 
+import java.util.List;
+
+import org.apache.servicecomb.config.DynamicPropertiesSource;
+import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.core.bootup.FilterChainCollector;
+import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
+import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.executor.GroupExecutor;
+import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
+import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
+@SuppressWarnings("unused")
 public class ServiceCombCoreConfiguration {
   @Bean
-  public ConfigurationSpringInitializer configurationSpringInitializer() {
-    return new ConfigurationSpringInitializer();
+  public ConfigurationSpringInitializer configurationSpringInitializer(
+      List<DynamicPropertiesSource<?>> dynamicPropertiesSources) {
+    return new ConfigurationSpringInitializer(dynamicPropertiesSources);
   }
 
   @Bean
-  public SCBApplicationListener scbApplicationListener() {
-    SCBApplicationListener scbApplicationListener = new SCBApplicationListener();
+  public SCBApplicationListener scbApplicationListener(SCBEngine scbEngine) {
+    SCBApplicationListener scbApplicationListener = new SCBApplicationListener(scbEngine);
     scbApplicationListener.setInitEventClass(ApplicationReadyEvent.class);
     return scbApplicationListener;
+  }
+
+  @Bean
+  public SCBEngine scbEngine() {
+    return new SCBEngine();
+  }
+
+
+  @Bean
+  public ProducerBootListener producerBootListener() {
+    return new ProducerBootListener();
+  }
+
+  @Bean
+  public SwaggerLoader swaggerLoader(MicroserviceProperties microserviceProperties) {
+    return new SwaggerLoader(microserviceProperties);
+  }
+
+  @Bean
+  public FilterChainCollector filterChainCollector() {
+    return new FilterChainCollector();
+  }
+
+  @Bean
+  public ServiceInformationCollector serviceInformationCollector() {
+    return new ServiceInformationCollector();
+  }
+
+  @Bean
+  public ExecutorManager executorManager() {
+    return new ExecutorManager();
+  }
+
+  @Bean(value = {"cse.executor.groupThreadPool", "cse.executor.default", "servicecomb.executor.groupThreadPool"})
+  public GroupExecutor groupExecutor(Environment environment) {
+    GroupExecutor groupExecutor = new GroupExecutor(environment);
+    groupExecutor.init();
+    return groupExecutor;
+  }
+
+  @Bean
+  public TransportManager transportManager() {
+    return new TransportManager();
   }
 }

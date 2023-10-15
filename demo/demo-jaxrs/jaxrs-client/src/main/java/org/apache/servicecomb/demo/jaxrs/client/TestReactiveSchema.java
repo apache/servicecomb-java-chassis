@@ -36,7 +36,9 @@ public class TestReactiveSchema implements CategorizedTestCase {
       TestMgr.check(true, false);
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 500);
-      TestMgr.check(((Map) e.getErrorData()).get("message"), "Can not execute sync logic in event loop.");
+      TestMgr.check(((Map) e.getErrorData()).get("message"),
+          "Unexpected exception when processing jaxrs.ReactiveSchema.testSyncInvokeInEventLoop. "
+              + "Can not execute sync logic in event loop.");
     }
   }
 }

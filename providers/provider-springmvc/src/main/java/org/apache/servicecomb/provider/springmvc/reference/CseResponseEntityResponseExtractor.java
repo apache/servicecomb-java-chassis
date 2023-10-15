@@ -41,9 +41,9 @@ public class CseResponseEntityResponseExtractor<T> implements ResponseExtractor<
   public ResponseEntity<T> extractData(ClientHttpResponse response) throws IOException {
     if (this.delegate != null) {
       T body = this.delegate.extractData(response);
-      return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).body(body);
+      return ResponseEntity.status(response.getStatusCode().value()).headers(response.getHeaders()).body(body);
     } else {
-      return ResponseEntity.status(response.getRawStatusCode()).headers(response.getHeaders()).build();
+      return ResponseEntity.status(response.getStatusCode().value()).headers(response.getHeaders()).build();
     }
   }
 }

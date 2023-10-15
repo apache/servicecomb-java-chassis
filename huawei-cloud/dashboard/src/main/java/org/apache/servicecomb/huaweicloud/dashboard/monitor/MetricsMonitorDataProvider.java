@@ -24,6 +24,7 @@ import org.apache.servicecomb.dashboard.client.model.InterfaceInfo;
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
+import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishModelFactory;
@@ -32,9 +33,11 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
+import org.apache.servicecomb.registry.sc.SCRegistration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Meter;
 
 /**
@@ -52,15 +55,50 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
 
   private volatile List<Meter> meters = null;
 
+  private SCRegistration scRegistration;
+
+  private Environment environment;
+
+  private MonitorConstant monitorConstant;
+
   public MetricsMonitorDataProvider() {
     EventManager.register(this);
   }
 
+  @Autowired
+  public void setSCRegistration(SCRegistration scRegistration) {
+    this.scRegistration = scRegistration;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  @Autowired
+  public void setMonitorConstant(MonitorConstant monitorConstant) {
+    this.monitorConstant = monitorConstant;
+  }
+
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.monitor.provider.metrics.enabled", true)
-        .get();
+    return environment.getProperty("servicecomb.monitor.provider.metrics.enabled", boolean.class, true);
+  }
+
+  @Override
+  public String getURL() {
+    return String.format(monitorConstant.getMonitorUri(), scRegistration.getMicroserviceInstance().getServiceName());
+  }
+
+  @Override
+  public void extractServiceInfo(MonitorData monitorData) {
+    monitorData.setAppId(scRegistration.getMicroserviceInstance().getApplication());
+    monitorData.setName(scRegistration.getMicroserviceInstance().getServiceName());
+    monitorData.setVersion(scRegistration.getMicroserviceInstance().getVersion());
+    monitorData.setServiceId(scRegistration.getMicroserviceInstance().getBackendMicroservice().getServiceId());
+    monitorData.setInstance(scRegistration.getMicroserviceInstance().getBackendMicroserviceInstance().getHostName());
+    monitorData.setInstanceId(scRegistration.getMicroserviceInstance().getInstanceId());
+    monitorData.setEnvironment(scRegistration.getMicroserviceInstance().getEnvironment());
   }
 
   @Override

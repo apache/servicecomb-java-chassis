@@ -17,10 +17,16 @@
 
 package org.apache.servicecomb.demo.crossapp;
 
-import org.apache.servicecomb.provider.pojo.RpcSchema;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-@RpcSchema(schemaId = "helloworld")
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+
+@RestSchema(schemaId = "helloworld")
+@Path("helloworld")
 public class HelloWorldImpl {
+  @GET
+  @Path("hello")
   public String sayHello() {
     return "hello world";
   }

@@ -115,9 +115,5 @@
       <artifactId>jmockit</artifactId>
       <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-core</artifactId>
-    </dependency>
   </dependencies>
 </project>

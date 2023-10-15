@@ -35,7 +35,6 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
-import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
@@ -44,199 +43,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import io.swagger.models.Swagger;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.ObjectProperty;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.models.properties.StringProperty;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.IntegerSchema;
+import io.swagger.v3.oas.models.media.StringSchema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings("rawtypes")
 public class TestSwaggerUtils {
 
-  private void testSchemaMethod(String resultName, String... methodNames) {
-    UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
-        Schema.class,
-        methodNames);
-  }
-
   @Test
-  public void testBoolean() {
-    testSchemaMethod("boolean", "testboolean");
-    testSchemaMethod("booleanObject", "testBoolean");
-  }
-
-  @Test
-  public void testByte() {
-    testSchemaMethod("byte", "testbyte");
-    testSchemaMethod("byteObject", "testByte");
-  }
-
-  @Test
-  public void testShort() {
-    testSchemaMethod("short", "testshort");
-    testSchemaMethod("shortObject", "testShort");
-  }
-
-  @Test
-  public void testInt() {
-    testSchemaMethod("int", "testint");
-    testSchemaMethod("intObject", "testInteger");
-  }
-
-  @Test
-  public void testLong() {
-    testSchemaMethod("long", "testlong");
-    testSchemaMethod("longObject", "testLong");
-  }
-
-  @Test
-  public void testFloat() {
-    testSchemaMethod("float", "testfloat");
-    testSchemaMethod("floatObject", "testFloat");
-  }
-
-  @Test
-  public void testDouble() {
-    testSchemaMethod("double", "testdouble");
-    testSchemaMethod("doubleObject", "testDouble");
-  }
-
-  @Test
-  public void should_not_lost_ApiParam_description_when_wrap_parameter_to_body() {
-    testSchemaMethod("wrapToBodyWithDesc", "wrapToBodyWithDesc");
-  }
-
-  @Test
-  public void testOneEnum() {
-    testSchemaMethod("oneEnum", "testOneEnum");
-  }
-
-  @Test
-  public void testEnum() {
-    testSchemaMethod("enum", "testEnum");
-  }
-
-  @Test
-  public void testChar() {
-    testSchemaMethod("char", "testchar");
-    testSchemaMethod("charObject", "testChar");
-  }
-
-  @Test
-  public void testBytes() {
-    testSchemaMethod("bytes", "testbytes");
-    testSchemaMethod("bytesObject", "testBytes");
-  }
-
-  @Test
-  public void testString() {
-    testSchemaMethod("string", "testString");
-  }
-
-  @Test
-  public void testObject() {
-    testSchemaMethod("object", "testObject");
-  }
-
-  @Test
-  public void testArray() {
-    testSchemaMethod("array", "testArray");
-  }
-
-  @Test
-  public void testSet() {
-    testSchemaMethod("set", "testSet");
-  }
-
-  @Test
-  public void testList() {
-    testSchemaMethod("list", "testList");
-  }
-
-  @Test
-  public void nestedListString() {
-    testSchemaMethod("nestedListString", "nestedListString");
-  }
-
-  @Test
-  public void testMap() {
-    testSchemaMethod("map", "testMap");
-  }
-
-  @Test
-  public void testMapList() {
-    testSchemaMethod("mapList", "testMapList");
-  }
-
-  @Test
-  public void testAllType() {
-    testSchemaMethod("allType", "testAllType");
-  }
-
-  @Test
-  public void testMultiParam() {
-    testSchemaMethod("multiParam", "testMultiParam");
-  }
-
-  @Test
-  public void testAllMethod() {
-    testSchemaMethod("allMethod");
-  }
-
-  @Test
-  public void testResponseHeader() {
-    testSchemaMethod("responseHeader", "testResponseHeader");
-  }
-
-  @Test
-  public void testApiResponse() {
-    testSchemaMethod("apiResponse", "testApiResponse");
-  }
-
-  @Test
-  public void testApiOperation() {
-    testSchemaMethod("apiOperation", "testApiOperation");
-  }
-
-  @Test
-  public void testCompletableFuture() {
-    testSchemaMethod("completableFuture", "testCompletableFuture");
-  }
-
-  @Test
-  public void testOptional() {
-    testSchemaMethod("testOptional", "testOptional");
-  }
-
-  @Test
-  public void testCompletableFutureOptional() {
-    testSchemaMethod("testCompletableFutureOptional", "testCompletableFutureOptional");
-  }
-
-  @Test
-  public void testDate() {
-    testSchemaMethod("date", "testDate");
-  }
-
-  @Test
-  public void testPart() {
-    testSchemaMethod("part", "part");
-  }
-
-  @Test
-  public void testPartArray() {
-    testSchemaMethod("partArray", "partArray");
-  }
-
-  @Test
-  public void testPartList() {
-    testSchemaMethod("partList", "partList");
-  }
-
-  @Test
-  public void should_ignore_httpServletRequest() {
-    testSchemaMethod("ignoreRequest", "ignoreRequest");
+  public void testSchemaMethod() {
+    UnitTestSwaggerUtils.testSwagger("schemas/Schema.yaml",
+        Schema.class);
   }
 
   @Test
@@ -247,23 +65,15 @@ public class TestSwaggerUtils {
   }
 
   @Test
-  public void testInvalidResponseHeader() {
-    UnitTestSwaggerUtils.testException(
-        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test.",
-        "invalid responseHeader, ResponseHeaderConfig [name=h, ResponseConfigBase [description=, responseReference=null, responseClass=class java.lang.Void, responseContainer=]]",
-        InvalidResponseHeader.class,
-        "test");
-  }
-
-  @Test
   public void noParameterName() {
     Method method = ReflectUtils.findMethod(Schema.class, "testint");
     Parameter parameter = Mockito.spy(method.getParameters()[0]);
     Mockito.when(parameter.isNamePresent()).thenReturn(false);
 
     IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
-            () -> SwaggerGeneratorUtils.collectParameterName(parameter));
-    String expectedMsg = "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
+        () -> SwaggerGeneratorUtils.collectParameterName(parameter));
+    String expectedMsg =
+        "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
             + "solution:\n"
             + "  change pom.xml, add compiler argument: -parameters, for example:\n"
             + "    <plugin>\n"
@@ -278,32 +88,15 @@ public class TestSwaggerUtils {
 
   @Test
   public void testGetRawJsonType() {
-    io.swagger.models.parameters.Parameter param = Mockito.mock(io.swagger.models.parameters.Parameter.class);
+    RequestBody param = Mockito.mock(RequestBody.class);
     Map<String, Object> extensions = new HashMap<>();
-    when(param.getVendorExtensions()).thenReturn(extensions);
+    when(param.getExtensions()).thenReturn(extensions);
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
     Assertions.assertTrue(SwaggerUtils.isRawJsonType(param));
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
     Assertions.assertFalse(SwaggerUtils.isRawJsonType(param));
-  }
-
-  @Test
-  public void isComplexProperty() {
-    Property property = new RefProperty("ref");
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-    property = new ObjectProperty();
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-    property = new MapProperty();
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-    property = new ArrayProperty(new ObjectProperty());
-    Assertions.assertTrue(SwaggerUtils.isComplexProperty(property));
-
-    property = new ArrayProperty(new StringProperty());
-    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
-    property = new StringProperty();
-    Assertions.assertFalse(SwaggerUtils.isComplexProperty(property));
   }
 
   private static class AllTypeTest1 {
@@ -346,8 +139,27 @@ public class TestSwaggerUtils {
   }
 
   private void testExcep(Type f1, Type f2) {
-    Swagger swagger = new Swagger();
-    SwaggerUtils.addDefinitions(swagger, f1);
-    SwaggerUtils.addDefinitions(swagger, f2);
+    OpenAPI swagger = new OpenAPI();
+    SwaggerUtils.resolveTypeSchemas(swagger, f1);
+    SwaggerUtils.resolveTypeSchemas(swagger, f2);
+  }
+
+  @Test
+  public void test_resolve_type_schemas_correct() {
+    OpenAPI openAPI = new OpenAPI();
+
+    io.swagger.v3.oas.models.media.Schema schema = SwaggerUtils.resolveTypeSchemas(openAPI, String.class);
+    Assertions.assertTrue(schema instanceof StringSchema);
+
+    openAPI = new OpenAPI();
+    schema = SwaggerUtils.resolveTypeSchemas(openAPI, Integer.class);
+    Assertions.assertTrue(schema instanceof IntegerSchema);
+
+    openAPI = new OpenAPI();
+    schema = SwaggerUtils.resolveTypeSchemas(openAPI, TestType1.class);
+    schema = SwaggerUtils.getSchema(openAPI, schema); // resolve reference
+    // should be ObjectSchema but swagger is not.
+    // <pre> Assertions.assertTrue(schema instanceof ObjectSchema) </pre>
+    Assertions.assertEquals("object", schema.getType());
   }
 }

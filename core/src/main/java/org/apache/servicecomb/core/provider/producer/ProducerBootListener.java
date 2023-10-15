@@ -21,30 +21,24 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.BasePath;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicPropertyFactory;
-
-import io.swagger.models.Scheme;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class ProducerBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerBootListener.class);
@@ -54,34 +48,42 @@ public class ProducerBootListener implements BootListener {
 
   private static final String TMP_DIR = System.getProperty("java.io.tmpdir");
 
+  private RegistrationManager registrationManager;
+
+  private MicroserviceProperties microserviceProperties;
+
+  private Environment environment;
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
+  }
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void onAfterTransport(BootEvent event) {
-    boolean exportToFile = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(DefinitionConst.SWAGGER_EXPORT_ENABLED, true).get();
-    String filePath = DynamicPropertyFactory.getInstance()
-        .getStringProperty(DefinitionConst.SWAGGER_DIRECTORY, TMP_DIR).get() + PATTERN;
+    boolean exportToFile = environment.getProperty(CoreConst.SWAGGER_EXPORT_ENABLED, boolean.class, true);
+    String filePath = environment.getProperty(CoreConst.SWAGGER_DIRECTORY, String.class, TMP_DIR) + PATTERN;
 
     if (exportToFile) {
       LOGGER.info("export microservice swagger file to path {}", filePath);
     }
     // register schema to microservice;
-    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
-
-    String swaggerSchema = "http";
-    for (String endpoint : microservice.getInstance().getEndpoints()) {
-      if (endpoint.startsWith("rest://") && endpoint.indexOf("sslEnabled=true") > 0) {
-        swaggerSchema = "https";
-        break;
-      }
-    }
-
     MicroserviceMeta microserviceMeta = event.getScbEngine().getProducerMicroserviceMeta();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
-      Swagger swagger = schemaMeta.getSwagger();
-      swagger.addScheme(Scheme.forValue(swaggerSchema));
+      OpenAPI swagger = schemaMeta.getSwagger();
       String content = SwaggerUtils.swaggerToString(swagger);
       if (exportToFile) {
-        exportToFile(String.format(filePath, microservice.getServiceName(), schemaMeta.getSchemaId()), content);
+        exportToFile(String.format(filePath, microserviceProperties.getName(), schemaMeta.getSchemaId()), content);
       } else {
         LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
             microserviceMeta.getAppId(),
@@ -89,36 +91,10 @@ public class ProducerBootListener implements BootListener {
             schemaMeta.getSchemaId(),
             content);
       }
-      RegistrationManager.INSTANCE.addSchema(schemaMeta.getSchemaId(), content);
+      this.registrationManager.addSchema(schemaMeta.getSchemaId(), content);
     }
-
-    saveBasePaths(microserviceMeta);
   }
 
-  // just compatible to old 3rd components， servicecomb not use it......
-  private void saveBasePaths(MicroserviceMeta microserviceMeta) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty(DefinitionConst.REGISTER_SERVICE_PATH, false).get()) {
-      return;
-    }
-
-    String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
-    Map<String, BasePath> basePaths = new LinkedHashMap<>();
-    for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
-      Swagger swagger = schemaMeta.getSwagger();
-
-      String basePath = swagger.getBasePath();
-      if (StringUtils.isNotEmpty(urlPrefix) && !basePath.startsWith(urlPrefix)) {
-        basePath = urlPrefix + basePath;
-      }
-      if (StringUtils.isNotEmpty(basePath)) {
-        BasePath basePathObj = new BasePath();
-        basePathObj.setPath(basePath);
-        basePaths.put(basePath, basePathObj);
-      }
-    }
-
-    RegistrationManager.INSTANCE.addBasePath(basePaths.values());
-  }
 
   // bug: can not close all thread for edge
   @Override

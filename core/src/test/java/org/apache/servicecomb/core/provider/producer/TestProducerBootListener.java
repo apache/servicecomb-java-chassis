@@ -17,26 +17,18 @@
 
 package org.apache.servicecomb.core.provider.producer;
 
-import java.io.Closeable;
 import java.util.Arrays;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestProducerBootListener {
   ProducerBootListener producerBootListener = new ProducerBootListener();
@@ -51,57 +43,15 @@ public class TestProducerBootListener {
   }
 
   @Test
-  public void onBootEvent_close(@Mocked SCBEngine scbEngine, @Mocked MicroserviceMeta microserviceMeta,
-      @Mocked OperationMeta op1,
-      @Mocked OperationMeta op2, @Mocked GroupExecutor closeable) {
-    AtomicInteger count = new AtomicInteger();
-    ExecutorService executorService = new MockUp<ExecutorService>() {
-      @Mock
-      void shutdown() {
-        count.incrementAndGet();
-      }
-    }.getMockInstance();
-    new MockUp<Closeable>(closeable) {
-      @Mock
-      void close() {
-        count.incrementAndGet();
-      }
-    };
-    new Expectations() {
-      {
-        scbEngine.getProducerMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.getOperations();
-        result = Arrays.asList(op1, op2);
-        op1.getExecutor();
-        result = executorService;
-        op2.getExecutor();
-        result = closeable;
-      }
-    };
-    BootEvent event = new BootEvent();
-    event.setScbEngine(scbEngine);
-    event.setEventType(EventType.AFTER_CLOSE);
+  public void onBootEvent_close_unknown() {
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+    OperationMeta op = Mockito.mock(OperationMeta.class);
 
-    producerBootListener.onBootEvent(event);
-
-    Assertions.assertEquals(2, count.get());
-  }
-
-  @Test
-  public void onBootEvent_close_unknown(@Mocked SCBEngine scbEngine, @Mocked MicroserviceMeta microserviceMeta,
-      @Mocked OperationMeta op1) {
     Executor executor = new UnCloseableExecutor();
-    new Expectations() {
-      {
-        scbEngine.getProducerMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.getOperations();
-        result = Arrays.asList(op1);
-        op1.getExecutor();
-        result = executor;
-      }
-    };
+    Mockito.when(scbEngine.getProducerMicroserviceMeta()).thenReturn(microserviceMeta);
+    Mockito.when(microserviceMeta.getOperations()).thenReturn(Arrays.asList(op));
+    Mockito.when(op.getExecutor()).thenReturn(executor);
 
     try (LogCollector logCollector = new LogCollector()) {
       BootEvent event = new BootEvent();

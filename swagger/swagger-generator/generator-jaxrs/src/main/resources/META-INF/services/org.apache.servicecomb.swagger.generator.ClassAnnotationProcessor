@@ -16,3 +16,5 @@
 #
 
 org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PathClassAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesClassAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesClassAnnotationProcessor

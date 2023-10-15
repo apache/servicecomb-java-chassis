@@ -17,22 +17,27 @@
 package org.apache.servicecomb.common.rest.codec.query;
 
 import java.util.Collection;
+import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.HttpServletRequest;
-
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+/**
+ * ?query=x1&query=x2
+ */
+@SuppressWarnings("unchecked")
 public class QueryCodecMulti extends AbstractQueryCodec {
-  public static final String CODEC_NAME = "multi";
+  public static final String CODEC_NAME = "form:1";
 
   public QueryCodecMulti() {
     super(CODEC_NAME);
   }
 
   @Override
-  public void encode(URLPathStringBuilder builder, String name, @Nonnull Collection<Object> values) throws Exception {
+  public void encode(URLPathStringBuilder builder, String name, Collection<Object> values) throws Exception {
     for (Object value : values) {
       if (value == null) {
         continue;
@@ -48,6 +53,23 @@ public class QueryCodecMulti extends AbstractQueryCodec {
     if (processor.isRepeatedType()) {
       //Even if the paramPath does not exist, value won't be null at now
       String[] values = request.getParameterValues(processor.getParameterPath());
+
+      // compatible to SpringMVC @RequestParam. BODY_PARAMETER is only set for SpringMVC.
+      if (values == null || values.length == 0) {
+        Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.BODY_PARAMETER);
+        if (forms == null) {
+          return processor.convertValue(values);
+        }
+        Object formValue = forms.get(processor.getParameterPath());
+        if (formValue == null) {
+          return processor.convertValue(values);
+        }
+        if (formValue instanceof String[]) {
+          values = (String[]) formValue;
+        } else {
+          values = new String[] {formValue.toString()};
+        }
+      }
       return processor.convertValue(values);
     }
 

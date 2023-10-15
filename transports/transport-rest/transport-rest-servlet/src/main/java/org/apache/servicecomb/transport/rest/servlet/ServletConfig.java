@@ -17,9 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import com.netflix.config.DynamicLongProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
+import org.springframework.core.env.Environment;
 
 public final class ServletConfig {
   public static final long DEFAULT_ASYN_SERVLET_TIMEOUT = -1;
@@ -32,26 +30,19 @@ public final class ServletConfig {
 
   public static final String DEFAULT_URL_PATTERN = "/*";
 
-  private static final DynamicLongProperty asyncServletTimeoutProperty =
-      DynamicPropertyFactory.getInstance().getLongProperty(KEY_SERVICECOMB_ASYC_SERVLET_TIMEOUT,
-          DEFAULT_ASYN_SERVLET_TIMEOUT);
-
   private ServletConfig() {
   }
 
-  public static long getAsyncServletTimeout() {
-    return asyncServletTimeoutProperty.get();
+  public static long getAsyncServletTimeout(Environment environment) {
+    return environment.getProperty(KEY_SERVICECOMB_ASYC_SERVLET_TIMEOUT, long.class,
+        DEFAULT_ASYN_SERVLET_TIMEOUT);
   }
 
-  public static String getLocalServerAddress() {
-    DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty(SERVICECOMB_REST_ADDRESS, null);
-    return address.get();
+  public static String getLocalServerAddress(Environment environment) {
+    return environment.getProperty(SERVICECOMB_REST_ADDRESS);
   }
 
-  public static String getServletUrlPattern() {
-    DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty(KEY_SERVLET_URL_PATTERN, null);
-    return address.get();
+  public static String getServletUrlPattern(Environment environment) {
+    return environment.getProperty(KEY_SERVLET_URL_PATTERN, DEFAULT_URL_PATTERN);
   }
 }

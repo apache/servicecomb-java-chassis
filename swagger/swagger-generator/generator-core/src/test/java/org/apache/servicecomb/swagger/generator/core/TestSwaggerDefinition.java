@@ -17,34 +17,31 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-
-import io.swagger.annotations.Contact;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ExternalDocs;
-import io.swagger.annotations.Info;
-import io.swagger.annotations.License;
-import io.swagger.annotations.SwaggerDefinition;
-import io.swagger.annotations.Tag;
-import io.swagger.models.Swagger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.models.OpenAPI;
+
+@SuppressWarnings("unchecked")
 public class TestSwaggerDefinition {
-  @SwaggerDefinition(
-      basePath = "base",
-      host = "host",
-      consumes = {"json", "xml"},
-      produces = {"abc", "123"},
+  @OpenAPIDefinition(
+      servers = @Server(url = "host/base"),
       tags = {@Tag(
           name = "tagA",
           description = "desc of tagA",
-          externalDocs = @ExternalDocs(value = "tagA ext docs", url = "url of tagA ext docs"),
+          externalDocs = @ExternalDocumentation(description = "tagA ext docs", url = "url of tagA ext docs"),
           extensions = {@Extension(
               name = "x-tagA",
               properties = {@ExtensionProperty(name = "x-tagAExt", value = "value of tagAExt")})})},
@@ -58,8 +55,8 @@ public class TestSwaggerDefinition {
           extensions = {@Extension(
               name = "x-info",
               properties = {@ExtensionProperty(name = "x-infoExt", value = "value of infoExt")})}),
-      externalDocs = @ExternalDocs(
-          value = "SwaggerAnnotation ext docs",
+      externalDocs = @ExternalDocumentation(
+          description = "SwaggerAnnotation ext docs",
           url = "url of SwaggerAnnotation ext docs"))
   interface SwaggerAnnotation {
   }
@@ -67,31 +64,27 @@ public class TestSwaggerDefinition {
   interface SwaggerNoAnnotation {
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testSwaggerDefinition() {
-    Swagger swagger = SwaggerGenerator.generate(SwaggerAnnotation.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SwaggerAnnotation.class);
 
-    Assertions.assertEquals(SwaggerAnnotation.class.getName(),
-        swagger.getInfo().getVendorExtensions().get(SwaggerConst.EXT_JAVA_INTF));
-    Assertions.assertEquals("2.0", swagger.getSwagger());
-    Assertions.assertEquals("/base", swagger.getBasePath());
-    Assertions.assertEquals("host", swagger.getHost());
-    Assertions.assertEquals(Arrays.asList("json", "xml"), swagger.getConsumes());
-    Assertions.assertEquals(Arrays.asList("abc", "123"), swagger.getProduces());
+    Assertions.assertEquals("value of infoExt",
+        ((Map<String, String>) swagger.getInfo().getExtensions().get("x-info")).get("x-infoExt"));
+    Assertions.assertEquals("3.0.1", swagger.getOpenapi());
+    Assertions.assertEquals("host/base", swagger.getServers().get(0).getUrl());
 
     Assertions.assertEquals(1, swagger.getTags().size());
-    io.swagger.models.Tag tagA = swagger.getTags().get(0);
+    io.swagger.v3.oas.models.tags.Tag tagA = swagger.getTags().get(0);
     Assertions.assertEquals("tagA", tagA.getName());
     Assertions.assertEquals("desc of tagA", tagA.getDescription());
     Assertions.assertEquals("tagA ext docs", tagA.getExternalDocs().getDescription());
     Assertions.assertEquals("url of tagA ext docs", tagA.getExternalDocs().getUrl());
-    Assertions.assertEquals(1, tagA.getVendorExtensions().size());
+    Assertions.assertEquals(1, tagA.getExtensions().size());
 
-    Map<String, Object> tagValue = (Map<String, Object>) tagA.getVendorExtensions().get("x-tagA");
+    Map<String, String> tagValue = (Map<String, String>) tagA.getExtensions().get("x-tagA");
     Assertions.assertEquals("value of tagAExt", tagValue.get("x-tagAExt"));
 
-    io.swagger.models.Info info = swagger.getInfo();
+    io.swagger.v3.oas.models.info.Info info = swagger.getInfo();
     Assertions.assertEquals("title of SwaggerAnnotation", info.getTitle());
     Assertions.assertEquals("0.1", info.getVersion());
     Assertions.assertEquals("termsOfService", info.getTermsOfService());
@@ -104,20 +97,15 @@ public class TestSwaggerDefinition {
     Assertions.assertEquals("license ", info.getLicense().getName());
     Assertions.assertEquals("http://license", info.getLicense().getUrl());
 
-    Assertions.assertEquals(2, info.getVendorExtensions().size());
-
-    Map<String, Object> infoValue = (Map<String, Object>) info.getVendorExtensions().get("x-info");
-    Assertions.assertEquals("value of infoExt", infoValue.get("x-infoExt"));
-
     Assertions.assertEquals("SwaggerAnnotation ext docs", swagger.getExternalDocs().getDescription());
     Assertions.assertEquals("url of SwaggerAnnotation ext docs", swagger.getExternalDocs().getUrl());
   }
 
   @Test
   public void testFillDefault() {
-    Swagger swagger = SwaggerGenerator.generate(SwaggerNoAnnotation.class);
-    Assertions.assertEquals("2.0", swagger.getSwagger());
-    Assertions.assertEquals("/SwaggerNoAnnotation", swagger.getBasePath());
+    OpenAPI swagger = SwaggerGenerator.generate(SwaggerNoAnnotation.class);
+    Assertions.assertEquals("3.0.1", swagger.getOpenapi());
+    Assertions.assertEquals("/SwaggerNoAnnotation", swagger.getServers().get(0).getUrl());
     Assertions.assertEquals("swagger definition for " + SwaggerNoAnnotation.class.getName(),
         swagger.getInfo().getTitle());
   }

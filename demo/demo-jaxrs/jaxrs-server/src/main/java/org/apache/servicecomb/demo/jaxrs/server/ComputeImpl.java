@@ -20,26 +20,30 @@ package org.apache.servicecomb.demo.jaxrs.server;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "compute")
 @Path("/compute")
@@ -55,6 +59,8 @@ public class ComputeImpl {
 
   @Path("/reduce")
   @GET
+  @Parameters(value = {@Parameter(in = ParameterIn.QUERY, name = "a", schema = @Schema(implementation = int.class)),
+      @Parameter(in = ParameterIn.QUERY, name = "b", schema = @Schema(implementation = int.class))})
   public int reduce(@Context HttpServletRequest request) {
     int a = Integer.parseInt(request.getParameter("a"));
     int b = Integer.parseInt(request.getParameter("b"));
@@ -74,7 +80,8 @@ public class ComputeImpl {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper()
+          .readValue(jsonInput.getBytes(StandardCharsets.UTF_8), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;

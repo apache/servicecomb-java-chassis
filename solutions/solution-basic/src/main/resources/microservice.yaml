@@ -20,14 +20,6 @@
 servicecomb-config-order: -100
 
 servicecomb:
-# loadbalance strategies
-  references:
-    version-rule: 0+
-  loadbalance:
-    retryEnabled: true
-    retryOnNext: 1
-    retryOnSame: 0
-
 # metrics and access log
   accesslog:
     enabled: true

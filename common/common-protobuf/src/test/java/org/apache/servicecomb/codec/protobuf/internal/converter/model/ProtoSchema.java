@@ -30,12 +30,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 
 @RequestMapping(path = "/")
 public class ProtoSchema implements ProtoSchemaIntf {
-  @ApiResponses(value = {@ApiResponse(code = 444, response = Color.class, message = "xxx")})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "444", content = @Content(schema = @Schema(implementation = Color.class)), description = "xxx")})
   @GetMapping(path = "/base")
   public int base(boolean boolValue, int iValue, long lValue, float fValue, double dValue, String sValue, int[] iArray,
       Color color,
@@ -173,5 +177,10 @@ public class ProtoSchema implements ProtoSchemaIntf {
   @PostMapping(path = "/fieldNeedWrap")
   public FieldNeedWrap fieldNeedWrap(@RequestBody FieldNeedWrap fieldNeedWrap) {
     return fieldNeedWrap;
+  }
+
+  @PostMapping(path = "/testTextPlain", consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
+  public String testTextPlain(@RequestBody String fieldNeedWrap) {
+    return null;
   }
 }

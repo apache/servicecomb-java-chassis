@@ -23,9 +23,6 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -42,7 +39,9 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -52,6 +51,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.annotations.VisibleForTesting;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.Response.Status;
 
 public class CseClientHttpRequest implements ClientHttpRequest {
 
@@ -182,7 +184,12 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName);
-    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+    if (microserviceReferenceConfig == null) {
+      throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
+          new CommonExceptionData(String.format("Failed to invoke service %s. Maybe service"
+              + " not registered or no active instance.", microserviceName)));
+    }
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getMicroserviceMeta();
 
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager == null) {
@@ -253,7 +260,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
   protected Map<String, Object> collectArguments() {
     HttpServletRequest mockRequest = new CommonToHttpServletRequest(requestMeta.getPathParams(), queryParams,
-        httpHeaders, requestBody, requestMeta.getSwaggerRestOperation().isFormData(),
+        httpHeaders, requestBody,
         requestMeta.getSwaggerRestOperation().getFileKeys());
     // no types info, so will not convert any parameters
     return RestCodec.restToArgs(mockRequest, requestMeta.getSwaggerRestOperation());

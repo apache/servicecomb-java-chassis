@@ -21,16 +21,17 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Registry;
@@ -44,19 +45,32 @@ import io.prometheus.client.exporter.HTTPServer;
 public class PrometheusPublisher extends Collector implements Collector.Describable, MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusPublisher.class);
 
-  static final String METRICS_PROMETHEUS_ADDRESS = "servicecomb.metrics.prometheus.address";
+  public static final String METRICS_PROMETHEUS_ADDRESS = "servicecomb.metrics.prometheus.address";
 
   private HTTPServer httpServer;
 
   private GlobalRegistry globalRegistry;
+
+  private MicroserviceProperties microserviceProperties;
+
+  private Environment environment;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     this.globalRegistry = globalRegistry;
 
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
-    String address =
-        DynamicPropertyFactory.getInstance().getStringProperty(METRICS_PROMETHEUS_ADDRESS, "0.0.0.0:9696").get();
+    String address = environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696");
 
     try {
       InetSocketAddress socketAddress = getSocketAddress(address);
@@ -105,7 +119,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     List<String> labelValues = new ArrayList<>();
 
     labelNames.add("appId");
-    labelValues.add(RegistrationManager.INSTANCE.getAppId());
+    labelValues.add(microserviceProperties.getApplication());
 
     for (Tag tag : measurement.id().tags()) {
       labelNames.add(tag.key());

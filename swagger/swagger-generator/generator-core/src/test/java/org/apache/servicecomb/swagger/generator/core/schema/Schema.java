@@ -25,34 +25,36 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ResponseHeader;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 
+@SuppressWarnings("all")
 public class Schema {
-  @ApiOperation(value = "", hidden = true)
+  @Operation(method = "", hidden = true)
   public void hidden() {
 
   }
 
-  @ApiResponse(responseHeaders = {@ResponseHeader(name = "h", response = String.class)}, code = 200, message = "")
+  @ApiResponse(headers = {@Header(name = "h",
+      schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = String.class))}, responseCode = "200", description = "")
   public void testApiResponse() {
 
   }
 
-  @ApiOperation(responseHeaders = {@ResponseHeader(name = "h", response = String.class)}, value = "")
+  @ApiResponse(headers = {@Header(name = "h",
+      schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = String.class))}, description = "")
   public void testApiOperation() {
 
   }
 
-  @ResponseHeader(name = "h", response = String.class)
+  @ApiResponse(headers = {@Header(name = "h",
+      schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = String.class))})
   public void testResponseHeader() {
 
   }
@@ -207,19 +209,7 @@ public class Schema {
     return Collections.emptyList();
   }
 
-  public void part(Part part) {
-
-  }
-
-  public void partArray(Part[] part) {
-
-  }
-
-  public void partList(List<Part> part) {
-
-  }
-
-  public void wrapToBodyWithDesc(@ApiParam(value = "desc") int value) {
+  public void wrapToBodyWithDesc(@Parameter(name = "desc") int value) {
 
   }
 

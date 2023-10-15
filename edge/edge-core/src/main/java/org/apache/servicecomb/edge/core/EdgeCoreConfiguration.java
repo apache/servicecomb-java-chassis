@@ -18,6 +18,7 @@ package org.apache.servicecomb.edge.core;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class EdgeCoreConfiguration {
@@ -32,7 +33,7 @@ public class EdgeCoreConfiguration {
   }
 
   @Bean
-  public EdgeAddHeaderFilter edgeAddHeaderFilter() {
-    return new EdgeAddHeaderFilter();
+  public EdgeAddHeaderFilter edgeAddHeaderFilter(Environment environment) {
+    return new EdgeAddHeaderFilter(environment);
   }
 }

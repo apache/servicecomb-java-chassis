@@ -31,9 +31,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,9 +40,9 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
-import io.swagger.util.Json;
+import io.swagger.v3.core.util.Json;
 
+@SuppressWarnings("rawtypes")
 public final class SwaggerGeneratorUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGeneratorUtils.class);
 
@@ -60,14 +57,15 @@ public final class SwaggerGeneratorUtils {
 
   private static final Map<Type, MethodAnnotationProcessor<?>> methodAnnotationProcessors = new HashMap<>();
 
-  private static final Map<JavaType, ParameterProcessor<?, ?>> parameterProcessors = new HashMap<>();
-
   private static final Map<Type, ResponseTypeProcessor> responseTypeProcessors = new HashMap<>();
 
   private static final DefaultResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
 
-  private static final List<OperationPostProcessor> operationPostProcessors = SPIServiceUtils
-      .getOrLoadSortedService(OperationPostProcessor.class);
+  private static final List<ParameterAnnotationProcessor> parameterAnnotationProcessors = SPIServiceUtils
+      .getOrLoadSortedService(ParameterAnnotationProcessor.class);
+
+  private static final List<ParameterTypeProcessor> parameterTypeProcessors = SPIServiceUtils
+      .getOrLoadSortedService(ParameterTypeProcessor.class);
 
   static {
     // low order value has high priority
@@ -87,14 +85,6 @@ public final class SwaggerGeneratorUtils {
       }
     }
 
-    for (ParameterProcessor<?, ?> processor : SPIServiceUtils.getOrLoadSortedService(ParameterProcessor.class)) {
-      JavaType javaType = processor.getProcessJavaType();
-      if (parameterProcessors.putIfAbsent(javaType, processor) != null) {
-        LOGGER.info("ignore duplicated ParameterProcessor, type={}, processor={}.",
-            javaType.toCanonical(), processor.getClass().getName());
-      }
-    }
-
     for (ResponseTypeProcessor processor : SPIServiceUtils.getOrLoadSortedService(ResponseTypeProcessor.class)) {
       if (responseTypeProcessors.putIfAbsent(processor.getProcessType(), processor) != null) {
         LOGGER.info("ignore duplicated ResponseTypeProcessor, type={}, processor={}.",
@@ -109,15 +99,6 @@ public final class SwaggerGeneratorUtils {
   private SwaggerGeneratorUtils() {
   }
 
-  public static void postProcessOperation(AbstractSwaggerGenerator swaggerGenerator,
-      AbstractOperationGenerator operationGenerator) {
-    for (OperationPostProcessor processor : operationPostProcessors) {
-      if (processor.shouldProcess(swaggerGenerator, operationGenerator)) {
-        processor.process(swaggerGenerator, operationGenerator);
-      }
-    }
-  }
-
   @SuppressWarnings("unchecked")
   public static <ANNOTATION> ClassAnnotationProcessor<ANNOTATION> findClassAnnotationProcessor(Type type) {
     return (ClassAnnotationProcessor<ANNOTATION>) classAnnotationProcessors.get(type);
@@ -129,10 +110,22 @@ public final class SwaggerGeneratorUtils {
   }
 
   @SuppressWarnings("unchecked")
-  public static <SWAGGER_PARAMETER, ANNOTATION> ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> findParameterProcessors(
-      Type type) {
-    type = TypeFactory.defaultInstance().constructType(type);
-    return (ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION>) parameterProcessors.get(type);
+  public static ParameterAnnotationProcessor<Annotation> findParameterAnnotationProcessor(Type type) {
+    for (ParameterAnnotationProcessor<Annotation> processor : parameterAnnotationProcessors) {
+      if (processor.getProcessType() == type) {
+        return processor;
+      }
+    }
+    return null;
+  }
+
+  public static ParameterTypeProcessor findParameterTypeProcessor(Type type) {
+    for (ParameterTypeProcessor processor : parameterTypeProcessors) {
+      if (processor.getProcessType() == type) {
+        return processor;
+      }
+    }
+    return null;
   }
 
   public static ResponseTypeProcessor findResponseTypeProcessor(Type type) {
@@ -181,7 +174,8 @@ public final class SwaggerGeneratorUtils {
     //   it's ambiguous to use different name in different annotation
     //   so we only read the first available name
     for (Annotation annotation : annotations) {
-      ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
+      ParameterAnnotationProcessor<Annotation> processor = findParameterAnnotationProcessor(
+          annotation.annotationType());
       if (processor == null) {
         continue;
       }
@@ -198,35 +192,19 @@ public final class SwaggerGeneratorUtils {
       return defaultName;
     }
 
-    String msg = String.format("parameter name is not present, method=%s:%s\n"
-            + "solution:\n"
-            + "  change pom.xml, add compiler argument: -parameters, for example:\n"
-            + "    <plugin>\n"
-            + "      <groupId>org.apache.maven.plugins</groupId>\n"
-            + "      <artifactId>maven-compiler-plugin</artifactId>\n"
-            + "      <configuration>\n"
-            + "        <compilerArgument>-parameters</compilerArgument>\n"
-            + "      </configuration>\n"
-            + "    </plugin>",
+    String msg = String.format("""
+            parameter name is not present, method=%s:%s
+            solution:
+              change pom.xml, add compiler argument: -parameters, for example:
+                <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-compiler-plugin</artifactId>
+                  <configuration>
+                    <compilerArgument>-parameters</compilerArgument>
+                  </configuration>
+                </plugin>""",
         executable.getDeclaringClass().getName(), executable.getName());
     throw new IllegalStateException(msg);
-  }
-
-  public static Type collectGenericType(List<Annotation> annotations, Type defaultType) {
-    Type genericType = null;
-    for (Annotation annotation : annotations) {
-      ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
-      if (processor == null) {
-        continue;
-      }
-
-      Type type = processor.getGenericType(annotation);
-      if (type != null) {
-        genericType = type;
-      }
-    }
-
-    return genericType != null ? genericType : defaultType;
   }
 
   public static List<Annotation> collectParameterAnnotations(Annotation[] parameterAnnotations,
@@ -241,28 +219,5 @@ public final class SwaggerGeneratorUtils {
     annotations.addAll(methodAnnotations);
 
     return annotations;
-  }
-
-  public static HttpParameterType collectHttpParameterType(List<Annotation> annotations, Type genericType) {
-    // use the last available type
-    for (int idx = annotations.size() - 1; idx >= 0; idx--) {
-      Annotation annotation = annotations.get(idx);
-      HttpParameterType httpParameterType = collectHttpParameterType(annotation, annotation.annotationType());
-      if (httpParameterType != null) {
-        return httpParameterType;
-      }
-    }
-
-    // try by parameter type
-    return collectHttpParameterType((Annotation) null, genericType);
-  }
-
-  private static HttpParameterType collectHttpParameterType(Annotation parameterAnnotation, Type type) {
-    ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(type);
-    if (processor == null) {
-      return null;
-    }
-
-    return processor.getHttpParameterType(parameterAnnotation);
   }
 }

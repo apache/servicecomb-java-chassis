@@ -20,10 +20,14 @@ import org.apache.servicecomb.config.inject.InjectBeanPostProcessor;
 import org.apache.servicecomb.config.priority.ConfigObjectFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
+@SuppressWarnings("unused")
 public class FoundationConfigConfiguration {
   @Bean
   public InjectBeanPostProcessor injectBeanPostProcessor(PriorityPropertyManager priorityPropertyManager) {
@@ -36,8 +40,8 @@ public class FoundationConfigConfiguration {
   }
 
   @Bean
-  public PriorityPropertyFactory priorityPropertyFactory() {
-    return new PriorityPropertyFactory();
+  public PriorityPropertyFactory priorityPropertyFactory(Environment environment) {
+    return new PriorityPropertyFactory(environment);
   }
 
   @Bean
@@ -46,12 +50,34 @@ public class FoundationConfigConfiguration {
   }
 
   @Bean
-  public DynamicPropertiesImpl dynamicProperties() {
-    return new DynamicPropertiesImpl();
+  public DynamicPropertiesImpl dynamicProperties(Environment environment) {
+    return new DynamicPropertiesImpl(environment);
   }
 
   @Bean
   public ConfigObjectFactory configObjectFactory(PriorityPropertyFactory propertyFactory) {
     return new ConfigObjectFactory(propertyFactory);
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = MicroserviceProperties.PREFIX)
+  public MicroserviceProperties microserviceProperties() {
+    return new MicroserviceProperties();
+  }
+
+  @Bean
+  @ConfigurationProperties(prefix = DataCenterProperties.PREFIX)
+  public DataCenterProperties dataCenterProperties() {
+    return new DataCenterProperties();
+  }
+
+  @Bean
+  public LegacyPropertyFactory legacyPropertyFactory(Environment environment) {
+    return new LegacyPropertyFactory(environment);
+  }
+
+  @Bean
+  public InMemoryDynamicPropertiesSource inMemoryDynamicPropertiesSource() {
+    return new InMemoryDynamicPropertiesSource();
   }
 }

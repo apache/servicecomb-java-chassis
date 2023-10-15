@@ -16,28 +16,23 @@
  */
 package org.apache.servicecomb.core;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
 import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
-import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
-import org.apache.servicecomb.core.definition.ServiceRegistryListener;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ExecutorManager;
@@ -45,45 +40,43 @@ import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
+import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import jakarta.ws.rs.core.Response.Status;
 
 public class SCBEngine {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCBEngine.class);
 
-  static final String CFG_KEY_WAIT_UP_TIMEOUT = "servicecomb.boot.waitUp.timeoutInMilliseconds";
+  public static final String CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC = "servicecomb.boot.turnDown.waitInSeconds";
 
-  static final long DEFAULT_WAIT_UP_TIMEOUT = 10_000;
+  public static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
 
-  static final String CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC = "servicecomb.boot.turnDown.waitInSeconds";
-
-  static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
-
-  private static final Object initializationLock = new Object();
-
+  // TODO: will remove in future. Too many codes need refactor.
   private static volatile SCBEngine INSTANCE;
 
   private ApplicationContext applicationContext;
@@ -96,10 +89,9 @@ public class SCBEngine {
 
   private MicroserviceMeta producerMicroserviceMeta;
 
-  private TransportManager transportManager = new TransportManager();
+  private TransportManager transportManager;
 
-  private final List<BootListener> bootListeners = new ArrayList<>(
-      SPIServiceUtils.getOrLoadSortedService(BootListener.class));
+  private List<BootListener> bootListeners;
 
   private final AtomicLong invocationStartedCounter = new AtomicLong();
 
@@ -109,22 +101,33 @@ public class SCBEngine {
 
   private final EventBus eventBus;
 
-  private ExecutorManager executorManager = new ExecutorManager();
+  private ExecutorManager executorManager;
 
   private PriorityPropertyManager priorityPropertyManager;
 
-  protected List<BootUpInformationCollector> bootUpInformationCollectors = SPIServiceUtils
-      .getSortedService(BootUpInformationCollector.class);
-
-  private final ServiceRegistryListener serviceRegistryListener;
+  private List<BootUpInformationCollector> bootUpInformationCollectors;
 
   private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
+  private SwaggerLoader swaggerLoader;
+
   private Thread shutdownHook;
 
-  protected SCBEngine() {
+  private RegistrationManager registrationManager;
+
+  private MicroserviceProperties microserviceProperties;
+
+  private DiscoveryManager discoveryManager;
+
+  private Environment environment;
+
+  private final Map<String, MicroserviceReferenceConfig> referenceConfigs = new ConcurrentHashMapEx<>();
+
+  private final Object referenceConfigsLock = new Object();
+
+  public SCBEngine() {
     eventBus = EventManager.getEventBus();
 
     eventBus.register(this);
@@ -132,15 +135,79 @@ public class SCBEngine {
     INSTANCE = this;
 
     producerProviderManager = new ProducerProviderManager(this);
-    serviceRegistryListener = new ServiceRegistryListener(this);
+  }
+
+  public static SCBEngine getInstance() {
+    if (INSTANCE == null) {
+      throw new InvocationException(Status.SERVICE_UNAVAILABLE,
+          new CommonExceptionData("SCBEngine is not initialized yet."));
+    }
+    return INSTANCE;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
+  public Environment getEnvironment() {
+    return this.environment;
+  }
+
+  @Autowired
+  @SuppressWarnings("unused")
+  public void setBootUpInformationCollectors(List<BootUpInformationCollector> bootUpInformationCollectors) {
+    this.bootUpInformationCollectors = bootUpInformationCollectors;
+  }
+
+  @Autowired
+  @SuppressWarnings("unused")
+  public void setBootListeners(List<BootListener> listeners) {
+    this.bootListeners = listeners;
+  }
+
+  @Autowired
+  public void setApplicationContext(ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
+  }
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
+  }
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
+
+  @Autowired
+  @SuppressWarnings("unused")
+  public void setSwaggerLoader(SwaggerLoader swaggerLoader) {
+    this.swaggerLoader = swaggerLoader;
+  }
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
+  @Autowired
+  public void setExecutorManager(ExecutorManager executorManager) {
+    this.executorManager = executorManager;
+  }
+
+  @Autowired
+  public void setTransportManager(TransportManager transportManager) {
+    this.transportManager = transportManager;
+  }
+
+  public RegistrationManager getRegistrationManager() {
+    return this.registrationManager;
   }
 
   public ApplicationContext getApplicationContext() {
     return applicationContext;
-  }
-
-  public void setApplicationContext(ApplicationContext applicationContext) {
-    this.applicationContext = applicationContext;
   }
 
   public VendorExtensions getVendorExtensions() {
@@ -148,7 +215,11 @@ public class SCBEngine {
   }
 
   public String getAppId() {
-    return RegistrationManager.INSTANCE.getAppId();
+    return this.microserviceProperties.getApplication();
+  }
+
+  public MicroserviceProperties getMicroserviceProperties() {
+    return this.microserviceProperties;
   }
 
   public void setStatus(SCBStatus status) {
@@ -159,19 +230,8 @@ public class SCBEngine {
     return status;
   }
 
-  public static SCBEngine getInstance() {
-    if (null == INSTANCE) {
-      synchronized (initializationLock) {
-        if (null == INSTANCE) {
-          new SCBEngine();
-        }
-      }
-    }
-    return INSTANCE;
-  }
-
   public SwaggerLoader getSwaggerLoader() {
-    return RegistrationManager.INSTANCE.getSwaggerLoader();
+    return swaggerLoader;
   }
 
   public FilterChainsManager getFilterChainsManager() {
@@ -200,10 +260,6 @@ public class SCBEngine {
     return executorManager;
   }
 
-  public void setExecutorManager(ExecutorManager executorManager) {
-    this.executorManager = executorManager;
-  }
-
   public ProducerProviderManager getProducerProviderManager() {
     return producerProviderManager;
   }
@@ -225,21 +281,8 @@ public class SCBEngine {
     return transportManager;
   }
 
-  public SCBEngine setTransportManager(TransportManager transportManager) {
-    this.transportManager = transportManager;
-    return this;
-  }
-
   public SwaggerEnvironment getSwaggerEnvironment() {
     return swaggerEnvironment;
-  }
-
-  public Collection<BootListener> getBootListeners() {
-    return bootListeners;
-  }
-
-  public void addBootListeners(Collection<BootListener> bootListeners) {
-    this.bootListeners.addAll(bootListeners);
   }
 
   public SCBEngine addProducerMeta(String schemaId, Object instance) {
@@ -272,21 +315,6 @@ public class SCBEngine {
     }
   }
 
-  /**
-   * <p>As the process of instance registry is asynchronous, the {@code AFTER_REGISTRY}
-   * event should not be sent immediately.
-   * When the instance registry succeeds, {@link MicroserviceInstanceRegisteredEvent} will be posted in {@link EventManager},
-   * register a subscriber to watch this event and send {@code AFTER_REGISTRY}.</p>
-   *
-   * <p>This method should be called before registry initialization to avoid that the registry process is too quick
-   * that the event is not watched by this subscriber.</p>
-   *
-   * <p>Check if {@code InstanceId} is null to judge whether the instance registry has succeeded.</p>
-   */
-  private void triggerAfterRegistryEvent() {
-    eventBus.register(new AfterRegistryEventHanlder(this));
-  }
-
   @AllowConcurrentEvents
   @Subscribe
   public void onInvocationStart(InvocationStartEvent event) {
@@ -299,13 +327,16 @@ public class SCBEngine {
     invocationFinishedCounter.incrementAndGet();
   }
 
+  public synchronized SCBEngine init() {
+    this.discoveryManager.init();
+    this.registrationManager.init();
+    return this;
+  }
+
   public synchronized SCBEngine run() {
     if (SCBStatus.DOWN.equals(status)) {
       try {
         doRun();
-        waitStatusUp();
-      } catch (TimeoutException e) {
-        LOGGER.warn("{}", e.getMessage());
       } catch (Throwable e) {
         LOGGER.error("Failed to start ServiceComb due to errors and close", e);
         try {
@@ -343,8 +374,6 @@ public class SCBEngine {
   private void doRun() throws Exception {
     status = SCBStatus.STARTING;
 
-    bootListeners.sort(Comparator.comparingInt(BootListener::getOrder));
-
     triggerEvent(EventType.BEFORE_FILTER);
     filterChainsManager.init();
     triggerEvent(EventType.AFTER_FILTER);
@@ -364,22 +393,27 @@ public class SCBEngine {
     triggerEvent(EventType.AFTER_TRANSPORT);
 
     triggerEvent(EventType.BEFORE_REGISTRY);
-
-    triggerAfterRegistryEvent();
-
-    RegistrationManager.INSTANCE.run();
-    DiscoveryManager.INSTANCE.run();
+    registrationManager.run();
+    discoveryManager.run();
+    // ensure can invoke services in AFTER_REGISTRY
+    registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.UP);
+    status = SCBStatus.UP;
+    triggerEvent(EventType.AFTER_REGISTRY);
 
     shutdownHook = new Thread(this::destroyForShutdownHook);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
+
+    // Keep this message for tests cases work.
+    LOGGER.warn("ServiceComb is ready.");
   }
 
   private void createProducerMicroserviceMeta() {
-    String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
-
-    producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
-    producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
-    producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
+    String microserviceName = this.microserviceProperties.getName();
+    producerMicroserviceMeta = new MicroserviceMeta(this,
+        this.microserviceProperties.getApplication(), microserviceName, false);
+    producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(
+        this.microserviceProperties.getApplication(), microserviceName));
+    producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
   }
 
   public void destroyForShutdownHook() {
@@ -418,10 +452,8 @@ public class SCBEngine {
 
     //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
-    RegistrationManager.INSTANCE.destroy();
-    DiscoveryManager.INSTANCE.destroy();
-
-    serviceRegistryListener.destroy();
+    registrationManager.destroy();
+    discoveryManager.destroy();
 
     //Step 4: wait all invocation finished
     try {
@@ -430,8 +462,7 @@ public class SCBEngine {
       LOGGER.error("wait all invocation finished interrupted", e);
     }
 
-    //Step 5: destroy config center source
-    ConfigUtil.destroyConfigCenterConfigurationSource();
+    //Step 5: destroy config source
     // only be null for some test cases
     if (priorityPropertyManager != null) {
       priorityPropertyManager.close();
@@ -448,14 +479,17 @@ public class SCBEngine {
   }
 
   private void turnDownInstanceStatus() {
-    RegistrationManager.INSTANCE.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.DOWN);
+    try {
+      registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.DOWN);
+    } catch (Throwable e) {
+      LOGGER.warn("turn down instance status fail: {}", e.getMessage());
+    }
   }
 
   private void blockShutDownOperationForConsumerRefresh() {
     try {
-      long turnDownWaitSeconds = DynamicPropertyFactory.getInstance()
-          .getLongProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)
-          .get();
+      long turnDownWaitSeconds = environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+          long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
       if (turnDownWaitSeconds <= 0) {
         return;
       }
@@ -486,51 +520,69 @@ public class SCBEngine {
     if (!SCBStatus.UP.equals(currentStatus)) {
       String message =
           "The request is rejected. Cannot process the request due to STATUS = " + currentStatus;
-      LOGGER.warn(message);
       throw new InvocationException(Status.SERVICE_UNAVAILABLE, new CommonExceptionData(message));
     }
   }
 
   /**
-   * for normal consumers
-   * @param microserviceName shortName, or appId:shortName when invoke cross app
-   * @return
+   * Only implement a sync method now.
    */
+  public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(
+      String microserviceName) {
+    return CompletableFuture.completedFuture(createMicroserviceReferenceConfig(microserviceName));
+  }
+
   public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName) {
-    return createMicroserviceReferenceConfig(microserviceName, null);
-  }
-
-  /**
-   * for edge, versionRule maybe controlled by url rule
-   * @param microserviceName hortName, or appId:shortName when invoke cross app
-   * @param versionRule if is empty, then use configuration value
-   * @return
-   */
-  public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(String microserviceName,
-      String versionRule) {
-    return DiscoveryManager.INSTANCE
-        .getOrCreateMicroserviceVersionsAsync(parseAppId(microserviceName), microserviceName)
-        .thenApply(versions -> {
-          ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
-              .getMicroserviceVersionsMeta(versions);
-          return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
-        });
-  }
-
-  /**
-   * for edge, versionRule maybe controlled by url rule
-   * @param microserviceName hortName, or appId:shortName when invoke cross app
-   * @param versionRule if is empty, then use configuration value
-   * @return
-   */
-  public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName, String versionRule) {
     ensureStatusUp();
-    MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE
-        .getOrCreateMicroserviceVersions(parseAppId(microserviceName), microserviceName);
-    ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
-        .getMicroserviceVersionsMeta(microserviceVersions);
+    MicroserviceReferenceConfig config = referenceConfigs.get(microserviceName);
+    if (config == null) {
+      synchronized (referenceConfigsLock) {
+        config = referenceConfigs.get(microserviceName);
+        if (config != null) {
+          return config;
+        }
+        MicroserviceNameParser parser = parseMicroserviceName(microserviceName);
+        List<? extends DiscoveryInstance> discoveryInstances = discoveryManager.findServiceInstances(
+            parser.getAppId(),
+            parser.getMicroserviceName());
+        if (CollectionUtils.isEmpty(discoveryInstances)) {
+          return null;
+        }
+        config = buildMicroserviceReferenceConfig(parser.getAppId(), parser.getMicroserviceName(),
+            discoveryInstances);
+        referenceConfigs.put(microserviceName, config);
+        return config;
+      }
+    }
+    return config;
+  }
 
-    return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
+  private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(String application,
+      String microserviceName, List<? extends DiscoveryInstance> instances) {
+    ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
+    MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, application, microserviceName, true);
+    microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(application, microserviceName));
+    microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
+
+    Map<String, String> schemas = new HashMap<>();
+    for (DiscoveryInstance instance : instances) {
+      instance.getSchemas().forEach(schemas::putIfAbsent);
+    }
+    for (Entry<String, String> schema : schemas.entrySet()) {
+      OpenAPI swagger = swaggerLoader
+          .loadSwagger(application, microserviceName, schema.getKey(), schema.getValue());
+      if (swagger != null) {
+        microserviceMeta.registerSchemaMeta(schema.getKey(), swagger);
+        continue;
+      }
+      throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
+          String.format("Swagger %s/%s/%s can not be empty or load swagger failed.",
+              application, microserviceName, schema.getKey()));
+    }
+
+    eventBus.post(new CreateMicroserviceMetaEvent(microserviceMeta));
+    return new MicroserviceReferenceConfig(application,
+        microserviceName, microserviceVersionsMeta, microserviceMeta);
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {
@@ -541,75 +593,19 @@ public class SCBEngine {
     this.producerMicroserviceMeta = producerMicroserviceMeta;
   }
 
-  /**
-   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
-   * but in some simple scenes, just block and wait is enough.
-   */
-  public void waitStatusUp() throws InterruptedException, TimeoutException {
-    long msWait = DynamicPropertyFactory.getInstance().getLongProperty(CFG_KEY_WAIT_UP_TIMEOUT, DEFAULT_WAIT_UP_TIMEOUT)
-        .get();
-    waitStatusUp(msWait);
-  }
-
-  /**
-   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
-   * but in some simple scenes, just block and wait is enough.
-   */
-  public void waitStatusUp(long msWait) throws InterruptedException, TimeoutException {
-    if (msWait <= 0) {
-      LOGGER.info("Give up waiting for status up, wait timeout milliseconds={}.", msWait);
-      return;
-    }
-
-    LOGGER.info("Waiting for status up. timeout: {}ms", msWait);
-    long start = System.currentTimeMillis();
-    for (; ; ) {
-      SCBStatus currentStatus = getStatus();
-      switch (currentStatus) {
-        case DOWN:
-        case FAILED:
-          throw new IllegalStateException("Failed to wait status up, real status: " + currentStatus);
-        case UP:
-          LOGGER.info("Status already changed to up.");
-          return;
-        default:
-          break;
-      }
-
-      TimeUnit.MILLISECONDS.sleep(100);
-      if (System.currentTimeMillis() - start > msWait) {
-        throw new TimeoutException(
-            String.format("Timeout to wait status up, timeout: %dms, last status: %s", msWait, currentStatus));
-      }
-    }
-  }
-
-  public String parseAppId(String microserviceName) {
-    return parseMicroserviceName(microserviceName).getAppId();
-  }
-
   public MicroserviceNameParser parseMicroserviceName(String microserviceName) {
     return new MicroserviceNameParser(getAppId(), microserviceName);
   }
 
-  public static class AfterRegistryEventHanlder {
-    private final SCBEngine engine;
+  public static class CreateMicroserviceMetaEvent {
+    private final MicroserviceMeta microserviceMeta;
 
-    public AfterRegistryEventHanlder(SCBEngine engine) {
-      this.engine = engine;
+    public CreateMicroserviceMetaEvent(MicroserviceMeta microserviceMeta) {
+      this.microserviceMeta = microserviceMeta;
     }
 
-    @Subscribe
-    @EnableExceptionPropagation
-    public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent event) {
-      if (event.isRegistrationManager()) {
-        LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
-        engine.setStatus(SCBStatus.UP);
-        engine.triggerEvent(EventType.AFTER_REGISTRY);
-        EventManager.unregister(this);
-        // keep this message to be WARN, used to detect service ready.
-        LOGGER.warn("ServiceComb is ready.");
-      }
+    public MicroserviceMeta getMicroserviceMeta() {
+      return this.microserviceMeta;
     }
   }
 }

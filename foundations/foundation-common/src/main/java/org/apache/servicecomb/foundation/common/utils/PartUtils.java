@@ -19,13 +19,13 @@ package org.apache.servicecomb.foundation.common.utils;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.servlet.http.Part;
-
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.common.part.ResourcePart;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+
+import jakarta.servlet.http.Part;
 
 public final class PartUtils {
   private PartUtils() {

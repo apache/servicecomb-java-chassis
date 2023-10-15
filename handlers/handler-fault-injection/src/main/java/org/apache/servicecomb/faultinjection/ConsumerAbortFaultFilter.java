@@ -18,8 +18,6 @@ package org.apache.servicecomb.faultinjection;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -39,11 +37,10 @@ public class ConsumerAbortFaultFilter implements ConsumerFilter {
   public static final String ABORTED_ERROR_MSG = "aborted by fault inject";
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1020;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "consumer-abort-fault";

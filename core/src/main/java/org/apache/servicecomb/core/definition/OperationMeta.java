@@ -18,13 +18,14 @@ package org.apache.servicecomb.core.definition;
 
 import java.util.concurrent.Executor;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
-import io.swagger.models.Operation;
+import io.swagger.v3.oas.models.Operation;
+
 
 public class OperationMeta {
   private SchemaMeta schemaMeta;
@@ -66,11 +67,11 @@ public class OperationMeta {
   }
 
   public void setSwaggerProducerOperation(SwaggerProducerOperation swaggerProducerOperation) {
-    this.putExtData(Const.PRODUCER_OPERATION, swaggerProducerOperation);
+    this.putExtData(CoreConst.PRODUCER_OPERATION, swaggerProducerOperation);
   }
 
   public SwaggerProducerOperation getSwaggerProducerOperation() {
-    return (SwaggerProducerOperation) this.getExtData(Const.PRODUCER_OPERATION);
+    return (SwaggerProducerOperation) this.getExtData(CoreConst.PRODUCER_OPERATION);
   }
 
   public OperationConfig getConfig() {
@@ -93,6 +94,17 @@ public class OperationMeta {
     // TODO : this method now called by highway, and highway always use swagger type
     // in the future improvement , highway can use runtime type and this method can be removed
     return responsesMeta;
+  }
+
+  public int parameterCount() {
+    int result = 0;
+    if (swaggerOperation.getRequestBody() != null) {
+      result++;
+    }
+    if (swaggerOperation.getParameters() != null) {
+      result += swaggerOperation.getParameters().size();
+    }
+    return result;
   }
 
   private ResponsesMeta cloneResponseMeta() {

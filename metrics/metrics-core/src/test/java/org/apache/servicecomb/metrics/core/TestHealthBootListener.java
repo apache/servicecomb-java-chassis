@@ -24,30 +24,32 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestHealthBootListener {
 
   @Before
   public void setUp() {
-    ArchaiusUtils.resetConfig();
   }
 
   @After
   public void tearDown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void onBeforeProducerProvider_health_endpoint_enabled_by_default() {
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty("servicecomb.health.endpoint.enabled", boolean.class, true))
+        .thenReturn(true);
     final HealthBootListener listener = new HealthBootListener();
-
+    listener.setEnvironment(environment);
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
     final ProducerMeta producerMeta = new ProducerMeta();
@@ -77,9 +79,11 @@ public class TestHealthBootListener {
 
   @Test
   public void onBeforeProducerProvider_health_endpoint_disabled() {
-    ArchaiusUtils.setProperty("servicecomb.health.endpoint.enabled", false);
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty("servicecomb.health.endpoint.enabled", boolean.class, true))
+        .thenReturn(false);
     final HealthBootListener listener = new HealthBootListener();
-
+    listener.setEnvironment(environment);
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
     final SCBEngine scbEngine = new SCBEngine() {

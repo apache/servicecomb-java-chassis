@@ -19,21 +19,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 
 import java.util.List;
 
-import javax.ws.rs.BeanParam;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.PATCH;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
@@ -41,7 +26,6 @@ import org.apache.servicecomb.swagger.generator.jaxrs.model.AggregatedParam;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamComplexField;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamComplexSetter;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamDefaultBody;
-import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamInvalidDefaultBody;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithJsonIgnoredTagged;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithPart;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.DynamicStatus;
@@ -51,9 +35,22 @@ import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatus;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatusBeanParam;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatusModel;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.ws.rs.BeanParam;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.PATCH;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
 
 @Path(value = "Echo")
 public class Echo {
@@ -63,33 +60,21 @@ public class Echo {
   }
 
   @POST
-  @ApiResponse(response = int.class, code = 200, message = "")
+  @ApiResponse(content = {
+      @Content(schema = @Schema(implementation = Integer.class))}, responseCode = "200", description = "")
+  @Path("response")
   public Response response() {
     return null;
   }
 
-  @GET
-  @Produces(MediaType.TEXT_PLAIN)
-  public Response responseText() {
-    return null;
-  }
-
-  @GET
-  public Response invalidResponse() {
-    return null;
-  }
-
   @POST
-  @Produces("")
-  @Consumes("")
-  @ApiOperation(value = "")
+  @Operation(summary = "")
+  @Path("emptyPath")
   public void emptyPath() {
 
   }
 
   @Path(value = "echo/{targetName}")
-  @Consumes(value = {"json", "xml"})
-  @Produces(value = {"json", "xml"})
   @POST
   public String echo(User srcUser, @HeaderParam(value = "header") String header,
       @PathParam(value = "targetName") String targetName,
@@ -115,13 +100,13 @@ public class Echo {
     return String.format("%s", query);
   }
 
-  @Path(value = "query")
+  @Path(value = "queryComplex")
   @GET
   public String queryComplex(@QueryParam(value = "querys") List<User> querys) {
     return String.format("%s", querys);
   }
 
-  @ApiOperation(value = "")
+  @Operation(summary = "")
   public void ignoredNonRestful() {
 
   }
@@ -166,12 +151,6 @@ public class Echo {
 
   }
 
-  @Path("beanParamInvalidDefaultBody")
-  @POST
-  public void beanParamInvalidDefaultBody(@BeanParam BeanParamInvalidDefaultBody beanParamInvalidDefaultBody) {
-
-  }
-
   @Path("beanParamWithJsonIgnoredTaggedBody")
   @POST
   public void beanParamWithJsonIgnoredTagged(@BeanParam BeanParamWithJsonIgnoredTagged beanParamWithJsonIgnoredTagged) {
@@ -187,7 +166,7 @@ public class Echo {
   @Path("/dynamicStatusEnum")
   @POST
   public DynamicStatus dynamicStatusEnum(@BeanParam DynamicStatusBeanParam statusBeanParam,
-      @QueryParam("status") @ApiParam(value = "dynamic desc direct") DynamicStatus status,
+      @QueryParam("status") @Parameter(description = "dynamic desc direct") DynamicStatus status,
       DynamicStatusModel model) {
     return null;
   }
@@ -195,7 +174,7 @@ public class Echo {
   @Path("/jdkStatusEnum")
   @POST
   public JdkStatus jdkStatusEnum(@BeanParam JdkStatusBeanParam statusBeanParam,
-      @QueryParam("status") @ApiParam(value = "jdk desc direct") JdkStatus status,
+      @QueryParam("status") @Parameter(description = "jdk desc direct") JdkStatus status,
       JdkStatusModel model) {
     return null;
   }

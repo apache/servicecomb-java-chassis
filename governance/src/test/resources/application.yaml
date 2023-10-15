@@ -235,3 +235,10 @@ servicecomb:
           - weight: 80
             tags:
               x-group: green
+
+    test_server2: |                              # 服务名
+      - precedence: 1
+        route:
+          - weight: 20
+            tags:
+              x-group: red

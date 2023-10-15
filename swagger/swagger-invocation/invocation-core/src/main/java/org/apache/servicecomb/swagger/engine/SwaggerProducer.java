@@ -20,14 +20,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class SwaggerProducer {
   private Class<?> producerCls;
 
   private Object producerInstance;
 
-  private Swagger swagger;
+  private OpenAPI swagger;
 
   // key is operationId
   private final Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
@@ -48,11 +48,11 @@ public class SwaggerProducer {
     this.producerInstance = producerInstance;
   }
 
-  public Swagger getSwagger() {
+  public OpenAPI getSwagger() {
     return swagger;
   }
 
-  public void setSwagger(Swagger swagger) {
+  public void setSwagger(OpenAPI swagger) {
     this.swagger = swagger;
   }
 

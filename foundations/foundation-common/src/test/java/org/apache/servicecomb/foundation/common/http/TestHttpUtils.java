@@ -18,7 +18,7 @@ package org.apache.servicecomb.foundation.common.http;
 
 import java.net.URISyntaxException;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

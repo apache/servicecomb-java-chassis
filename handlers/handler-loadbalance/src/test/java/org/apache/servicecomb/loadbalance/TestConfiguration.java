@@ -17,21 +17,27 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 /**
  *
  */
 public class TestConfiguration {
+  Environment environment = Mockito.mock(Environment.class);
+
+  @Before
+  public void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
+  }
+
   @After
   public void after() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -61,31 +67,10 @@ public class TestConfiguration {
     Assertions.assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
   }
 
-
-  /**
-   * The property key of  timerIntervalInMilis  changed from <code>servicecomb.loadbalance.stats.timerIntervalInMilis</code>
-   * to <code>servicecomb.loadbalance.stats.timerIntervalInMillis</code>, check the compatibility
-   */
-  @Test
-  public void testGetTimerIntervalInMillis() {
-    System.setProperty(Configuration.TIMER_INTERVAL_IN_MILLIS, "100");
-    ConcurrentCompositeConfiguration localConfiguration = ConfigUtil.createLocalConfig();
-    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
-
-    System.clearProperty(Configuration.TIMER_INTERVAL_IN_MILLIS);
-    localConfiguration = ConfigUtil.createLocalConfig();
-    Assertions.assertNull(localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
-
-    System.setProperty("servicecomb.loadbalance.stats.timerIntervalInMilis", "100");
-    localConfiguration = ConfigUtil.createLocalConfig();
-    Assertions.assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
-  }
-
   @Test
   public void testGetMaxSingleTestWindow() {
     Assertions.assertEquals(60000, Configuration.INSTANCE.getMaxSingleTestWindow());
-
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow", 5000);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow")).thenReturn("5000");
     Assertions.assertEquals(5000, Configuration.INSTANCE.getMaxSingleTestWindow());
   }
 }

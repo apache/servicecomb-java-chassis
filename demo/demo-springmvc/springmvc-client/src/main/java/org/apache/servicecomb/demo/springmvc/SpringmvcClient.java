@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
@@ -29,8 +30,8 @@ import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.demo.springmvc.client.CodeFirstRestTemplateSpringmvc;
 import org.apache.servicecomb.demo.springmvc.client.ThirdSvc.ThirdSvcClient;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -52,7 +53,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.config.DynamicPropertyFactory;
 
 @SpringBootApplication
 @EnableServiceComb
@@ -79,10 +79,11 @@ public class SpringmvcClient {
       LOGGER.error("-------------- test failed -------------");
     }
     TestMgr.summary();
+    LOGGER.info("-------------- last time updated checks(maybe more/less): 1281 -------------");
   }
 
   private static void changeTransport(String microserviceName, String transport) {
-    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
   }
 
@@ -122,13 +123,9 @@ public class SpringmvcClient {
   }
 
   private static void testHttpClientsIsOk() {
-    TestMgr.check(HttpClients.getClient("registry") != null, true);
-    TestMgr.check(HttpClients.getClient("registry-watch") != null, true);
     TestMgr.check(HttpClients.getClient("http-transport-client") != null, true);
     TestMgr.check(HttpClients.getClient("http2-transport-client") != null, true);
 
-    TestMgr.check(HttpClients.getClient("registry", false) != null, true);
-    TestMgr.check(HttpClients.getClient("registry-watch", false) != null, true);
     TestMgr.check(HttpClients.getClient("http-transport-client", false) != null, true);
     TestMgr.check(HttpClients.getClient("http2-transport-client", false) != null, true);
   }
@@ -167,7 +164,7 @@ public class SpringmvcClient {
       String content = restTemplate
           .getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
-      String application = DynamicPropertyFactory.getInstance().getStringProperty("APPLICATION_ID", "").get();
+      String application = LegacyPropertyFactory.getStringProperty("servicecomb.service.application", "");
 
       TestMgr.check(true,
           content.contains(
@@ -278,8 +275,6 @@ public class SpringmvcClient {
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 503);
     }
-
-    TestMgr.check("hi world [world]", controller.sayHi("world"));
   }
 
   private static void testControllerAllTransport(RestTemplate template, String microserviceName) {
@@ -296,26 +291,6 @@ public class SpringmvcClient {
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 400);
     }
-
-    TestMgr.check("hi world [world]",
-        template.getForObject(prefix + "/controller/sayhi?name=world",
-            String.class));
-
-    TestMgr.check("hi world1 [world1]",
-        template.getForObject(prefix + "/controller/sayhi?name={name}",
-            String.class,
-            "world1"));
-    TestMgr.check("hi hi 中国 [hi 中国]",
-        template.getForObject(prefix + "/controller/sayhi?name={name}",
-            String.class,
-            "hi 中国"));
-
-    Map<String, String> params = new HashMap<>();
-    params.put("name", "world2");
-    TestMgr.check("hi world2 [world2]",
-        template.getForObject(prefix + "/controller/sayhi?name={name}",
-            String.class,
-            params));
 
     TestMgr.check("hello world",
         template.postForObject(prefix + "/controller/sayhello/{name}",
@@ -358,7 +333,6 @@ public class SpringmvcClient {
   }
 
   private static void testController() {
-    TestMgr.check("hi world [world]", controller.sayHi("world"));
     Person user = new Person();
     user.setName("world");
     TestMgr.check("ha world", controller.saySomething("ha", user));

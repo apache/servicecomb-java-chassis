@@ -17,24 +17,25 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.netflix.config.DynamicPropertyFactory;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Instance property with priority filter
@@ -47,22 +48,28 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   private String propertyKey;
 
+  private MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
   @Override
   protected void init(DiscoveryContext context, DiscoveryTreeNode parent) {
-    propertyKey = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key", "environment")
-        .get();
+    propertyKey = environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key",
+        String.class, "environment");
 
     // group all instance by property
-    Map<String, MicroserviceInstance> instances = parent.data();
-    Map<String, Map<String, MicroserviceInstance>> groupByProperty = new HashMap<>();
-    for (MicroserviceInstance microserviceInstance : instances.values()) {
+    List<StatefulDiscoveryInstance> instances = parent.data();
+    Map<String, List<StatefulDiscoveryInstance>> groupByProperty = new HashMap<>();
+    for (StatefulDiscoveryInstance microserviceInstance : instances) {
       String propertyValue = new PriorityInstanceProperty(propertyKey, microserviceInstance).getPropertyValue();
-      groupByProperty.computeIfAbsent(propertyValue, key -> new HashMap<>())
-          .put(microserviceInstance.getInstanceId(), microserviceInstance);
+      groupByProperty.computeIfAbsent(propertyValue, key -> new ArrayList<>())
+          .add(microserviceInstance);
     }
     Map<String, DiscoveryTreeNode> children = new HashMap<>();
-    for (Map.Entry<String, Map<String, MicroserviceInstance>> entry : groupByProperty.entrySet()) {
+    for (Map.Entry<String, List<StatefulDiscoveryInstance>> entry : groupByProperty.entrySet()) {
       children.put(entry.getKey(),
           new DiscoveryTreeNode().subName(parent, entry.getKey()).data(entry.getValue()));
     }
@@ -77,7 +84,8 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
     // context property has precedence over instance property
     String initPropertyValue = invocation.getContext()
         .computeIfAbsent("x-" + propertyKey,
-            key -> new PriorityInstanceProperty(propertyKey, RegistrationManager.INSTANCE.getMicroserviceInstance())
+            key -> new PriorityInstanceProperty(propertyKey,
+                microserviceProperties.getProperties().get(propertyKey))
                 .getPropertyValue());
 
     PriorityInstanceProperty currentProperty = context.getContextParameter(propertyKey);
@@ -106,9 +114,8 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled", false)
-        .get();
+    return environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled",
+        boolean.class, false);
   }
 
   @Override
@@ -148,8 +155,9 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
      * @param key property key
      * @param microserviceInstance instance
      */
-    public PriorityInstanceProperty(@NotNull String key, @NotNull MicroserviceInstance microserviceInstance) {
-      this(key, Optional.ofNullable(microserviceInstance.getProperties().get(key)).orElse(StringUtils.EMPTY));
+    public PriorityInstanceProperty(@NotNull String key, @NotNull StatefulDiscoveryInstance microserviceInstance) {
+      this(key, Optional.ofNullable(microserviceInstance.getProperties().get(key))
+          .orElse(StringUtils.EMPTY));
     }
 
     /**

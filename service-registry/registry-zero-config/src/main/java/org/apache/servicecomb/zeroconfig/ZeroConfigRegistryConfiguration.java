@@ -19,9 +19,7 @@ package org.apache.servicecomb.zeroconfig;
 import java.io.IOException;
 
 import org.apache.servicecomb.registry.lightweight.MessageExecutor;
-import org.apache.servicecomb.zeroconfig.local.LocalRegistration;
 import org.apache.servicecomb.zeroconfig.multicast.Multicast;
-import org.apache.servicecomb.zeroconfig.multicast.MulticastRegistration;
 import org.apache.servicecomb.zeroconfig.multicast.MulticastServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +27,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ZeroConfigRegistryConfiguration {
   @Bean
-  public MulticastRegistration multicastRegistration() {
-    return new MulticastRegistration();
+  public ZeroConfigRegistration zeroConfigRegistration() {
+    return new ZeroConfigRegistration();
   }
 
   @Bean
@@ -44,13 +42,8 @@ public class ZeroConfigRegistryConfiguration {
   }
 
   @Bean
-  public Multicast multicast(Config config) throws IOException {
+  public Multicast zeroConfigMulticast(Config config) throws IOException {
     return new Multicast(config);
-  }
-
-  @Bean
-  public LocalRegistration localRegistration() {
-    return new LocalRegistration();
   }
 
   @Bean

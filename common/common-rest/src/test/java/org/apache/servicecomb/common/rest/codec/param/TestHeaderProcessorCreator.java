@@ -18,20 +18,35 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.HeaderProcessor;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.HeaderParameter;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
 
 public class TestHeaderProcessorCreator {
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+  }
+
   @Test
   public void testCreate() {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(HeaderProcessorCreator.PARAMTYPE);
     HeaderParameter hp = new HeaderParameter();
     hp.setName("h1");
+    hp.setSchema(new Schema());
 
-    ParamValueProcessor processor = creator.create(hp, String.class);
+    ParamValueProcessor processor = creator.create(null, hp.getName(), hp, String.class);
 
     Assertions.assertEquals(HeaderProcessor.class, processor.getClass());
   }

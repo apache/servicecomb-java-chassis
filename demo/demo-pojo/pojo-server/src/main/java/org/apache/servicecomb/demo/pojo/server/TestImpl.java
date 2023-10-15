@@ -20,7 +20,7 @@ package org.apache.servicecomb.demo.pojo.server;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.demo.server.Test;
 import org.apache.servicecomb.demo.server.TestRequest;
 import org.apache.servicecomb.demo.server.User;
@@ -103,6 +103,6 @@ public class TestImpl implements Test {
 
   @Override
   public String testTraceId() {
-    return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
+    return ContextUtils.getInvocationContext().getContext(CoreConst.TRACE_ID_NAME);
   }
 }

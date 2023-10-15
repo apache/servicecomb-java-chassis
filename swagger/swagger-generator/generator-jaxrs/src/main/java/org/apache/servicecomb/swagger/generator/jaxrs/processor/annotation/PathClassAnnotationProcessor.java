@@ -19,12 +19,11 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Path;
-
-import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class PathClassAnnotationProcessor implements ClassAnnotationProcessor<Path> {
+import jakarta.ws.rs.Path;
+
+public class PathClassAnnotationProcessor extends JaxrsClassAnnotationProcessor<Path> {
   @Override
   public Type getProcessType() {
     return Path.class;

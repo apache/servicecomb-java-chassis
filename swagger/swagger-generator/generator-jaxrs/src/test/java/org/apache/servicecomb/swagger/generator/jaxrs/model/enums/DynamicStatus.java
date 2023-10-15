@@ -21,13 +21,13 @@ import org.apache.servicecomb.foundation.common.base.DynamicEnumCache;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.Parameter;
 
 public class DynamicStatus extends DynamicEnum<Integer> {
-  @ApiModelProperty(value = "dynamic bad request")
+  @Parameter(description = "dynamic bad request")
   public static final DynamicStatus BAD_REQUEST = new DynamicStatus(400);
 
-  @ApiModelProperty(value = "dynamic not found")
+  @Parameter(description = "dynamic not found")
   public static final DynamicStatus NOT_FOUND = new DynamicStatus(404);
 
   private static final DynamicEnumCache<DynamicStatus> CACHE = new DynamicEnumCache<>(DynamicStatus.class);

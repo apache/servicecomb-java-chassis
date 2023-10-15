@@ -17,46 +17,34 @@
 
 package org.apache.servicecomb.core.registry.discovery;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Mocked;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestEndpointDiscoveryFilter {
   EndpointDiscoveryFilter filter = new EndpointDiscoveryFilter();
 
   DiscoveryContext context = new DiscoveryContext();
 
-  @Mocked
   Invocation invocation;
 
-  SCBEngine scbEngine;
-
-  @Before
+  @BeforeEach
   public void setup() {
-    ArchaiusUtils.resetConfig();
-    ConfigUtil.installDynamicConfig();
-    context.setInputParameters(invocation);
-    scbEngine = SCBBootstrap.createSCBEngineForTest();
+
   }
 
-  @After
+  @AfterEach
   public void teardown() {
-    scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -66,36 +54,38 @@ public class TestEndpointDiscoveryFilter {
 
   @Test
   public void getTransportName() {
-    new Expectations() {
-      {
-        invocation.getConfigTransportName();
-        result = Const.RESTFUL;
-      }
-    };
-
-    Assertions.assertEquals(Const.RESTFUL, filter.findTransportName(context, null));
+    invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getConfigTransportName()).thenReturn(CoreConst.RESTFUL);
+    context.setInputParameters(invocation);
+    Assertions.assertEquals(CoreConst.RESTFUL, filter.findTransportName(context, null));
   }
 
   @Test
   public void createEndpointNullTransport() {
-    Assertions.assertNull(filter.createEndpoint(null, Const.RESTFUL, "", null));
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    Mockito.when(transportManager.findTransport(CoreConst.RESTFUL)).thenReturn(null);
+    filter.setScbEngine(scbEngine);
+    Assertions.assertNull(filter.createEndpoint(null, CoreConst.RESTFUL, "", null));
   }
 
   @Test
-  public void createEndpointNormal(@Mocked Transport transport, @Mocked MicroserviceInstance instance) {
+  public void createEndpointNormal() {
+    Transport transport = Mockito.mock(Transport.class);
+    StatefulDiscoveryInstance instance = Mockito.mock(StatefulDiscoveryInstance.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+
     String endpoint = "rest://ip:port";
     Object address = new Object();
 
-    new Expectations(scbEngine.getTransportManager()) {
-      {
-        scbEngine.getTransportManager().findTransport(Const.RESTFUL);
-        result = transport;
-        transport.parseAddress(endpoint);
-        result = address;
-      }
-    };
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Mockito.when(scbEngine.getTransportManager()).thenReturn(transportManager);
+    Mockito.when(transportManager.findTransport(CoreConst.RESTFUL)).thenReturn(transport);
+    Mockito.when(transport.parseAddress(endpoint)).thenReturn(address);
+    filter.setScbEngine(scbEngine);
 
-    Endpoint ep = (Endpoint) filter.createEndpoint(null, Const.RESTFUL, endpoint, instance);
+    Endpoint ep = (Endpoint) filter.createEndpoint(null, CoreConst.RESTFUL, endpoint, instance);
     Assertions.assertSame(transport, ep.getTransport());
     Assertions.assertSame(address, ep.getAddress());
     Assertions.assertSame(instance, ep.getMicroserviceInstance());

@@ -21,8 +21,12 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
 
 @Component
 public class TestDownloadSchema implements CategorizedTestCase {
@@ -31,6 +35,7 @@ public class TestDownloadSchema implements CategorizedTestCase {
     testDownloadFileAndDeleted();
     testDownloadFileNotDeleted();
     testDownloadFileWithNull();
+    testSetContentTypeByResponseEntity();
   }
 
   private void testDownloadFileAndDeleted() throws Exception {
@@ -68,5 +73,15 @@ public class TestDownloadSchema implements CategorizedTestCase {
     boolean exists = restTemplate
         .getForObject("servicecomb://springmvc/download/assertLastFileDeleted", boolean.class);
     TestMgr.check(exists, true);
+  }
+
+  private void testSetContentTypeByResponseEntity() throws Exception {
+    RestTemplate restTemplate = RestTemplateBuilder.create();
+    ResponseEntity<ReadStreamPart> responseEntity = restTemplate
+            .getForEntity("servicecomb://springmvc/download/setContentTypeByResponseEntity?content=hello&contentType=customType",
+                    ReadStreamPart.class);
+    String hello = responseEntity.getBody().saveAsString().get();
+    TestMgr.check(responseEntity.getHeaders().get(HttpHeaders.CONTENT_TYPE), Collections.singletonList("customType"));
+    TestMgr.check(hello, "hello");
   }
 }

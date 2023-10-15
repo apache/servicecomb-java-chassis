@@ -52,7 +52,7 @@ public class TestProduceTextPlainProcessor {
     Object result = pp.decodeResponse(Buffer.buffer(), resultType);
     Assertions.assertNull(result);
 
-    ByteArrayInputStream is = new ByteArrayInputStream(new byte[] {});
+    ByteArrayInputStream is = new ByteArrayInputStream("\"\"".getBytes(StandardCharsets.UTF_8));
     result = pp.decodeResponse(is, resultType);
     Assertions.assertEquals(result, "");
   }
@@ -91,6 +91,6 @@ public class TestProduceTextPlainProcessor {
     Assertions.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
 
     pp.setSerializationView(Object.class);
-    Assertions.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+    Assertions.assertEquals("java.lang.Object", pp.getSerializationView());
   }
 }

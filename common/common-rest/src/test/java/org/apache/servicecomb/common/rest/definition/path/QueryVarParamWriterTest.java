@@ -26,11 +26,16 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.QueryParameter;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class QueryVarParamWriterTest {
   private static QueryVarParamWriter queryVarParamWriterCsv;
@@ -39,24 +44,39 @@ public class QueryVarParamWriterTest {
 
   private static QueryVarParamWriter queryVarParamWriterDefault;
 
+  static Environment environment = Mockito.mock(Environment.class);
+
   @BeforeAll
   public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+
     QueryParameter parameter = new QueryParameter();
     parameter.setName("q");
-    parameter.setCollectionFormat("csv");
+    parameter.setSchema(new Schema());
+    parameter.setStyle(StyleEnum.FORM);
+    parameter.setExplode(false);
     queryVarParamWriterCsv = new QueryVarParamWriter(
-        new RestParam(parameter, String[].class));
+        new RestParam(null, parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
-    parameter.setCollectionFormat("multi");
+    parameter.setSchema(new Schema());
+    parameter.setStyle(StyleEnum.FORM);
+    parameter.setExplode(true);
     queryVarParamWriterMulti = new QueryVarParamWriter(
-        new RestParam(parameter, String[].class));
+        new RestParam(null, parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
+    parameter.setSchema(new Schema());
     queryVarParamWriterDefault = new QueryVarParamWriter(
-        new RestParam(parameter, String[].class));
+        new RestParam(null, parameter, String[].class));
   }
 
   @Test

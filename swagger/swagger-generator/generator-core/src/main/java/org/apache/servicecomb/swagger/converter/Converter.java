@@ -20,8 +20,10 @@ package org.apache.servicecomb.swagger.converter;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings("rawtypes")
 public interface Converter {
   JavaType OBJECT_JAVA_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
 
@@ -29,5 +31,5 @@ public interface Converter {
 
   // def can be property or model
   // def can not be null
-  JavaType convert(Swagger swagger, Object def);
+  JavaType convert(OpenAPI swagger, Schema def);
 }

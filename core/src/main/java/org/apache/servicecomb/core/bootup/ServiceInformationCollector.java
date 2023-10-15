@@ -17,13 +17,31 @@
 
 package org.apache.servicecomb.core.bootup;
 
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class ServiceInformationCollector implements BootUpInformationCollector {
+  private RegistrationManager registrationManager;
+
+  private DiscoveryManager discoveryManager;
+
+  public ServiceInformationCollector() {
+  }
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
+  }
+
+  @Autowired
+  public void setDiscoveryManager(DiscoveryManager discoveryManager) {
+    this.discoveryManager = discoveryManager;
+  }
 
   @Override
   public String collect() {
-    return RegistrationManager.INSTANCE.info();
+    return registrationManager.info() + "\n" + discoveryManager.info();
   }
 
   @Override

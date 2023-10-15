@@ -19,8 +19,6 @@ package org.apache.servicecomb.qps;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -29,11 +27,16 @@ import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
 
 public class ConsumerFlowControlFilter implements ConsumerFilter {
-  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(false);
+  private final QpsControllerManager qpsControllerMgr;
+
+  public ConsumerFlowControlFilter(Environment environment) {
+    qpsControllerMgr = new QpsControllerManager(false, environment);
+  }
 
   @VisibleForTesting
   public QpsControllerManager getQpsControllerMgr() {
@@ -41,11 +44,10 @@ public class ConsumerFlowControlFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1990;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "consumer-flow-control";

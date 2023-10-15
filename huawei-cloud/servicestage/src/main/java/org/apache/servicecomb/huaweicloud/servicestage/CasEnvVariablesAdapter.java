@@ -17,30 +17,26 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.adapter.EnvAdapter;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import java.util.Map;
 
-public class CasEnvVariablesAdapter implements EnvAdapter {
-  private static final String NAME = "cas-env-variables-adapter";
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
-  @Override
-  public String getEnvName() {
-    return NAME;
+public class CasEnvVariablesAdapter implements InitializingBean {
+
+  private RegistrationManager registrationManager;
+
+  @Autowired
+  public void setRegistrationManager(RegistrationManager registrationManager) {
+    this.registrationManager = registrationManager;
   }
 
   @Override
-  public int getOrder() {
-    return 0;
-  }
-
-  @Override
-  public void beforeRegisterInstance(MicroserviceInstance instance) {
-    instance.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyInstanceProperties());
-  }
-
-  @Override
-  public void beforeRegisterService(Microservice microservice) {
-    microservice.getProperties().putAll(CasEnvConfig.INSTANCE.getNonEmptyServiceProperties());
+  public void afterPropertiesSet() throws Exception {
+    Map<String, String> extras = CasEnvConfig.INSTANCE.getNonEmptyServiceProperties();
+    extras.forEach((k, v) -> this.registrationManager.addProperty(k, v));
+    extras = CasEnvConfig.INSTANCE.getNonEmptyInstanceProperties();
+    extras.forEach((k, v) -> this.registrationManager.addProperty(k, v));
   }
 }

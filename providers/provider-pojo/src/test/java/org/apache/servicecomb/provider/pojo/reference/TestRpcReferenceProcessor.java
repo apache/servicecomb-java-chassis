@@ -17,10 +17,8 @@
 
 package org.apache.servicecomb.provider.pojo.reference;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.Person;
 import org.apache.servicecomb.provider.pojo.PersonReference;
@@ -28,18 +26,20 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestRpcReferenceProcessor {
+  static Environment environment = Mockito.mock(Environment.class);
+
   RpcReferenceProcessor consumers = new RpcReferenceProcessor();
 
   @BeforeEach
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
   }
 
   @AfterEach
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -50,7 +50,7 @@ public class TestRpcReferenceProcessor {
 
   @Test
   public void testReference() {
-    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
 
     PersonReference bean = new PersonReference();
 

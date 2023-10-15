@@ -26,23 +26,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.HeaderProcessorCreator.HeaderProcessor;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.properties.ArrayProperty;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.HeaderParameter;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class TestHeaderProcessor {
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -59,14 +62,24 @@ public class TestHeaderProcessor {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
 
     HeaderParameter headerParameter = new HeaderParameter();
+    headerParameter.setSchema(new Schema());
     headerParameter.name(name)
-        .required(required)
-        .setDefaultValue(defaultValue);
+        .required(required);
+    headerParameter.getSchema().setDefault(defaultValue);
 
     if (javaType.isContainerType()) {
-      headerParameter.type(ArrayProperty.TYPE);
+      headerParameter.schema(new ArraySchema());
     }
     return new HeaderProcessor(headerParameter, javaType);
+  }
+
+  Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck"
+        , boolean.class, false)).thenReturn(false);
   }
 
   @Test
@@ -180,7 +193,7 @@ public class TestHeaderProcessor {
   @Test
   public void testSetValueDateFixed() throws Exception {
     Date date = new Date(1586957400199L);
-    String strDate =  "2020-04-15T13:30:00.199+00:00";
+    String strDate = "2020-04-15T13:30:00.199+00:00";
 
     Mockito.doAnswer(invocation -> {
       headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
@@ -195,7 +208,7 @@ public class TestHeaderProcessor {
   @Test
   public void testSetValueDate() throws Exception {
     Date date = new Date();
-    String strDate =  new StdDateFormat().format(date);
+    String strDate = new StdDateFormat().format(date);
     Mockito.doAnswer(invocation -> {
       headers.put("h1", RestObjectMapperFactory.getConsumerWriterMapper().convertToString(date));
       return null;

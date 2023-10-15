@@ -17,29 +17,32 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.discovery.DiscoveryTree;
+import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import mockit.Deencapsulation;
-import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
@@ -70,8 +73,14 @@ public class TestLoadBalanceFilter {
 
   @Before
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
-    scbEngine = SCBBootstrap.createSCBEngineForTest().run();
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
+    scbEngine.setEnvironment(environment);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",
+        boolean.class, false)).thenReturn(false);
+    scbEngine.run();
     transportManager = scbEngine.getTransportManager();
 
     new MockUp<Invocation>(invocation) {
@@ -98,25 +107,20 @@ public class TestLoadBalanceFilter {
       }
     };
 
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getSortedService(DiscoveryFilter.class);
-        result = Collections.emptyList();
-      }
-    };
-
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
     ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);
 
-    handler = new LoadBalanceFilter(extensionsManager);
+    DiscoveryTree discoveryTree = new DiscoveryTree(
+        new DiscoveryManager(Collections.emptyList(), List.of(new TelnetInstancePing())));
+    handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
+        discoveryTree, scbEngine);
     loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
   }
 
   @After
   public void teardown() {
     scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test

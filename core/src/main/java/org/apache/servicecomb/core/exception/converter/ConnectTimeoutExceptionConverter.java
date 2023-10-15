@@ -16,10 +16,7 @@
  */
 package org.apache.servicecomb.core.exception.converter;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-
-import javax.annotation.Nullable;
-import javax.ws.rs.core.Response.StatusType;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
@@ -28,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.netty.channel.ConnectTimeoutException;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class ConnectTimeoutExceptionConverter implements ExceptionConverter<ConnectTimeoutException> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConnectTimeoutExceptionConverter.class);
@@ -45,7 +43,7 @@ public class ConnectTimeoutExceptionConverter implements ExceptionConverter<Conn
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, ConnectTimeoutException throwable,
+  public InvocationException convert(Invocation invocation, ConnectTimeoutException throwable,
       StatusType genericStatus) {
     // throwable.getMessage:
     //   connection timed out: /1.1.1.1:8080

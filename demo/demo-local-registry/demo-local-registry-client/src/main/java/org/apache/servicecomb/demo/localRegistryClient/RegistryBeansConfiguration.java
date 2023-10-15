@@ -27,6 +27,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@SuppressWarnings("unused")
 public class RegistryBeansConfiguration {
   @Bean
   public RegistryBean demoLocalRegistryServerBean() {
@@ -41,7 +42,7 @@ public class RegistryBeansConfiguration {
         .setVersion("0.0.3")
         .setAppId("demo-local-registry")
         .addSchemaId("ServerEndpoint")
-        .addSchemaId("CodeFirstEndpoint")
+        .addSchemaInterface("CodeFirstEndpoint", CodeFirstService.class)
         .setInstances(new Instances().setInstances(instances));
   }
 
@@ -57,6 +58,7 @@ public class RegistryBeansConfiguration {
         .setId("003")
         .setVersion("0.0.3")
         .setAppId("demo-local-registry")
+        .addSchemaId("ServerEndpoint")
         .addSchemaInterface("CodeFirstEndpoint2", CodeFirstService.class)
         .setInstances(new Instances().setInstances(instances));
   }

@@ -17,16 +17,23 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-// filter is stateless
-public interface DiscoveryFilter {
+import org.springframework.core.Ordered;
+
+/**
+ * Server list filters for DiscoveryTree.
+ *
+ * Implementation Notice: DiscoveryFilter is initialized using bean and instance shared for all
+ * microservices. If implementation has states, can put the states to DiscoveryContext or parent DiscoveryTreeNode.
+ */
+public interface DiscoveryFilter extends Ordered {
   default boolean enabled() {
     return true;
   }
 
-  int getOrder();
-
-  // grouping filter, means grouping instances to some groups
-  // eg: operation/ZoneAware/transport
+  /**
+   * grouping filter, means grouping instances to some groups
+   *  eg: operation/ZoneAware/transport
+   */
   default boolean isGroupingFilter() {
     return false;
   }

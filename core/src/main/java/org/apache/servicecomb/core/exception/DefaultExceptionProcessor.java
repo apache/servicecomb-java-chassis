@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.core.exception;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.TOO_MANY_REQUESTS;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.TOO_MANY_REQUESTS;
 import static org.apache.commons.lang3.exception.ExceptionUtils.getStackTrace;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_SERVER;
 import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
@@ -28,10 +28,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
@@ -48,6 +44,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 @InjectProperties(prefix = "servicecomb.invocation.exception")
 public class DefaultExceptionProcessor implements ExceptionProcessor {
@@ -104,17 +102,21 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public InvocationException convert(@Nonnull Invocation invocation, Throwable throwable) {
+  public InvocationException convert(Invocation invocation, Throwable throwable) {
     StatusType genericStatus = CONSUMER.equals(invocation.getInvocationType()) ? BAD_REQUEST : INTERNAL_SERVER_ERROR;
     return convert(invocation, throwable, genericStatus);
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
+  public InvocationException convert(Invocation invocation, Throwable throwable, StatusType genericStatus) {
     Throwable unwrapped = ExceptionFactory.unwrap(throwable);
     try {
-      return converterCache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped))
-          .convert(invocation, unwrapped, genericStatus);
+      ExceptionConverter<Throwable> converter =
+          converterCache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped));
+      LOGGER.warn("convert operation {} exception using {}.",
+          invocation == null ? genericStatus.getStatusCode() : invocation.getMicroserviceQualifiedName(),
+          converter.getClass().getSimpleName(), throwable);
+      return converter.convert(invocation, unwrapped, genericStatus);
     } catch (Exception e) {
       LOGGER.error("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
               + "original exception :{}"
@@ -144,7 +146,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public void logConsumerException(@Nonnull Invocation invocation, @Nonnull InvocationException exception) {
+  public void logConsumerException(Invocation invocation, InvocationException exception) {
     if (isIgnoreLog(invocation, exception)) {
       return;
     }
@@ -166,7 +168,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public boolean isIgnoreLog(@Nonnull Invocation invocation, @Nonnull InvocationException exception) {
+  public boolean isIgnoreLog(Invocation invocation, InvocationException exception) {
     if (!isPrintRateLimit() && exception.getStatusCode() == TOO_MANY_REQUESTS.getStatusCode()) {
       return true;
     }
@@ -175,7 +177,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public Response toProducerResponse(@Nullable Invocation invocation, Throwable exception) {
+  public Response toProducerResponse(Invocation invocation, Throwable exception) {
     InvocationException invocationException = convert(invocation, exception, INTERNAL_SERVER_ERROR);
     if (invocation != null) {
       logProducerException(invocation, invocationException);
@@ -185,7 +187,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
   }
 
   @Override
-  public void logProducerException(@Nonnull Invocation invocation, @Nonnull InvocationException exception) {
+  public void logProducerException(Invocation invocation, InvocationException exception) {
     if (isIgnoreLog(invocation, exception)) {
       return;
     }

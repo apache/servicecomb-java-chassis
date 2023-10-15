@@ -19,9 +19,6 @@ package org.apache.servicecomb.demo.edge.service.handler;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -35,6 +32,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import jakarta.ws.rs.core.Response.Status;
+
 @Component
 public class AuthHandler implements ConsumerFilter {
   private static Logger LOGGER = LoggerFactory.getLogger(AuthHandler.class);
@@ -46,19 +45,18 @@ public class AuthHandler implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1980;
   }
 
   @Override
-  public boolean isEnabledForMicroservice(String microservice) {
-    if ("auth".equals(microservice)) {
+  public boolean enabledForMicroservice(String application, String serviceName) {
+    if ("auth".equals(serviceName)) {
       return false;
     }
     return true;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "test-auth";

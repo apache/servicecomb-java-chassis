@@ -17,24 +17,20 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import java.util.List;
-
-import javax.servlet.AsyncContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
-import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
+
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class ServletRestDispatcher {
   private final RestAsyncListener restAsyncListener = new RestAsyncListener();
@@ -43,18 +39,16 @@ public class ServletRestDispatcher {
 
   private MicroserviceMeta microserviceMeta;
 
-  private final List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
-
   public void service(HttpServletRequest request, HttpServletResponse response) {
     if (transport == null) {
-      transport = SCBEngine.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+      transport = SCBEngine.getInstance().getTransportManager().findTransport(CoreConst.RESTFUL);
       microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     }
 
     // 异步场景
     AsyncContext asyncCtx = request.startAsync();
     asyncCtx.addListener(restAsyncListener);
-    asyncCtx.setTimeout(ServletConfig.getAsyncServletTimeout());
+    asyncCtx.setTimeout(ServletConfig.getAsyncServletTimeout(SCBEngine.getInstance().getEnvironment()));
 
     HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
     HttpServletResponseEx responseEx = new StandardHttpServletResponseEx(response);

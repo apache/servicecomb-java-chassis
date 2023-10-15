@@ -19,10 +19,8 @@ package org.apache.servicecomb.transport.rest.client;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -42,19 +40,18 @@ public class RestClientCodecFilter implements ConsumerFilter {
 
   protected RestClientDecoder decoder;
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;
   }
 
   @Override
-  public boolean isEnabledForTransport(String transport) {
-    return Const.RESTFUL.equals(transport);
+  public boolean enabledForTransport(String transport) {
+    return CoreConst.RESTFUL.equals(transport);
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1990;
   }
 

@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.common.rest.codec.query;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
 
 public class QueryCodecsUtils {
   // create a default instance, so that more friendly to UT
@@ -27,8 +27,15 @@ public class QueryCodecsUtils {
     QueryCodecsUtils.queryCodecs = queryCodecs;
   }
 
-  @Nonnull
-  public static QueryCodec find(@Nullable String name) {
-    return queryCodecs.find(name);
+  public static QueryCodec find(Parameter.StyleEnum styleEnum, Boolean explode) {
+    return queryCodecs.find(formatName(styleEnum, explode));
+  }
+
+  private static String formatName(StyleEnum styleEnum, Boolean explode) {
+    if (styleEnum == null) {
+      return null;
+    }
+    return styleEnum + ":" +
+        (explode != null && explode ? "1" : "0");
   }
 }

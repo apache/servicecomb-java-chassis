@@ -20,7 +20,7 @@ import org.apache.servicecomb.demo.server.Test;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 
 public class BeanRpcTest {
-  @RpcReference(microserviceName = "pojo")
+  @RpcReference(microserviceName = "pojo", schemaId = "server")
   private Test test;
 
   public BeanRpcTest() {

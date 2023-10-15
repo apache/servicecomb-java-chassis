@@ -17,35 +17,25 @@
 
 package org.apache.servicecomb.core.transport;
 
+import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_ADDRESS;
+
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.AfterClass;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.springframework.util.ReflectionUtils;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicProperty;
-
-import mockit.Expectations;
-import mockit.Mocked;
+import io.vertx.core.file.impl.FileResolverImpl;
 
 public class TestAbstractTransport {
-  private final Method updatePropertyMethod =
-      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
-
-  private void updateProperty(String key, Object value) {
-    updatePropertyMethod.setAccessible(true);
-    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
-  }
+  Environment environment = Mockito.mock(Environment.class);
 
   static class MyAbstractTransport extends AbstractTransport {
 
@@ -58,26 +48,23 @@ public class TestAbstractTransport {
     public boolean init() {
       return true;
     }
-
-    @Override
-    public void send(Invocation invocation, AsyncResponse asyncResp) {
-    }
   }
 
-  @AfterClass
-  public static void classTeardown() {
-    VertxUtils.blockCloseVertxByName("transport");
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(environment.getProperty(PUBLISH_ADDRESS, "")).thenReturn("");
+    Mockito.when(environment.getProperty("servicecomb.my.publishPort", int.class, 0)).thenReturn(0);
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
   public void testSetListenAddressWithoutSchemaChineseSpaceNewSC() throws UnsupportedEncodingException {
-    new Expectations() {
-      {
-        RegistrationManager.getPublishAddress("my", "127.0.0.1:9090");
-      }
-    };
-
     MyAbstractTransport transport = new MyAbstractTransport();
+    transport.setEnvironment(environment);
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
     Assertions.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
         transport.getEndpoint().getEndpoint());
@@ -86,6 +73,7 @@ public class TestAbstractTransport {
   @Test
   public void testSetListenAddressWithoutSchemaNormalNotEncode() {
     MyAbstractTransport transport = new MyAbstractTransport();
+    transport.setEnvironment(environment);
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "chinese"));
     Assertions.assertEquals("my://127.0.0.1:9090?country=chinese", transport.getEndpoint().getEndpoint());
   }
@@ -93,6 +81,7 @@ public class TestAbstractTransport {
   @Test
   public void testSetListenAddressWithoutSchemaAlreadyHaveQuery() {
     MyAbstractTransport transport = new MyAbstractTransport();
+    transport.setEnvironment(environment);
     transport.setListenAddressWithoutSchema("127.0.0.1:9090?a=aValue",
         Collections.singletonMap("country", "chinese"));
     Assertions.assertEquals("my://127.0.0.1:9090?a=aValue&country=chinese", transport.getEndpoint().getEndpoint());
@@ -101,6 +90,7 @@ public class TestAbstractTransport {
   @Test
   public void testMyAbstractTransport() {
     MyAbstractTransport transport = new MyAbstractTransport();
+    transport.setEnvironment(environment);
     transport.setListenAddressWithoutSchema("127.0.0.1:9090");
     Assertions.assertEquals("my", transport.getName());
     Assertions.assertEquals("my://127.0.0.1:9090", transport.getEndpoint().getEndpoint());
@@ -112,10 +102,11 @@ public class TestAbstractTransport {
     Assertions.assertNull(transport.parseAddress(null));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void testMyAbstractTransportException(@Mocked TransportManager manager) {
+  @Test
+  public void testMyAbstractTransportException() {
     MyAbstractTransport transport = new MyAbstractTransport();
-
-    transport.setListenAddressWithoutSchema(":127.0.0.1:9090");
+    transport.setEnvironment(environment);
+    Assertions.assertThrows(IllegalArgumentException.class, () ->
+        transport.setListenAddressWithoutSchema(":127.0.0.1:9090"));
   }
 }

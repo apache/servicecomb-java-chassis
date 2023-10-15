@@ -17,28 +17,43 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class TestQueryProcessorCreator {
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+  }
+
   @Test
   public void testCreate() {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
-
-    ParamValueProcessor processor = creator.create(parameter, String.class);
+    parameter.setSchema(new Schema());
+    ParamValueProcessor processor = creator.create(null, parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 
@@ -56,13 +71,15 @@ public class TestQueryProcessorCreator {
   @Test
   public void testCreateNullAsEmpty() throws Exception {
     HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-    ArchaiusUtils.setProperty("servicecomb.rest.parameter.query.emptyAsNull", "true");
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(true);
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(QueryProcessorCreator.PARAMTYPE);
     Parameter parameter = new QueryParameter();
     parameter.setName("query");
+    parameter.setSchema(new Schema());
 
-    ParamValueProcessor processor = creator.create(parameter, String.class);
+    ParamValueProcessor processor = creator.create(null, parameter.getName(), parameter, String.class);
 
     Assertions.assertEquals(QueryProcessor.class, processor.getClass());
 
@@ -78,6 +95,5 @@ public class TestQueryProcessorCreator {
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
     result = (String) processor.getValue(request);
     Assertions.assertNull(result);
-    ArchaiusUtils.resetConfig();
   }
 }

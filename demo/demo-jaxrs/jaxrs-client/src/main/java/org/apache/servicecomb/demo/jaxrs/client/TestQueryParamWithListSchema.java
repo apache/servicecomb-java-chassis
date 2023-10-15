@@ -32,7 +32,6 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
     testMulti();
     testCSV();
     testSSV();
-    testTSV();
     testPipes();
   }
 
@@ -41,7 +40,6 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
     testMultiRest();
     testCSVRest();
     testSSVRest();
-    testTSVRest();
     testPipesRest();
   }
 
@@ -51,7 +49,6 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
     testMultiHighway();
     testCSVHighway();
     testSSVHighway();
-    testTSVHighway();
     testPipesHighway();
   }
 
@@ -79,26 +76,6 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList={1}", String.class, " "));
     TestMgr.check("1:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=", String.class));
-  }
-
-  private void testTSVHighway() {
-    TestMgr.check("null",
-        restTemplate.getForObject("cse://jaxrs/queryList/queryListTSV?", String.class));
-  }
-
-  private void testTSVRest() {
-    TestMgr.check("0:[]",
-        restTemplate.getForObject("cse://jaxrs/queryList/queryListTSV?", String.class));
-  }
-
-  private void testTSV() {
-    TestMgr.check("2:[1, 2]",
-        restTemplate
-            .getForObject("cse://jaxrs/queryList/queryListTSV?queryList={1}", String.class, "1\t2"));
-    TestMgr.check("2:[, ]",
-        restTemplate.getForObject("cse://jaxrs/queryList/queryListTSV?queryList={1}", String.class, "\t"));
-    TestMgr.check("1:[]",
-        restTemplate.getForObject("cse://jaxrs/queryList/queryListTSV?queryList=", String.class));
   }
 
   private void testPipesHighway() {

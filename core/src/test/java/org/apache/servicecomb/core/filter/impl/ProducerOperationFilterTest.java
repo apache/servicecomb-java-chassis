@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.filter.impl;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -44,7 +44,7 @@ import mockit.Mocked;
 import mockit.Verifications;
 
 public class ProducerOperationFilterTest {
-  ProducerOperationFilter filter = new ProducerOperationFilter();
+  ProviderOperationFilter filter = new ProviderOperationFilter();
 
   @Injectable
   Invocation invocation;

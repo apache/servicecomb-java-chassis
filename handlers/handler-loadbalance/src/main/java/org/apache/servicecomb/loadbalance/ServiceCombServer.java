@@ -23,11 +23,8 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.Server;
 
 /**
@@ -38,32 +35,12 @@ import com.netflix.loadbalancer.Server;
 public class ServiceCombServer extends Server {
   private final Endpoint endpoint;
 
-  // 所属服务实例
-  private final MicroserviceInstance instance;
-
   private final String microserviceName;
 
-  @VisibleForTesting
-  ServiceCombServer(String microserviceName, Endpoint endpoint, MicroserviceInstance instance) {
+  public ServiceCombServer(String microserviceName, Endpoint endpoint) {
     super(null);
+    this.microserviceName = microserviceName;
     this.endpoint = endpoint;
-    this.instance = instance;
-    this.microserviceName = microserviceName;
-
-    // Different types of Robin Component Rule have different usages for server status and list.
-    // e.g. RoundRobinRule using getAllServers & alive & readyToServe
-    // RandomRule using getReachableServers & alive
-    // WeightedResponseTimeRule using getAllServers & alive
-    // To make all rules work only on "how to choose a server from alive servers", we do not rely on Robbin defined status
-    this.setAlive(true);
-    this.setReadyToServe(true);
-  }
-
-  public ServiceCombServer(String microserviceName, Transport transport, CacheEndpoint cacheEndpoint) {
-    super(null);
-    this.microserviceName = microserviceName;
-    endpoint = new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
-    instance = cacheEndpoint.getInstance();
 
     // Different types of Robin Component Rule have different usages for server status and list.
     // e.g. RoundRobinRule using getAllServers & alive & readyToServe
@@ -88,8 +65,8 @@ public class ServiceCombServer extends Server {
     return endpoint;
   }
 
-  public MicroserviceInstance getInstance() {
-    return instance;
+  public StatefulDiscoveryInstance getInstance() {
+    return endpoint.getMicroserviceInstance();
   }
 
   @Override
@@ -106,7 +83,8 @@ public class ServiceCombServer extends Server {
   @Override
   public boolean equals(Object o) {
     if (o instanceof ServiceCombServer) {
-      return this.instance.getInstanceId().equals(((ServiceCombServer) o).instance.getInstanceId())
+      return this.getInstance().getInstanceId()
+          .equals(((ServiceCombServer) o).getInstance().getInstanceId())
           && StringUtils.equals(endpoint.getEndpoint(), ((ServiceCombServer) o).getEndpoint().getEndpoint());
     } else {
       return false;
@@ -115,6 +93,6 @@ public class ServiceCombServer extends Server {
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.instance.getInstanceId(), this.endpoint);
+    return Objects.hash(this.getInstance().getInstanceId(), this.endpoint);
   }
 }

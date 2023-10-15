@@ -16,12 +16,11 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model.enums;
 
-import javax.ws.rs.QueryParam;
-
-import io.swagger.annotations.ApiParam;
+import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.ws.rs.QueryParam;
 
 public class DynamicStatusBeanParam {
-  @ApiParam(value = "dynamic desc aggr")
+  @Parameter(description = "dynamic desc aggr")
   @QueryParam("status-aggr")
   public DynamicStatus queryStatus;
 }

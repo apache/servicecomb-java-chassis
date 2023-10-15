@@ -21,13 +21,8 @@ package org.apache.servicecomb.core.provider.consumer;
 public class ReferenceConfig {
   protected String transport;
 
-  protected String versionRule;
-
-  private boolean thirdPartyService;
-
-  public ReferenceConfig(String transport, String versionRule) {
+  public ReferenceConfig(String transport) {
     this.transport = transport;
-    this.versionRule = versionRule;
   }
 
   public String getTransport() {
@@ -36,22 +31,5 @@ public class ReferenceConfig {
 
   public void setTransport(String transport) {
     this.transport = transport;
-  }
-
-  public boolean is3rdPartyService() {
-    return isThirdPartyService();
-  }
-
-  public String getVersionRule() {
-    return versionRule;
-  }
-
-  public boolean isThirdPartyService() {
-    return thirdPartyService;
-  }
-
-  public ReferenceConfig setThirdPartyService(boolean thirdPartyService) {
-    this.thirdPartyService = thirdPartyService;
-    return this;
   }
 }

@@ -19,35 +19,28 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.BodyParameter;
-
-public class RequestBodyAnnotationProcessor implements ParameterProcessor<BodyParameter, RequestBody> {
+public class RequestBodyAnnotationProcessor extends
+    SpringmvcParameterAnnotationsProcessor<RequestBody> {
   @Override
   public Type getProcessType() {
     return RequestBody.class;
   }
 
   @Override
-  public String getParameterName(RequestBody parameterAnnotation) {
+  public String getParameterName(RequestBody annotation) {
     return null;
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(RequestBody parameterAnnotation) {
-    return HttpParameterType.BODY;
-  }
-
-  @Override
-  public void fillParameter(Swagger swagger, Operation operation, BodyParameter bodyParameter, JavaType type,
-      RequestBody requestBody) {
-    bodyParameter.setRequired(requestBody.required());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestBody annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }

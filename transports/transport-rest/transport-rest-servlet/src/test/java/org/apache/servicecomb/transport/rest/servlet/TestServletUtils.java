@@ -29,38 +29,43 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRegistration.Dynamic;
-import javax.servlet.http.HttpServlet;
-
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration;
+import jakarta.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.http.HttpServlet;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestServletUtils {
+  Environment environment = Mockito.mock(Environment.class);
+
   @Before
   public void setUp() {
-    ArchaiusUtils.resetConfig();
-  }
-
-  @After
-  public void tearDown() {
-    ArchaiusUtils.resetConfig();
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR))
+        .thenReturn(RestConst.UPLOAD_DEFAULT_DIR);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_MAX_FILE_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_MAX_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, int.class, 0))
+        .thenReturn(0);
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
@@ -253,7 +258,7 @@ public class TestServletUtils {
   @Test
   public void setServletParameters_notSupportUpload() {
     // not support upload will not set parameters to servlet, so servletContext is null will not throw exception
-    ServletUtils.setServletParameters(null);
+    ServletUtils.setServletParameters(null, environment);
   }
 
   @Test
@@ -283,9 +288,10 @@ public class TestServletUtils {
 
     File tempDir = Files.createTempDirectory("temp").toFile();
     File uploadDir = new File(tempDir, "upload");
-    ArchaiusUtils.setProperty(RestConst.UPLOAD_DIR, uploadDir.getAbsolutePath());
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR))
+        .thenReturn(uploadDir.getAbsolutePath());
 
-    ServletUtils.setServletParameters(servletContext);
+    ServletUtils.setServletParameters(servletContext, environment);
 
     Assertions.assertEquals(1, multipartConfigs.size());
 

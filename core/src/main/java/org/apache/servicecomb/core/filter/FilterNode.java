@@ -62,7 +62,7 @@ public class FilterNode {
   }
 
   public CompletableFuture<Response> onFilter(Invocation invocation) {
-    if (!filter.isEnabledForTransport(invocation.getTransportName())) {
+    if (!filter.enabledForTransport(invocation.getTransportName())) {
       return nextNode.onFilter(invocation);
     }
 

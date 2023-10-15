@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.springframework.core.env.Environment;
 
 // TODO:感觉要拆成显式的client、server才好些
 public interface Transport {
@@ -33,6 +33,8 @@ public interface Transport {
 
   boolean init() throws Exception;
 
+  void setEnvironment(Environment environment);
+
   /*
    * endpoint的格式为 URI，比如rest://192.168.1.1:8080
    */
@@ -47,6 +49,4 @@ public interface Transport {
    * 用于上报到服务中心，要求是其他节点可访问的地址
    */
   Endpoint getPublishEndpoint() throws Exception;
-
-  void send(Invocation invocation, AsyncResponse asyncResp) throws Exception;
 }

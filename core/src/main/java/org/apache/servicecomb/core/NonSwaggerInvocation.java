@@ -22,12 +22,9 @@ public class NonSwaggerInvocation extends Invocation {
 
   private final String microserviceName;
 
-  private final String versionRule;
-
-  public NonSwaggerInvocation(String appId, String microserviceName, String versionRule) {
+  public NonSwaggerInvocation(String appId, String microserviceName) {
     this.appId = appId;
     this.microserviceName = microserviceName;
-    this.versionRule = versionRule;
   }
 
   @Override
@@ -47,7 +44,7 @@ public class NonSwaggerInvocation extends Invocation {
 
   @Override
   public String getConfigTransportName() {
-    return Const.RESTFUL;
+    return CoreConst.RESTFUL;
   }
 
   @Override
@@ -58,10 +55,5 @@ public class NonSwaggerInvocation extends Invocation {
   @Override
   public String getAppId() {
     return appId;
-  }
-
-  @Override
-  public String getMicroserviceVersionRule() {
-    return versionRule;
   }
 }

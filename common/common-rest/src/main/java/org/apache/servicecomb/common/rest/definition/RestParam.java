@@ -21,15 +21,20 @@ import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator;
+import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessorCreator;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessorCreatorManager;
+import org.apache.servicecomb.core.definition.OperationMeta;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class RestParam {
   private static final JavaType STRING_ARRAY_TYPE = TypeFactory.defaultInstance().constructArrayType(String.class);
 
@@ -37,11 +42,19 @@ public class RestParam {
 
   protected String paramName;
 
-  public RestParam(Parameter parameter, Type genericParamType) {
+  public RestParam(OperationMeta operationMeta, Parameter parameter, Type genericParamType) {
     this.paramName = parameter.getName();
 
-    init(parameter, genericParamType);
+    init(operationMeta, parameter, genericParamType);
   }
+
+  public RestParam(OperationMeta operationMeta,
+      String paramName, RequestBody parameter, boolean isForm, Type genericParamType) {
+    this.paramName = paramName;
+
+    init(operationMeta, parameter, isForm, genericParamType);
+  }
+
 
   public ParamValueProcessor getParamProcessor() {
     return this.paramProcessor;
@@ -55,15 +68,28 @@ public class RestParam {
     return paramName;
   }
 
-  protected void init(Parameter parameter, Type genericParamType) {
+  protected void init(OperationMeta operationMeta, Parameter parameter, Type genericParamType) {
     String paramType = parameter.getIn();
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(paramType);
 
-    this.setParamProcessor(creator.create(parameter, genericParamType));
+    this.setParamProcessor(creator.create(operationMeta, parameter.getName(), parameter, genericParamType));
   }
 
-  @SuppressWarnings("unchecked")
+  protected void init(OperationMeta operationMeta, RequestBody parameter, boolean isForm, Type genericParamType) {
+    ParamValueProcessorCreator creator;
+    if (isForm) {
+      creator =
+          ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(FormProcessorCreator.PARAMTYPE);
+    } else {
+      creator =
+          ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(BodyProcessorCreator.PARAM_TYPE);
+    }
+
+    this.setParamProcessor(creator.create(operationMeta, this.paramName,
+        parameter, genericParamType));
+  }
+
   public <T> T getValue(Map<String, Object> args) {
     return (T) args.get(paramName);
   }
@@ -74,7 +100,7 @@ public class RestParam {
       return null;
     }
 
-    if (value.getClass().isArray() || Collection.class.isInstance(value)) {
+    if (value.getClass().isArray() || value instanceof Collection) {
       return (String[]) paramProcessor.convertValue(value, STRING_ARRAY_TYPE);
     }
 

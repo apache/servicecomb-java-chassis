@@ -18,11 +18,7 @@
 package org.apache.servicecomb.core.governance;
 
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.servicecomb.config.event.RefreshGovernanceConfigurationEvent;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
@@ -35,19 +31,8 @@ public class ServiceCombConfigurationEventAdapter {
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(RefreshGovernanceConfigurationEvent event) {
-    Set<String> changedKeys = new HashSet<>();
-    addMap(changedKeys, event.getEvent().getAdded());
-    addMap(changedKeys, event.getEvent().getDeleted());
-    addMap(changedKeys, event.getEvent().getChanged());
-    addMap(changedKeys, event.getEvent().getComplete());
-    GovernanceConfigurationChangedEvent newEvent = new GovernanceConfigurationChangedEvent(changedKeys);
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    GovernanceConfigurationChangedEvent newEvent = new GovernanceConfigurationChangedEvent(event.getChanged());
     GovernanceEventManager.post(newEvent);
-  }
-
-  private void addMap(Set<String> keys, Map<String, Object> changed) {
-    if (changed != null) {
-      keys.addAll(changed.keySet());
-    }
   }
 }

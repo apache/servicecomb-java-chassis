@@ -17,215 +17,319 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
-import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfig;
-import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfigBase;
-import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ExampleProperty;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.Model;
-import io.swagger.models.Operation;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.Property;
-import io.swagger.util.ReflectionUtils;
+import io.swagger.v3.oas.annotations.ExternalDocumentation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.servers.Server;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.MediaType;
 
+/**
+ * Utility class to convert from OpenAPI annotations to models.
+ */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public final class AnnotationUtils {
   private AnnotationUtils() {
 
   }
 
-  public static void appendDefinition(Swagger swagger, Map<String, Model> newDefinitions) {
-    if (newDefinitions.isEmpty()) {
-      return;
+  public static List<io.swagger.v3.oas.models.servers.Server> serversModel(Server[] servers) {
+    if (servers == null) {
+      return null;
     }
-
-    Map<String, Model> definitions = swagger.getDefinitions();
-    if (definitions == null) {
-      definitions = new LinkedHashMap<>();
-      swagger.setDefinitions(definitions);
-    }
-
-    definitions.putAll(newDefinitions);
+    return Arrays.stream(servers).map(AnnotationUtils::convertServer).collect(Collectors.toList());
   }
 
-  private static ResponseConfig convert(ApiOperation apiOperation) {
-    ResponseConfig responseConfig = new ResponseConfig();
-    responseConfig.setCode(apiOperation.code());
-    responseConfig.setResponseClass(apiOperation.response());
-    responseConfig.setResponseContainer(apiOperation.responseContainer());
-    responseConfig.setResponseReference(apiOperation.responseReference());
-    responseConfig.setResponseHeaders(apiOperation.responseHeaders());
-    return responseConfig;
+  public static io.swagger.v3.oas.models.servers.Server convertServer(Server server) {
+    io.swagger.v3.oas.models.servers.Server item = new io.swagger.v3.oas.models.servers.Server();
+    item.setUrl(server.url());
+    item.setDescription(server.description());
+    return item;
   }
 
-  private static ResponseConfig convert(ApiResponse apiResponse) {
-    ResponseConfig responseConfig = new ResponseConfig();
-    responseConfig.setCode(apiResponse.code());
-    responseConfig.setDescription(apiResponse.message());
-    responseConfig.setResponseClass(apiResponse.response());
-    responseConfig.setResponseContainer(apiResponse.responseContainer());
-    responseConfig.setResponseReference(apiResponse.reference());
-    responseConfig.setResponseHeaders(apiResponse.responseHeaders());
-    responseConfig.setExamples(apiResponse.examples());
-    return responseConfig;
-  }
-
-  public static ResponseHeaderConfig convert(ResponseHeader responseHeader) {
-    if (StringUtils.isEmpty(responseHeader.name())) {
+  public static io.swagger.v3.oas.models.info.Info infoModel(Info infoAnnotation) {
+    if (infoAnnotation == null) {
       return null;
     }
 
-    ResponseHeaderConfig config = new ResponseHeaderConfig();
-    config.setName(responseHeader.name());
-    config.setDescription(responseHeader.description());
-    config.setResponseClass(responseHeader.response());
-    config.setResponseContainer(responseHeader.responseContainer());
-    return config;
+    io.swagger.v3.oas.models.info.Info info = new io.swagger.v3.oas.models.info.Info();
+
+    info.setTitle(infoAnnotation.title());
+    info.setVersion(infoAnnotation.version());
+    if (StringUtils.isNotEmpty(infoAnnotation.description())) {
+      info.setDescription(infoAnnotation.description());
+    }
+    if (StringUtils.isNotEmpty(infoAnnotation.termsOfService())) {
+      info.setTermsOfService(infoAnnotation.termsOfService());
+    }
+    info.setContact(contactModel(infoAnnotation.contact()));
+    info.setLicense(licenseModel(infoAnnotation.license()));
+    info.setExtensions(extensionsModel(infoAnnotation.extensions()));
+
+    return info;
   }
 
-  public static void addResponse(Swagger swagger, Operation operation, ApiOperation apiOperation) {
-    ResponseConfig responseConfig = convert(apiOperation);
-    generateResponse(swagger, responseConfig);
-    mergeResponse(operation, responseConfig);
+  public static io.swagger.v3.oas.models.info.License licenseModel(License licenseAnnotation) {
+    io.swagger.v3.oas.models.info.License license = new io.swagger.v3.oas.models.info.License();
+
+    if (StringUtils.isNotEmpty(licenseAnnotation.name())) {
+      license.setName(licenseAnnotation.name());
+    }
+    if (StringUtils.isNotEmpty(licenseAnnotation.url())) {
+      license.setUrl(licenseAnnotation.url());
+    }
+
+    if (StringUtils.isEmpty(license.getName()) && StringUtils.isEmpty(license.getUrl())) {
+      return null;
+    }
+
+    return license;
   }
 
-  public static void addResponse(Swagger swagger, ApiResponse apiResponse) {
-    ResponseConfig responseConfig = convert(apiResponse);
-    generateResponse(swagger, responseConfig);
-    swagger.response(String.valueOf(responseConfig.getCode()), responseConfig.getResponse());
+  public static io.swagger.v3.oas.models.info.Contact contactModel(Contact contactAnnotation) {
+    io.swagger.v3.oas.models.info.Contact contact = new io.swagger.v3.oas.models.info.Contact();
+
+    if (StringUtils.isNotEmpty(contactAnnotation.name())) {
+      contact.setName(contactAnnotation.name());
+    }
+    if (StringUtils.isNotEmpty(contactAnnotation.url())) {
+      contact.setUrl(contactAnnotation.url());
+    }
+    if (StringUtils.isNotEmpty(contactAnnotation.email())) {
+      contact.setEmail(contactAnnotation.email());
+    }
+
+    if (StringUtils.isEmpty(contact.getName()) &&
+        StringUtils.isEmpty(contact.getUrl()) &&
+        StringUtils.isEmpty(contact.getEmail())) {
+      return null;
+    }
+
+    return contact;
   }
 
-  public static void addResponse(Swagger swagger, Operation operation, ApiResponse apiResponse) {
-    ResponseConfig responseConfig = convert(apiResponse);
-    generateResponse(swagger, responseConfig);
-    mergeResponse(operation, responseConfig);
+  public static List<io.swagger.v3.oas.models.tags.Tag> tagsModel(Tag[] tagArray) {
+    if (tagArray == null) {
+      return null;
+    }
+
+    List<io.swagger.v3.oas.models.tags.Tag> tags = Arrays.stream(tagArray)
+        .filter(t -> !t.name().isEmpty())
+        .map(AnnotationUtils::tagModel)
+        .collect(Collectors.toList());
+    return tags.isEmpty() ? null : tags;
   }
 
-  private static void mergeResponse(Operation operation, ResponseConfig responseConfig) {
-    if (operation.getResponses() == null) {
-      operation.response(responseConfig.getCode(), responseConfig.getResponse());
-      return;
+  public static List<String> tagsModel(String[] tagArray) {
+    if (tagArray == null) {
+      return null;
     }
-    Response response = operation.getResponses().get(String.valueOf(responseConfig.getCode()));
-    if (response == null) {
-      operation.response(responseConfig.getCode(), responseConfig.getResponse());
-      return;
-    }
-    Response sourceResp = responseConfig.getResponse();
-    if (StringUtils.isNotEmpty(sourceResp.getDescription()) && StringUtils.isEmpty(response.getDescription())) {
-      response.setDescription(sourceResp.getDescription());
-    }
-    if (sourceResp.getResponseSchema() != null && response.getResponseSchema() == null) {
-      response.setResponseSchema(sourceResp.getResponseSchema());
-    }
-    if (sourceResp.getExamples() != null && response.getExamples() == null) {
-      response.setExamples(sourceResp.getExamples());
-    }
-    if (sourceResp.getHeaders() != null && response.getHeaders() == null) {
-      response.setHeaders(sourceResp.getHeaders());
-    }
-    if (sourceResp.getVendorExtensions() != null && response.getVendorExtensions() == null) {
-      response.setVendorExtensions(sourceResp.getVendorExtensions());
-    }
+
+    List<String> tags = Arrays.stream(tagArray)
+        .filter(t -> !t.isEmpty())
+        .collect(Collectors.toList());
+    return tags.isEmpty() ? null : tags;
   }
 
-  private static void generateResponse(Swagger swagger, ResponseConfig responseConfig) {
-    Response response = new Response();
-
-    Property property = generateResponseProperty(swagger, responseConfig);
-    if (property != null) {
-      Model model = PropertyModelConverterExt.toModel(property);
-      response.setResponseSchema(model);
-    }
-    response.setDescription(responseConfig.getDescription());
-    addExamplesToResponse(response, responseConfig);
-    if (responseConfig.getResponseHeaders() != null) {
-      Map<String, Property> headers = generateResponseHeader(swagger, responseConfig.getResponseHeaders());
-      response.setHeaders(headers);
-    }
-
-    responseConfig.setResponse(response);
+  public static io.swagger.v3.oas.models.tags.Tag tagModel(Tag tagAnnotation) {
+    io.swagger.v3.oas.models.tags.Tag tag = new io.swagger.v3.oas.models.tags.Tag();
+    tag.setName(tagAnnotation.name());
+    tag.setDescription(tagAnnotation.description());
+    tag.setExternalDocs(externalDocumentationModel(tagAnnotation.externalDocs()));
+    tag.setExtensions(extensionsModel(tagAnnotation.extensions()));
+    return tag;
   }
 
-  private static void addExamplesToResponse(Response response, ResponseConfig responseConfig) {
-    if (responseConfig.getExamples() != null) {
-      for (ExampleProperty property : responseConfig.getExamples().value()) {
-        if (StringUtils.isEmpty(property.mediaType()) && StringUtils.isEmpty(property.value())) {
-          // @ApiResponse default value has one element, but type and value is empty.
-          // ignore this default value.
-          continue;
-        }
-        if (StringUtils.isEmpty(property.mediaType())) {
-          throw new IllegalStateException("media type is required in examples. e.g. 'text', 'json'.");
-        }
-        response.example(property.mediaType(), property.value());
+  public static io.swagger.v3.oas.models.ExternalDocumentation externalDocumentationModel(
+      ExternalDocumentation externalDocs) {
+    io.swagger.v3.oas.models.ExternalDocumentation doc = new io.swagger.v3.oas.models.ExternalDocumentation();
+    doc.setUrl(externalDocs.url());
+    doc.setDescription(externalDocs.description());
+    return doc;
+  }
+
+  public static Map<String, Object> extensionsModel(Extension[] extensions) {
+    Map<String, Object> result = new HashMap<>();
+    Stream.of(extensions).forEach(e -> result.put(e.name(), extensionPropertiesModel(e.properties())));
+    return result;
+  }
+
+  public static Map<String, String> extensionPropertiesModel(ExtensionProperty[] properties) {
+    Map<String, String> result = new HashMap<>();
+    Stream.of(properties).forEach(e -> result.put(e.name(), e.value()));
+    return result;
+  }
+
+  public static String responseCodeModel(ApiResponse apiResponse) {
+    if (StringUtils.isEmpty(apiResponse.responseCode())) {
+      return "200";
+    }
+    return apiResponse.responseCode();
+  }
+
+  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(OpenAPI openAPI,
+      ApiResponses apiResponses) {
+    io.swagger.v3.oas.models.responses.ApiResponses result =
+        new io.swagger.v3.oas.models.responses.ApiResponses();
+    result.setExtensions(extensionsModel(apiResponses.extensions()));
+    for (ApiResponse apiResponse : apiResponses.value()) {
+      result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(openAPI, apiResponse));
+    }
+    return result;
+  }
+
+  public static io.swagger.v3.oas.models.responses.ApiResponses apiResponsesModel(OpenAPI openAPI,
+      ApiResponse[] apiResponses) {
+    io.swagger.v3.oas.models.responses.ApiResponses result =
+        new io.swagger.v3.oas.models.responses.ApiResponses();
+    for (ApiResponse apiResponse : apiResponses) {
+      if (result.get(responseCodeModel(apiResponse)) != null) {
+        throw new IllegalStateException("not support too many ApiResponse with same status code");
+      } else {
+        result.addApiResponse(responseCodeModel(apiResponse), apiResponseModel(openAPI, apiResponse));
       }
     }
+    return result;
   }
 
-  private static Map<String, Property> generateResponseHeader(Swagger swagger,
-      List<ResponseHeaderConfig> responseHeaders) {
-    Map<String, Property> headers = new HashMap<>();
-    for (ResponseHeaderConfig config : responseHeaders) {
-      Property property = generateResponseHeaderProperty(swagger, config);
-      headers.put(config.getName(), property);
+  public static io.swagger.v3.oas.models.responses.ApiResponse apiResponseModel(OpenAPI openAPI,
+      ApiResponse apiResponse) {
+    io.swagger.v3.oas.models.responses.ApiResponse result =
+        new io.swagger.v3.oas.models.responses.ApiResponse();
+    result.setDescription(apiResponse.description());
+    result.setContent(contentModel(openAPI, apiResponse.content()));
+    result.setHeaders(headersModel(openAPI, apiResponse.headers()));
+    return result;
+  }
+
+  public static Map<String, io.swagger.v3.oas.models.headers.Header> headersModel(OpenAPI openAPI, Header[] headers) {
+    Map<String, io.swagger.v3.oas.models.headers.Header> result = new HashMap<>();
+    for (Header header : headers) {
+      io.swagger.v3.oas.models.headers.Header model =
+          new io.swagger.v3.oas.models.headers.Header();
+      model.setDescription(header.description());
+      model.setSchema(schemaModel(openAPI, header.schema()));
+      result.put(header.name(), model);
     }
-    return headers;
+    return result;
   }
 
-  public static Property generateResponseHeaderProperty(Swagger swagger, ResponseHeaderConfig config) throws Error {
-    Property property = generateResponseProperty(swagger, config);
-    if (property == null) {
-      throw new Error("invalid responseHeader, " + config);
+  public static io.swagger.v3.oas.models.media.Content contentModel(OpenAPI openAPI, Content[] contents) {
+    io.swagger.v3.oas.models.media.Content result = new io.swagger.v3.oas.models.media.Content();
+    for (io.swagger.v3.oas.annotations.media.Content content : contents) {
+      String mediaTypeName = mediaTypeModel(content);
+      MediaType mediaType = result.get(mediaTypeName);
+      boolean isForm = SwaggerConst.FORM_MEDIA_TYPE.equals(mediaTypeName) ||
+          SwaggerConst.FILE_MEDIA_TYPE.equals(mediaTypeName);
+      if (mediaType == null) {
+        mediaType = new MediaType();
+        if (isForm) {
+          io.swagger.v3.oas.models.media.Schema schema = new io.swagger.v3.oas.models.media.Schema();
+          schema.setProperties(new HashMap<>());
+          schema.addProperty(content.schema().name(), schemaModel(openAPI, content.schema(), content.examples()));
+          mediaType.setSchema(schema);
+        } else {
+          mediaType.setSchema(schemaModel(openAPI, content.schema(), content.examples()));
+        }
+        result.addMediaType(mediaTypeName, mediaType);
+      } else {
+        if (isForm) {
+          mediaType.getSchema().addProperty(content.schema().name(),
+              schemaModel(openAPI, content.schema(), content.examples()));
+        } else {
+          throw new IllegalStateException("Not allowed to define duplicated content type for " + mediaTypeName);
+        }
+      }
     }
-    return property;
+    return result;
   }
 
-  public static Property generateResponseProperty(Swagger swagger, ResponseConfigBase config) throws Error {
-    Class<?> responseClass = config.getResponseClass();
-    if (responseClass == null || ReflectionUtils.isVoid(responseClass)) {
+  public static io.swagger.v3.oas.models.parameters.RequestBody requestBodyModel(OpenAPI openAPI,
+      RequestBody requestBody) {
+    if (requestBody == null || isOperationDefaultRequestBody(requestBody)) {
       return null;
     }
+    io.swagger.v3.oas.models.parameters.RequestBody result = new io.swagger.v3.oas.models.parameters.RequestBody();
+    result.setContent(AnnotationUtils.contentModel(openAPI, requestBody.content()));
+    return result;
+  }
 
-    if (!ClassUtils.isPrimitiveOrWrapper(responseClass)) {
-      Map<String, Model> newDefinitions = ModelConverters.getInstance().readAll(responseClass);
-      appendDefinition(swagger, newDefinitions);
+  private static boolean isOperationDefaultRequestBody(RequestBody requestBody) {
+    return "".equals(requestBody.description()) && requestBody.content().length == 0
+        && !requestBody.required() && requestBody.extensions().length == 0;
+  }
+
+  private static String mediaTypeModel(io.swagger.v3.oas.annotations.media.Content content) {
+    if (StringUtils.isEmpty(content.mediaType())) {
+      return SwaggerConst.DEFAULT_MEDIA_TYPE;
+    }
+    return content.mediaType();
+  }
+
+  public static io.swagger.v3.oas.models.media.Schema schemaModel(OpenAPI openAPI, Schema schema) {
+    if (schema.implementation() != Void.class) {
+      io.swagger.v3.oas.models.media.Schema result =
+          SwaggerUtils.resolveTypeSchemas(openAPI, schema.implementation());
+      result.setDescription(schema.description());
+      result.setExample(schema.example());
+      result.setNullable(schema.nullable());
+      return result;
     }
 
-    Property property = ModelConverters.getInstance().readAsProperty(responseClass);
-    // responseContainer只可能是:"List", "Set" or "Map"
-    // 根据swagger定义这里是区分大小写的， 虽然不明白为何这样做，不过还是不要改标准了
-    switch (config.getResponseContainer()) {
-      case "List":
-        property = new ArrayProperty(property);
-        break;
-      case "Set":
-        property = new ArrayProperty(property);
-        ((ArrayProperty) property).setUniqueItems(true);
-        break;
-      case "Map":
-        property = new MapProperty(property);
-        break;
-      case "":
-        // 不必处理
-        break;
-      default:
-        throw new Error("not support responseContainer " + config.getResponseContainer());
+    io.swagger.v3.oas.models.media.Schema result =
+        new io.swagger.v3.oas.models.media.Schema();
+    result.setType(schema.type());
+    result.setFormat(schema.format());
+    result.setDescription(schema.description());
+    result.setExample(schema.example());
+    result.setNullable(schema.nullable());
+    return result;
+  }
+
+  public static io.swagger.v3.oas.models.media.Schema schemaModel(OpenAPI openAPI, Schema schema,
+      ExampleObject[] exampleObjects) {
+    io.swagger.v3.oas.models.media.Schema result = schemaModel(openAPI, schema);
+    List<Object> examples = new ArrayList<>();
+    for (ExampleObject exampleObject : exampleObjects) {
+      examples.add(exampleObject.name() + ":" + exampleObject.value());
     }
-    return property;
+    result.setExamples(examples);
+    return result;
+  }
+
+  public static io.swagger.v3.oas.models.Operation operationModel(OpenAPI openAPI, Operation apiOperationAnnotation) {
+    io.swagger.v3.oas.models.Operation result = new io.swagger.v3.oas.models.Operation();
+    result.setSummary(apiOperationAnnotation.summary());
+    result.setDescription(apiOperationAnnotation.description());
+    result.setExtensions(extensionsModel(apiOperationAnnotation.extensions()));
+    result.setResponses(apiResponsesModel(openAPI, apiOperationAnnotation.responses()));
+    result.setOperationId(apiOperationAnnotation.operationId());
+    result.setTags(tagsModel(apiOperationAnnotation.tags()));
+    result.setRequestBody(requestBodyModel(openAPI, apiOperationAnnotation.requestBody()));
+    return result;
   }
 }

@@ -19,7 +19,7 @@ package org.apache.servicecomb.tracing.zipkin;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ class ZipkinProviderDelegate implements ZipkinTracingDelegate {
 
   public static final String SPAN_ID_HEADER_NAME = "X-B3-SpanId";
 
-  public static final String TRACE_ID_HEADER_NAME = Const.TRACE_ID_NAME;
+  public static final String TRACE_ID_HEADER_NAME = CoreConst.TRACE_ID_NAME;
 
   private static final Getter<Invocation, String> INVOCATION_STRING_GETTER = (invocation, key) -> {
     String extracted = invocation.getContext().get(key);

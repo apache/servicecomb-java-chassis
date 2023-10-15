@@ -19,13 +19,22 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
-import io.swagger.models.parameters.FormParameter;
-
+/**
+ * Use RequestAttribute to annotate a Form parameter.
+ *
+ * NOTICE: In spring-web, RequestAttribute is used to annotate request attribute, and use RequestParam
+ * to annotate query param and form param. This is implementation based. We can't use RequestParam to express
+ * both query and form in OpenAPI 3.0. And there is no request attribute.
+ */
 public class RequestAttributeAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<FormParameter, RequestAttribute> {
+    SpringmvcParameterAnnotationsProcessor<RequestAttribute> {
   @Override
   public Type getProcessType() {
     return RequestAttribute.class;
@@ -37,21 +46,19 @@ public class RequestAttributeAnnotationProcessor extends
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(RequestAttribute parameterAnnotation) {
-    return HttpParameterType.FORM;
-  }
-
-  @Override
-  protected boolean readRequired(RequestAttribute requestAttribute) {
-    return requestAttribute.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(RequestAttribute requestAttribute) {
+    if (StringUtils.isNotEmpty(value)) {
+      return value;
+    }
     return null;
+  }
+
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestAttribute annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.FORM);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
+    }
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }

@@ -26,12 +26,13 @@ import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.Swagger;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Schema;
 
+@SuppressWarnings("rawtypes")
 public class ArrayPropertyConverter extends AbstractPropertyConverter {
-  public static JavaType findJavaType(Swagger swagger, Property itemProperty, Boolean uniqueItems) {
+  public static JavaType findJavaType(OpenAPI swagger, Schema itemProperty, Boolean uniqueItems) {
     JavaType itemJavaType = ConverterMgr.findJavaType(swagger, itemProperty);
 
     @SuppressWarnings("rawtypes")
@@ -43,8 +44,8 @@ public class ArrayPropertyConverter extends AbstractPropertyConverter {
   }
 
   @Override
-  public JavaType doConvert(Swagger swagger, Object property) {
-    ArrayProperty arrayProperty = (ArrayProperty) property;
+  public JavaType doConvert(OpenAPI swagger, Schema property) {
+    ArraySchema arrayProperty = (ArraySchema) property;
 
     return findJavaType(swagger, arrayProperty.getItems(), arrayProperty.getUniqueItems());
   }

@@ -17,13 +17,22 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDiscoveryFilter.class);
+
+  protected Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
@@ -39,8 +48,8 @@ public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
     String childName = findChildName(context, parent);
     DiscoveryTreeNode node = parent.child(childName);
     if (node == null) {
-      LOGGER.warn("discovery filter {} return null.", this.getClass().getName());
-      return new DiscoveryTreeNode().subName(parent, "empty").data(new HashMap<>());
+      LOGGER.warn("discovery filter {}/{} return null.", this.getClass().getSimpleName(), childName);
+      return new DiscoveryTreeNode().subName(parent, "empty").data(new ArrayList<>());
     }
     return node;
   }

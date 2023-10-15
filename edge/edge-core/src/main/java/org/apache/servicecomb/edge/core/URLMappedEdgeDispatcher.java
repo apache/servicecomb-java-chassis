@@ -21,7 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
@@ -29,10 +31,11 @@ import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpSer
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
+import com.google.common.eventbus.Subscribe;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -58,7 +61,15 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
+  private Environment environment;
+
   public URLMappedEdgeDispatcher() {
+  }
+
+  // though this is an SPI, but add as beans.
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
     if (this.enabled()) {
       loadConfigurations();
     }
@@ -71,18 +82,18 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public int getOrder() {
-    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, 30_000).get();
+    return LegacyPropertyFactory.getIntProperty(KEY_ORDER, 30_000);
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, false).get();
+    return environment.getProperty(KEY_ENABLED, boolean.class, false);
   }
 
   @Override
   public void init(Router router) {
     // cookies handler are enabled by default start from 3.8.3
-    String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, PATTERN_ANY).get();
+    String pattern = environment.getProperty(KEY_PATTERN, PATTERN_ANY);
     router.routeWithRegex(pattern).failureHandler(this::onFailure)
         .handler((PlatformHandler) URLMappedEdgeDispatcher.this::preCheck)
         .handler(createBodyHandler())
@@ -90,15 +101,17 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   }
 
   private void loadConfigurations() {
-    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
-        .getBackingConfigurationSource();
-    configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
-    config.addConfigurationListener(event -> {
-      if (event.getPropertyName().startsWith(KEY_MAPPING_PREFIX)) {
-        LOG.info("Map rule have been changed. Reload configurations. Event=" + event.getType());
-        configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
+    configurations = URLMappedConfigurationLoader.loadConfigurations(environment, KEY_MAPPING_PREFIX);
+  }
+
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    for (String changed : event.getChanged()) {
+      if (changed.startsWith(KEY_MAPPING_PREFIX)) {
+        loadConfigurations();
+        break;
       }
-    });
+    }
   }
 
   protected void preCheck(RoutingContext context) {
@@ -133,7 +146,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
     InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
-        configurationItem.getMicroserviceName(), configurationItem.getVersionRule(), path);
+        configurationItem.getMicroserviceName(), path);
     new RestProducerInvocationFlow(creator, requestEx, responseEx)
         .run();
   }

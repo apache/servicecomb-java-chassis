@@ -17,6 +17,8 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.apache.servicecomb.foundation.common.utils.bean.CharSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
@@ -40,6 +42,14 @@ public class StringReadSchemas {
     if (String.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject() || Character.class
         .equals(javaType.getRawClass())) {
       return new StringSchema<>(protoField, propertyDescriptor);
+    }
+
+    if (BigDecimal.class.equals(javaType.getRawClass())) {
+      return new BigDecimalSchema<>(protoField, propertyDescriptor);
+    }
+
+    if (BigInteger.class.equals(javaType.getRawClass())) {
+      return new BigIntegerSchema<>(protoField, propertyDescriptor);
     }
 
     ProtoUtils.throwNotSupportMerge(protoField, propertyDescriptor.getJavaType());
@@ -79,6 +89,38 @@ public class StringReadSchemas {
     public int mergeFrom(InputEx input, T message) throws IOException {
       String value = input.readString();
       setter.set(message, value.toCharArray()[0]);
+      return input.readFieldNumber();
+    }
+  }
+
+  private static class BigDecimalSchema<T> extends FieldSchema<T> {
+    private final Setter<T, Object> setter;
+
+    public BigDecimalSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
+    }
+
+    @Override
+    public int mergeFrom(InputEx input, T message) throws IOException {
+      String value = input.readString();
+      setter.set(message, new BigDecimal(value));
+      return input.readFieldNumber();
+    }
+  }
+
+  private static class BigIntegerSchema<T> extends FieldSchema<T> {
+    private final Setter<T, Object> setter;
+
+    public BigIntegerSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
+    }
+
+    @Override
+    public int mergeFrom(InputEx input, T message) throws IOException {
+      String value = input.readString();
+      setter.set(message, new BigInteger(value));
       return input.readFieldNumber();
     }
   }

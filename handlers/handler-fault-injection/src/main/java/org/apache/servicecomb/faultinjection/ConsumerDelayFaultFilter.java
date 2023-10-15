@@ -18,8 +18,6 @@ package org.apache.servicecomb.faultinjection;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -36,11 +34,10 @@ public class ConsumerDelayFaultFilter implements ConsumerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerDelayFaultFilter.class);
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1030;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "consumer-delay-fault";

@@ -19,14 +19,15 @@ package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.ext.web.Router;
@@ -43,36 +44,36 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private static final String KEY_PREFIX = "servicecomb.http.dispatcher.edge.default.prefix";
 
-  private static final String KEY_WITH_VERSION = "servicecomb.http.dispatcher.edge.default.withVersion";
-
   private static final String KEY_PREFIX_SEGMENT_COUNT = "servicecomb.http.dispatcher.edge.default.prefixSegmentCount";
 
   public static final String MICROSERVICE_NAME = "param0";
 
-  public static final String VERSION = "param1";
-
-  private final CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
-
-  private boolean withVersion;
-
   private int prefixSegmentCount;
+
+  private Environment environment;
+
+  // though this is an SPI, but add as beans.
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public int getOrder() {
-    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, 20_000).get();
+    // can not use environment, add as beans is later than instantiate SPI
+    return LegacyPropertyFactory.getIntProperty(KEY_ORDER, 20_000);
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, false).get();
+    return environment.getProperty(KEY_ENABLED, boolean.class, false);
   }
 
   @Override
   public void init(Router router) {
-    String prefix = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PREFIX, "api").get();
-    withVersion = DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_WITH_VERSION, true).get();
-    prefixSegmentCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PREFIX_SEGMENT_COUNT, 1).get();
-    String regex = generateRouteRegex(prefix, withVersion);
+    String prefix = environment.getProperty(KEY_PREFIX, "api");
+    prefixSegmentCount = environment.getProperty(KEY_PREFIX_SEGMENT_COUNT, int.class, 1);
+    String regex = generateRouteRegex(prefix, false);
 
     // cookies handler are enabled by default start from 3.8.3
     router.routeWithRegex(regex).handler(createBodyHandler());
@@ -87,10 +88,9 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   protected void onRequest(RoutingContext context) {
     String microserviceName = extractMicroserviceName(context);
-    String versionRule = extractVersionRule(context);
     String path = Utils.findActualPath(context.request().path(), prefixSegmentCount);
 
-    requestByFilter(context, microserviceName, versionRule, path);
+    requestByFilter(context, microserviceName, path);
   }
 
   @Nullable
@@ -98,20 +98,11 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
     return context.pathParam(MICROSERVICE_NAME);
   }
 
-  private String extractVersionRule(RoutingContext context) {
-    if (withVersion) {
-      String pathVersion = context.pathParam(VERSION);
-      return versionMapper.getOrCreate(pathVersion).getVersionRule();
-    }
-
-    return DefinitionConst.VERSION_RULE_ALL;
-  }
-
-  protected void requestByFilter(RoutingContext context, String microserviceName, String versionRule, String path) {
+  protected void requestByFilter(RoutingContext context, String microserviceName, String path) {
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
     InvocationCreator creator = new EdgeInvocationCreator(context, requestEx, responseEx,
-        microserviceName, versionRule, path);
+        microserviceName, path);
     new RestProducerInvocationFlow(creator, requestEx, responseEx)
         .run();
   }

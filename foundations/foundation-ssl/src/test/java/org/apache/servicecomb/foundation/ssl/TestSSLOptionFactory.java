@@ -19,8 +19,8 @@ package org.apache.servicecomb.foundation.ssl;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -28,10 +28,11 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestSSLOptionFactory {
+  Environment environment = Mockito.mock(Environment.class);
 
   @Test
   public void testSSLOptionFactory() {
-    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", environment);
     Assertions.assertNull(factory);
   }
 
@@ -39,13 +40,13 @@ public class TestSSLOptionFactory {
   public void testSSLOptionFactoryWrong(@Mocked SSLOption option) {
     new Expectations() {
       {
-        SSLOption.getStringProperty((ConcurrentCompositeConfiguration) any, anyString, (String[]) any);
+        SSLOption.getStringProperty((Environment) any, anyString, (String[]) any);
         result = "wrong";
       }
     };
 
     IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class,
-            () -> SSLOptionFactory.createSSLOptionFactory("cc", null));
+        () -> SSLOptionFactory.createSSLOptionFactory("cc", null));
     Assertions.assertEquals("Failed to create SSLOptionFactory.", exception.getMessage());
   }
 
@@ -53,12 +54,12 @@ public class TestSSLOptionFactory {
   public void testSSLOptionFactoryCorrent() {
     new MockUp<SSLOption>() {
       @Mock
-      public String getStringProperty(ConcurrentCompositeConfiguration configSource, String defaultValue,
+      public String getStringProperty(Environment environment, String defaultValue,
           String... keys) {
         return "org.apache.servicecomb.foundation.ssl.MyOptionFactory";
       }
     };
-    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", null);
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory("cc", environment);
     Assertions.assertEquals(factory.createSSLOption().getProtocols(), "TLSv1.2");
   }
 }

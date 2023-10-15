@@ -17,64 +17,60 @@
 
 package org.apache.servicecomb.common.accessLog;
 
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 public class AccessLogConfig {
 
-    private static final String SERVER_BASE = "servicecomb.accesslog.";
+  public static final String SERVER_BASE = "servicecomb.accesslog.";
 
-    private static final String CLIENT_BASE = "servicecomb.accesslog.request.";
+  public static final String CLIENT_BASE = "servicecomb.accesslog.request.";
 
-    private static final String SERVER_LOG_ENABLED = SERVER_BASE + "enabled";
+  public static final String SERVER_LOG_ENABLED = SERVER_BASE + "enabled";
 
-    private static final String SERVER_LOG_PATTERN = SERVER_BASE + "pattern";
+  public static final String SERVER_LOG_PATTERN = SERVER_BASE + "pattern";
 
-    private static final String CLIENT_LOG_ENABLED = CLIENT_BASE + "enabled";
+  public static final String CLIENT_LOG_ENABLED = CLIENT_BASE + "enabled";
 
-    private static final String CLIENT_LOG_PATTERN = CLIENT_BASE + "pattern";
+  public static final String CLIENT_LOG_PATTERN = CLIENT_BASE + "pattern";
 
-    private static final String DEFAULT_SERVER_PATTERN = "%h - - %t %r %s %B %D";
+  public static final String DEFAULT_SERVER_PATTERN = "%h - - %t %r %s %B %D";
 
-    private static final String DEFAULT_CLIENT_PATTERN = "%h %SCB-transport - - %t %r %s %D";
+  public static final String DEFAULT_CLIENT_PATTERN = "%h %SCB-transport - - %t %r %s %D";
 
-    public static final AccessLogConfig INSTANCE = new AccessLogConfig();
+  public static final AccessLogConfig INSTANCE = new AccessLogConfig();
 
-    private boolean serverLogEnabled;
+  private boolean serverLogEnabled;
 
-    private boolean clientLogEnabled;
+  private boolean clientLogEnabled;
 
-    private String serverLogPattern;
+  private String serverLogPattern;
 
-    private String clientLogPattern;
+  private String clientLogPattern;
 
-    private AccessLogConfig() {
-        init();
-    }
+  private AccessLogConfig() {
+    init();
+  }
 
-    private void init() {
-        clientLogEnabled = DynamicPropertyFactory
-            .getInstance().getBooleanProperty(CLIENT_LOG_ENABLED, false).get();
-        serverLogEnabled = DynamicPropertyFactory
-            .getInstance().getBooleanProperty(SERVER_LOG_ENABLED, false).get();
-        clientLogPattern = DynamicPropertyFactory
-          .getInstance().getStringProperty(CLIENT_LOG_PATTERN, DEFAULT_CLIENT_PATTERN).get();
-        serverLogPattern = DynamicPropertyFactory
-            .getInstance().getStringProperty(SERVER_LOG_PATTERN, DEFAULT_SERVER_PATTERN).get();
-    }
+  private void init() {
+    clientLogEnabled = LegacyPropertyFactory.getBooleanProperty(CLIENT_LOG_ENABLED, false);
+    serverLogEnabled = LegacyPropertyFactory.getBooleanProperty(SERVER_LOG_ENABLED, false);
+    clientLogPattern = LegacyPropertyFactory.getStringProperty(CLIENT_LOG_PATTERN, DEFAULT_CLIENT_PATTERN);
+    serverLogPattern = LegacyPropertyFactory.getStringProperty(SERVER_LOG_PATTERN, DEFAULT_SERVER_PATTERN);
+  }
 
-    public boolean isServerLogEnabled() {
-        return serverLogEnabled;
-    }
+  public boolean isServerLogEnabled() {
+    return serverLogEnabled;
+  }
 
-    public boolean isClientLogEnabled() {
-        return clientLogEnabled;
-    }
+  public boolean isClientLogEnabled() {
+    return clientLogEnabled;
+  }
 
-    public String getServerLogPattern() {
-        return serverLogPattern;
-    }
+  public String getServerLogPattern() {
+    return serverLogPattern;
+  }
 
-    public String getClientLogPattern() {
-        return clientLogPattern;
-    }
+  public String getClientLogPattern() {
+    return clientLogPattern;
+  }
 }

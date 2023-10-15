@@ -21,18 +21,15 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.Model;
-import io.swagger.models.properties.Property;
-import io.swagger.util.ReflectionUtils;
+import io.swagger.v3.core.util.ReflectionUtils;
+import io.swagger.v3.oas.models.media.Schema;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
   protected boolean extractActualType;
@@ -76,7 +73,7 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
   }
 
   @Override
-  public Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+  public Schema process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       Type genericResponseType) {
     Type responseType = extractResponseType(swaggerGenerator, operationGenerator, genericResponseType);
     if (responseType == null || ReflectionUtils.isVoid(responseType)) {
@@ -86,8 +83,7 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
     if (responseType instanceof Class && Part.class.isAssignableFrom((Class<?>) responseType)) {
       responseType = Part.class;
     }
-    SwaggerUtils.addDefinitions(swaggerGenerator.getSwagger(), responseType);
-    Property property = ModelConverters.getInstance().readAsProperty(responseType);
-    return PropertyModelConverterExt.toModel(property);
+
+    return SwaggerUtils.resolveTypeSchemas(swaggerGenerator.getOpenAPI(), responseType);
   }
 }

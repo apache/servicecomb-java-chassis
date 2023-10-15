@@ -22,25 +22,26 @@ import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
-import mockit.Mock;
-import mockit.MockUp;
+import io.vertx.core.file.impl.FileResolverImpl;
 
 public class TestHighwayTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestHighwayTransport.class);
 
-  private final HighwayTransport transport = new HighwayTransport();
+  Environment environment = Mockito.mock(Environment.class);
 
   @BeforeClass
   public static void setup() {
@@ -54,17 +55,41 @@ public class TestHighwayTransport {
     Thread.getAllStackTraces().keySet().forEach(t -> LOGGER.info("after: {}", t.getName()));
   }
 
+  @Before
+  public void setUp() {
+    Mockito.when(environment.getProperty(
+            "servicecomb.request.timeout", long.class, (long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT))
+        .thenReturn((long) TcpClientConfig.DEFAULT_LOGIN_TIMEOUT);
+    Mockito.when(environment.getProperty("servicecomb.highway.client.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.highway.client.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.highway.server.verticle-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.highway.server.thread-count", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
+        .thenReturn(-1);
+    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+        .thenReturn(true);
+    LegacyPropertyFactory.setEnvironment(environment);
+  }
+
   @Test
   public void testGetInstance() {
+    HighwayTransport transport = new HighwayTransport();
     Assertions.assertNotNull(transport);
   }
 
   @Test
   public void testInit() {
+    HighwayTransport transport = new HighwayTransport();
+    transport.setEnvironment(environment);
     boolean status = true;
     try {
       transport.init();
     } catch (Exception e) {
+      e.printStackTrace();
       status = false;
     }
 
@@ -72,24 +97,8 @@ public class TestHighwayTransport {
   }
 
   @Test
-  public void testSendException() throws Exception {
-    Invocation invocation = Mockito.mock(Invocation.class);
-    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    commonHighwayMock(invocation);
-
-    Holder<Boolean> sended = new Holder<>(false);
-    new MockUp<HighwayClient>() {
-      @Mock
-      public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-        sended.value = true;
-      }
-    };
-    transport.send(invocation, asyncResp);
-    Assertions.assertTrue(sended.value);
-  }
-
-  @Test
   public void testHighway() {
+    HighwayTransport transport = new HighwayTransport();
     Invocation invocation = Mockito.mock(Invocation.class);
     commonHighwayMock(invocation);
     Assertions.assertEquals("highway", transport.getName());

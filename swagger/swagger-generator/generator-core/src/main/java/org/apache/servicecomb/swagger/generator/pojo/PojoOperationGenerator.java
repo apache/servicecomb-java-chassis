@@ -16,140 +16,91 @@
  */
 package org.apache.servicecomb.swagger.generator.pojo;
 
-import java.lang.annotation.Annotation;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
+
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import javax.ws.rs.HttpMethod;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
-import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.reflect.TypeToken;
 
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.RefModel;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.media.ObjectSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import jakarta.ws.rs.HttpMethod;
 
 public class PojoOperationGenerator extends AbstractOperationGenerator {
-  protected ModelImpl bodyModel;
-
-  protected BodyParameter bodyParameter;
-
   public PojoOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     super(swaggerGenerator, method);
   }
 
   @Override
-  protected void initMethodParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {
-    super.initMethodParameterGenerators(methodAnnotationMap);
+  protected void initParameterGenerators() {
+    List<ParameterGenerator> bodyParameters = new ArrayList<>();
+    for (java.lang.reflect.Parameter methodParameter : method.getParameters()) {
+      Type type = TypeToken.of(clazz)
+          .resolveType(methodParameter.getParameterizedType())
+          .getType();
+      ParameterGenerator parameterGenerator = new ParameterGenerator(
+          this, Collections.emptyMap(), methodParameter,
+          TypeFactory.defaultInstance().constructType(type));
+      validateParameter(parameterGenerator.getGenericType());
+      if (isContextParameter(parameterGenerator.getGenericType())) {
+        continue;
+      }
 
-    tryWrapParametersToBody();
+      bodyParameters.add(parameterGenerator);
+    }
+
+    tryWrapParametersToBody(bodyParameters);
   }
 
-  private void tryWrapParametersToBody() {
-    List<ParameterGenerator> bodyFields = parameterGenerators.stream().filter(pg -> pg.getHttpParameterType() == null)
-        .collect(Collectors.toList());
-    if (bodyFields.isEmpty()) {
+  private void tryWrapParametersToBody(List<ParameterGenerator> bodyParameters) {
+    if (bodyParameters.size() == 0) {
       return;
     }
 
-    if (bodyFields.size() == 1 && SwaggerUtils.isBean(bodyFields.get(0).getGenericType())) {
-      ParameterGenerator parameterGenerator = bodyFields.get(0);
+    if (bodyParameters.size() == 1 && SwaggerUtils.isBean(bodyParameters.get(0).getGenericType())) {
+      ParameterGenerator parameterGenerator = bodyParameters.get(0);
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
+      parameterGenerators.add(parameterGenerator);
       return;
     }
 
-    // wrap parameters to body
-    wrapParametersToBody(bodyFields);
+    wrapParametersToBody(bodyParameters);
   }
 
   private void wrapParametersToBody(List<ParameterGenerator> bodyFields) {
+    // process annotations like parameter name
+    for (ParameterGenerator parameterGenerator : bodyFields) {
+      scanMethodParameter(parameterGenerator);
+    }
+
     String simpleRef = MethodUtils.findSwaggerMethodName(method) + "Body";
 
-    bodyModel = new ModelImpl();
-    bodyModel.setType(ModelImpl.OBJECT);
+    Schema<?> bodyModel = new ObjectSchema();
     for (ParameterGenerator parameterGenerator : bodyFields) {
-      // to collect all information by swagger mechanism
-      // must have a parameter type
-      // but all these parameters will be wrap to be one body parameter, their parameter type must be null
-      // so we first set to be BODY, after collected, set back to be null
-      parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
-      scanMethodParameter(parameterGenerator);
-
-      Property property = ModelConverters.getInstance().readAsProperty(parameterGenerator.getGenericType());
-      property.setDescription(parameterGenerator.getGeneratedParameter().getDescription());
-      bodyModel.addProperty(parameterGenerator.getParameterName(), property);
-
-      parameterGenerator.setHttpParameterType(null);
-    }
-    swagger.addDefinition(simpleRef, bodyModel);
-
-    SwaggerGeneratorFeature feature = swaggerGenerator.getSwaggerGeneratorFeature();
-    // bodyFields.size() > 1 is no reason, just because old version do this......
-    // if not care for this, then can just delete all logic about EXT_JAVA_CLASS/EXT_JAVA_INTF
-    if (feature.isExtJavaClassInVendor()
-        && bodyFields.size() > 1
-        && StringUtils.isNotEmpty(feature.getPackageName())) {
-      bodyModel.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, feature.getPackageName() + "." + simpleRef);
+      bodyModel.addProperty(parameterGenerator.getParameterGeneratorContext().getParameterName(),
+          parameterGenerator.getParameterGeneratorContext().getSchema());
     }
 
-    RefModel refModel = new RefModel();
-    refModel.setReference("#/definitions/" + simpleRef);
-
-    bodyParameter = new BodyParameter();
-    bodyParameter.name(simpleRef);
-    bodyParameter.setSchema(refModel);
-    bodyParameter.setName(parameterGenerators.size() == 1 ? parameterGenerators.get(0).getParameterName() : simpleRef);
-
-    List<ParameterGenerator> newParameterGenerators = new ArrayList<>();
-    newParameterGenerators.add(new ParameterGenerator(
-        bodyParameter.getName(),
-        Collections.emptyList(),
-        null,
-        HttpParameterType.BODY,
-        bodyParameter));
-    parameterGenerators.stream().filter(p -> p.getHttpParameterType() != null)
-        .forEach(newParameterGenerators::add);
-    parameterGenerators = newParameterGenerators;
-  }
-
-  private boolean isWrapBody(Object parameter) {
-    return parameter != null && parameter == bodyParameter;
-  }
-
-  @Override
-  protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, JavaType type,
-      List<Annotation> annotations) {
-    if (isWrapBody(parameter)) {
-      return;
-    }
-
-    super.fillParameter(swagger, parameter, parameterName, type, annotations);
-  }
-
-  @Override
-  protected Parameter createParameter(ParameterGenerator parameterGenerator) {
-    if (isWrapBody(parameterGenerator.getGeneratedParameter())) {
-      return bodyParameter;
-    }
-
-    return super.createParameter(parameterGenerator);
+    swagger.getComponents().addSchemas(simpleRef, bodyModel);
+    Schema<?> bodyModelNew = new Schema<>();
+    bodyModelNew.set$ref(Components.COMPONENTS_SCHEMAS_REF + simpleRef);
+    ParameterGenerator newParameterGenerator = new ParameterGenerator(this, simpleRef, bodyModelNew);
+    newParameterGenerator.setHttpParameterType(HttpParameterType.BODY);
+    parameterGenerators.add(newParameterGenerator);
   }
 
   @Override

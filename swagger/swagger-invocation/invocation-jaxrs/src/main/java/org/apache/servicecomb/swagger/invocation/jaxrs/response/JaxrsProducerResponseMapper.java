@@ -19,8 +19,8 @@ package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
@@ -28,7 +28,7 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 public class JaxrsProducerResponseMapper implements ProducerResponseMapper {
   @Override
   public Response mapResponse(StatusType status, Object response) {
-    javax.ws.rs.core.Response jaxrsResponse = (javax.ws.rs.core.Response) response;
+    jakarta.ws.rs.core.Response jaxrsResponse = (jakarta.ws.rs.core.Response) response;
 
     Response cseResponse = Response.status(jaxrsResponse.getStatusInfo()).entity(jaxrsResponse.getEntity());
     MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();

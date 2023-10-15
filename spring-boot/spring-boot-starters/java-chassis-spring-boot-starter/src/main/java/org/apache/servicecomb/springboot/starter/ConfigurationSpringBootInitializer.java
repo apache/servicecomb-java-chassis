@@ -29,6 +29,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 public class ConfigurationSpringBootInitializer implements EnvironmentPostProcessor {
   @Override
   public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-    ConfigurationSpringInitializer.syncToSpring(environment);
+    ConfigurationSpringInitializer.addMicroserviceDefinitions(environment);
   }
 }

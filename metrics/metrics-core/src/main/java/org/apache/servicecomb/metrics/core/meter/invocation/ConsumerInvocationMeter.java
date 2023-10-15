@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
@@ -40,8 +41,8 @@ public class ConsumerInvocationMeter extends AbstractInvocationMeter {
 
   private final SimpleTimer clientFiltersResponseTimer;
 
-  public ConsumerInvocationMeter(Id id) {
-    super(id);
+  public ConsumerInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(id, metricsBootstrapConfig);
     clientFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
     consumerSendRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
     consumerGetConnectionTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);

@@ -18,11 +18,11 @@
 package org.apache.servicecomb.zeroconfig;
 
 public interface ZeroConfigConst {
+  String ZERO_CONFIG_REGISTRY_NAME = "zero-config-registry";
+
   int MAX_PACKET_SIZE = 1024;
 
-  String PREFIX = "servicecomb.service.zero-config.";
-
-  String CFG_MODE = PREFIX + "mode";
+  String PREFIX = "servicecomb.registry.zero-config.";
 
   String CFG_ENABLED = PREFIX + "enabled";
 
@@ -46,9 +46,5 @@ public interface ZeroConfigConst {
 
   String DEFAULT_PULL_INTERVAL = "3s";
 
-  String MODE_MULTICAST = "multicast";
-
-  String MODE_LOCAL = "local";
-
-  int ORDER = -100;
+  int ORDER = -8000;
 }

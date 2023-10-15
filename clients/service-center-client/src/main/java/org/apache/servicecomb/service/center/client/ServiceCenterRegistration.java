@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,7 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   private MicroserviceInstance microserviceInstance;
 
-  private List<SchemaInfo> schemaInfos;
+  private List<SchemaInfo> schemaInfos = new ArrayList<>();
 
   private final ServiceCenterConfiguration serviceCenterConfiguration;
 
@@ -100,6 +101,15 @@ public class ServiceCenterRegistration extends AbstractTask {
   public ServiceCenterRegistration setSchemaInfos(List<SchemaInfo> schemaInfos) {
     this.schemaInfos = schemaInfos;
     return this;
+  }
+
+  public ServiceCenterRegistration addSchemaInfo(SchemaInfo schemaInfo) {
+    this.schemaInfos.add(schemaInfo);
+    return this;
+  }
+
+  public List<SchemaInfo> getSchemaInfos() {
+    return this.schemaInfos;
   }
 
   public void startRegistration() {

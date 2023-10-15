@@ -17,147 +17,24 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.util.List;
 
-import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.hamcrest.MatcherAssert;
-import org.hamcrest.Matchers;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.StringProperty;
-
 public class RequestPartAnnotationProcessorTest {
-  private static Method producerMethod;
-
-  private static final RequestPartAnnotationProcessor requestPartAnnotationProcessor = new RequestPartAnnotationProcessor();
-
-  @BeforeAll
-  public static void beforeClass() {
-    for (Method method : DemoRest.class.getDeclaredMethods()) {
-      if (method.getName().equals("fun")) {
-        producerMethod = method;
-        break;
-      }
-    }
-  }
-
   @Test
-  public void getProcessType() {
-    Assertions.assertEquals(requestPartAnnotationProcessor.getProcessType(),
-        RequestPart.class);
+  public void testDemoRest() {
+    UnitTestSwaggerUtils.testSwagger("schemas/DemoRest.yaml", DemoRest.class);
   }
 
-  @Test
-  public void getParameterName_fromValue() {
-    Parameter[] parameters = producerMethod.getParameters();
-
-    Parameter stringParam = parameters[0];
-    RequestPart stringParamAnnotation = stringParam.getAnnotation(RequestPart.class);
-    MatcherAssert.assertThat(requestPartAnnotationProcessor.getParameterName(stringParamAnnotation),
-        Matchers.is("stringParam"));
-  }
-
-  @Test
-  public void getParameterName_fromName() {
-    Parameter[] parameters = producerMethod.getParameters();
-
-    Parameter intParam = parameters[1];
-    RequestPart intParamAnnotation = intParam.getAnnotation(RequestPart.class);
-    MatcherAssert.assertThat(requestPartAnnotationProcessor.getParameterName(intParamAnnotation),
-        Matchers.is("intParam"));
-  }
-
-  @Test
-  public void getHttpParameterType() {
-    MatcherAssert.assertThat(requestPartAnnotationProcessor.getHttpParameterType(null),
-        Matchers.is(HttpParameterType.FORM));
-  }
-
-  @Test
-  public void fillParameter_simpleType() {
-    Parameter param = producerMethod.getParameters()[0];
-    RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
-    requestPartAnnotationProcessor
-        .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
-
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("string"));
-  }
-
-  @Test
-  public void fillParameter_simpleType_arrayPart() {
-    Parameter param = producerMethod.getParameters()[2];
-    RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
-    requestPartAnnotationProcessor
-        .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
-
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
-  }
-
-  @Test
-  public void fillParameter_simpleType_collectionPart() {
-    Parameter param = producerMethod.getParameters()[3];
-    RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
-    requestPartAnnotationProcessor
-        .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
-
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(StringProperty.class));
-  }
-
-  @Test
-  public void fillParameter_uploadFile() {
-    Parameter param = producerMethod.getParameters()[4];
-    RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
-    requestPartAnnotationProcessor
-        .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
-
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("file"));
-  }
-
-  @Test
-  public void fillParameter_uploadFile_arrayPart() {
-    Parameter param = producerMethod.getParameters()[5];
-    RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
-    requestPartAnnotationProcessor
-        .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
-
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
-  }
-
-  @Test
-  public void fillParameter_uploadFile_collectionPart() {
-    Parameter param = producerMethod.getParameters()[6];
-    RequestPart requestPartAnnotation = param.getAnnotation(RequestPart.class);
-    FormParameter formParameter = new FormParameter();
-    requestPartAnnotationProcessor
-        .fillParameter(null, null, formParameter, param.getParameterizedType(), requestPartAnnotation);
-
-    MatcherAssert.assertThat(formParameter.getIn(), Matchers.is("formData"));
-    MatcherAssert.assertThat(formParameter.getType(), Matchers.is("array"));
-    MatcherAssert.assertThat(formParameter.getItems(), Matchers.instanceOf(FileProperty.class));
-  }
-
+  @RequestMapping("/")
   public static class DemoRest {
+    @RequestMapping(method = RequestMethod.POST, path = "/fun")
     public void fun(@RequestPart("stringParam") String stringParam,
         @RequestPart(name = "intParam") int intParam,
         @RequestPart("stringParamArray") String[] stringParamArray,

@@ -107,7 +107,7 @@ public class PublishModelFactory {
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.CONSUMER.name()));
 
     model.getProducer()
-        .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.PRODUCER.name()));
+        .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.PROVIDER.name()));
     //edge
     model.getEdge()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, MeterInvocationConst.EDGE_INVOCATION_NAME));

@@ -16,6 +16,14 @@
  */
 package org.apache.servicecomb.registry.lightweight;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.localregistry.RegistryBean;
+import org.apache.servicecomb.localregistry.RegistryBean.Instance;
+import org.apache.servicecomb.localregistry.RegistryBean.Instances;
+import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,35 +31,49 @@ import org.springframework.context.annotation.Configuration;
 import com.google.common.eventbus.EventBus;
 
 @Configuration
+@SuppressWarnings("unused")
 public class LightWeightRegistryConfiguration {
+
+  public static final String ZERO_CONFIG_DISCOVERY_CLIENT = "zero-config-discovery-client";
+
   @Bean
-  public Store store() {
+  public Store zeroConfigStore() {
     return new Store();
   }
 
   @Bean
-  public MessageExecutor messageExecutor(Self self, StoreService storeService) {
+  public MessageExecutor zeroConfigMessageExecutor(Self self, StoreService storeService) {
     return new MessageExecutor(self, storeService);
   }
 
   @Bean
-  public Self self() {
+  public Self zeroConfigSelf() {
     return new Self();
   }
 
   @Bean
-  public StoreService storeService(EventBus eventBus, Store store, DiscoveryClient discoveryClient) {
+  public StoreService zeroConfigStoreService(EventBus eventBus, Store store, DiscoveryClient discoveryClient) {
     return new StoreService(eventBus, store, discoveryClient);
   }
 
   @Bean
-  public VirtualDiscoverySvc virtualDiscoverySvc() {
-    return new VirtualDiscoverySvc();
+  public DiscoveryEndpoint zeroConfigDiscoveryEndpoint(Self self) {
+    return new DiscoveryEndpoint(self);
   }
 
   @Bean
-  public DiscoveryEndpoint discoveryEndpoint(Self self) {
-    return new DiscoveryEndpoint(self);
+  public RegistryBean zeroConfigDiscoveryServer(MicroserviceProperties microserviceProperties) {
+    return new RegistryBean().setAppId(microserviceProperties.getApplication())
+        .setServiceName(ZERO_CONFIG_DISCOVERY_CLIENT)
+        .addSchemaInterface(ZERO_CONFIG_DISCOVERY_CLIENT, DiscoveryClient.class)
+        // add an empty instance endpoint so that can invoke by endpoint
+        .setInstances(new Instances().setInstances(List.of(new Instance().setEndpoints(Collections.emptyList()))));
+  }
+
+  @Bean
+  public DiscoveryClient zeroConfigDiscoveryClient() {
+    return Invoker.createProxy(ZERO_CONFIG_DISCOVERY_CLIENT,
+        ZERO_CONFIG_DISCOVERY_CLIENT, DiscoveryClient.class);
   }
 }
 

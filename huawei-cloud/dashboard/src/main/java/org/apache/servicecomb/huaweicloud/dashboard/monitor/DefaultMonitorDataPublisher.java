@@ -17,12 +17,10 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -33,8 +31,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.dashboard.client.DashboardAddressManager;
 import org.apache.servicecomb.dashboard.client.DashboardClient;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -44,11 +40,27 @@ import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   private static final String SSL_KEY = "mc.consumer";
 
   private DashboardClient dashboardClient;
+
+  private MonitorConstant monitorConstant;
+
+  private Environment environment;
+
+  @Autowired
+  public void setMonitorConstant(MonitorConstant monitorConstant) {
+    this.monitorConstant = monitorConstant;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Override
   public void init() {
@@ -59,18 +71,15 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
     requestBuilder.setSocketTimeout(10000);
 
     HttpTransport httpTransport = createHttpTransport(addressManager, requestBuilder.build(),
-        ConfigUtil.createLocalConfig());
+        environment);
 
     dashboardClient = new DashboardClient(addressManager, httpTransport);
   }
 
+  @SuppressWarnings("unchecked")
   private DashboardAddressManager createDashboardAddressManager() {
-    List<String> addresses = new ArrayList<>();
-    SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(
-        MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE);
-    if (info != null && info.getAccessURL() != null) {
-      addresses.addAll(info.getAccessURL());
-    }
+    List<String> addresses = ConfigUtil.parseArrayValue(
+        environment.getProperty(MonitorConstant.SYSTEM_KEY_DASHBOARD_SERVICE, ""));
 
     if (addresses.isEmpty()) {
       throw new IllegalStateException("dashboard address is not configured.");
@@ -80,32 +89,32 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   }
 
   private HttpTransport createHttpTransport(DashboardAddressManager addressManager, RequestConfig requestConfig,
-      Configuration localConfiguration) {
+      Environment environment) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
-    if (MonitorConstant.isProxyEnable()) {
+    if (monitorConstant.isProxyEnable()) {
       HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
           setDefaultRequestConfig(requestConfig);
-      HttpHost proxy = new HttpHost(MonitorConstant.getProxyHost(),
-          MonitorConstant.getProxyPort(), "http"); // now only support http proxy
+      HttpHost proxy = new HttpHost(monitorConstant.getProxyHost(),
+          monitorConstant.getProxyPort(), "http"); // now only support http proxy
       httpClientBuilder.setProxy(proxy);
       CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       credentialsProvider.setCredentials(new AuthScope(proxy),
-          new UsernamePasswordCredentials(MonitorConstant.getProxyUsername(),
-              MonitorConstant.getProxyPasswd()));
+          new UsernamePasswordCredentials(monitorConstant.getProxyUsername(),
+              monitorConstant.getProxyPasswd()));
       httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
 
       return HttpTransportFactory
           .createHttpTransport(
               TransportUtils
-                  .createSSLProperties(addressManager.sslEnabled(), localConfiguration, SSL_KEY),
+                  .createSSLProperties(addressManager.sslEnabled(), environment, SSL_KEY),
               getRequestAuthHeaderProvider(authHeaderProviders), httpClientBuilder);
     }
 
     return HttpTransportFactory
         .createHttpTransport(
             TransportUtils
-                .createSSLProperties(MonitorConstant.sslEnabled(), localConfiguration, SSL_KEY),
+                .createSSLProperties(monitorConstant.sslEnabled(), environment, SSL_KEY),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 

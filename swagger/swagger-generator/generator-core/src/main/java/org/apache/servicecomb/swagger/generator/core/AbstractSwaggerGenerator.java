@@ -22,31 +22,30 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.MediaType;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.inject.PlaceholderResolver;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.models.Info;
-import io.swagger.models.Swagger;
-import io.swagger.models.Tag;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Paths;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
+
 
 /**
  * <pre>
@@ -60,9 +59,11 @@ import io.swagger.models.Tag;
 public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   protected SwaggerGeneratorFeature swaggerGeneratorFeature = new SwaggerGeneratorFeature();
 
+  protected SwaggerGeneratorContext swaggerGeneratorContext = new SwaggerGeneratorContext();
+
   protected Class<?> cls;
 
-  protected Swagger swagger;
+  protected OpenAPI openAPI;
 
   // allowed to control only process some methods
   // empty means all methods are available
@@ -72,23 +73,19 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   // to check if operationId is duplicated
   protected Map<String, AbstractOperationGenerator> operationGenerators = new LinkedHashMap<>();
 
-  /**
-   * According to the definition of swagger, the {@link Tag} defined in {@link Api#tags()} will be set
-   * to all of the operations in this swagger. And the {@link Tag} definde in {@link ApiOperation#tags()} will overwrite
-   * the {@link Api#tags()}.
-   */
-  protected Set<String> defaultTags = new LinkedHashSet<>();
-
   protected String httpMethod;
 
-  @SuppressWarnings("unchecked")
   public AbstractSwaggerGenerator(Class<?> cls) {
-    this.swagger = new Swagger();
+    this.openAPI = new OpenAPI();
+    this.openAPI.components(new Components())
+        .paths(new Paths())
+        .servers(new ArrayList<>())
+        .info(new Info());
     this.cls = cls;
   }
 
-  public Swagger getSwagger() {
-    return swagger;
+  public OpenAPI getOpenAPI() {
+    return openAPI;
   }
 
   @Override
@@ -102,14 +99,20 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
   @Override
   public void setHttpMethod(String httpMethod) {
-    this.httpMethod = httpMethod.toLowerCase(Locale.US);
+    this.httpMethod = httpMethod.toUpperCase(Locale.US);
   }
 
+  @Override
   public SwaggerGeneratorFeature getSwaggerGeneratorFeature() {
     return swaggerGeneratorFeature;
   }
 
-  public Swagger generate() {
+  @Override
+  public SwaggerGeneratorContext getSwaggerGeneratorContext() {
+    return swaggerGeneratorContext;
+  }
+
+  public OpenAPI generate() {
     LOGGER.info("generate schema from [{}]", cls);
     scanClassAnnotation();
 
@@ -121,7 +124,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
 
       correctSwagger();
 
-      return swagger;
+      return openAPI;
     } finally {
       featureThreadLocal.remove();
     }
@@ -148,48 +151,26 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
    * if can not build default value, then throw exceptions
    */
   protected void correctSwagger() {
-    if (StringUtils.isEmpty(swagger.getSwagger())) {
-      swagger.setSwagger("2.0");
-    }
-
     correctBasePath();
     correctInfo();
-    correctProduces();
-    correctConsumes();
   }
 
-  private void correctProduces() {
-    List<String> produces = swagger.getProduces();
-    if (produces == null || produces.isEmpty()) {
-      produces = Arrays.asList(MediaType.APPLICATION_JSON);
-      swagger.setProduces(produces);
+  private void correctBasePath() {
+    if (openAPI.getServers() == null) {
+      openAPI.setServers(new ArrayList<>());
     }
-  }
-
-  private void correctConsumes() {
-    List<String> consumes = swagger.getConsumes();
-    if (consumes == null || consumes.isEmpty()) {
-      consumes = Arrays.asList(MediaType.APPLICATION_JSON);
-      swagger.setConsumes(consumes);
+    if (openAPI.getServers().size() <= 0) {
+      Server server = new Server();
+      server.setUrl("/" + cls.getSimpleName());
+      openAPI.getServers().add(server);
     }
-  }
-
-  protected void correctBasePath() {
-    String basePath = swagger.getBasePath();
-    if (StringUtils.isEmpty(basePath)) {
-      basePath = "/" + cls.getSimpleName();
-    }
-    if (!basePath.startsWith("/")) {
-      basePath = "/" + basePath;
-    }
-    swagger.setBasePath(basePath);
   }
 
   private void correctInfo() {
-    Info info = swagger.getInfo();
+    Info info = openAPI.getInfo();
     if (info == null) {
       info = new Info();
-      swagger.setInfo(info);
+      openAPI.setInfo(info);
     }
 
     if (StringUtils.isEmpty(info.getTitle())) {
@@ -198,26 +179,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     if (StringUtils.isEmpty(info.getVersion())) {
       info.setVersion("1.0.0");
     }
-
-    setJavaInterface(info);
-  }
-
-  protected void setJavaInterface(Info info) {
-    if (!swaggerGeneratorFeature.isExtJavaInterfaceInVendor()) {
-      return;
-    }
-
-    if (cls.isInterface()) {
-      info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, cls.getName());
-      return;
-    }
-
-    if (StringUtils.isEmpty(swaggerGeneratorFeature.getPackageName())) {
-      return;
-    }
-
-    String intfName = swaggerGeneratorFeature.getPackageName() + "." + cls.getSimpleName() + "Intf";
-    info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, intfName);
   }
 
   @Override
@@ -249,9 +210,9 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       return true;
     }
 
-    ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
+    Operation apiOperation = method.getAnnotation(Operation.class);
     if (apiOperation != null && apiOperation.hidden()) {
-      return apiOperation.hidden();
+      return true;
     }
 
     if (!methodWhiteList.isEmpty()) {
@@ -274,8 +235,8 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       try {
         operationGenerator.generate();
       } catch (Throwable e) {
-        String msg = String
-            .format("generate swagger operation failed, method=%s:%s.", this.cls.getName(), method.getName());
+        String msg = String.format("Generate swagger operation failed, method=%s:%s, cause=%s",
+            this.cls.getSimpleName(), method.getName(), e.getMessage());
         throw new IllegalStateException(msg, e);
       }
 
@@ -301,22 +262,11 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   @Override
   public void setBasePath(String basePath) {
     basePath = new PlaceholderResolver().replaceFirst(basePath);
-    swagger.setBasePath(basePath);
-  }
-
-  /**
-   * Add a tag to {@link #defaultTags} if the corresponding tag not exists.
-   * @param tagName the name of the added tag
-   */
-  public void addDefaultTag(String tagName) {
-    if (StringUtils.isEmpty(tagName)) {
-      return;
+    Server server = new Server();
+    server.setUrl(basePath);
+    if (openAPI.getServers() == null) {
+      openAPI.setServers(new ArrayList<>());
     }
-
-    defaultTags.add(tagName);
-  }
-
-  public Set<String> getDefaultTags() {
-    return defaultTags;
+    openAPI.getServers().add(server);
   }
 }

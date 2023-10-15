@@ -30,8 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.springframework.core.env.Environment;
 
 public class GroupExecutor implements Executor, Closeable {
   private static final Logger LOGGER = LoggerFactory.getLogger(GroupExecutor.class);
@@ -50,6 +49,8 @@ public class GroupExecutor implements Executor, Closeable {
   public static final String KEY_MAX_QUEUE_SIZE = "servicecomb.executor.default.maxQueueSize-per-group";
 
   private static final AtomicBoolean LOG_PRINTED = new AtomicBoolean();
+
+  private final Environment environment;
 
   protected String groupName;
 
@@ -71,6 +72,10 @@ public class GroupExecutor implements Executor, Closeable {
   private final AtomicInteger index = new AtomicInteger();
 
   private final Map<Long, Executor> threadExecutorMap = new ConcurrentHashMapEx<>();
+
+  public GroupExecutor(Environment environment) {
+    this.environment = environment;
+  }
 
   public GroupExecutor init() {
     return init("group");
@@ -104,12 +109,12 @@ public class GroupExecutor implements Executor, Closeable {
           + "4.if queue is full, and threads count is max, then reject the request.");
     }
 
-    groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
-    coreThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_CORE_THREADS, 25).get();
+    groupCount = environment.getProperty(KEY_GROUP, int.class, 2);
+    coreThreads = environment.getProperty(KEY_CORE_THREADS, int.class, 25);
 
-    maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_THREADS, -1).get();
+    maxThreads = environment.getProperty(KEY_MAX_THREADS, int.class, -1);
     if (maxThreads <= 0) {
-      maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_OLD_MAX_THREAD, -1).get();
+      maxThreads = environment.getProperty(KEY_OLD_MAX_THREAD, int.class, -1);
       if (maxThreads > 0) {
         LOGGER.warn("{} is deprecated, recommended to use {}.", KEY_OLD_MAX_THREAD, KEY_MAX_THREADS);
       } else {
@@ -121,8 +126,8 @@ public class GroupExecutor implements Executor, Closeable {
       coreThreads = maxThreads;
     }
 
-    maxIdleInSecond = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_IDLE_SECOND, 60).get();
-    maxQueueSize = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_QUEUE_SIZE, Integer.MAX_VALUE).get();
+    maxIdleInSecond = environment.getProperty(KEY_MAX_IDLE_SECOND, int.class, 60);
+    maxQueueSize = environment.getProperty(KEY_MAX_QUEUE_SIZE, int.class, Integer.MAX_VALUE);
 
     LOGGER.info(
         "executor name={}, group={}. per group settings, coreThreads={}, maxThreads={}, maxIdleInSecond={}, maxQueueSize={}.",

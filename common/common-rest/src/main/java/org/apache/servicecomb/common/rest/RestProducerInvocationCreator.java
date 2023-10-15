@@ -16,17 +16,12 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_CLIENT;
+import static jakarta.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.NOT_DEFINED_ANY_SCHEMA;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import javax.annotation.Nonnull;
-import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -34,20 +29,18 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.config.YAMLUtil;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.Json;
 
@@ -67,7 +60,7 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   protected ProduceProcessor produceProcessor;
 
   public RestProducerInvocationCreator(MicroserviceMeta microserviceMeta, Endpoint endpoint,
-      @Nonnull HttpServletRequestEx requestEx, @Nonnull HttpServletResponseEx responseEx) {
+      HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
     this.microserviceMeta = microserviceMeta;
     this.endpoint = endpoint;
     this.requestEx = requestEx;
@@ -81,7 +74,6 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
     Invocation invocation = createInstance();
     initInvocationContext(invocation);
     addParameterContext(invocation);
-    initProduceProcessor();
     initTransportContext(invocation);
 
     invocation.addLocalContext(RestConst.REST_REQUEST, requestEx);
@@ -94,7 +86,7 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   }
 
   protected void initInvocationContext(Invocation invocation) {
-    String strCseContext = requestEx.getHeader(Const.CSE_CONTEXT);
+    String strCseContext = requestEx.getHeader(CoreConst.CSE_CONTEXT);
     if (StringUtils.isEmpty(strCseContext)) {
       return;
     }
@@ -105,10 +97,10 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   }
 
   protected void addParameterContext(Invocation invocation) {
-    String headerContextMapper = DynamicPropertyFactory.getInstance()
-        .getStringProperty(RestConst.HEADER_CONTEXT_MAPPER, null).get();
-    String queryContextMapper = DynamicPropertyFactory.getInstance()
-        .getStringProperty(RestConst.QUERY_CONTEXT_MAPPER, null).get();
+    String headerContextMapper = LegacyPropertyFactory
+        .getStringProperty(RestConst.HEADER_CONTEXT_MAPPER);
+    String queryContextMapper = LegacyPropertyFactory
+        .getStringProperty(RestConst.QUERY_CONTEXT_MAPPER);
 
     Map<String, Object> headerContextMappers;
     if (headerContextMapper != null) {
@@ -157,17 +149,5 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
 
   protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
     return servicePathManager.producerLocateOperation(requestEx.getRequestURI(), requestEx.getMethod());
-  }
-
-  @VisibleForTesting
-  void initProduceProcessor() {
-    produceProcessor = restOperationMeta.ensureFindProduceProcessor(requestEx);
-    if (produceProcessor == null) {
-      LOGGER.error("Accept {} is not supported, operation={}.", requestEx.getHeader(HttpHeaders.ACCEPT),
-          restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
-
-      String msg = String.format("Accept %s is not supported", requestEx.getHeader(HttpHeaders.ACCEPT));
-      throw Exceptions.create(NOT_ACCEPTABLE, GENERIC_CLIENT, msg);
-    }
   }
 }

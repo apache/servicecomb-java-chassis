@@ -29,9 +29,10 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 public class TransportManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(TransportManager.class);
@@ -42,6 +43,13 @@ public class TransportManager {
 
   public Map<String, Transport> getTransportMap() {
     return transportMap;
+  }
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   public void clearTransportBeforeInit() {
@@ -57,6 +65,7 @@ public class TransportManager {
   }
 
   public void init(SCBEngine scbEngine) throws Exception {
+    initEnvironment();
     buildTransportMap();
 
     for (Transport transport : transportMap.values()) {
@@ -64,10 +73,16 @@ public class TransportManager {
         Endpoint endpoint = transport.getPublishEndpoint();
         if (endpoint != null && endpoint.getEndpoint() != null) {
           LOGGER.info("endpoint to publish: {}", endpoint.getEndpoint());
-          RegistrationManager.INSTANCE.addEndpoint(endpoint.getEndpoint());
+          scbEngine.getRegistrationManager().addEndpoint(endpoint.getEndpoint());
         }
         continue;
       }
+    }
+  }
+
+  private void initEnvironment() {
+    for (Transport transport : transports) {
+      transport.setEnvironment(environment);
     }
   }
 

@@ -21,19 +21,18 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import org.springframework.util.StringUtils;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import jakarta.servlet.http.HttpServletRequest;
 
-public class PathProcessorCreator implements ParamValueProcessorCreator {
+public class PathProcessorCreator implements ParamValueProcessorCreator<Parameter> {
   public static final String PARAMTYPE = "path";
 
   public static class PathProcessor extends AbstractParamProcessor {
@@ -72,9 +71,10 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
   }
 
   @Override
-  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(OperationMeta operationMeta,
+      String parameterName, Parameter parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
-    return new PathProcessor(parameter.getName(), targetType, ((PathParameter) parameter).getDefaultValue(), true);
+    return new PathProcessor(parameterName, targetType, parameter.getSchema().getDefault(), true);
   }
 }

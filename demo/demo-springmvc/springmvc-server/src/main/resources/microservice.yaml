@@ -15,35 +15,21 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: springmvctest
-service_description:
-  name: springmvc
-  version: 0.0.3
-  paths:
-    - path: /test1/testpath
-      property:
-        checksession: false
-    - path: /test2/testpath
-      property:
-        checksession: true
 instance_description:
   initialStatus: TESTING
 servicecomb:
   service:
-    registry:
-      registerPath: true
+    application: springmvctest
+    name: springmvc
+    version: 0.0.3
+
+  registry:
+    sc:
       address: http://127.0.0.1:9980,http://127.0.0.1:30100
-      client:
-        timeout:
-          idle: 60
-          watch: 60
-      instance:
-        healthCheck:
-          interval: 3
-        pull:
-          interval: 10
-        watch: true
       autodiscovery: true
+      healthCheckIntervalInSeconds: 3
+      pollIntervalInMillis: 10000
+      watch: true
 
   uploads:
     directory: target

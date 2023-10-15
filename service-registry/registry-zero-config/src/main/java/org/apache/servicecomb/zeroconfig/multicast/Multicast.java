@@ -56,12 +56,6 @@ public class Multicast {
     LOGGER.info("zero config, address: {}", bindAddress);
     LOGGER.info("zero config, group: {}", group);
 
-    // delete after support @Conditional
-    if (!config.isMulticast()) {
-      multicastSocket = null;
-      return;
-    }
-
     this.multicastSocket = new MulticastSocket(bindAddress);
     this.multicastSocket.joinGroup(group);
     this.multicastSocket.setSoTimeout((int) TimeUnit.SECONDS.toMillis(5));

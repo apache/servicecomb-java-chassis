@@ -51,6 +51,7 @@ public class SwaggerBodyFieldToProducerArgument extends ProducerArgumentMapper {
   public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
       Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
     Map<String, Object> body = (Map<String, Object>) swaggerArguments.get(swaggerArgumentName);
-    invocationArguments.put(invocationArgumentName, mapper.convertValue(body.get(parameterName), producerParamType));
+    invocationArguments.put(invocationArgumentName,
+        body == null ? null : mapper.convertValue(body.get(parameterName), producerParamType));
   }
 }

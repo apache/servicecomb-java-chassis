@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
@@ -49,10 +50,10 @@ public class TcpServer {
     NetServer netServer;
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(sslKey, null);
+          SSLOptionFactory.createSSLOptionFactory(sslKey, LegacyPropertyFactory.getEnvironment());
       SSLOption sslOption;
       if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(sslKey);
+        sslOption = SSLOption.build(sslKey, LegacyPropertyFactory.getEnvironment());
       } else {
         sslOption = factory.createSSLOption();
       }
@@ -78,7 +79,8 @@ public class TcpServer {
       TcpServerConnection connection = createTcpServerConnection();
       connection.init(netSocket);
     });
-    netServer.exceptionHandler(e -> LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e)));
+    netServer.exceptionHandler(
+        e -> LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e)));
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();
     netServer.listen(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
       if (ar.succeeded()) {

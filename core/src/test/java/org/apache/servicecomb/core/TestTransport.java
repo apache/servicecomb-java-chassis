@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.env.Environment;
 
 public class TestTransport {
   @BeforeAll
@@ -31,21 +31,20 @@ public class TestTransport {
 
   @AfterAll
   public static void classTeardown() {
-    SCBEngine.getInstance().destroy();
   }
 
   @Test
   public void testEndpoint() throws Exception {
     Endpoint oEndpoint = new Endpoint(new Transport() {
       @Override
-      public void send(Invocation invocation, AsyncResponse asyncResp) {
-      }
-
-      @Override
       public Object parseAddress(String address) {
         return "127.0.0.1";
       }
 
+      @Override
+      public void setEnvironment(Environment environment) {
+
+      }
       @Override
       public boolean init() {
         return true;

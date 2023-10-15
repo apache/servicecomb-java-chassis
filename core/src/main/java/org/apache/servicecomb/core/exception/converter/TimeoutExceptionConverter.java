@@ -16,18 +16,17 @@
  */
 package org.apache.servicecomb.core.exception.converter;
 
-import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
+import static jakarta.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
 
 import java.util.concurrent.TimeoutException;
-
-import javax.annotation.Nullable;
-import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class TimeoutExceptionConverter implements ExceptionConverter<TimeoutException> {
   private static final Logger LOGGER = LoggerFactory.getLogger(TimeoutExceptionConverter.class);
@@ -45,7 +44,7 @@ public class TimeoutExceptionConverter implements ExceptionConverter<TimeoutExce
   }
 
   @Override
-  public InvocationException convert(@Nullable Invocation invocation, TimeoutException throwable,
+  public InvocationException convert(Invocation invocation, TimeoutException throwable,
       StatusType genericStatus) {
     // throwable.getMessage:
     //   The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080

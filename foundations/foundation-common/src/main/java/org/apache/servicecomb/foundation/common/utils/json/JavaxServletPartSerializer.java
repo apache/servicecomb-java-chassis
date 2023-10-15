@@ -19,13 +19,13 @@ package org.apache.servicecomb.foundation.common.utils.json;
 
 import java.io.IOException;
 
-import javax.servlet.http.Part;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.util.TokenBuffer;
+
+import jakarta.servlet.http.Part;
 
 // 什么情况下用？
 public class JavaxServletPartSerializer extends StdSerializer<Part> {

@@ -19,10 +19,7 @@ package org.apache.servicecomb.authentication.consumer;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -30,16 +27,23 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class ConsumerAuthFilter implements ConsumerFilter {
-  private ConsumerTokenManager authenticationTokenManager = new ConsumerTokenManager();
+  private ConsumerTokenManager authenticationTokenManager;
+
+  @Autowired
+  public void setConsumerTokenManager(ConsumerTokenManager consumerTokenManager) {
+    this.authenticationTokenManager = consumerTokenManager;
+  }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1010;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "consumer-public-key";
@@ -52,7 +56,7 @@ public class ConsumerAuthFilter implements ConsumerFilter {
       return CompletableFuture.failedFuture(
           new InvocationException(Status.SERVICE_UNAVAILABLE, "auth token is not properly configured yet."));
     }
-    invocation.addContext(Const.AUTH_TOKEN, token.get());
+    invocation.addContext(CoreConst.AUTH_TOKEN, token.get());
     return nextNode.onFilter(invocation);
   }
 }

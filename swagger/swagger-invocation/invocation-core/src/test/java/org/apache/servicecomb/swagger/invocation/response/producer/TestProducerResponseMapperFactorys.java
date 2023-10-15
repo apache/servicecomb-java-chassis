@@ -22,18 +22,17 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.ws.rs.core.Response.Status;
 
 public class TestProducerResponseMapperFactorys {
   static class ResponseForTest {
@@ -45,14 +44,16 @@ public class TestProducerResponseMapperFactorys {
       return CompletableFuture.completedFuture("async");
     }
 
-    @ApiResponse(code = 200, message = "", response = String.class)
+    @ApiResponse(responseCode = "200", description = "",
+        content = {@Content(schema = @Schema(implementation = String.class))})
     public Response scbResponse() {
       return Response.ok("scb");
     }
 
-    @ApiResponse(code = 200, message = "", response = String.class)
-    public javax.ws.rs.core.Response jaxrsResponse() {
-      return javax.ws.rs.core.Response.ok("jaxrs").build();
+    @ApiResponse(responseCode = "200", description = "",
+        content = {@Content(schema = @Schema(implementation = String.class))})
+    public jakarta.ws.rs.core.Response jaxrsResponse() {
+      return jakarta.ws.rs.core.Response.ok("jaxrs").build();
     }
 
     public Optional<String> optional() {
@@ -72,8 +73,7 @@ public class TestProducerResponseMapperFactorys {
 
   @BeforeClass
   public static void setup() {
-    Swagger swagger = SwaggerGenerator.generate(ResponseForTest.class);
-    swaggerProducer = environment.createProducer(instance, swagger);
+    swaggerProducer = environment.createProducer(instance);
   }
 
   @Test

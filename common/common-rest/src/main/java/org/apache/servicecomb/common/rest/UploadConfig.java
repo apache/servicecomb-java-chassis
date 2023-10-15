@@ -16,79 +16,51 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import javax.servlet.MultipartConfigElement;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.DynamicPropertyFactory;
+import jakarta.servlet.MultipartConfigElement;
 
 public class UploadConfig {
+  private final Environment environment;
+
+  public UploadConfig(Environment environment) {
+    this.environment = environment;
+  }
 
   /**
    * null means not support upload
    */
-  private String location;
+  public String getLocation() {
+    return environment.getProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR);
+  }
 
   /**
    * limit of one upload file, only available for servlet rest transport
    */
-  private long maxFileSize;
+  public long getMaxFileSize() {
+    return environment.getProperty(RestConst.UPLOAD_MAX_FILE_SIZE, long.class, -1L);
+  }
 
   /**
    * limit of upload request body
    */
-  private long maxSize;
+  public long getMaxSize() {
+    return environment.getProperty(RestConst.UPLOAD_MAX_SIZE, long.class, -1L);
+  }
+
 
   /**
    * the size threshold after which files will be written to disk, only available for servlet rest transport
    */
-  private int fileSizeThreshold;
-
-  public UploadConfig() {
-    location = DynamicPropertyFactory.getInstance()
-        .getStringProperty(RestConst.UPLOAD_DIR, RestConst.UPLOAD_DEFAULT_DIR).get();
-    maxFileSize = DynamicPropertyFactory.getInstance().getLongProperty(RestConst.UPLOAD_MAX_FILE_SIZE, -1L).get();
-    maxSize = DynamicPropertyFactory.getInstance().getLongProperty(RestConst.UPLOAD_MAX_SIZE, -1L).get();
-    fileSizeThreshold = DynamicPropertyFactory.getInstance().getIntProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, 0)
-        .get();
-  }
-
-  public String getLocation() {
-    return location;
-  }
-
-  public void setLocation(String location) {
-    this.location = location;
-  }
-
-  public long getMaxFileSize() {
-    return maxFileSize;
-  }
-
-  public void setMaxFileSize(long maxFileSize) {
-    this.maxFileSize = maxFileSize;
-  }
-
-  public long getMaxSize() {
-    return maxSize;
-  }
-
-  public void setMaxSize(long maxSize) {
-    this.maxSize = maxSize;
-  }
-
   public int getFileSizeThreshold() {
-    return fileSizeThreshold;
-  }
-
-  public void setFileSizeThreshold(int fileSizeThreshold) {
-    this.fileSizeThreshold = fileSizeThreshold;
+    return environment.getProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, int.class, 0);
   }
 
   public MultipartConfigElement toMultipartConfigElement() {
-
     return new MultipartConfigElement(
-        location,
-        DynamicPropertyFactory.getInstance().getLongProperty(RestConst.UPLOAD_MAX_FILE_SIZE, -1L).get(),
-        DynamicPropertyFactory.getInstance().getLongProperty(RestConst.UPLOAD_MAX_SIZE, -1L).get(),
-        DynamicPropertyFactory.getInstance().getIntProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, 0).get());
+        getLocation(),
+        getMaxFileSize(),
+        getMaxSize(),
+        getFileSizeThreshold());
   }
 }

@@ -16,17 +16,17 @@
  */
 package org.apache.servicecomb.foundation.metrics;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -38,9 +38,24 @@ public class MetricsBootstrap {
 
   private EventBus eventBus;
 
-  private final MetricsBootstrapConfig config = new MetricsBootstrapConfig();
+  private MetricsBootstrapConfig config;
 
   private ScheduledExecutorService executorService;
+
+  private List<MetricsInitializer> metricsInitializers;
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+    config = new MetricsBootstrapConfig(environment);
+  }
+
+  @Autowired
+  public void setMetricsInitializers(List<MetricsInitializer> metricsInitializers) {
+    this.metricsInitializers = metricsInitializers;
+  }
 
   public void start(GlobalRegistry globalRegistry, EventBus eventBus) {
     this.globalRegistry = globalRegistry;
@@ -50,7 +65,7 @@ public class MetricsBootstrap {
             .setNameFormat("spectator-poller-%d")
             .build());
 
-    loadMetricsInitializers();
+    metricsInitializers.forEach(initializer -> initializer.init(globalRegistry, eventBus, config));
     startPoll();
   }
 
@@ -59,14 +74,8 @@ public class MetricsBootstrap {
       executorService.shutdown();
     }
 
-    List<MetricsInitializer> initializers = new ArrayList<>(SPIServiceUtils.getSortedService(MetricsInitializer.class));
-    Collections.reverse(initializers);
-    initializers.forEach(MetricsInitializer::destroy);
-  }
-
-  protected void loadMetricsInitializers() {
-    SPIServiceUtils.getSortedService(MetricsInitializer.class)
-        .forEach(initializer -> initializer.init(globalRegistry, eventBus, config));
+    Collections.reverse(metricsInitializers);
+    metricsInitializers.forEach(MetricsInitializer::destroy);
   }
 
   protected void startPoll() {

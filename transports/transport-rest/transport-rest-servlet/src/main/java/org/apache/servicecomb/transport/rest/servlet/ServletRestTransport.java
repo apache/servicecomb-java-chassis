@@ -21,29 +21,24 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.transport.rest.client.RestTransportClient;
-import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ServletRestTransport extends AbstractTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServletRestTransport.class);
 
-  private RestTransportClient restClient;
-
   @Override
   public String getName() {
-    return org.apache.servicecomb.core.Const.RESTFUL;
+    return CoreConst.RESTFUL;
   }
 
   @Override
   public boolean canInit() {
-    String listenAddress = ServletConfig.getLocalServerAddress();
+    String listenAddress = ServletConfig.getLocalServerAddress(environment);
     if (listenAddress == null) {
       // not publish, but can init and be RESTful client
       return true;
@@ -65,15 +60,9 @@ public class ServletRestTransport extends AbstractTransport {
       queryMap.put(DefinitionConst.URL_PREFIX, urlPrefix);
     }
 
-    String listenAddress = ServletConfig.getLocalServerAddress();
+    String listenAddress = ServletConfig.getLocalServerAddress(environment);
     setListenAddressWithoutSchema(listenAddress, queryMap);
 
-    restClient = RestTransportClientManager.INSTANCE.getRestClient();
     return true;
-  }
-
-  @Override
-  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    restClient.send(invocation, asyncResp);
   }
 }

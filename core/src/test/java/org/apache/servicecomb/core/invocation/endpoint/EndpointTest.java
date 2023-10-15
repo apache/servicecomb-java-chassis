@@ -34,7 +34,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class EndpointTest {
   public interface TestSchema {
@@ -47,27 +47,24 @@ public class EndpointTest {
     generator.getSwaggerGeneratorFeature()
         .setExtJavaInterfaceInVendor(false)
         .setExtJavaClassInVendor(false);
-    Swagger swagger = generator.generate();
+    OpenAPI swagger = generator.generate();
 
     assertThat(SwaggerUtils.swaggerToString(swagger))
-        .isEqualTo("---\n"
-            + "swagger: \"2.0\"\n"
+        .isEqualTo("openapi: 3.0.1\n"
             + "info:\n"
-            + "  version: \"1.0.0\"\n"
-            + "  title: \"swagger definition for org.apache.servicecomb.core.invocation.endpoint.EndpointTest$TestSchema\"\n"
-            + "basePath: \"/TestSchema\"\n"
-            + "consumes:\n"
-            + "- \"application/json\"\n"
-            + "produces:\n"
-            + "- \"application/json\"\n"
+            + "  title: swagger definition for org.apache.servicecomb.core.invocation.endpoint.EndpointTest$TestSchema\n"
+            + "  version: 1.0.0\n"
+            + "servers:\n"
+            + "- url: /TestSchema\n"
             + "paths:\n"
             + "  /say:\n"
             + "    post:\n"
-            + "      operationId: \"say\"\n"
-            + "      parameters: []\n"
+            + "      operationId: say\n"
             + "      responses:\n"
             + "        \"200\":\n"
-            + "          description: \"response of 200\"\n");
+            + "          description: response of 200\n"
+            + "components: {}\n"
+            + "");
   }
 
   @Test

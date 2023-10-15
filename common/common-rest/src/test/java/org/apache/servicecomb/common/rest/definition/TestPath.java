@@ -25,17 +25,33 @@ import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.QueryVarParamWriter;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
+
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.PathParameter;
+import io.swagger.v3.oas.models.parameters.QueryParameter;
 
 public class TestPath {
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void beforeClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.emptyAsNull", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", boolean.class, false))
+        .thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", boolean.class, false))
+        .thenReturn(false);
+  }
 
   @BeforeEach
   public void setUp() {
@@ -99,12 +115,14 @@ public class TestPath {
 
     Parameter pathParameter = new PathParameter();
     pathParameter.setName("id");
-    RestParam oRestParam = new RestParam(pathParameter, int.class);
+    pathParameter.setSchema(new Schema<>());
+    RestParam oRestParam = new RestParam(null, pathParameter, int.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     Parameter queryParameter = new QueryParameter();
     queryParameter.setName("q");
-    oRestParam = new RestParam(queryParameter, String.class);
+    queryParameter.setSchema(new Schema<>());
+    oRestParam = new RestParam(null, queryParameter, String.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     URLPathBuilder oURLPathBuilder = new URLPathBuilder("/root/{id}", paramMap);
@@ -120,7 +138,8 @@ public class TestPath {
     boolean status = true;
 
     Parameter parameter = new QueryParameter();
-    RestParam restParam = new RestParam(parameter, String.class);
+    parameter.setSchema(new Schema<>());
+    RestParam restParam = new RestParam(null, parameter, String.class);
     RestParam spy = Mockito.spy(restParam);
     Mockito.when(spy.getParamName()).thenReturn("queryVar");
     QueryVarParamWriter writer = new QueryVarParamWriter(spy);

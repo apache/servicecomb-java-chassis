@@ -20,15 +20,16 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public interface SwaggerGenerator {
   Logger LOGGER = LoggerFactory.getLogger(SwaggerGenerator.class);
 
-  static Swagger generate(Class<?> cls) {
+  static OpenAPI generate(Class<?> cls) {
     return create(cls).generate();
   }
 
@@ -46,27 +47,22 @@ public interface SwaggerGenerator {
 
   SwaggerGeneratorFeature getSwaggerGeneratorFeature();
 
+  SwaggerGeneratorContext getSwaggerGeneratorContext();
+
   /**
-   * support placeholder
-   * @param basePath
+   * base path contains application server context-path, and schema base path.
    */
   void setBasePath(String basePath);
 
   void scanClassAnnotation();
 
-  Swagger generate();
+  OpenAPI generate();
 
   Class<?> getClazz();
 
-  Swagger getSwagger();
+  OpenAPI getOpenAPI();
 
   void setHttpMethod(String httpMethod);
-
-  /**
-   *
-   * @param tagName default tag for operations
-   */
-  void addDefaultTag(String tagName);
 
   void replaceMethodWhiteList(String... methodNames);
 

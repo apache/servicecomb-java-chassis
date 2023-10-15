@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.demo.springboot.pojo.client;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 
 public interface DemoConst {
-  String[] transports = new String[] {"rest", Const.ANY_TRANSPORT};
+  String[] transports = new String[] {"rest", CoreConst.ANY_TRANSPORT};
 }

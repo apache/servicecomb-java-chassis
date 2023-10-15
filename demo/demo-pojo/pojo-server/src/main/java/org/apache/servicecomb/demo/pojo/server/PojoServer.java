@@ -26,6 +26,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 @EnableServiceComb
 public class PojoServer {
   public static void main(String[] args) throws Exception {
-    new SpringApplicationBuilder(PojoServer.class).web(WebApplicationType.NONE).run(args);
+    try {
+      new SpringApplicationBuilder(PojoServer.class).web(WebApplicationType.NONE).run(args);
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
   }
 }

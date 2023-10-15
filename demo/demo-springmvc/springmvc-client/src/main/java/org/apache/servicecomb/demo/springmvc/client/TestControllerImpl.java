@@ -18,11 +18,11 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class TestControllerImpl implements CategorizedTestCase {
@@ -36,8 +36,7 @@ public class TestControllerImpl implements CategorizedTestCase {
 
   private void testQueryParamSpecial() {
     // vert.x and servlet container have different query parameter implementations
-    if (DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+    if (LegacyPropertyFactory.getBooleanProperty("servicecomb.test.vert.transport", true)) {
 
       TestMgr.check(restTemplate.getForObject(
           SERVER + "/springmvc/controller/sayHello1?name=you;me", String.class), "Hello you,v");

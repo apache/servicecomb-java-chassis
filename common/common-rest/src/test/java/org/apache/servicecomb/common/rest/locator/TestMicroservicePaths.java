@@ -17,18 +17,27 @@
 
 package org.apache.servicecomb.common.rest.locator;
 
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestMicroservicePaths {
   static SCBEngine scbEngine;
@@ -37,9 +46,22 @@ public class TestMicroservicePaths {
 
   @BeforeAll
   public static void setup() {
-    ConfigUtil.installDynamicConfig();
-    scbEngine = SCBBootstrap.createSCBEngineForTest()
-        .addProducerMeta("sid1", new TestPathSchema())
+    Environment environment = Mockito.mock(Environment.class);
+    scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
+    LegacyPropertyFactory.setEnvironment(environment);
+    scbEngine.setEnvironment(environment);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
+        .thenReturn(false);
+    List<BootListener> listeners = new ArrayList<>();
+    listeners.add(new RestEngineSchemaListener());
+    ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    scbEngine.setTransportManager(transportManager);
+    scbEngine.setExecutorManager(executorManager);
+    scbEngine.setBootListeners(listeners);
+    scbEngine.addProducerMeta("sid1", new TestPathSchema())
         .run();
 
     ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
@@ -49,7 +71,6 @@ public class TestMicroservicePaths {
   @AfterAll
   public static void teardown() {
     scbEngine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -68,33 +89,16 @@ public class TestMicroservicePaths {
     Mockito.when(staticResPost.getAbsolutePath()).thenReturn("/static/");
     Mockito.when(staticResPost.isAbsoluteStaticPath()).thenReturn(true);
 
-
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
-            () -> paths.addResource(staticResPost));
+        () -> paths.addResource(staticResPost));
     Assertions.assertEquals("operation with url /static/, method POST is duplicated.", exception.getMessage());
   }
 
   @Test
   public void dynamicPath() {
-    Assertions.assertEquals("dynamicExId", paths.getDynamicPathOperationList().get(0).getOperationMeta().getOperationId());
-    Assertions.assertEquals("dynamicId", paths.getDynamicPathOperationList().get(1).getOperationMeta().getOperationId());
-  }
-
-  @Test
-  public void testPrintPaths() {
-    try (LogCollector collector = new LogCollector()) {
-      paths.printPaths();
-
-      StringBuilder sb = new StringBuilder();
-      collector.getEvents()
-          .forEach(e -> sb.append(e.getMessage().getFormattedMessage()).append("\n"));
-      Assertions.assertEquals(
-          "Swagger mapped \"{[/static/], method=[POST], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.postStatic()\n"
-              + "Swagger mapped \"{[/static/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStatic()\n"
-              + "Swagger mapped \"{[/staticEx/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.getStaticEx()\n"
-              + "Swagger mapped \"{[/dynamicEx/{id}/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicExId(java.lang.String)\n"
-              + "Swagger mapped \"{[/dynamic/{id}/], method=[GET], produces=[application/json]}\" onto public void org.apache.servicecomb.common.rest.locator.TestPathSchema.dynamicId(java.lang.String)\n",
-          sb.toString());
-    }
+    Assertions.assertEquals("dynamicExId",
+        paths.getDynamicPathOperationList().get(0).getOperationMeta().getOperationId());
+    Assertions.assertEquals("dynamicId",
+        paths.getDynamicPathOperationList().get(1).getOperationMeta().getOperationId());
   }
 }

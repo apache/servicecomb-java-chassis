@@ -17,20 +17,17 @@
 
 package org.apache.servicecomb.registry.lightweight;
 
-import java.util.Map.Entry;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.swagger.SwaggerLoader;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceFactory;
+import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.ConfigurationManager;
 
 public class Self implements InitializingBean, BootListener {
   private Microservice microservice;
@@ -38,20 +35,25 @@ public class Self implements InitializingBean, BootListener {
   // Whether to allow cross-app calls to me
   private boolean crossApp;
 
-  private String schemasSummary;
-
   private MicroserviceInstance instance;
 
   private final MicroserviceInfo microserviceInfo = new MicroserviceInfo();
 
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void afterPropertiesSet() {
-    init(ConfigurationManager.getConfigInstance());
+    init(environment);
   }
 
   @VisibleForTesting
-  public Self init(AbstractConfiguration configuration) {
-    microservice = new MicroserviceFactory().create(configuration);
+  public Self init(Environment environment) {
+    microservice = new MicroserviceFactory().create(environment);
     microservice.serviceId(String.format("%s/%s/%s/%s",
         microservice.getEnvironment(),
         microservice.getAppId(),
@@ -77,7 +79,6 @@ public class Self implements InitializingBean, BootListener {
 
   @Override
   public void onBeforeRegistry(BootEvent event) {
-    schemasSummary = calcSchemasSummary();
     crossApp = microservice.allowCrossApp();
   }
 
@@ -115,8 +116,6 @@ public class Self implements InitializingBean, BootListener {
 
   public Self addSchema(String schemaId, String content) {
     microservice.addSchema(schemaId, content);
-    schemasSummary = null;
-
     return this;
   }
 
@@ -125,24 +124,11 @@ public class Self implements InitializingBean, BootListener {
     return this;
   }
 
-  public String getSchemasSummary() {
-    return schemasSummary;
-  }
-
-  private String calcSchemasSummary() {
-    String content = microservice.getSchemaMap().entrySet().stream()
-        .sorted(Entry.comparingByKey())
-        .map(Entry::getValue)
-        .collect(Collectors.joining("\n", "", ""));
-    return SwaggerLoader.calcSchemaSummary(content);
-  }
-
   public RegisterRequest buildRegisterRequest() {
     return createRegisterRequest()
         .setAppId(microservice.getAppId())
         .setServiceId(microservice.getServiceId())
         .setCrossApp(crossApp)
-        .setSchemasSummary(schemasSummary)
         .setInstanceId(instance.getInstanceId())
         .setStatus(instance.getStatus())
         .setEndpoints(instance.getEndpoints());

@@ -27,7 +27,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+
 
 public class MethodUtils {
   /**
@@ -88,26 +89,22 @@ public class MethodUtils {
       return true;
     }
 
-    ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
-    if (apiOperation != null && apiOperation.hidden()) {
-      return apiOperation.hidden();
-    }
-
-    return false;
+    Operation apiOperation = method.getAnnotation(Operation.class);
+    return apiOperation != null && apiOperation.hidden();
   }
 
   /**
    * Get the operationId in schema of this method,
-   * no matter whether it should be hidden(see {@link ApiOperation#hidden()}).
-   * @return If the operation name is specified via {@link ApiOperation}, use that one.
+   * no matter whether it should be hidden.
+   * @return If the operation name is specified via {@link Operation}, use that one.
    * Otherwise the method name is returned.
    */
   public static String findSwaggerMethodName(Method method) {
-    ApiOperation apiOperationAnnotation = method.getAnnotation(ApiOperation.class);
-    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
+    Operation apiOperationAnnotation = method.getAnnotation(Operation.class);
+    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.operationId())) {
       return method.getName();
     }
 
-    return apiOperationAnnotation.nickname();
+    return apiOperationAnnotation.operationId();
   }
 }

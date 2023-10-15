@@ -37,10 +37,6 @@
       <groupId>jakarta.ws.rs</groupId>
       <artifactId>jakarta.ws.rs-api</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
-    </dependency>
   </dependencies>
 
   <build>

@@ -18,14 +18,12 @@
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import io.swagger.models.Swagger;
 
 public class RequestMappingClassAnnotationProcessor implements ClassAnnotationProcessor<RequestMapping> {
   @Override
@@ -35,15 +33,18 @@ public class RequestMappingClassAnnotationProcessor implements ClassAnnotationPr
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, RequestMapping requestMapping) {
-    Swagger swagger = swaggerGenerator.getSwagger();
-
     this.processMethod(requestMapping.method(), swaggerGenerator);
 
     // path/value是等同的
     this.processPath(requestMapping.path(), swaggerGenerator);
     this.processPath(requestMapping.value(), swaggerGenerator);
-    SwaggerUtils.setConsumes(swagger, requestMapping.consumes());
-    SwaggerUtils.setProduces(swagger, requestMapping.produces());
+
+    if (requestMapping.consumes().length > 0) {
+      swaggerGenerator.getSwaggerGeneratorContext().updateConsumes(Arrays.asList(requestMapping.consumes()));
+    }
+    if (requestMapping.produces().length > 0) {
+      swaggerGenerator.getSwaggerGeneratorContext().updateProduces(Arrays.asList(requestMapping.produces()));
+    }
   }
 
   protected void processPath(String[] paths, SwaggerGenerator swaggerGenerator) {

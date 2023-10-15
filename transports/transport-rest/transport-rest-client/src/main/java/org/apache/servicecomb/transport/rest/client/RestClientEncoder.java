@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCodes.FAILED_TO_ENCODE_REST_CLIENT_REQUEST;
 
 import java.net.URLEncoder;
@@ -26,16 +26,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.foundation.common.utils.StringBuilderUtils;
@@ -50,6 +44,9 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * encode all send data except upload
@@ -103,7 +100,7 @@ public class RestClientEncoder {
           .argsToRest(invocation.getSwaggerArguments(), transportContext.getRestOperationMeta(), requestParameters);
     }
 
-    protected void writeCookies(@Nullable Map<String, String> cookieMap) {
+    protected void writeCookies(Map<String, String> cookieMap) {
       if (CollectionUtils.isEmpty(cookieMap)) {
         return;
       }
@@ -121,16 +118,16 @@ public class RestClientEncoder {
 
     protected void writeScbHeaders() throws JsonProcessingException {
       OperationConfig operationConfig = invocation.getOperationMeta().getConfig();
-      if (invocation.isThirdPartyInvocation() && operationConfig.isClientRequestHeaderFilterEnabled()) {
+      if (operationConfig.isClientRequestHeaderFilterEnabled()) {
         return;
       }
 
-      httpClientRequest.putHeader(Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
-      httpClientRequest.putHeader(Const.CSE_CONTEXT,
+      httpClientRequest.putHeader(CoreConst.TARGET_MICROSERVICE, invocation.getMicroserviceName());
+      httpClientRequest.putHeader(CoreConst.CSE_CONTEXT,
           RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(invocation.getContext()));
     }
 
-    protected void writeForm(@Nullable Map<String, Object> formMap) throws Exception {
+    protected void writeForm(Map<String, Object> formMap) throws Exception {
       if (requestParameters.getUploads() == null) {
         writeUrlEncodedForm(formMap);
         return;
@@ -139,7 +136,7 @@ public class RestClientEncoder {
       writeChunkedForm(formMap);
     }
 
-    protected void writeUrlEncodedForm(@Nullable Map<String, Object> formMap) throws Exception {
+    protected void writeUrlEncodedForm(Map<String, Object> formMap) throws Exception {
       if (formMap == null) {
         return;
       }
@@ -150,7 +147,7 @@ public class RestClientEncoder {
       requestParameters.setBodyBuffer(bodyBuffer);
     }
 
-    protected Buffer genUrlEncodedFormBuffer(@Nonnull Map<String, Object> formMap) throws Exception {
+    protected Buffer genUrlEncodedFormBuffer(Map<String, Object> formMap) throws Exception {
       // 2x faster than UriComponentsBuilder
       ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
       for (Entry<String, Object> entry : formMap.entrySet()) {
@@ -169,7 +166,7 @@ public class RestClientEncoder {
       return Buffer.buffer(byteBuf);
     }
 
-    protected void writeChunkedForm(@Nullable Map<String, Object> formMap) throws Exception {
+    protected void writeChunkedForm(Map<String, Object> formMap) throws Exception {
       String boundary = transportContext.getOrCreateBoundary();
 
       httpClientRequest.setChunked(true);
@@ -183,7 +180,7 @@ public class RestClientEncoder {
       requestParameters.setBodyBuffer(bodyBuffer);
     }
 
-    protected Buffer genChunkedFormBuffer(@Nonnull Map<String, Object> formMap, String boundary) throws Exception {
+    protected Buffer genChunkedFormBuffer(Map<String, Object> formMap, String boundary) throws Exception {
       ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
       for (Entry<String, Object> entry : formMap.entrySet()) {
         writeCharSequence(byteBuf, "\r\n--");

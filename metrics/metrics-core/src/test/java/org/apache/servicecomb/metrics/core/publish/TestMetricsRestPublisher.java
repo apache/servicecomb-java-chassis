@@ -16,21 +16,29 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
+import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
+
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.Clock;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
-import org.junit.jupiter.api.Assertions;
 
 public class TestMetricsRestPublisher {
   MetricsRestPublisher publisher = new MetricsRestPublisher();
+
+  Environment environment = Mockito.mock(Environment.class);
 
   @Test
   public void measure_globalRegistryNull() {
@@ -41,6 +49,12 @@ public class TestMetricsRestPublisher {
 
   @Test
   public void measure_normal() {
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+
     Clock clock = new ManualClock();
     GlobalRegistry globalRegistry = new GlobalRegistry();
     Registry registry = new DefaultRegistry(clock);
@@ -49,7 +63,7 @@ public class TestMetricsRestPublisher {
 
     EventBus eventBus = new EventBus();
 
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig());
+    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Map<String, Double> result = publisher.measure();
 
     Assertions.assertEquals(2, result.size());

@@ -42,13 +42,18 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.models.Swagger;
-import io.swagger.util.Json;
+import io.swagger.v3.core.util.Json;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class SwaggerEnvironment {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
 
-  public SwaggerConsumer createConsumer(Class<?> consumerIntf, Swagger swagger) {
+  /*
+   * For Consumer, first load swagger from resources. Generate one if not exists.
+   */
+  public SwaggerConsumer createConsumer(Class<?> consumerIntf, OpenAPI swagger) {
+    swagger = checkAndGenerateSwagger(consumerIntf, swagger);
+
     Map<Class<?>, ContextArgumentMapperFactory> contextFactorys = SPIServiceUtils
         .getOrLoadSortedService(ConsumerContextArgumentMapperFactory.class)
         .stream()
@@ -99,14 +104,20 @@ public class SwaggerEnvironment {
     return MethodUtils.findSwaggerMethodName(consumerMethod);
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {
-    return createProducer(producerInstance, null, swagger);
+  /*
+   * For producer, always generate swagger from code.
+   */
+  public SwaggerProducer createProducer(Object producerInstance) {
+    return createProducer(producerInstance, null);
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Class<?> schemaInterface, Swagger swagger) {
+  /*
+   * For producer, always generate swagger from code.
+   */
+  public SwaggerProducer createProducer(Object producerInstance, Class<?> schemaInterface) {
     Class<?> producerCls = targetSwaggerClass(producerInstance, schemaInterface);
 
-    swagger = checkAndGenerateSwagger(producerCls, swagger);
+    OpenAPI swagger = SwaggerGenerator.generate(producerCls);
 
     Map<Class<?>, ContextArgumentMapperFactory> contextFactories = SPIServiceUtils
         .getOrLoadSortedService(ProducerContextArgumentMapperFactory.class)
@@ -160,7 +171,7 @@ public class SwaggerEnvironment {
     return producer;
   }
 
-  private Swagger checkAndGenerateSwagger(Class<?> swaggerClass, Swagger swagger) {
+  private OpenAPI checkAndGenerateSwagger(Class<?> swaggerClass, OpenAPI swagger) {
     if (swagger == null) {
       swagger = SwaggerGenerator.generate(swaggerClass);
     }

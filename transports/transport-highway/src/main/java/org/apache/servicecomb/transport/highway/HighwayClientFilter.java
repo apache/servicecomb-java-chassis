@@ -18,11 +18,9 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
@@ -41,19 +39,18 @@ public class HighwayClientFilter implements ConsumerFilter {
 
   public static final String NAME = "highway-client";
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;
   }
 
   @Override
-  public boolean isEnabledForTransport(String transport) {
-    return Const.HIGHWAY.equals(transport);
+  public boolean enabledForTransport(String transport) {
+    return CoreConst.HIGHWAY.equals(transport);
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 2000;
   }
 

@@ -16,21 +16,34 @@
  */
 package org.apache.servicecomb.swagger.generator;
 
-import io.swagger.models.Operation;
-import io.swagger.models.properties.Property;
+
+import org.apache.servicecomb.swagger.generator.core.OperationGeneratorContext;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
 
 public interface OperationGenerator {
+  OpenAPI getSwagger();
+
   Operation getOperation();
 
   void setHttpMethod(String httpMethod);
 
   String getHttpMethod();
 
-  void addMethodResponseHeader(String name, Property property);
-
   void addOperationToSwagger();
 
   void setPath(String value);
 
-  void generateResponse();
+  OperationGeneratorContext getOperationGeneratorContext();
+
+  /**
+   * Used to check if one of operation has form parameter
+   */
+  boolean isForm();
+
+  /**
+   * Used to check if one of operation form parameter is binary
+   */
+  boolean isBinary();
 }

@@ -19,13 +19,16 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestHeader;
-
-import io.swagger.models.parameters.HeaderParameter;
+import org.springframework.web.bind.annotation.ValueConstants;
 
 public class RequestHeaderAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<HeaderParameter, RequestHeader> {
+    SpringmvcParameterAnnotationsProcessor<RequestHeader> {
   @Override
   public Type getProcessType() {
     return RequestHeader.class;
@@ -37,21 +40,25 @@ public class RequestHeaderAnnotationProcessor extends
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
+    if (StringUtils.isNotEmpty(value)) {
+      return value;
+    }
+    return null;
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(RequestHeader parameterAnnotation) {
-    return HttpParameterType.HEADER;
-  }
-
-  @Override
-  protected boolean readRequired(RequestHeader requestHeader) {
-    return requestHeader.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(RequestHeader requestHeader) {
-    return requestHeader.defaultValue();
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestHeader annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.HEADER);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
+    }
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
+    if (!ValueConstants.DEFAULT_NONE.equals(annotation.defaultValue())) {
+      parameterGenerator.getParameterGeneratorContext()
+          .setDefaultValue(annotation.defaultValue());
+      // if default value is set, must be required false.
+      parameterGenerator.getParameterGeneratorContext().setRequired(false);
+    }
   }
 }

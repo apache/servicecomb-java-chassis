@@ -1,0 +1,141 @@
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+
+---
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.FullSwaggerService
+  version: 1.0.0
+servers:
+- url: /FullSwaggerService
+paths:
+  /defaultValue:
+    get:
+      operationId: defaultValue
+      parameters:
+      - name: e
+        in: query
+        schema:
+          type: integer
+          format: int32
+      - name: a
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 20
+      - name: b
+        in: query
+        schema:
+          type: string
+          default: bobo
+      - name: c
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 40
+      - name: d
+        in: query
+        schema:
+          maximum: 30
+          minimum: 20
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+  /fileDownload:
+    get:
+      operationId: fileDownload
+      responses:
+        "200":
+          description: response of 200
+          content:
+            '*/*':
+              schema:
+                type: string
+                format: binary
+  /fileUpload:
+    post:
+      operationId: fileUpload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file1:
+                  type: string
+                  format: binary
+                file2:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: response of 200
+          content:
+            text/plain:
+              schema:
+                type: string
+  /queryListMULTI:
+    get:
+      operationId: queryListMULTI
+      parameters:
+      - name: queryList
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: array
+          items:
+            type: string
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+            application/protobuf:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+  /textPlain:
+    get:
+      operationId: textPlain
+      responses:
+        "200":
+          description: response of 200
+          content:
+            text/plain:
+              schema:
+                type: string
+components: {}

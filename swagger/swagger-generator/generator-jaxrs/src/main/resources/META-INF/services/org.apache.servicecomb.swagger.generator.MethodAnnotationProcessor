@@ -15,11 +15,11 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesMethodAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ProducesMethodAnnotationProcessor
 org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PathMethodAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.GetAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PostAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PutAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.DeleteAnnotationProcessor
-org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PatchAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.GetMethodAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PostMethodAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PutMethodAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.DeleteMethodAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PatchMethodAnnotationProcessor

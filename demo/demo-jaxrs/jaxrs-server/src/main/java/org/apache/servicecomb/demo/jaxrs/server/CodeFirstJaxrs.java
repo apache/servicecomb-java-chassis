@@ -19,68 +19,66 @@ package org.apache.servicecomb.demo.jaxrs.server;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.CookieParam;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
-import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
-import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ResponseHeader;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.vertx.core.json.JsonObject;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.CookieParam;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 @RestSchema(schemaId = "codeFirst")
 @Path("/codeFirstJaxrs")
 @Produces(MediaType.APPLICATION_JSON)
 public class CodeFirstJaxrs {
-  @ApiResponse(code = 200, response = User.class, message = "")
-  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
-      @ResponseHeader(name = "h2", response = String.class)})
+  @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = User.class)), description = "",
+      headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),
+          @Header(name = "h2", schema = @Schema(implementation = String.class))})
   @Path("/cseResponse")
   @GET
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
-    response.setHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
+    response.setHeader("h1", "h1v " + c1.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    response.setHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
+    response.setHeader("h2", "h2v " + c2.getContext().get(CoreConst.SRC_MICROSERVICE));
 
     return response;
   }
@@ -95,14 +93,6 @@ public class CodeFirstJaxrs {
   @POST
   @Consumes(MediaType.TEXT_PLAIN)
   public String textPlain(String body) {
-    return body;
-  }
-
-  @Path("/appXml")
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_XML)
-  public JAXBPerson appXml(JAXBPerson body) {
     return body;
   }
 
@@ -132,7 +122,7 @@ public class CodeFirstJaxrs {
 
   @Path("/reduce")
   @GET
-  @ApiImplicitParams({@ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query")})
+  @Parameters({@Parameter(name = "a", schema = @Schema(implementation = int.class), in = ParameterIn.QUERY)})
   public int reduce(HttpServletRequest request, @CookieParam("b") int b) {
     int a = Integer.parseInt(request.getParameter("a"));
     return a - b;
@@ -223,48 +213,14 @@ public class CodeFirstJaxrs {
   @Path("/traceId")
   @GET
   public String getTraceId() {
-    return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
-  }
-
-  @Path("/upload1")
-  @POST
-  @Produces(MediaType.TEXT_PLAIN)
-  public String fileUpload1(@FormParam("file1") Part file1, @FormParam("file2") Part file2) throws IOException {
-    if (file1 == null || file2 == null) {
-      return "null file";
-    }
-    try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
-      String content1 = IOUtils.toString(is1, StandardCharsets.UTF_8);
-      String content2 = IOUtils.toString(is2, StandardCharsets.UTF_8);
-      return String.format("%s:%s:%s\n" + "%s:%s:%s",
-          file1.getSubmittedFileName(),
-          file1.getContentType(),
-          content1,
-          file2.getSubmittedFileName(),
-          file2.getContentType(),
-          content2);
-    }
+    return ContextUtils.getInvocationContext().getContext(CoreConst.TRACE_ID_NAME);
   }
 
   @GET
   @Path("/responseLong")
-  @ApiResponse(code = 200, response = Object.class, message = "")
+  @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Object.class)), description = "")
   public Response responseLong() {
     return Response.createSuccess(Long.MAX_VALUE);
-  }
-
-  @Path("/upload2")
-  @POST
-  @Produces(MediaType.TEXT_PLAIN)
-  public String fileUpload2(@FormParam("file1") Part file1, @FormParam("message") String message) throws IOException {
-    try (InputStream is1 = file1.getInputStream()) {
-      String content1 = IOUtils.toString(is1, StandardCharsets.UTF_8);
-      return String.format("%s:%s:%s:%s",
-          file1.getSubmittedFileName(),
-          file1.getContentType(),
-          content1,
-          message);
-    }
   }
 
   @Path("/download/testDeleteAfterFinished")

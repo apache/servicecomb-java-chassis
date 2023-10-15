@@ -17,33 +17,32 @@
 
 package org.apache.servicecomb.registry.lightweight;
 
-import java.time.Duration;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.Discovery;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.lightweight.store.Store;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class AbstractLightweightDiscovery implements Discovery, InitializingBean {
+public abstract class AbstractLightweightDiscovery<D extends DiscoveryInstance> implements Discovery<D> {
+  public static final String ZERO_CONFIG_NAME = "zero-config-discovery";
+
+  public static final String ZERO_DISCOVERY_ENABLED = "servicecomb.registry.zero-config.%s.%s.enabled";
+
   protected EventBus eventBus;
 
   protected Store store;
 
   protected String revision;
+
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
   @Autowired
   public AbstractLightweightDiscovery setEventBus(EventBus eventBus) {
@@ -58,30 +57,8 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
-    eventBus.register(this);
-  }
-
-  @SuppressWarnings("unused")
-  @Subscribe
-  public void onSchemaChanged(SchemaChangedEvent event) {
-    Microservice microservice = event.getMicroservice();
-    DiscoveryManager.INSTANCE.getAppManager().markWaitingDelete(microservice.getAppId(), microservice.getServiceName());
-  }
-
-  protected void startPullInstances(Duration pullInterval) {
-    Executors
-        .newSingleThreadScheduledExecutor(runnable -> new Thread(runnable, name()))
-        .scheduleAtFixedRate(DiscoveryManager.INSTANCE.getAppManager()::safePullInstances, 0, pullInterval.getSeconds(),
-            TimeUnit.SECONDS);
-  }
-
-  @Override
   public void init() {
-  }
-
-  @Override
-  public void run() {
+    eventBus.register(this);
   }
 
   @Override
@@ -89,37 +66,8 @@ public abstract class AbstractLightweightDiscovery implements Discovery, Initial
   }
 
   @Override
-  public Microservice getMicroservice(String microserviceId) {
-    return store.getMicroservice(microserviceId)
-        .orElse(null);
-  }
-
-  @Override
-  public List<Microservice> getAllMicroservices() {
-    return store.getAllMicroservices();
-  }
-
-  @Override
-  public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId) {
-    return Optional.ofNullable(store.findMicroserviceStore(microserviceId))
-        .map(MicroserviceStore::getMicroservice)
-        .map(microservice -> microservice.getSchemaMap().get(schemaId))
-        .orElse(null);
-  }
-
-  @Override
-  public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
-    return store.getMicroserviceInstance(instanceId)
-        .orElse(null);
-  }
-
-  // ignore versionRule, instances only filter by consumer logic
-  @Override
-  public MicroserviceInstances findServiceInstances(String appId, String serviceName, String uselessVersionRule) {
-    MicroserviceInstances microserviceInstances = store.findServiceInstances(appId, serviceName, this.revision);
-    if (!microserviceInstances.isMicroserviceNotExist() && microserviceInstances.isNeedRefresh()) {
-      this.revision = microserviceInstances.getRevision();
-    }
-    return microserviceInstances;
+  public boolean enabled(String application, String serviceName) {
+    return environment.getProperty(String.format(ZERO_DISCOVERY_ENABLED, application, serviceName),
+        boolean.class, true);
   }
 }

@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.rest;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 
@@ -36,7 +37,7 @@ public abstract class RestOperationGenerator extends AbstractOperationGenerator 
 
   protected void checkPath() {
     if (StringUtils.isEmpty(path)
-        && StringUtils.isEmpty(swagger.getBasePath())) {
+        && StringUtils.isEmpty(SwaggerUtils.getBasePath(swagger))) {
       throw new IllegalStateException("Path must not both be empty in class and method");
     }
   }

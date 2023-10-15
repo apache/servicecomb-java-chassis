@@ -17,7 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 public final class SwaggerConst {
   private SwaggerConst() {
@@ -26,6 +27,14 @@ public final class SwaggerConst {
 
   public static final String SUCCESS_KEY = String.valueOf(Response.Status.OK.getStatusCode());
 
+  public static final String DEFAULT_MEDIA_TYPE = MediaType.APPLICATION_JSON;
+
+  public static final String FORM_MEDIA_TYPE = MediaType.APPLICATION_FORM_URLENCODED;
+
+  public static final String FILE_MEDIA_TYPE = MediaType.MULTIPART_FORM_DATA;
+
+  public static final String PROTOBUF_TYPE = "application/protobuf";
+
   public static final String EXT_JAVA_INTF = "x-java-interface";
 
   public static final String EXT_JAVA_CLASS = "x-java-class";
@@ -33,4 +42,6 @@ public final class SwaggerConst {
   public static final String EXT_RAW_JSON_TYPE = "x-raw-json";
 
   public static final String EXT_JSON_VIEW = "x-json-view";
+
+  public static final String EXT_BODY_NAME = "x-name";
 }

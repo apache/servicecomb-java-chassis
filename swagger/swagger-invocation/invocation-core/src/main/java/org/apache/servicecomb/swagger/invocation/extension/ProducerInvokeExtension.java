@@ -27,6 +27,6 @@ public interface ProducerInvokeExtension {
   int getOrder();
 
   ///Invoked before the method execution to handle the required checks before method invocation.
-  <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
+  void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
       Object[] args) throws Exception;
 }

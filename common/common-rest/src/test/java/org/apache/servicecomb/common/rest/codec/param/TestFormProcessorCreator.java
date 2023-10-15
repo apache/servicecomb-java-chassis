@@ -17,21 +17,31 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
-import org.junit.jupiter.api.Assertions;
+import java.util.HashMap;
 
-import io.swagger.models.parameters.FormParameter;
+import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class TestFormProcessorCreator {
   @Test
   public void testCreate() {
     ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.findValue(FormProcessorCreator.PARAMTYPE);
-    FormParameter p = new FormParameter();
-    p.setName("p1");
+    RequestBody p = new RequestBody();
+    p.setContent(new Content());
+    p.getContent().addMediaType(SwaggerConst.FORM_MEDIA_TYPE, new MediaType());
+    p.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).setSchema(new Schema());
+    p.getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema().setProperties(new HashMap<>());
 
-    ParamValueProcessor processor = creator.create(p, String.class);
+    ParamValueProcessor processor = creator.create(null, "p1", p, String.class);
 
     Assertions.assertEquals(FormProcessor.class, processor.getClass());
   }

@@ -17,16 +17,12 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
@@ -35,11 +31,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 import mockit.Mocked;
 
 public class TestVertxRestDispatcher {
@@ -53,23 +52,35 @@ public class TestVertxRestDispatcher {
 
   Throwable throwable;
 
+  Environment environment = Mockito.mock(Environment.class);
+
   @Before
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty(
+            RestConst.UPLOAD_MAX_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_MAX_FILE_SIZE, long.class, -1L))
+        .thenReturn(-1L);
+    Mockito.when(environment.getProperty(RestConst.UPLOAD_FILE_SIZE_THRESHOLD, int.class, 0))
+        .thenReturn(0);
+
     dispatcher = new VertxRestDispatcher();
     dispatcher.init(mainRouter);
 
-    SCBBootstrap.createSCBEngineForTest().setTransportManager(transportManager);
+    SCBBootstrap.createSCBEngineForTest(environment).setTransportManager(transportManager);
   }
 
   @After
   public void teardown() {
     SCBEngine.getInstance().destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void getOrder() {
+    Mockito.when(environment.getProperty(
+            "servicecomb.http.dispatcher.rest.order", int.class, Integer.MAX_VALUE))
+        .thenReturn(Integer.MAX_VALUE);
     Assertions.assertEquals(Integer.MAX_VALUE, dispatcher.getOrder());
   }
 

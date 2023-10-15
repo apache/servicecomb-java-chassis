@@ -106,8 +106,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://service30100:30100
-                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                          -Dservicecomb.registry.sc.address=http://service30100:30100
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/demo-multi-service-center-servera-${project.version}.jar</JAR_PATH>
                       </env>
@@ -115,7 +114,7 @@
                         <link>service30100:service30100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>8080</port>
@@ -135,8 +134,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://service40100:30100
-                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                          -Dservicecomb.registry.sc.address=http://service40100:30100
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/demo-multi-service-center-serverb-${project.version}.jar</JAR_PATH>
                       </env>
@@ -144,7 +142,7 @@
                         <link>service40100:service40100</link>
                       </links>
                       <wait>
-                        <log>Register microservice instance success</log>
+                        <log>ServiceComb is ready</log>
                         <tcp>
                           <ports>
                             <port>8082</port>
@@ -184,34 +182,9 @@
             <artifactId>docker-maven-plugin</artifactId>
           </plugin>
           <plugin>
-            <groupId>org.codehaus.gmavenplus</groupId>
-            <artifactId>gmavenplus-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>add-default-properties</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>execute</goal>
-                </goals>
-                <configuration>
-                  <scripts>
-                    <script>
-                      project.properties.setProperty('docker.hostname', 'localhost')
-                      log.info("Docker hostname is " + project.properties['docker.hostname'])
-                    </script>
-                  </scripts>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
             <configuration>
-              <systemPropertyVariables>
-                <servicecomb.service.registry.address>http://${docker.hostname}:30100
-                </servicecomb.service.registry.address>
-              </systemPropertyVariables>
               <argLine>${jacoco.failsafe.argLine}</argLine>
             </configuration>
             <executions>

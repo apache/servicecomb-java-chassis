@@ -17,19 +17,14 @@
 
 package org.apache.servicecomb.registry.api;
 
-import java.util.Collection;
-
 import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
-import org.apache.servicecomb.registry.api.registry.BasePath;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+
 
 /**
  * This is the core service registration interface. <br/>
  */
-public interface Registration extends SPIEnabled, SPIOrder, LifeCycle {
+public interface Registration<R extends RegistrationInstance> extends SPIEnabled, SPIOrder, LifeCycle {
   String name();
 
   /**
@@ -37,21 +32,7 @@ public interface Registration extends SPIEnabled, SPIOrder, LifeCycle {
    *
    * Life Cycle：This method is called anytime after <code>run</code>.
    */
-  MicroserviceInstance getMicroserviceInstance();
-
-  /**
-   * get Microservice </br>
-   *
-   * Life Cycle：This method is called anytime after <code>run</code>.
-   */
-  Microservice getMicroservice();
-
-  /**
-   * get application id </br>
-   *
-   * Life Cycle：This method is called anytime after <code>run</code>.
-   */
-  String getAppId();
+  R getMicroserviceInstance();
 
   /**
    * update MicroserviceInstance status </br>
@@ -75,9 +56,9 @@ public interface Registration extends SPIEnabled, SPIOrder, LifeCycle {
   void addEndpoint(String endpoint);
 
   /**
-   * adding BasePath to MicroserviceInstance </br>
+   * adding property to MicroserviceInstance </br>
    *
    * Life Cycle：This method is called after <code>init</code> and before <code>run</code>.
    */
-  void addBasePath(Collection<BasePath> basePaths);
+  void addProperty(String key, String value);
 }

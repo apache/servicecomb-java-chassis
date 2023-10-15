@@ -21,15 +21,13 @@ import java.nio.channels.ClosedChannelException;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
 import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
@@ -46,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -62,6 +59,8 @@ import io.vertx.core.net.impl.ConnectionBase;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 public class RestServerVerticle extends AbstractVerticle {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServerVerticle.class);
@@ -100,8 +99,8 @@ public class RestServerVerticle extends AbstractVerticle {
         DefaultHttpServerMetrics serverMetrics = (DefaultHttpServerMetrics) ((ConnectionBase) connection).metrics();
         DefaultServerEndpointMetric endpointMetric = serverMetrics.getEndpointMetric();
         long connectedCount = endpointMetric.getCurrentConnectionCount();
-        int connectionLimit = DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
+        int connectionLimit = LegacyPropertyFactory.getIntProperty("servicecomb.rest.server.connection-limit",
+            Integer.MAX_VALUE);
         if (connectedCount > connectionLimit) {
           connection.close();
           endpointMetric.onRejectByConnectionLimit();
@@ -250,7 +249,6 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private HttpServerOptions createDefaultHttpServerOptions() {
     HttpServerOptions serverOptions = new HttpServerOptions();
-    serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
     serverOptions.setMaxFormAttributeSize(TransportConfig.getMaxFormAttributeSize());
@@ -258,10 +256,13 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setMaxChunkSize(TransportConfig.getMaxChunkSize());
     serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
     serverOptions.setDecoderInitialBufferSize(TransportConfig.getDecoderInitialBufferSize());
-    serverOptions.setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
     if (endpointObject.isHttp2Enabled()) {
       serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
+          .setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize())
+          .setIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
+          .setReadIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
+          .setWriteIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
           .setInitialSettings(new Http2Settings().setPushEnabled(TransportConfig.getPushEnabled())
               .setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams())
               .setHeaderTableSize(TransportConfig.getHttp2HeaderTableSize())
@@ -269,13 +270,17 @@ public class RestServerVerticle extends AbstractVerticle {
               .setMaxFrameSize(TransportConfig.getMaxFrameSize())
               .setMaxHeaderListSize(TransportConfig.getMaxHeaderListSize())
           );
+    } else {
+      serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
+      serverOptions.setReadIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
+      serverOptions.setWriteIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+          SSLOptionFactory.createSSLOptionFactory(SSL_KEY, LegacyPropertyFactory.getEnvironment());
       SSLOption sslOption;
       if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(SSL_KEY);
+        sslOption = SSLOption.build(SSL_KEY, LegacyPropertyFactory.getEnvironment());
       } else {
         sslOption = factory.createSSLOption();
       }

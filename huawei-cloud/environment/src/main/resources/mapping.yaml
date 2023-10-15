@@ -17,11 +17,11 @@
 servicecomb-config-order: -100
 
 PAAS_CSE_ENDPOINT:
-  - servicecomb.service.registry.address
+  - servicecomb.registry.sc.address
   - servicecomb.config.client.serverUri
   - servicecomb.monitor.client.serverUri
 PAAS_CSE_SC_ENDPOINT:
-  - servicecomb.service.registry.address
+  - servicecomb.registry.sc.address
 PAAS_CSE_CC_ENDPOINT:
   - servicecomb.config.client.serverUri
 PAAS_CSE_DS_ENDPOINT:

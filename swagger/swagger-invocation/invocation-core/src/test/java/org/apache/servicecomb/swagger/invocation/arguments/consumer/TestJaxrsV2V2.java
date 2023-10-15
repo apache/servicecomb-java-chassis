@@ -31,16 +31,16 @@ import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBodyV2;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
 import org.junit.Test;
-
-import io.swagger.models.Swagger;
 import org.junit.jupiter.api.Assertions;
+
+import io.swagger.v3.oas.models.OpenAPI;
 
 @SuppressWarnings("unchecked")
 public class TestJaxrsV2V2 {
   @Test
   public void add_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -48,7 +48,7 @@ public class TestJaxrsV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("z", 3);
+    arguments.put("x-z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
@@ -62,7 +62,7 @@ public class TestJaxrsV2V2 {
   @Test
   public void add_addBeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -70,7 +70,7 @@ public class TestJaxrsV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("z", 3);
+    arguments.put("x-z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
@@ -84,7 +84,7 @@ public class TestJaxrsV2V2 {
   @Test
   public void add_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBodyV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -108,7 +108,7 @@ public class TestJaxrsV2V2 {
   @Test
   public void addBody_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -128,7 +128,7 @@ public class TestJaxrsV2V2 {
   @Test
   public void addBody_addBeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -148,7 +148,7 @@ public class TestJaxrsV2V2 {
   @Test
   public void addBody_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(JaxrsAddBodyV2.class);
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 

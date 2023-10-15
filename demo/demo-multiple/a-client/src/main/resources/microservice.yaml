@@ -16,11 +16,12 @@
 ## ---------------------------------------------------------------------------
 
 a-server.name: a-server
-APPLICATION_ID: multiple
-service_description:
-  name: a-client
-  version: 0.0.1
+
 servicecomb:
   service:
-    registry:
+    application: multiple
+    name: a-client
+    version: 0.0.1
+  registry:
+    sc:
       address: http://127.0.0.1:30100

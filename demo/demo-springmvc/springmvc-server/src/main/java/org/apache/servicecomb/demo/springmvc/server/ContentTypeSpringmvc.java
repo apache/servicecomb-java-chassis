@@ -17,20 +17,20 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
+import java.util.Arrays;
 
+import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "contentTypeSpringmvc")
-@RequestMapping("/contentTypeSpringmvc")
-@Api(consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
+@RequestMapping(value = "/contentTypeSpringmvc", consumes = MediaType.TEXT_PLAIN, produces = MediaType.TEXT_PLAIN)
 public class ContentTypeSpringmvc {
   @RequestMapping(path = "/testGlobalSetting", method = RequestMethod.POST)
   public String testGlobalSetting(@RequestBody String name, HttpServletRequest request) {
@@ -38,7 +38,6 @@ public class ContentTypeSpringmvc {
   }
 
   @RequestMapping(path = "/testApiOperation", method = RequestMethod.POST)
-  @ApiOperation(value = "testApiOperation desc", consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
   public String testApiOperation(@RequestBody String name, HttpServletRequest request) {
     return String.format("testApiOperation: name=[%s], request content-type=[%s]", name, request.getContentType());
   }
@@ -47,5 +46,13 @@ public class ContentTypeSpringmvc {
       consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
   public String testRequestMapping(@RequestBody String name, HttpServletRequest request) {
     return String.format("testRequestMapping: name=[%s], request content-type=[%s]", name, request.getContentType());
+  }
+
+  @RequestMapping(path = "/testProtoBuffer", method = RequestMethod.POST,
+      consumes = SwaggerConst.PROTOBUF_TYPE, produces = SwaggerConst.PROTOBUF_TYPE)
+  public String testProtoBuffer(@RequestBody User user, HttpServletRequest request) {
+    return String.format("testRequestMapping: name=[%s], request content-type=[%s]",
+        user.getName() + ":" + user.getIndex() + ":" +
+            Arrays.toString(user.getNames()), request.getContentType());
   }
 }

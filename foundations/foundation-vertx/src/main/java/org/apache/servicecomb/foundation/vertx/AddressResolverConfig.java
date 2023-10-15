@@ -20,11 +20,9 @@ package org.apache.servicecomb.foundation.vertx;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.dns.AddressResolverOptions;
 
@@ -37,84 +35,69 @@ public class AddressResolverConfig {
    * @param tag config tag, such as sc.consumer or cc.consumer
    * @return AddressResolverOptions
    */
-  public static AddressResolverOptions getAddressResover(String tag) {
-    return getAddressResover(tag, null);
-  }
-
-  /**
-   * get the target endpoints with custom address resolve config
-   * @param tag config tag, such as sc.consumer or cc.consumer
-   * @param configSource get config from special config source
-   * @return AddressResolverOptions
-   */
-  public static AddressResolverOptions getAddressResover(String tag, Configuration configSource) {
+  public static AddressResolverOptions getAddressResolverOptions(String tag) {
     AddressResolverOptions addressResolverOptions = new AddressResolverOptions();
     addressResolverOptions
-        .setServers(getStringListProperty(configSource,
+        .setServers(getStringListProperty(
             AddressResolverOptions.DEFAULT_SERVERS,
             "addressResolver." + tag + ".servers",
             "addressResolver.servers"));
     addressResolverOptions
-        .setOptResourceEnabled(getBooleanProperty(configSource,
+        .setOptResourceEnabled(getBooleanProperty(
             AddressResolverOptions.DEFAULT_OPT_RESOURCE_ENABLED,
             "addressResolver." + tag + ".optResourceEnabled",
             "addressResolver.optResourceEnabled"));
     addressResolverOptions
-        .setCacheMinTimeToLive(getPositiveIntProperty(configSource,
+        .setCacheMinTimeToLive(getPositiveIntProperty(
             AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheMinTimeToLive",
             "addressResolver.cacheMinTimeToLive"));
     addressResolverOptions
-        .setCacheMaxTimeToLive(getPositiveIntProperty(configSource,
+        .setCacheMaxTimeToLive(getPositiveIntProperty(
             AddressResolverOptions.DEFAULT_CACHE_MAX_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheMaxTimeToLive",
             "addressResolver.cacheMaxTimeToLive"));
     addressResolverOptions
-        .setCacheNegativeTimeToLive(getPositiveIntProperty(configSource,
+        .setCacheNegativeTimeToLive(getPositiveIntProperty(
             AddressResolverOptions.DEFAULT_CACHE_NEGATIVE_TIME_TO_LIVE,
             "addressResolver." + tag + ".cacheNegativeTimeToLive",
             "addressResolver.cacheNegativeTimeToLive"));
     addressResolverOptions
-        .setQueryTimeout(getPositiveIntProperty(configSource,
+        .setQueryTimeout(getPositiveIntProperty(
             AddressResolverOptions.DEFAULT_QUERY_TIMEOUT,
             "addressResolver." + tag + ".queryTimeout",
             "addressResolver.queryTimeout"));
     addressResolverOptions
-        .setMaxQueries(getPositiveIntProperty(configSource,
+        .setMaxQueries(getPositiveIntProperty(
             AddressResolverOptions.DEFAULT_MAX_QUERIES,
             "addressResolver." + tag + ".maxQueries",
             "addressResolver.maxQueries"));
     addressResolverOptions
-        .setRdFlag(getBooleanProperty(configSource,
+        .setRdFlag(getBooleanProperty(
             AddressResolverOptions.DEFAULT_RD_FLAG,
             "addressResolver." + tag + ".rdFlag",
             "addressResolver.rdFlag"));
     addressResolverOptions
-        .setSearchDomains(getStringListProperty(configSource,
+        .setSearchDomains(getStringListProperty(
             AddressResolverOptions.DEFAULT_SEACH_DOMAINS,
             "addressResolver." + tag + ".searchDomains",
             "addressResolver.searchDomains"));
     addressResolverOptions
-        .setNdots(getPositiveIntProperty(configSource,
+        .setNdots(getPositiveIntProperty(
             AddressResolverOptions.DEFAULT_NDOTS,
             "addressResolver." + tag + ".ndots",
             "addressResolver.ndots"));
     addressResolverOptions
-        .setRotateServers(getBooleanProperty(configSource,
+        .setRotateServers(getBooleanProperty(
             AddressResolverOptions.DEFAULT_ROTATE_SERVERS,
             "addressResolver." + tag + ".rotateServers",
             "addressResolver.rotateServers"));
     return addressResolverOptions;
   }
 
-  private static List<String> getStringListProperty(Configuration configSource,
-      List<String> defaultValue, String... keys) {
-    configSource = guardConfigSource(configSource);
-    if (configSource == null) {
-      return defaultValue;
-    }
+  private static List<String> getStringListProperty(List<String> defaultValue, String... keys) {
     for (String key : keys) {
-      String[] vals = configSource.getStringArray(key);
+      String[] vals = LegacyPropertyFactory.getProperty(key, String[].class);
       if (vals != null && vals.length > 0) {
         return Arrays.asList(vals);
       }
@@ -122,13 +105,9 @@ public class AddressResolverConfig {
     return defaultValue;
   }
 
-  private static int getPositiveIntProperty(Configuration configSource, int defaultValue, String... keys) {
-    configSource = guardConfigSource(configSource);
-    if (configSource == null) {
-      return defaultValue;
-    }
+  private static int getPositiveIntProperty(int defaultValue, String... keys) {
     for (String key : keys) {
-      Integer val = configSource.getInteger(key, null);
+      Integer val = LegacyPropertyFactory.getProperty(key, Integer.class);
       if (val != null && val <= 0) {
         LOGGER.warn("Address resover key:{}'s value:{} is not positive, please check!", key, val);
         continue;
@@ -140,25 +119,14 @@ public class AddressResolverConfig {
     return defaultValue;
   }
 
-  private static boolean getBooleanProperty(Configuration configSource, boolean defaultValue,
+  private static boolean getBooleanProperty(boolean defaultValue,
       String... keys) {
-    configSource = guardConfigSource(configSource);
-    if (configSource == null) {
-      return defaultValue;
-    }
     for (String key : keys) {
-      Boolean val = configSource.getBoolean(key, null);
+      Boolean val = LegacyPropertyFactory.getProperty(key, Boolean.class);
       if (val != null) {
         return val;
       }
     }
     return defaultValue;
-  }
-
-  private static Configuration guardConfigSource(Configuration configSource) {
-    if (configSource == null && DynamicPropertyFactory.getBackingConfigurationSource() != null) {
-      configSource = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    }
-    return configSource;
   }
 }

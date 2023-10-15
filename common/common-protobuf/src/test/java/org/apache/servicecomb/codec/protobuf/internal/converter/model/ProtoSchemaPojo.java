@@ -26,11 +26,14 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 public class ProtoSchemaPojo implements ProtoSchemaIntf {
-  @ApiResponses(value = {@ApiResponse(code = 444, response = Color.class, message = "xxx")})
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "444", content = @Content(schema = @Schema(implementation = Color.class)), description = "xxx")})
   public int base(boolean boolValue, int iValue, long lValue, float fValue, double dValue, String sValue, int[] iArray,
       Color color,
       LocalDate localDate, Date date, Empty empty) {

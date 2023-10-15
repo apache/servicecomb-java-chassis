@@ -41,6 +41,10 @@
     <property name="message" value="Trailing whitespace"/>
     <property name="severity" value="error"/>
   </module>
+  <module name="SuppressWithPlainTextCommentFilter">
+    <property name="offCommentFormat" value="CHECKSTYLE.OFF"/>
+    <property name="onCommentFormat" value="CHECKSTYLE.ON"/>
+  </module>
   <module name="TreeWalker">
     <module name="AvoidStarImport"/>
     <module name="EmptyStatement"/>

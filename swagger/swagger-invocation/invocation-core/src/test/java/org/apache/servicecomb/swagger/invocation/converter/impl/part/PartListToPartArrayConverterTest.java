@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
 import java.util.Arrays;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.hamcrest.MatcherAssert;
@@ -31,7 +31,7 @@ public class PartListToPartArrayConverterTest {
 
   @Test
   public void getSrcType() {
-    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
+    Assertions.assertEquals("java.util.List<jakarta.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
   @Test

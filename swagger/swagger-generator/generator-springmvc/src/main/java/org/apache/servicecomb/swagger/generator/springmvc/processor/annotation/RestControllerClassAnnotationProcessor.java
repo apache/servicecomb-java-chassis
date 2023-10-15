@@ -20,11 +20,12 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 import java.lang.reflect.Type;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class RestControllerClassAnnotationProcessor implements ClassAnnotationProcessor<RestController> {
   @Override
@@ -34,9 +35,9 @@ public class RestControllerClassAnnotationProcessor implements ClassAnnotationPr
 
   @Override
   public void process(SwaggerGenerator swaggerGenerator, RestController restController) {
-    Swagger swagger = swaggerGenerator.getSwagger();
-    if (StringUtils.isEmpty(swagger.getBasePath())) {
-      swagger.setBasePath("/");
+    OpenAPI swagger = swaggerGenerator.getOpenAPI();
+    if (StringUtils.isEmpty(SwaggerUtils.getBasePath(swagger))) {
+      SwaggerUtils.setBasePath(swagger, "/");
     }
   }
 }

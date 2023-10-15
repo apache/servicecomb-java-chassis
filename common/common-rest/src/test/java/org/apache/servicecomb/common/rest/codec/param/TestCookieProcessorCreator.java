@@ -19,9 +19,10 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.CookieProcessorCreator.CookieProcessor;
 import org.junit.jupiter.api.Assertions;
-
-import io.swagger.models.parameters.CookieParameter;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.CookieParameter;
 
 public class TestCookieProcessorCreator {
   @Test
@@ -30,8 +31,8 @@ public class TestCookieProcessorCreator {
         ParamValueProcessorCreatorManager.INSTANCE.findValue(CookieProcessorCreator.PARAMTYPE);
     CookieParameter p = new CookieParameter();
     p.setName("p1");
-
-    ParamValueProcessor processor = creator.create(p, String.class);
+    p.setSchema(new Schema());
+    ParamValueProcessor processor = creator.create(null, p.getName(), p, String.class);
 
     Assertions.assertEquals(CookieProcessor.class, processor.getClass());
   }

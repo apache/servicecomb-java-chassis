@@ -19,13 +19,15 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import io.swagger.models.parameters.PathParameter;
-
 public class PathVariableAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<PathParameter, PathVariable> {
+    SpringmvcParameterAnnotationsProcessor<PathVariable> {
   @Override
   public Type getProcessType() {
     return PathVariable.class;
@@ -37,23 +39,19 @@ public class PathVariableAnnotationProcessor extends
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
+    if (StringUtils.isNotEmpty(value)) {
+      return value;
+    }
+    return null;
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(PathVariable parameterAnnotation) {
-    return HttpParameterType.PATH;
-  }
-
-  @Override
-  protected boolean readRequired(PathVariable pathVariable) {
-    // path always is required
-    return true;
-  }
-
-  @Override
-  protected String pureReadDefaultValue(PathVariable pathVariable) {
-    // no default for path
-    return "";
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, PathVariable annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.PATH);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
+    }
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }

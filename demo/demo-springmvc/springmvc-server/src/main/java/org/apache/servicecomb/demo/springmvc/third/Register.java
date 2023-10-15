@@ -17,26 +17,37 @@
 
 package org.apache.servicecomb.demo.springmvc.third;
 
-import java.util.Arrays;
+import java.util.List;
 
-import org.apache.servicecomb.provider.pojo.registry.ThirdServiceWithInvokerRegister;
-import org.springframework.stereotype.Component;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.localregistry.RegistryBean;
+import org.apache.servicecomb.localregistry.RegistryBean.Instance;
+import org.apache.servicecomb.localregistry.RegistryBean.Instances;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * see: https://github.com/apache/servicecomb-java-chassis/issues/2534
  */
-@Component
-public class Register extends ThirdServiceWithInvokerRegister {
-  public Register() {
-    super("third");
-    addSchema("heartbeat", HealthSchema.class);
-    if (DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
-      setUrls("", Arrays.asList("rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi"));
+@Configuration
+public class Register {
+  @Autowired
+  Environment environment;
+
+  @Bean
+  public RegistryBean thirdRegistryBean() {
+    String endpoint;
+    if (environment.getProperty("servicecomb.test.vert.transport", boolean.class, true)) {
+      endpoint = "rest://localhost:8080?sslEnabled=false&urlPrefix=%2Fapi";
     } else {
-      setUrls("", Arrays.asList("rest://localhost:8080?sslEnabled=false"));
+      endpoint = "rest://localhost:8080?sslEnabled=false";
     }
+
+    return new RegistryBean().addSchemaInterface("heartbeat", HealthSchema.class)
+        .setAppId("springmvctest")
+        .setServiceName("third")
+        .setVersion("0.0.1")
+        .setInstances(new Instances().setInstances(List.of(new Instance().setEndpoints(List.of(endpoint)))));
   }
 }

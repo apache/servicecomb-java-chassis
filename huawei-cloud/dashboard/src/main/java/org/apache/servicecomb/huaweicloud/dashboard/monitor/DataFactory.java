@@ -23,13 +23,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import io.netty.util.concurrent.DefaultThreadFactory;
 
@@ -40,11 +39,14 @@ public class DataFactory {
 
   private boolean hasStart = false;
 
-  @Inject
+  @Autowired
   private List<MonitorDataProvider> dataProviders;
 
-  @Inject
+  @Autowired
   private MonitorDataPublisher publisher;
+
+  @Autowired
+  private MonitorConstant monitorConstant;
 
   private ScheduledExecutorService executorService = null;
 
@@ -81,7 +83,7 @@ public class DataFactory {
         } catch (Throwable e) {
           LOGGER.error("send monitor data error.", e);
         }
-      }, MonitorConstant.getInterval(), MonitorConstant.getInterval(), TimeUnit.MILLISECONDS);
+      }, monitorConstant.getInterval(), monitorConstant.getInterval(), TimeUnit.MILLISECONDS);
       hasStart = true;
     }
   }

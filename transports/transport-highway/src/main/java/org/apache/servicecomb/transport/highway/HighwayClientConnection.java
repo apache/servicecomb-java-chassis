@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
 import org.apache.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConnection;
@@ -45,7 +45,7 @@ public class HighwayClientConnection extends TcpClientConnection {
       header.setMsgType(MsgType.LOGIN);
 
       LoginRequest login = new LoginRequest();
-      login.setProtocol(Const.HIGHWAY);
+      login.setProtocol(CoreConst.HIGHWAY);
 
       HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId());
       os.write(header, LoginRequest.getRootSerializer(), login);

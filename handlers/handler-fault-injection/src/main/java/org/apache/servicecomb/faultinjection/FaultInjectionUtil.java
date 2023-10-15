@@ -27,6 +27,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -120,7 +121,7 @@ public class FaultInjectionUtil {
       return cfgMap.get(config).get();
     }
 
-    value = FaultInjectionConfig.getConfigVal(config, FAULT_INJECTION_DEFAULT_VALUE);
+    value = LegacyPropertyFactory.getIntProperty(config, FAULT_INJECTION_DEFAULT_VALUE);
     return value;
   }
 

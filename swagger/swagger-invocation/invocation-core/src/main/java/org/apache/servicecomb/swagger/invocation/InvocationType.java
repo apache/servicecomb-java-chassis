@@ -19,5 +19,5 @@ package org.apache.servicecomb.swagger.invocation;
 
 public enum InvocationType {
   CONSUMER,
-  PRODUCER
+  PROVIDER
 }

@@ -77,12 +77,6 @@
       <artifactId>java-chassis-core</artifactId>
     </dependency>
 
-    <!-- deployment -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>deployment</artifactId>
-    </dependency>
-
     <!-- dynamic-config -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -177,12 +171,6 @@
       <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
 
-    <!-- inspector -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
-    </dependency>
-
     <!-- metrics -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -219,10 +207,6 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-schema-discovery</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -510,19 +494,19 @@
     <!-- demo zeroconfig shcema discovery -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-zeroconfig-schemadiscovery-registry-client</artifactId>
+      <artifactId>demo-zeroconfig-registry-client</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-zeroconfig-schemadiscovery-registry-server</artifactId>
+      <artifactId>demo-zeroconfig-registry-server</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-zeroconfig-schemadiscovery-registry-tests</artifactId>
+      <artifactId>demo-zeroconfig-registry-tests</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

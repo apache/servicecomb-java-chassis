@@ -53,7 +53,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import io.swagger.models.Swagger;
 
 /**
  * SchemaMetaCodec test cases. This test cases covers RestTemplate invoker and producer.
@@ -85,17 +84,17 @@ public class TestSchemaMetaCodecRestTemplate {
     Mockito.when(consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
 
     SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
-    Swagger swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
-    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(new ProtoSchema(), swagger);
+    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(new ProtoSchema());
+    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, "ProtoSchema", swaggerProducer.getSwagger());
+
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
       operationMeta.setSwaggerProducerOperation(producerOperation);
     }
 
-    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
+    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swaggerProducer.getSwagger());
   }
 
   private Invocation mockInvocation(String operation, InvocationType invocationType) {
@@ -132,7 +131,7 @@ public class TestSchemaMetaCodecRestTemplate {
   @Test
   public void testProtoSchemaOperationUser() throws Exception {
     Invocation consumerInvocation = mockInvocation("user", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("user", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("user", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -181,7 +180,7 @@ public class TestSchemaMetaCodecRestTemplate {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void testProtoSchemaOperationBase() throws Exception {
     Invocation consumerInvocation = mockInvocation("base", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("base", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("base", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);

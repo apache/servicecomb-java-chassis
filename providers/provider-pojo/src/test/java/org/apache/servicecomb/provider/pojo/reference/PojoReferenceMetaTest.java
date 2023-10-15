@@ -19,32 +19,32 @@ package org.apache.servicecomb.provider.pojo.reference;
 
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class PojoReferenceMetaTest {
+  static Environment environment = Mockito.mock(Environment.class);
+
   @BeforeEach
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
   }
 
   @AfterEach
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testHasConsumerInterface() {
-    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
 
     PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
     pojoReferenceMeta.setMicroserviceName("test");

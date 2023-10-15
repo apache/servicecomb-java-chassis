@@ -125,7 +125,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public Invocation(Endpoint endpoint, OperationMeta operationMeta, Map<String, Object> swaggerArguments) {
-    this.invocationType = InvocationType.PRODUCER;
+    this.invocationType = InvocationType.PROVIDER;
     this.invocationRuntimeType = operationMeta.buildBaseProviderRuntimeType();
     this.endpoint = endpoint;
     init(operationMeta, swaggerArguments);
@@ -281,10 +281,6 @@ public class Invocation extends SwaggerInvocation {
     return schemaMeta.getMicroserviceMeta();
   }
 
-  public String getMicroserviceVersionRule() {
-    return referenceConfig.getVersionRule();
-  }
-
   public InvocationRuntimeType getInvocationRuntimeType() {
     return this.invocationRuntimeType;
   }
@@ -421,7 +417,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public boolean isProducer() {
-    return InvocationType.PRODUCER.equals(invocationType);
+    return InvocationType.PROVIDER.equals(invocationType);
   }
 
   public boolean isEdge() {
@@ -430,10 +426,6 @@ public class Invocation extends SwaggerInvocation {
 
   public void setEdge(boolean edge) {
     this.edge = edge;
-  }
-
-  public boolean isThirdPartyInvocation() {
-    return referenceConfig.is3rdPartyService();
   }
 
   public long getInvocationId() {
@@ -453,7 +445,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public String getTraceId() {
-    return getContext(Const.TRACE_ID_NAME);
+    return getContext(CoreConst.TRACE_ID_NAME);
   }
 
   public String getTraceId(String traceIdName) {

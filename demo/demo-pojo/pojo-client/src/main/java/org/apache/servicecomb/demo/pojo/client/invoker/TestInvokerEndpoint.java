@@ -27,7 +27,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.stereotype.Component;
 
 @Component
-@SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class TestInvokerEndpoint implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
@@ -52,18 +52,19 @@ public class TestInvokerEndpoint implements CategorizedTestCase {
     model.setName("hello");
     args.put("request", model);
 
-    Map result = (Map) InvokerUtils.syncInvoke("pojo", "0+", "highway", "InvokerEndpoint", "model", args);
+    Map result = InvokerUtils.syncInvoke("pojo", "highway", "InvokerEndpoint",
+        "model", args, Map.class);
     TestMgr.check(model.getCode(), result.get("code"));
     TestMgr.check(model.getName(), result.get("name"));
 
     ClientModel modelResult = InvokerUtils
-        .syncInvoke("pojo", "0+", "highway", "InvokerEndpoint", "model", args, ClientModel.class);
+        .syncInvoke("pojo", "highway", "InvokerEndpoint", "model", args, ClientModel.class);
     TestMgr.check(model.getCode(), modelResult.getCode());
     TestMgr.check(model.getName(), modelResult.getName());
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     InvokerUtils
-        .reactiveInvoke("pojo", "0+", "highway", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
+        .reactiveInvoke("pojo", "highway", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
           ClientModel reactiveResult = response.getResult();
           TestMgr.check(model.getCode(), reactiveResult.getCode());
           TestMgr.check(model.getName(), reactiveResult.getName());
@@ -80,17 +81,18 @@ public class TestInvokerEndpoint implements CategorizedTestCase {
     model.setName("hello");
     args.put("request", model);
 
-    Map result = (Map) InvokerUtils.syncInvoke("pojo", "0+", "rest", "InvokerEndpoint", "model", args);
+    Map result = InvokerUtils.syncInvoke("pojo", "rest", "InvokerEndpoint",
+        "model", args, Map.class);
     TestMgr.check(model.getCode(), result.get("code"));
     TestMgr.check(model.getName(), result.get("name"));
 
     ClientModel modelResult = InvokerUtils
-        .syncInvoke("pojo", "0+", "rest", "InvokerEndpoint", "model", args, ClientModel.class);
+        .syncInvoke("pojo", "rest", "InvokerEndpoint", "model", args, ClientModel.class);
     TestMgr.check(model.getCode(), modelResult.getCode());
     TestMgr.check(model.getName(), modelResult.getName());
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
-    InvokerUtils.reactiveInvoke("pojo", "0+", "rest", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
+    InvokerUtils.reactiveInvoke("pojo", "rest", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
       ClientModel reactiveResult = response.getResult();
       TestMgr.check(model.getCode(), reactiveResult.getCode());
       TestMgr.check(model.getName(), reactiveResult.getName());
@@ -107,7 +109,8 @@ public class TestInvokerEndpoint implements CategorizedTestCase {
     model.setName("hello");
     args.put("request", model);
 
-    Map result = (Map) InvokerUtils.syncInvoke("pojo", "InvokerEndpoint", "model", args);
+    Map result = InvokerUtils.syncInvoke("pojo", "InvokerEndpoint",
+        "model", args, Map.class);
     TestMgr.check(model.getCode(), result.get("code"));
     TestMgr.check(model.getName(), result.get("name"));
 
@@ -116,7 +119,8 @@ public class TestInvokerEndpoint implements CategorizedTestCase {
     TestMgr.check(model.getName(), modelResult.getName());
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
-    InvokerUtils.reactiveInvoke("pojo", "InvokerEndpoint", "model", args, ClientModel.class, response -> {
+    InvokerUtils.reactiveInvoke("pojo", "InvokerEndpoint", "model", args,
+        ClientModel.class, response -> {
       ClientModel reactiveResult = response.getResult();
       TestMgr.check(model.getCode(), reactiveResult.getCode());
       TestMgr.check(model.getName(), reactiveResult.getName());
@@ -133,7 +137,7 @@ public class TestInvokerEndpoint implements CategorizedTestCase {
     model.put("name", "hello");
     args.put("request", model);
 
-    Map result = (Map) InvokerUtils.syncInvoke("pojo", "InvokerEndpoint", "model", args);
+    Map result = InvokerUtils.syncInvoke("pojo", "InvokerEndpoint", "model", args, Map.class);
     TestMgr.check(model.get("code"), result.get("code"));
     TestMgr.check(model.get("name"), result.get("name"));
 

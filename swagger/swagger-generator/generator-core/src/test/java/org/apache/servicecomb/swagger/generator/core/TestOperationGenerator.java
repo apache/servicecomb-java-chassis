@@ -18,23 +18,26 @@
 package org.apache.servicecomb.swagger.generator.core;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.util.List;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.Extension;
-import io.swagger.annotations.ExtensionProperty;
-import io.swagger.annotations.ResponseHeader;
-import io.swagger.models.Response;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.extensions.Extension;
+import io.swagger.v3.oas.annotations.extensions.ExtensionProperty;
+import io.swagger.v3.oas.annotations.headers.Header;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 public class TestOperationGenerator {
   static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
@@ -44,29 +47,35 @@ public class TestOperationGenerator {
     swaggerOperations = null;
   }
 
-  @Api(tags = {"default0", "default1"})
+  @OpenAPIDefinition(tags = {@Tag(name = "default0"), @Tag(name = "default1")})
   private static class TestClass {
-    @ApiResponse(code = 200, message = "200 is ok............", response = String.class,
-        responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
-    @ApiOperation(value = "value1", tags = {"tag1", "tag2"},
-        responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
-            @ResponseHeader(name = "x-user-id", response = String.class)},
+    @ApiResponse(responseCode = "200", description = "200 is ok............",
+        content = @Content(mediaType = "application/json", schema = @Schema(name = "String")),
+        headers = @Header(name = "x-user-domain", schema = @Schema(implementation = String.class)))
+    @Operation(summary = "value1", tags = {"tag1", "tag2"},
+        responses = {
+            @ApiResponse(responseCode = "200", headers =
+                {@Header(name = "x-user-name", schema = @Schema(implementation = String.class)),
+                    @Header(name = "x-user-id", schema = @Schema(implementation = String.class))})},
         extensions = {
-            @Extension(name = "x-class-name", properties = {@ExtensionProperty(value = "value", name = "key")})})
+            @Extension(name = "x-class-name", properties = @ExtensionProperty(value = "value", name = "key"))})
     public void responseThenApiOperation() {
     }
 
-    @ApiOperation(value = "value1", tags = {"tag1", "tag2"},
-        responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
-            @ResponseHeader(name = "x-user-id", response = String.class)},
+    @Operation(summary = "value1", tags = {"tag1", "tag2"},
+        responses = {@ApiResponse(responseCode = "200", headers = {
+            @Header(name = "x-user-name", schema = @Schema(implementation = String.class)),
+            @Header(name = "x-user-id", schema = @Schema(implementation = String.class))})},
         extensions = {
-            @Extension(name = "x-class-name", properties = {@ExtensionProperty(value = "value", name = "key")})})
-    @ApiResponse(code = 200, message = "200 is ok............", response = String.class,
-        responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
+            @Extension(name = "x-class-name", properties = {
+                @ExtensionProperty(value = "value", name = "key")})})
+    @ApiResponse(responseCode = "200", description = "200 is ok............",
+        content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class)),
+        headers = @Header(name = "x-user-domain", schema = @Schema(implementation = String.class)))
     public void apiOperationThenResponse() {
     }
 
-    @ApiOperation(value = "value2")
+    @Operation(summary = "value2")
     public void apiOperationNoTag() {
     }
 
@@ -78,7 +87,7 @@ public class TestOperationGenerator {
   public void apiOperationNoTag() {
     SwaggerOperation operation = swaggerOperations.findOperation("apiOperationNoTag");
     List<String> tags = operation.getOperation().getTags();
-    MatcherAssert.assertThat(tags, contains("default0", "default1"));
+    MatcherAssert.assertThat(tags, equalTo(null));
     Assertions.assertEquals("value2", operation.getOperation().getSummary());
   }
 
@@ -86,7 +95,7 @@ public class TestOperationGenerator {
   public void noApiOperation() {
     SwaggerOperation operation = swaggerOperations.findOperation("noApiOperation");
     List<String> tags = operation.getOperation().getTags();
-    MatcherAssert.assertThat(tags, contains("default0", "default1"));
+    MatcherAssert.assertThat(tags, equalTo(null));
     Assertions.assertNull(operation.getOperation().getSummary());
   }
 
@@ -96,11 +105,12 @@ public class TestOperationGenerator {
     List<String> tags = swaggerOperation.getOperation().getTags();
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
-    Response response = swaggerOperation.getOperation().getResponses().get("200");
+    io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
     Assertions.assertEquals("200 is ok............", response.getDescription());
-    Assertions.assertNull(response.getHeaders().get("x-user-domain"));
+    Assertions.assertNotNull(response.getHeaders().get("x-user-domain"));
     Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
-    Assertions.assertNotNull(swaggerOperation.getOperation().getVendorExtensions().get("x-class-name"));
+    Assertions.assertNotNull(swaggerOperation.getOperation().getExtensions().get("x-class-name"));
+    Assertions.assertNull(swaggerOperation.getOperation().getExtensions().get("x-not-exists"));
   }
 
   @Test
@@ -109,10 +119,10 @@ public class TestOperationGenerator {
     List<String> tags = swaggerOperation.getOperation().getTags();
     MatcherAssert.assertThat(tags, contains("tag1", "tag2"));
 
-    Response response = swaggerOperation.getOperation().getResponses().get("200");
+    io.swagger.v3.oas.models.responses.ApiResponse response = swaggerOperation.getOperation().getResponses().get("200");
     Assertions.assertEquals("200 is ok............", response.getDescription());
-    Assertions.assertNull(response.getHeaders().get("x-user-domain"));
+    Assertions.assertNotNull(response.getHeaders().get("x-user-domain"));
     Assertions.assertNotNull(response.getHeaders().get("x-user-name"));
-    Assertions.assertNotNull(swaggerOperation.getOperation().getVendorExtensions().get("x-class-name"));
+    Assertions.assertNotNull(swaggerOperation.getOperation().getExtensions().get("x-class-name"));
   }
 }

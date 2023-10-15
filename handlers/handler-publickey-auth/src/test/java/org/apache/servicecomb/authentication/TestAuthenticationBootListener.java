@@ -16,44 +16,62 @@
  */
 package org.apache.servicecomb.authentication;
 
-import org.apache.servicecomb.config.ConfigUtil;
+import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestAuthenticationBootListener {
   private SCBEngine engine;
 
+  static Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeAll
+  public static void setUpClass() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA"))
+        .thenReturn("RSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA"))
+        .thenReturn("SHA256withRSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keySize", int.class, 2048))
+        .thenReturn(2048);
+    Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
+        long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+  }
+
   @BeforeEach
   public void setUp() {
-    ConfigUtil.installDynamicConfig();
-    engine = SCBBootstrap.createSCBEngineForTest().run();
+    engine = SCBBootstrap.createSCBEngineForTest(environment);
+    engine.run();
   }
 
   @AfterEach
   public void teardown() {
     engine.destroy();
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testGenerateRSAKey() {
-    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-    Microservice microservice = new Microservice();
-    microservice.setInstance(microserviceInstance);
-
+    RegistrationManager registrationManager = Mockito.mock(RegistrationManager.class);
     AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
+    authenticationBootListener.setRegistrationManager(registrationManager);
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
     authenticationBootListener.onBootEvent(bootEvent);
@@ -63,12 +81,15 @@ public class TestAuthenticationBootListener {
 
   @Test
   public void testMicroserviceInstancePublicKey() {
+    RegistrationManager registrationManager = Mockito.mock(RegistrationManager.class);
     AuthenticationBootListener authenticationBootListener = new AuthenticationBootListener();
+    authenticationBootListener.setRegistrationManager(registrationManager);
     BootEvent bootEvent = new BootEvent();
     bootEvent.setEventType(BootListener.EventType.BEFORE_REGISTRY);
+
     authenticationBootListener.onBootEvent(bootEvent);
-    String publicKey = RegistrationManager.INSTANCE.getMicroserviceInstance().
-        getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
-    Assertions.assertNotNull(publicKey);
+
+    Mockito.verify(registrationManager, times(1))
+        .addProperty(eq(DefinitionConst.INSTANCE_PUBKEY_PRO), any(String.class));
   }
 }

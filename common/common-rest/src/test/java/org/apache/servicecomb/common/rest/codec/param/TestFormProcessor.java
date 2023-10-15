@@ -24,22 +24,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.FormProcessor;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.properties.ArrayProperty;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MapSchema;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.MediaType;
+
 public class TestFormProcessor {
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
@@ -54,22 +58,35 @@ public class TestFormProcessor {
   private FormProcessor createProcessor(String name, Type type, String defaultValue, boolean required) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
 
-    FormParameter formParameter = new FormParameter();
-    formParameter.name(name)
-        .required(required)
-        .setDefaultValue(defaultValue);
+    RequestBody formParameter = new RequestBody();
+    Content content = new Content();
+    MapSchema schema = new MapSchema();
+    io.swagger.v3.oas.models.media.MediaType mediaType = new io.swagger.v3.oas.models.media.MediaType();
 
     if (javaType.isContainerType()) {
-      formParameter.type(ArrayProperty.TYPE);
+      Schema propertySchema = new ArraySchema();
+      schema.addProperty(name, propertySchema);
+      mediaType.schema(schema);
+    } else {
+      Schema propertySchema = new Schema();
+      propertySchema.setDefault(defaultValue);
+      schema.addProperty(name, propertySchema);
+      mediaType.schema(schema);
     }
-    return new FormProcessor(formParameter, javaType);
+
+    content.addMediaType(MediaType.APPLICATION_FORM_URLENCODED,
+        mediaType);
+    formParameter.content(content)
+        .required(required);
+
+    return new FormProcessor(name, formParameter, MediaType.APPLICATION_FORM_URLENCODED, javaType);
   }
 
   @Test
   public void testGetValueWithAttr() throws Exception {
     Map<String, Object> forms = new HashMap<>();
     forms.put("name", "value");
-    Mockito.when(request.getAttribute(RestConst.FORM_PARAMETERS)).thenReturn(forms);
+    Mockito.when(request.getAttribute(RestConst.BODY_PARAMETER)).thenReturn(forms);
 
     ParamValueProcessor processor = createProcessor("name", String.class);
     Object value = processor.getValue(request);

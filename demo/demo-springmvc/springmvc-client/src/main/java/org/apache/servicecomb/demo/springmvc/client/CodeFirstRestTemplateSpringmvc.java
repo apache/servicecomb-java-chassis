@@ -26,15 +26,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.Part;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
-import org.apache.servicecomb.registry.RegistrationManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -46,6 +45,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import jakarta.servlet.http.Part;
 
 @Component
 public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
@@ -71,6 +72,12 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
   private TestContentType testContentType = new TestContentType();
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+    testResponse.setMicroserviceProperties(microserviceProperties);
+  }
 
   @Override
   protected void testOnlyRest(String microservcieName, RestTemplate template, String cseUrlPrefix) {
@@ -112,8 +119,6 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
 
-  @SuppressWarnings("deprecation")
-// TODO : upgrade to spring 5 will having warning's , we'll fix it later
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "hello world";
     File file1 = File.createTempFile("测 试", ".txt");
@@ -179,7 +184,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     CseHttpEntity<Map<String, Object>> httpEntity = new CseHttpEntity<>(body);
     httpEntity.addContext("contextKey", "contextValue");
 
-    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    String srcName = microserviceProperties.getName();
 
     ResponseEntity<Date> responseEntity =
         template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);

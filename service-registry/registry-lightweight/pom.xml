@@ -32,7 +32,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-registry</artifactId>
+      <artifactId>registry-local</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

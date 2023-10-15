@@ -19,13 +19,16 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.CookieValue;
-
-import io.swagger.models.parameters.CookieParameter;
+import org.springframework.web.bind.annotation.ValueConstants;
 
 public class CookieValueAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<CookieParameter, CookieValue> {
+    SpringmvcParameterAnnotationsProcessor<CookieValue> {
   @Override
   public Type getProcessType() {
     return CookieValue.class;
@@ -37,21 +40,25 @@ public class CookieValueAnnotationProcessor extends
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
+    if (StringUtils.isNotEmpty(value)) {
+      return value;
+    }
+    return null;
   }
 
   @Override
-  public HttpParameterType getHttpParameterType(CookieValue parameterAnnotation) {
-    return HttpParameterType.COOKIE;
-  }
-
-  @Override
-  protected boolean readRequired(CookieValue cookieValue) {
-    return cookieValue.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(CookieValue cookieValue) {
-    return cookieValue.defaultValue();
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, CookieValue annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.COOKIE);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
+    }
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
+    if (!ValueConstants.DEFAULT_NONE.equals(annotation.defaultValue())) {
+      parameterGenerator.getParameterGeneratorContext()
+          .setDefaultValue(annotation.defaultValue());
+      // if default value is set, must be required false.
+      parameterGenerator.getParameterGeneratorContext().setRequired(false);
+    }
   }
 }

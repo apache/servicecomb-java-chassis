@@ -48,23 +48,18 @@
     <module>demo-register-url-prefix</module>
     <module>demo-local-registry</module>
     <module>demo-multi-registries</module>
-    <module>demo-zeroconfig-schemadiscovery-registry</module>
+    <module>demo-zeroconfig-registry</module>
     <module>demo-spring-boot-transport</module>
     <module>demo-edge</module>
     <module>demo-multiple</module>
     <module>demo-multi-service-center</module>
-    <module>demo-signature</module>
     <module>demo-cse-v1</module>
     <module>demo-cse-v2</module>
+    <module>demo-nacos</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>org.apache.servicecomb.demo</groupId>
-        <artifactId>demo-signature</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.apache.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
@@ -134,10 +129,6 @@
   </dependencyManagement>
 
   <dependencies>
-    <dependency>
-      <groupId>org.codehaus.groovy</groupId>
-      <artifactId>groovy</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>

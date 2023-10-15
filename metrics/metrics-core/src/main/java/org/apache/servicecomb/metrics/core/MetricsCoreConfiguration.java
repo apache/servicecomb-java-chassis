@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
+import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
+import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,4 +28,53 @@ public class MetricsCoreConfiguration {
   public HealthBootListener healthBootListener() {
     return new HealthBootListener();
   }
+
+  @Bean
+  public MetricsBootListener metricsBootListener(MetricsBootstrap metricsBootstrap) {
+    return new MetricsBootListener(metricsBootstrap);
+  }
+
+  @Bean
+  public MetricsBootstrap metricsBootstrap() {
+    return new MetricsBootstrap();
+  }
+
+  // Begin MetricsInitializers
+
+  @Bean
+  public DefaultLogPublisher defaultLogPublisher() {
+    return new DefaultLogPublisher();
+  }
+
+  @Bean
+  public DefaultRegistryInitializer defaultRegistryInitializer() {
+    return new DefaultRegistryInitializer();
+  }
+
+  @Bean
+  public InvocationMetersInitializer invocationMetersInitializer() {
+    return new InvocationMetersInitializer();
+  }
+
+  @Bean
+  public ThreadPoolMetersInitializer threadPoolMetersInitializer() {
+    return new ThreadPoolMetersInitializer();
+  }
+
+  @Bean
+  public VertxMetersInitializer vertxMetersInitializer() {
+    return new VertxMetersInitializer();
+  }
+
+  @Bean
+  public OsMetersInitializer osMetersInitializer() {
+    return new OsMetersInitializer();
+  }
+
+  @Bean
+  public MetricsRestPublisher metricsRestPublisher() {
+    return new MetricsRestPublisher();
+  }
+
+  // End MetricsInitializers
 }

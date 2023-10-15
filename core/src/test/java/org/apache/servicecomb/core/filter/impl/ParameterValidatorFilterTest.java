@@ -17,36 +17,38 @@
 
 package org.apache.servicecomb.core.filter.impl;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.DEFAULT_VALIDATE;
 import static org.apache.servicecomb.core.exception.converter.ConstraintViolationExceptionConverter.KEY_CODE;
+import static org.apache.servicecomb.core.filter.impl.ParameterValidatorFilter.ENABLE_EL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.List;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.exception.converter.ConstraintViolationExceptionConverter;
 import org.apache.servicecomb.core.exception.converter.ValidateDetail;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -86,7 +88,7 @@ public class ParameterValidatorFilterTest {
     }
   }
 
-  static ParameterValidatorFilter filter = new ParameterValidatorFilter();
+  ParameterValidatorFilter filter = new ParameterValidatorFilter();
 
   @Mocked
   Invocation invocation;
@@ -94,13 +96,17 @@ public class ParameterValidatorFilterTest {
   @Mocked
   SwaggerProducerOperation operation;
 
-  @BeforeClass
-  public static void beforeClass() throws Exception {
-    filter.afterPropertiesSet();
-  }
+  Environment environment;
 
   @Before
   public void setUp() throws Exception {
+    environment = Mockito.mock(Environment.class);
+    SCBEngine engine = SCBBootstrap.createSCBEngineForTest(environment);
+
+    Mockito.when(environment.getProperty(ENABLE_EL, boolean.class, false)).thenReturn(false);
+    filter.setEnvironment(environment);
+    filter.afterPropertiesSet();
+    engine.setEnvironment(environment);
     new Expectations() {
       {
         operation.getProducerInstance();
@@ -134,7 +140,7 @@ public class ParameterValidatorFilterTest {
 
   @Test
   public void error_code_and_message_should_be_build_in_value() {
-    ArchaiusUtils.setProperty(KEY_CODE, null);
+    Mockito.when(environment.getProperty(KEY_CODE, String.class, DEFAULT_VALIDATE)).thenReturn(DEFAULT_VALIDATE);
     CommonExceptionData errorData = getExceptionData();
 
     assertThat(errorData.getCode()).isEqualTo(DEFAULT_VALIDATE);
@@ -143,13 +149,11 @@ public class ParameterValidatorFilterTest {
 
   @Test
   public void should_allow_customize_error_code_by_configuration() {
-    ArchaiusUtils.setProperty(KEY_CODE, "test.0001");
-    SPIServiceUtils.getTargetService(ExceptionConverter.class, ConstraintViolationExceptionConverter.class)
-        .refreshCode();
+    Mockito.when(environment.getProperty(KEY_CODE, String.class, DEFAULT_VALIDATE)).thenReturn("test.0001");
+    SPIServiceUtils.getTargetService(ExceptionConverter.class, ConstraintViolationExceptionConverter.class);
     CommonExceptionData errorData = getExceptionData();
 
     assertThat(errorData.getCode()).isEqualTo("test.0001");
-    ArchaiusUtils.setProperty(KEY_CODE, null);
   }
 
   @Test

@@ -19,15 +19,16 @@ package org.apache.servicecomb.demo.jaxrs.client.validation;
 
 import java.util.ArrayList;
 
-import javax.ws.rs.core.Response.Status;
-
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.jaxrs.server.validation.ValidationModel;
 import org.apache.servicecomb.demo.validator.Teacher;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.web.client.RestTemplate;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class ValidationServiceClient {
   private static RestTemplate template = RestTemplateBuilder.create();
@@ -36,7 +37,7 @@ public class ValidationServiceClient {
 
   public static void run() {
     // highway do not support this feature
-    ArchaiusUtils.setProperty("servicecomb.references.transport.jaxrs", "rest");
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport.jaxrs", "rest");
     testValidation();
   }
 
@@ -89,7 +90,7 @@ public class ValidationServiceClient {
     } catch (InvocationException e) {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      TestMgr.check(e.getErrorData().toString().contains("Parameter is required."), true);
+      TestMgr.check(((CommonExceptionData) e.getErrorData()).getMessage().contains("Parameter is not valid"), true);
     }
 
     Teacher teacher = new Teacher();

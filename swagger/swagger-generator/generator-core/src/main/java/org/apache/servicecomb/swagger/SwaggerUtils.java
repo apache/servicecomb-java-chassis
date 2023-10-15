@@ -25,62 +25,68 @@ import java.lang.reflect.Type;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.Arrays;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.converter.ModelConverters;
-import io.swagger.models.Info;
-import io.swagger.models.Model;
-import io.swagger.models.ModelImpl;
-import io.swagger.models.Operation;
-import io.swagger.models.Path;
-import io.swagger.models.RefModel;
-import io.swagger.models.Response;
-import io.swagger.models.Swagger;
-import io.swagger.models.parameters.AbstractSerializableParameter;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.ObjectProperty;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.util.Yaml;
+import io.swagger.v3.core.converter.AnnotatedType;
+import io.swagger.v3.core.converter.ModelConverters;
+import io.swagger.v3.core.converter.ResolvedSchema;
+import io.swagger.v3.core.util.Yaml;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.oas.models.servers.Server;
+import jakarta.servlet.http.Part;
 
+@SuppressWarnings("rawtypes")
 public final class SwaggerUtils {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerUtils.class);
-
-
   private SwaggerUtils() {
   }
 
-  public static String swaggerToString(Swagger swagger) {
+  /**
+   * Only ones servers and contains only base path.
+   */
+  public static String getBasePath(OpenAPI swagger) {
+    if (swagger.getServers() == null || swagger.getServers().size() == 0) {
+      return null;
+    }
+    return swagger.getServers().get(0).getUrl();
+  }
+
+  /**
+   * Only ones servers and contains only base path.
+   */
+  public static void setBasePath(OpenAPI swagger, String basePath) {
+    if (swagger.getServers() == null || swagger.getServers().size() == 0) {
+      swagger.setServers(List.of(new Server()));
+    }
+    swagger.getServers().get(0).setUrl(basePath);
+  }
+
+  public static String swaggerToString(OpenAPI swagger) {
     try {
       return Yaml.mapper().writeValueAsString(swagger);
     } catch (Throwable e) {
@@ -88,22 +94,18 @@ public final class SwaggerUtils {
     }
   }
 
-  public static Swagger parseSwagger(URL url) {
+  public static OpenAPI parseAndValidateSwagger(URL url) {
     try {
       String swaggerContent = IOUtils.toString(url, StandardCharsets.UTF_8);
-      return internalParseSwagger(swaggerContent);
+      OpenAPI result = internalParseSwagger(swaggerContent);
+      validateSwagger(result);
+      return result;
     } catch (Throwable e) {
       throw new ServiceCombException("Parse swagger from url failed, url=" + url, e);
     }
   }
 
-  public static Swagger parseAndValidateSwagger(URL url) {
-    Swagger swagger = SwaggerUtils.parseSwagger(url);
-    SwaggerUtils.validateSwagger(swagger);
-    return swagger;
-  }
-
-  public static Swagger parseSwagger(String swaggerContent) {
+  public static OpenAPI parseSwagger(String swaggerContent) {
     try {
       return internalParseSwagger(swaggerContent);
     } catch (Throwable e) {
@@ -111,252 +113,219 @@ public final class SwaggerUtils {
     }
   }
 
-  public static Swagger parseAndValidateSwagger(String swaggerContent) {
-    Swagger swagger = SwaggerUtils.parseSwagger(swaggerContent);
-    SwaggerUtils.validateSwagger(swagger);
-    return swagger;
+  public static OpenAPI parseAndValidateSwagger(String appId, String microserviceName,
+      String schemaId, String swaggerContent) {
+    try {
+      OpenAPI result = internalParseSwagger(swaggerContent);
+      validateSwagger(result);
+      return result;
+    } catch (Throwable e) {
+      throw new ServiceCombException(
+          String.format("Parse swagger from content failed, %s/%s/%s",
+              appId, microserviceName, schemaId), e);
+    }
   }
 
-  /**
-   * Provide a method to validate swagger. This method is now implemented to check common errors, and the logic
-   * will be changed when necessary. For internal use only.
-   */
-  public static void validateSwagger(Swagger swagger) {
-    Map<String, Path> paths = swagger.getPaths();
-    if (paths == null) {
+  private static void validateSwagger(OpenAPI openAPI) {
+    if (openAPI.getPaths() == null) {
       return;
     }
-
-    for (Path path : paths.values()) {
-      Operation operation = path.getPost();
-      if (operation == null) {
-        continue;
+    for (PathItem pathItem : openAPI.getPaths().values()) {
+      if (pathItem.getGet() != null) {
+        validateOperation(pathItem.getGet());
       }
-
-      for (Parameter parameter : operation.getParameters()) {
-        if (BodyParameter.class.isInstance(parameter) &&
-            ((BodyParameter) parameter).getSchema() == null) {
-          throw new ServiceCombException("swagger validator: body parameter schema is empty.");
-        }
+      if (pathItem.getPost() != null) {
+        validateOperation(pathItem.getPost());
+      }
+      if (pathItem.getDelete() != null) {
+        validateOperation(pathItem.getDelete());
+      }
+      if (pathItem.getPut() != null) {
+        validateOperation(pathItem.getPut());
+      }
+      if (pathItem.getPatch() != null) {
+        validateOperation(pathItem.getPatch());
       }
     }
   }
 
-  private static Swagger internalParseSwagger(String swaggerContent) throws IOException {
-    Swagger swagger = Yaml.mapper().readValue(swaggerContent, Swagger.class);
-    correctResponses(swagger);
-    return swagger;
+  private static void validateOperation(Operation operation) {
+    if (operation.getRequestBody() != null) {
+      validateRequestBody(operation.getRequestBody());
+    }
+    if (operation.getParameters() != null) {
+      validateParameters(operation.getParameters());
+    }
   }
 
-  public static void correctResponses(Operation operation) {
-    int okCode = Status.OK.getStatusCode();
-    String strOkCode = String.valueOf(okCode);
-    Response okResponse = null;
+  private static void validateParameters(List<Parameter> parameters) {
+    for (Parameter parameter : parameters) {
+      if (parameter == null) {
+        throw new ServiceCombException("Parameter can not be null.");
+      }
+      if (StringUtils.isEmpty(parameter.getName())) {
+        throw new ServiceCombException("Parameter name is required.");
+      }
+    }
+  }
 
-    for (Entry<String, Response> responseEntry : operation.getResponses().entrySet()) {
-      Response response = responseEntry.getValue();
+  private static void validateRequestBody(RequestBody requestBody) {
+    for (String contentType : requestBody.getContent().keySet()) {
+      if (SwaggerConst.FILE_MEDIA_TYPE.equals(contentType) || SwaggerConst.FORM_MEDIA_TYPE.equals(contentType)) {
+        continue;
+      }
+      if (requestBody.getExtensions() == null) {
+        throw new ServiceCombException("Request body x-name extension is required.");
+      }
+      if (StringUtils.isEmpty((String) requestBody.getExtensions().get(SwaggerConst.EXT_BODY_NAME))) {
+        throw new ServiceCombException("Request body x-name extension is required.");
+      }
+      break;
+    }
+  }
+
+  private static OpenAPI internalParseSwagger(String swaggerContent) throws IOException {
+    return Yaml.mapper().readValue(swaggerContent, OpenAPI.class);
+  }
+
+  // add descriptions to response and add a default response if absent.
+  public static void correctResponses(Operation operation) {
+    if (operation.getResponses() == null) {
+      operation.setResponses(new ApiResponses());
+    }
+    if (operation.getResponses().size() == 0) {
+      operation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
+    }
+
+    for (Entry<String, ApiResponse> responseEntry : operation.getResponses().entrySet()) {
+      ApiResponse response = responseEntry.getValue();
       if (StringUtils.isEmpty(response.getDescription())) {
         response.setDescription("response of " + responseEntry.getKey());
       }
-
-      if (operation.getResponses().get(strOkCode) != null) {
-        continue;
-      }
-
-      int statusCode = NumberUtils.toInt(responseEntry.getKey());
-      if ("default".equals(responseEntry.getKey())) {
-        statusCode = okCode;
-      }
-      if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
-        okResponse = response;
-      }
-    }
-
-    if (okResponse != null) {
-      operation.addResponse(strOkCode, okResponse);
     }
   }
 
-  public static void correctResponses(Swagger swagger) {
+  public static void correctResponses(OpenAPI swagger) {
     if (swagger.getPaths() == null) {
       return;
     }
 
-    for (Path path : swagger.getPaths().values()) {
-      for (Operation operation : path.getOperations()) {
+    for (PathItem path : swagger.getPaths().values()) {
+      for (Operation operation : path.readOperations()) {
         correctResponses(operation);
       }
     }
   }
 
-  public static Map<String, Property> getBodyProperties(Swagger swagger, Parameter parameter) {
-    if (!(parameter instanceof BodyParameter)) {
-      return null;
+  public static Schema resolveTypeSchemas(OpenAPI swagger, Type type) {
+    ResolvedSchema resolvedSchema = ModelConverters.getInstance().resolveAsResolvedSchema(
+        new AnnotatedType(type).resolveAsRef(true));
+
+    if (resolvedSchema == null || resolvedSchema.schema == null) {
+      throw new IllegalArgumentException("cannot resolve type : " + type);
     }
 
-    Model model = ((BodyParameter) parameter).getSchema();
-    if (model instanceof RefModel) {
-      model = swagger.getDefinitions().get(((RefModel) model).getSimpleRef());
+    if (swagger.getComponents() == null) {
+      swagger.setComponents(new Components());
     }
 
-    if (model instanceof ModelImpl) {
-      return model.getProperties();
-    }
-
-    return null;
-  }
-
-  public static void addDefinitions(Swagger swagger, Type paramType) {
-    JavaType javaType = TypeFactory.defaultInstance().constructType(paramType);
-    if (javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
-      return;
-    }
-    Map<String, Model> models = ModelConverters.getInstance().readAll(javaType);
-    for (Entry<String, Model> entry : models.entrySet()) {
-      if (!modelNotDuplicate(swagger, entry)) {
-        LOGGER.warn("duplicate param model: " + entry.getKey());
-        throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
-      }
-    }
-  }
-
-  private static boolean modelNotDuplicate(Swagger swagger, Entry<String, Model> entry) {
-    if (null == swagger.getDefinitions()) {
-      swagger.addDefinition(entry.getKey(), entry.getValue());
-      return true;
-    }
-    Model tempModel = swagger.getDefinitions().get(entry.getKey());
-    if (null != tempModel && !tempModel.equals(entry.getValue())) {
-      if (modelOfClassNotDuplicate(tempModel, entry.getValue())) {
-        swagger.addDefinition(entry.getKey(), tempModel);
-        return true;
+    Map<String, Schema> schemaMap = resolvedSchema.referencedSchemas;
+    if (!CollectionUtils.isEmpty(schemaMap)) {
+      Map<String, Schema> componentSchemas = swagger.getComponents().getSchemas();
+      if (componentSchemas == null) {
+        componentSchemas = new LinkedHashMap<>(schemaMap);
       } else {
-        return false;
+        for (Map.Entry<String, Schema> entry : schemaMap.entrySet()) {
+          if (!componentSchemas.containsKey(entry.getKey())) {
+            componentSchemas.put(entry.getKey(), entry.getValue());
+          } else {
+            if (!schemaEquals(entry.getValue(), componentSchemas.get(entry.getKey()))) {
+              throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+            }
+          }
+        }
       }
+      swagger.getComponents().setSchemas(componentSchemas);
     }
-    swagger.addDefinition(entry.getKey(), entry.getValue());
-    return true;
+    return resolvedSchema.schema;
   }
 
-  private static boolean modelOfClassNotDuplicate(Model tempModel, Model model) {
-    String tempModelClass = (String) tempModel.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
-    String modelClass = (String) model.getVendorExtensions().get(SwaggerConst.EXT_JAVA_CLASS);
-    return tempModelClass.equals(modelClass);
+  // swagger api equals method will compare Map address(extensions)
+  // and is not applicable for usage.
+  public static int schemaHashCode(Schema<?> schema) {
+    int result = schema.getType() != null ? schema.getType().hashCode() : 0;
+    result = result ^ (schema.getFormat() != null ? schema.getFormat().hashCode() : 0);
+    result = result ^ (schema.getName() != null ? schema.getName().hashCode() : 0);
+    result = result ^ (schema.get$ref() != null ? schema.get$ref().hashCode() : 0);
+    result = result ^ (schema.getItems() != null ? schemaHashCode(schema.getItems()) : 0);
+    result = result ^ (schema.getAdditionalProperties() != null ?
+        schemaHashCode((Schema<?>) schema.getAdditionalProperties()) : 0);
+    result = result ^ (schema.getProperties() != null ? propertiesHashCode(schema.getProperties()) : 0);
+    return result;
   }
 
-  public static void setParameterType(Swagger swagger, JavaType type, AbstractSerializableParameter<?> parameter) {
-    addDefinitions(swagger, type);
-    Property property = ModelConverters.getInstance().readAsProperty(type);
-
-    if (isComplexProperty(property)) {
-      // cannot set a simple parameter(header, query, etc.) as complex type
-      String msg = String
-          .format("not allow complex type for %s parameter, type=%s.", parameter.getIn(), type.toCanonical());
-      throw new IllegalStateException(msg);
+  private static int propertiesHashCode(Map<String, Schema> properties) {
+    int result = 0;
+    for (Entry<String, Schema> entry : properties.entrySet()) {
+      result = result ^ (entry.getKey().hashCode() ^ schemaHashCode(entry.getValue()));
     }
-    parameter.setProperty(property);
+    return result;
   }
 
-  public static boolean isBean(Model model) {
-    return isBean(PropertyModelConverterExt.toProperty(model));
-  }
-
-  public static boolean isBean(Property property) {
-    return property instanceof RefProperty || property instanceof ObjectProperty;
-  }
-
-  public static boolean isComplexProperty(Property property) {
-    if (property instanceof RefProperty || property instanceof ObjectProperty || property instanceof MapProperty) {
+  // swagger api equals method will compare Map address(extensions)
+  // and is not applicable for usage.
+  public static boolean schemaEquals(Schema<?> schema1, Schema<?> schema2) {
+    if (schema1 == null && schema2 == null) {
       return true;
     }
-
-    if (ArrayProperty.class.isInstance(property)) {
-      return isComplexProperty(((ArrayProperty) property).getItems());
+    if (schema1 == null || schema2 == null) {
+      return false;
     }
-
-    return false;
+    return StringUtils.equals(schema1.getType(), schema2.getType())
+        && StringUtils.equals(schema1.getFormat(), schema2.getFormat())
+        && StringUtils.equals(schema1.getName(), schema2.getName())
+        && StringUtils.equals(schema1.get$ref(), schema2.get$ref())
+        && schemaEquals(schema1.getItems(), schema2.getItems())
+        && schemaEquals((Schema<?>) schema1.getAdditionalProperties(), (Schema<?>) schema2.getAdditionalProperties())
+        && propertiesEquals(schema1.getProperties(), schema2.getProperties());
   }
 
-  public static ModelImpl getModelImpl(Swagger swagger, BodyParameter bodyParameter) {
-    Model model = bodyParameter.getSchema();
-    if (model instanceof ModelImpl) {
-      return (ModelImpl) model;
+  public static boolean propertiesEquals(Map<String, Schema> properties1, Map<String, Schema> properties2) {
+    if (properties1 == null && properties2 == null) {
+      return true;
     }
+    if (properties1 == null || properties2 == null) {
+      return false;
+    }
+    if (properties1.size() != properties2.size()) {
+      return false;
+    }
+    boolean result = true;
+    for (Entry<String, Schema> item : properties1.entrySet()) {
+      if (!schemaEquals(item.getValue(), properties2.get(item.getKey()))) {
+        result = false;
+        break;
+      }
+    }
+    return result;
+  }
 
-    if (!(model instanceof RefModel)) {
+  public static Schema getSchema(OpenAPI swagger, String ref) {
+    return swagger.getComponents().getSchemas().get(ref.substring(Components.COMPONENTS_SCHEMAS_REF.length()));
+  }
+
+  public static String getSchemaName(String ref) {
+    return ref.substring(Components.COMPONENTS_SCHEMAS_REF.length());
+  }
+
+  public static Schema getSchema(OpenAPI swagger, Schema ref) {
+    if (ref == null) {
       return null;
     }
-
-    String simpleRef = ((RefModel) model).getSimpleRef();
-    Model targetModel = swagger.getDefinitions().get(simpleRef);
-    return targetModel instanceof ModelImpl ? (ModelImpl) targetModel : null;
-  }
-
-  public static void setCommaConsumes(Swagger swagger, String commaConsumes) {
-    if (StringUtils.isEmpty(commaConsumes)) {
-      return;
+    if (ref.get$ref() != null) {
+      return getSchema(swagger, ref.get$ref());
     }
-
-    setConsumes(swagger, commaConsumes.split(","));
-  }
-
-  public static void setCommaConsumes(Operation operation, String commaConsumes) {
-    if (StringUtils.isEmpty(commaConsumes)) {
-      return;
-    }
-
-    setConsumes(operation, commaConsumes.split(","));
-  }
-
-  public static void setConsumes(Operation operation, String... consumes) {
-    List<String> consumeList = convertConsumesOrProduces(consumes);
-    if (!consumeList.isEmpty()) {
-      operation.setConsumes(consumeList);
-    }
-  }
-
-  public static void setConsumes(Swagger swagger, String... consumes) {
-    List<String> consumeList = convertConsumesOrProduces(consumes);
-    if (!consumeList.isEmpty()) {
-      swagger.setConsumes(consumeList);
-    }
-  }
-
-  public static List<String> convertConsumesOrProduces(String... consumesOrProduces) {
-    return Arrays.stream(consumesOrProduces)
-        .map(String::trim)
-        .filter(StringUtils::isNotEmpty)
-        .collect(Collectors.toList());
-  }
-
-  public static void setCommaProduces(Swagger swagger, String commaProduces) {
-    if (StringUtils.isEmpty(commaProduces)) {
-      return;
-    }
-
-    setProduces(swagger, commaProduces.split(","));
-  }
-
-  public static void setCommaProduces(Operation operation, String commaProduces) {
-    if (StringUtils.isEmpty(commaProduces)) {
-      return;
-    }
-
-    setProduces(operation, commaProduces.split(","));
-  }
-
-  public static void setProduces(Operation operation, String... produces) {
-    List<String> produceList = convertConsumesOrProduces(produces);
-    if (!produceList.isEmpty()) {
-      operation.setProduces(produceList);
-    }
-  }
-
-  public static void setProduces(Swagger swagger, String... produces) {
-    List<String> produceList = convertConsumesOrProduces(produces);
-    if (!produceList.isEmpty()) {
-      swagger.setProduces(produceList);
-    }
+    return ref;
   }
 
   public static boolean hasAnnotation(Class<?> cls, Class<? extends Annotation> annotation) {
@@ -373,26 +342,15 @@ public final class SwaggerUtils {
     return false;
   }
 
-  public static boolean isRawJsonType(Parameter param) {
-    Object rawJson = param.getVendorExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
+  public static boolean isRawJsonType(RequestBody param) {
+    if (param.getExtensions() == null) {
+      return false;
+    }
+    Object rawJson = param.getExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
     if (rawJson instanceof Boolean) {
       return (boolean) rawJson;
     }
     return false;
-  }
-
-  public static Class<?> getInterface(Swagger swagger) {
-    Info info = swagger.getInfo();
-    if (info == null) {
-      return null;
-    }
-
-    String name = getInterfaceName(info.getVendorExtensions());
-    if (StringUtils.isEmpty(name)) {
-      return null;
-    }
-
-    return ReflectUtils.getClassByName(name);
   }
 
   public static String getClassName(Map<String, Object> vendorExtensions) {
@@ -430,27 +388,44 @@ public final class SwaggerUtils {
     return (cls != String.class
         && cls != Date.class
         && cls != LocalDate.class
+        && cls != LocalDateTime.class
         && cls != byte[].class
         && cls != File.class
         && !cls.getName().equals("org.springframework.web.multipart.MultipartFile")
         && !Part.class.isAssignableFrom(cls));
   }
 
-  public static boolean isFileParameter(Parameter parameter) {
-    if (!(parameter instanceof FormParameter)) {
-      return false;
+  public static void updateProduces(Operation operation, String[] produces) {
+    if (produces == null || produces.length == 0) {
+      return;
     }
-
-    FormParameter formParameter = (FormParameter) parameter;
-    if (FileProperty.isType(formParameter.getType(), formParameter.getFormat())) {
-      return true;
+    if (operation.getResponses() == null) {
+      operation.setResponses(new ApiResponses());
     }
-
-    Property property = formParameter.getItems();
-    if (!ArrayProperty.isType(formParameter.getType()) || property == null) {
-      return false;
+    if (operation.getResponses().size() == 0) {
+      operation.getResponses().addApiResponse(SwaggerConst.SUCCESS_KEY, new ApiResponse());
     }
+    for (String produce : produces) {
+      operation.getResponses().forEach((k, v) -> {
+        if (v.getContent() == null) {
+          v.setContent(new Content());
+        }
+        if (v.getContent().get(produce) == null) {
+          v.getContent().addMediaType(produce, new MediaType());
+        }
+      });
+    }
+  }
 
-    return FileProperty.isType(property.getType(), property.getFormat());
+  public static boolean methodExists(PathItem pathItem, String httpMethod) {
+    PathItem.HttpMethod method = PathItem.HttpMethod.valueOf(httpMethod);
+    return switch (method) {
+      case GET -> pathItem.getGet() != null;
+      case PUT -> pathItem.getPut() != null;
+      case POST -> pathItem.getPost() != null;
+      case PATCH -> pathItem.getPatch() != null;
+      case DELETE -> pathItem.getDelete() != null;
+      default -> false;
+    };
   }
 }

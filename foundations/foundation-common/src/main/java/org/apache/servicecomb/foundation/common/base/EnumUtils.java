@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.common.base;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -40,7 +41,7 @@ public interface EnumUtils {
         .filter(field -> isEnumField(cls, field));
   }
 
-  static boolean isDynamicEnum(Class<?> cls) {
-    return DynamicEnum.class.isAssignableFrom(cls);
+  static boolean isDynamicEnum(Type cls) {
+    return cls instanceof DynamicEnum;
   }
 }

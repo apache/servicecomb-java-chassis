@@ -17,46 +17,30 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import static org.hamcrest.Matchers.contains;
-
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
-import org.hamcrest.MatcherAssert;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestSwaggerGenerator {
-  @BeforeClass
-  public static void setup() {
-    ArchaiusUtils.resetConfig();
-  }
+  Environment environment = Mockito.mock(Environment.class);
 
-  @AfterClass
-  public static void teardown() {
-    ArchaiusUtils.resetConfig();
+  @BeforeEach
+  public void setUp() {
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
   public void testBasePathPlaceHolder() {
-    ArchaiusUtils.setProperty("var", "varValue");
+    Mockito.when(environment.getProperty("var")).thenReturn("varValue");
 
     PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
     swaggerGenerator.setBasePath("/a/${var}/b");
 
-    Assertions.assertEquals("/a/varValue/b", swaggerGenerator.getSwagger().getBasePath());
-  }
-
-  @Test
-  public void testAddDefaultTag() {
-    PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
-
-    swaggerGenerator.addDefaultTag("test1");
-    swaggerGenerator.addDefaultTag("");
-    swaggerGenerator.addDefaultTag(null);
-    swaggerGenerator.addDefaultTag("test2");
-
-    MatcherAssert.assertThat(swaggerGenerator.getDefaultTags(), contains("test1", "test2"));
+    Assertions.assertEquals("/a/varValue/b", SwaggerUtils.getBasePath(swaggerGenerator.getOpenAPI()));
   }
 }

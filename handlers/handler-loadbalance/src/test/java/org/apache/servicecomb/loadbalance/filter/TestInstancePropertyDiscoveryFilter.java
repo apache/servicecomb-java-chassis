@@ -17,45 +17,60 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Injectable;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 
 public class TestInstancePropertyDiscoveryFilter {
 
   private InstancePropertyDiscoveryFilter filter;
 
-  MicroserviceInstance instance = new MicroserviceInstance();
+  StatefulDiscoveryInstance instance;
 
-  @BeforeClass
-  public static void beforeCls() {
-    AbstractConfiguration configuration = new BaseConfiguration();
-    configuration.addProperty("servicecomb.loadbalance.test.flowsplitFilter.policy",
-        "org.apache.servicecomb.loadbalance.filter.SimpleFlowsplitFilter");
-    configuration.addProperty("servicecomb.loadbalance.test.flowsplitFilter.options.tag0", "value0");
-  }
+  ConfigurableEnvironment environment;
 
-  @Before
+  EnumerablePropertySource<?> propertySource;
+
+  @BeforeEach
   public void setUp() {
+    environment = Mockito.mock(ConfigurableEnvironment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
+    propertySource = Mockito.mock(EnumerablePropertySource.class);
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    mutablePropertySources.addLast(propertySource);
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {
+        "servicecomb.loadbalance.test.flowsplitFilter.policy",
+        "servicecomb.loadbalance.test.flowsplitFilter.options.tag0"
+    });
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.test.flowsplitFilter.policy"))
+        .thenReturn("org.apache.servicecomb.loadbalance.filter.SimpleFlowsplitFilter");
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.test.flowsplitFilter.options.tag0"))
+        .thenReturn("value0");
+
     filter = new InstancePropertyDiscoveryFilter();
     Map<String, String> properties = new HashMap<>();
     properties.put("tag0", "value0");
     properties.put("tag1", "value1");
-    instance.setInstanceId("instance111");
-    instance.setProperties(properties);
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    instance = new StatefulDiscoveryInstance(discoveryInstance);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("instance111");
+    Mockito.when(discoveryInstance.getProperties()).thenReturn(properties);
   }
 
   @Test
@@ -76,22 +91,19 @@ public class TestInstancePropertyDiscoveryFilter {
 
   @Test
   @SuppressWarnings("unchecked")
-  public void testGetFilteredListOfServers(@Injectable DiscoveryContext context, @Injectable DiscoveryTreeNode parent,
-      @Injectable Invocation invocation) {
-    Map<String, MicroserviceInstance> instances = new HashMap<>();
-    instances.put(instance.getInstanceId(), instance);
-    new Expectations() {
-      {
-        context.getInputParameters();
-        result = invocation;
-        parent.data();
-        result = instances;
-        parent.name();
-        result = "parent";
-      }
-    };
+  public void testGetFilteredListOfServers() {
+    DiscoveryContext context = new DiscoveryContext();
+    DiscoveryTreeNode parent = new DiscoveryTreeNode();
+
+    Invocation invocation = Mockito.mock(Invocation.class);
+    context.setInputParameters(invocation);
+
+    List<StatefulDiscoveryInstance> instances = new ArrayList<>();
+    instances.add(instance);
+    parent.data(instances);
+    parent.name("parent");
 
     DiscoveryTreeNode node = filter.discovery(context, parent);
-    Assertions.assertEquals(1, ((Map<String, MicroserviceInstance>) node.data()).keySet().size());
+    Assertions.assertEquals(1, ((List<StatefulDiscoveryInstance>) node.data()).size());
   }
 }

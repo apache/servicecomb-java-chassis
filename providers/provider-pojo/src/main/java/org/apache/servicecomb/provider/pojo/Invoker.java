@@ -69,7 +69,7 @@ public class Invoker implements InvocationHandler {
   }
 
   protected InvocationCaller createInvocationCaller() {
-    return new HandlerInvocationCaller();
+    return new FilterInvocationCaller();
   }
 
   @Override

@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
 
 @RequestMapping(path = "MethodEmptyPath")
 public class MethodEmptyPath {
@@ -56,7 +56,7 @@ public class MethodEmptyPath {
 
   // this will be ignored in the generation of service contract
   // as ApiOperation is not a restful annotation
-  @ApiOperation(value = "")
+  @Operation(summary = "")
   public void ignoredNonRestful() {
 
   }

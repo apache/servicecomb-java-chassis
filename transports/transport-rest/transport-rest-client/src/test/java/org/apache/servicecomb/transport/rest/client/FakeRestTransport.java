@@ -16,10 +16,8 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 
 class FakeRestTransport extends AbstractTransport {
   @Override
@@ -30,11 +28,6 @@ class FakeRestTransport extends AbstractTransport {
   @Override
   public boolean init() {
     return false;
-  }
-
-  @Override
-  public void send(Invocation invocation, AsyncResponse asyncResp) {
-
   }
 
   @Override

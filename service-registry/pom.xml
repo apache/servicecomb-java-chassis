@@ -31,10 +31,10 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>registry-lightweight</module>
-    <module>registry-service-center</module>
     <module>registry-local</module>
+    <module>registry-service-center</module>
+    <module>registry-lightweight</module>
     <module>registry-zero-config</module>
-    <module>registry-schema-discovery</module>
+    <module>registry-nacos</module>
   </modules>
 </project>

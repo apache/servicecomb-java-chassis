@@ -1,0 +1,119 @@
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+
+---
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.swagger.generator.jaxrs.ClassAnnotation
+  version: 1.0.0
+servers:
+- url: /class
+paths:
+  /testBean:
+    post:
+      operationId: testBean
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        x-name: user
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            text/plain:
+              schema:
+                $ref: '#/components/schemas/User'
+  /testForm:
+    post:
+      operationId: testForm
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                param:
+                  type: integer
+                  format: int32
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+  /testString:
+    post:
+      operationId: testString
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        x-name: user
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+  /testUpload:
+    post:
+      operationId: testUpload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                part:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: string
+            text/plain:
+              schema:
+                type: string
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+        friends:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+      x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User

@@ -42,7 +42,6 @@ import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.People;
@@ -60,8 +59,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import io.swagger.models.Swagger;
 
 /**
  * SchemaMetaCodec test cases. This test cases covers POJO invoker and producer.
@@ -96,17 +93,15 @@ public class TestSchemaMetaCodec {
     Mockito.when(consumerMicroserviceMeta.getMicroserviceVersionsMeta()).thenReturn(microserviceVersionsMeta);
     Mockito.when(consumerMicroserviceMeta.getMicroserviceName()).thenReturn("test");
     Mockito.when(consumerMicroserviceMeta.getExtData(ProtobufManager.EXT_ID)).thenReturn(null);
-    Swagger swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
-
-    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, schemaId, swagger);
-    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(producerInstance, swagger);
+    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(producerInstance);
+    providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, schemaId, swaggerProducer.getSwagger());
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
       operationMeta.setSwaggerProducerOperation(producerOperation);
     }
 
-    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, schemaId, swagger);
+    consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, schemaId, swaggerProducer.getSwagger());
   }
 
   @Test
@@ -154,7 +149,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationUserImpl() throws IOException {
     Invocation consumerInvocation = mockInvocation("user", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("user", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("user", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -229,7 +224,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationmapUserImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("mapUser", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("mapUser", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("mapUser", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -253,7 +248,7 @@ public class TestSchemaMetaCodec {
     args.put("users", userMap);
     if (isPojo) {
       Map<String, Object> swaggerArgs = new HashMap<>(1);
-      swaggerArgs.put("users", args);
+      swaggerArgs.put("listListUserBody", args);
       values = requestSerializer.serialize(swaggerArgs);
     } else {
       values = requestSerializer.serialize(args);
@@ -261,7 +256,7 @@ public class TestSchemaMetaCodec {
     RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
     if (isPojo) {
-      decodedUserArgs = (Map<String, Object>) decodedUserArgs.get("users");
+      decodedUserArgs = (Map<String, Object>) decodedUserArgs.get("mapUserBody");
       Assertions.assertEquals(user.name,
           ((Map<String, Map<String, Object>>) decodedUserArgs.get("users")).get("test").get("name"));
       Assertions.assertEquals(user.friends.get(0).name,
@@ -276,13 +271,15 @@ public class TestSchemaMetaCodec {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(userMap);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
+    Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values,
+        TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, User.class));
     Assertions.assertEquals(user.name, decodedUser.get("test").name);
     Assertions.assertEquals(user.friends.get(0).name, decodedUser.get("test").friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(userMap);
-    decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
+    decodedUser = (Map<String, User>) responseDeserializer.deserialize(values,
+        TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, User.class));
     Assertions.assertEquals(user.name, decodedUser.get("test").name);
     // proto buffer encode and decode empty list to be null
     Assertions.assertNull(decodedUser.get("test").friends);
@@ -302,7 +299,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationBaseImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("base", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("base", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("base", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -421,7 +418,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationlistListUserImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("listListUser", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("listListUser", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("listListUser", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);
@@ -447,7 +444,7 @@ public class TestSchemaMetaCodec {
 
     if (isPojo) {
       Map<String, Object> swaggerArgs = new HashMap<>();
-      swaggerArgs.put("value", args);
+      swaggerArgs.put("listListUserBody", args);
       values = requestSerializer.serialize(swaggerArgs);
     } else {
       values = requestSerializer.serialize(args);
@@ -457,7 +454,7 @@ public class TestSchemaMetaCodec {
     Map<String, Object> decodedArgs;
     if (isPojo) {
       Assertions.assertEquals(1, decodedSwaggerArgs.size());
-      decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("value");
+      decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("listListUserBody");
     } else {
       decodedArgs = decodedSwaggerArgs;
     }
@@ -494,7 +491,7 @@ public class TestSchemaMetaCodec {
 
   private void testProtoSchemaOperationObjImpl(boolean isPojo) throws IOException {
     Invocation consumerInvocation = mockInvocation("obj", InvocationType.CONSUMER);
-    Invocation providerInvocation = mockInvocation("obj", InvocationType.PRODUCER);
+    Invocation providerInvocation = mockInvocation("obj", InvocationType.PROVIDER);
 
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerInvocation);

@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.demo.jaxrs.client.pojoDefault;
 
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.jaxrs.server.pojoDefault.DefaultResponseModel;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,7 +30,7 @@ public class DefaultModelServiceClient {
 
   public static void run() {
     // highway do not support this feature
-    ArchaiusUtils.setProperty("servicecomb.references.transport.jaxrs", "rest");
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport.jaxrs", "rest");
     testDefaultModelService();
   }
 

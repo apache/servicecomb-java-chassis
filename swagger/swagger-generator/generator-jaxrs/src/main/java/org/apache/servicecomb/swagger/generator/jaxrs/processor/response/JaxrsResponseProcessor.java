@@ -17,14 +17,16 @@
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.response;
 
 import java.lang.reflect.Type;
-import java.util.List;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
+
+import io.swagger.v3.oas.models.responses.ApiResponse;
+import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   @Override
@@ -40,15 +42,13 @@ public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   @Override
   public Type extractResponseType(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       Type genericResponseType) {
-    // Response can not express respone type
-    // if produces is text，then can assume to be string, otherwise can only throw exception
-    List<String> produces = operationGenerator.getOperation().getProduces();
-    if (produces == null) {
-      produces = swaggerGenerator.getSwagger().getProduces();
-    }
-    if (produces != null) {
-      if (produces.contains(MediaType.TEXT_PLAIN)) {
-        return String.class;
+    ApiResponses responses = operationGenerator.getOperation().getResponses();
+    if (responses != null) {
+      ApiResponse response = responses.get(SwaggerConst.SUCCESS_KEY);
+      if (response != null && response.getContent() != null) {
+        if (response.getContent().get(MediaType.TEXT_PLAIN) != null) {
+          return String.class;
+        }
       }
     }
 

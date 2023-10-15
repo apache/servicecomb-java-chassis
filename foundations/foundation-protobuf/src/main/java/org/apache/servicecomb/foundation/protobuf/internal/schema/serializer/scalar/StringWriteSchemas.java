@@ -17,6 +17,8 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.scalar;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import org.apache.servicecomb.foundation.common.utils.bean.CharGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
@@ -62,6 +64,11 @@ public class StringWriteSchemas {
 
       if (value instanceof Character) {
         output.writeScalarString(tag, tagSize, String.valueOf((char) value));
+        return;
+      }
+
+      if (value instanceof BigDecimal || value instanceof BigInteger) {
+        output.writeScalarString(tag, tagSize, value.toString());
         return;
       }
 

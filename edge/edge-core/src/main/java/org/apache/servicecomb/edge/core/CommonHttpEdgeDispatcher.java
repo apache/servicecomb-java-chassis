@@ -20,7 +20,10 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
+import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -31,17 +34,16 @@ import org.apache.servicecomb.loadbalance.LoadBalanceFilter;
 import org.apache.servicecomb.loadbalance.LoadBalancer;
 import org.apache.servicecomb.loadbalance.RuleExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOptionsSPI;
 import org.apache.servicecomb.transport.rest.client.HttpTransportHttpClientOptionsSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
+import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -75,42 +77,64 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
-  private DiscoveryTree discoveryTree;
+  private Environment environment;
 
   public CommonHttpEdgeDispatcher() {
+
+  }
+
+  // though this is an SPI, but add as beans.
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
     if (this.enabled()) {
       loadConfigurations();
-      discoveryTree = new DiscoveryTree();
-      discoveryTree.addFilter(new ServerDiscoveryFilter());
     }
+  }
+
+  // Maybe future change to beans
+  protected DiscoveryTree getDiscoveryTree() {
+    return BeanUtils.getBean(DiscoveryTree.class);
+  }
+
+  // Maybe future change to beans
+  protected MicroserviceProperties getMicroserviceProperties() {
+    return BeanUtils.getBean(MicroserviceProperties.class);
+  }
+
+  // Maybe future change to beans
+  protected ExtensionsManager getExtensionsManager() {
+    return BeanUtils.getBean(ExtensionsManager.class);
   }
 
   @Override
   public int getOrder() {
-    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, 40_000).get();
+    return LegacyPropertyFactory.getIntProperty(KEY_ORDER, 40_000);
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, false).get();
+    return environment.getProperty(KEY_ENABLED, boolean.class, false);
   }
 
   @Override
   public void init(Router router) {
-    String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, PATTERN_ANY).get();
+    String pattern = environment.getProperty(KEY_PATTERN, PATTERN_ANY);
     router.routeWithRegex(pattern).failureHandler(this::onFailure).handler(this::onRequest);
   }
 
   private void loadConfigurations() {
-    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
-        .getBackingConfigurationSource();
-    configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
-    config.addConfigurationListener(event -> {
-      if (event.getPropertyName().startsWith(KEY_MAPPING_PREFIX)) {
-        LOG.info("Map rule have been changed. Reload configurations. Event=" + event.getType());
-        configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
+    configurations = URLMappedConfigurationLoader.loadConfigurations(environment, KEY_MAPPING_PREFIX);
+  }
+
+  @Subscribe
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    for (String changed : event.getChanged()) {
+      if (changed.startsWith(KEY_MAPPING_PREFIX)) {
+        loadConfigurations();
+        break;
       }
-    });
+    }
   }
 
   protected void onRequest(RoutingContext context) {
@@ -134,8 +158,8 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
       }
     };
 
-    LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation, configurationItem.getMicroserviceName(),
-        configurationItem.getVersionRule());
+    LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation, configurationItem.getMicroserviceName()
+    );
     ServiceCombServer server = loadBalancer.chooseServer(invocation);
     if (server == null) {
       LOG.warn("no available server for service {}", configurationItem.getMicroserviceName());
@@ -195,20 +219,19 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     return data -> routingContext.response().write(data);
   }
 
-  protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation, String microserviceName, String versionRule) {
+  protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation, String microserviceName) {
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
-    VersionedCache serversVersionedCache = discoveryTree.discovery(context,
-        RegistrationManager.INSTANCE.getMicroservice().getAppId(),
-        microserviceName,
-        versionRule);
+    VersionedCache serversVersionedCache = getDiscoveryTree().discovery(context,
+        getMicroserviceProperties().getApplication(),
+        microserviceName);
     invocation.addLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
     return loadBalancerMap
         .computeIfAbsent(microserviceName, name -> createLoadBalancer(microserviceName));
   }
 
   private LoadBalancer createLoadBalancer(String microserviceName) {
-    RuleExt rule = BeanUtils.getBean(ExtensionsManager.class).createLoadBalancerRule(microserviceName);
+    RuleExt rule = getExtensionsManager().createLoadBalancerRule(microserviceName);
     return new LoadBalancer(rule, microserviceName);
   }
 

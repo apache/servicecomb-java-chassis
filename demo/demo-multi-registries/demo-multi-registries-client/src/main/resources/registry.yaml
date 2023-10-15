@@ -29,7 +29,7 @@ thirdParty-no-schema-server:
     version: "4.0.0"
     appid: demo-multi-registries
     schemaIds:
-      - ServerEndpoint # not in local , discovery from demo-multi-registries-server
+      - ServerEndpoint # not in local , discovery from demo-multi-registries-server. Not supported since 3.0.0
     instances:
       - endpoints:
           - rest://localhost:8080 # actually will invoke to demo-multi-registries-server

@@ -35,9 +35,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
@@ -63,7 +60,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
@@ -71,6 +67,7 @@ import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
 import io.github.resilience4j.retry.RetryRegistry;
 import io.vertx.core.Context;
+import jakarta.ws.rs.core.Response.Status;
 
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
@@ -100,45 +97,45 @@ public final class InvokerUtils {
     return reactiveRetryPool;
   }
 
-  private static final boolean ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK =
-      DynamicPropertyFactory.getInstance()
-          .getBooleanProperty("servicecomb.invocation.enableEventLoopBlockingCallCheck", true).get();
-
   @SuppressWarnings({"unchecked"})
-  public static <T> T syncInvoke(String microserviceName, String microserviceVersion, String transport,
+  public static <T> T syncInvoke(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
-    Invocation invocation = createInvocation(microserviceName, microserviceVersion, transport, schemaId, operationId,
+    Invocation invocation = createInvocation(microserviceName, transport, schemaId, operationId,
         swaggerArguments, responseType);
     return (T) syncInvoke(invocation);
   }
 
-  public static void reactiveInvoke(String microserviceName, String microserviceVersion, String transport,
+  public static void reactiveInvoke(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType,
       AsyncResponse asyncResp) {
-    Invocation invocation = createInvocation(microserviceName, microserviceVersion, transport, schemaId, operationId,
+    Invocation invocation = createInvocation(microserviceName, transport, schemaId, operationId,
         swaggerArguments, responseType);
     reactiveInvoke(invocation, asyncResp);
   }
 
   public static <T> T syncInvoke(String microserviceName, String schemaId, String operationId,
       Map<String, Object> swaggerArguments, Type responseType) {
-    return syncInvoke(microserviceName, null, null,
+    return syncInvoke(microserviceName, null,
         schemaId, operationId, swaggerArguments, responseType);
   }
 
-  @Deprecated
   public static void reactiveInvoke(String microserviceName, String schemaId, String operationId,
       Map<String, Object> swaggerArguments, Type responseType,
       AsyncResponse asyncResp) {
-    reactiveInvoke(microserviceName, null, null,
+    reactiveInvoke(microserviceName, null,
         schemaId, operationId, swaggerArguments, responseType, asyncResp);
   }
 
-  private static Invocation createInvocation(String microserviceName, String microserviceVersion, String transport,
+  public static Invocation createInvocation(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
-        .createMicroserviceReferenceConfig(microserviceName, microserviceVersion);
-    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+        .createMicroserviceReferenceConfig(microserviceName);
+    if (microserviceReferenceConfig == null) {
+      throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
+          new CommonExceptionData(String.format("Failed to invoke service %s. Maybe service"
+              + " not registered or no active instance.", microserviceName)));
+    }
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
 
@@ -152,25 +149,13 @@ public final class InvokerUtils {
   /**
    *
    * use of this method , the response type can not be determined.
-   * use {@link #syncInvoke(String, String, String, Map, Type)} instead.
+   * use {@link #syncInvoke(String, String, String, String, Map, Type)} instead.
    *
    */
   @Deprecated
-  public static Object syncInvoke(String microserviceName, String schemaId, String operationId,
-      Map<String, Object> swaggerArguments) {
-    return syncInvoke(microserviceName, null, null, schemaId, operationId, swaggerArguments);
-  }
-
-  /**
-   *
-   * use of this method , the response type can not be determined.
-   * use {@link #syncInvoke(String, String, String, String, String, Map, Type)} instead.
-   *
-   */
-  @Deprecated
-  public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
+  public static Object syncInvoke(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments) {
-    return syncInvoke(microserviceName, microserviceVersion, transport, schemaId, operationId, swaggerArguments,
+    return syncInvoke(microserviceName, transport, schemaId, operationId, swaggerArguments,
         null);
   }
 
@@ -193,7 +178,10 @@ public final class InvokerUtils {
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
   public static Response innerSyncInvoke(Invocation invocation) {
-    if (ENABLE_EVENT_LOOP_BLOCKING_CALL_CHECK && isInEventLoop()) {
+    if (isInEventLoop() &&
+        SCBEngine.getInstance()
+            .getEnvironment()
+            .getProperty("servicecomb.invocation.enableEventLoopBlockingCallCheck", boolean.class, true)) {
       throw new IllegalStateException("Can not execute sync logic in event loop.");
     }
     return toSync(invoke(invocation), invocation.getWaitTime());
@@ -265,11 +253,11 @@ public final class InvokerUtils {
     }
   }
 
-  public static boolean isSyncMethod(@Nonnull Method method) {
+  public static boolean isSyncMethod(Method method) {
     return !isAsyncMethod(method);
   }
 
-  public static boolean isAsyncMethod(@Nonnull Method method) {
+  public static boolean isAsyncMethod(Method method) {
     // currently only support CompletableFuture for async method definition
     return method.getReturnType().equals(CompletableFuture.class);
   }

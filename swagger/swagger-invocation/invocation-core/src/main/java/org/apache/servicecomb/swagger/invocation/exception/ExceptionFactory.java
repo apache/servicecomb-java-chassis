@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;

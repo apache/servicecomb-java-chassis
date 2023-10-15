@@ -18,8 +18,6 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
@@ -31,26 +29,24 @@ import org.apache.servicecomb.swagger.invocation.context.TransportContext;
 public class EdgeServerCodecFilter extends RestServerCodecFilter {
   public static final String NAME = "edge-server-codec";
 
-  @Nonnull
   @Override
   public String getName() {
     return NAME;
   }
 
-  @Nonnull
   @Override
-  public boolean isEnabledForInvocationType(InvocationType invocationType) {
+  public boolean enabledForInvocationType(InvocationType invocationType) {
     return invocationType == InvocationType.CONSUMER;
   }
 
   @Override
-  public boolean isEnabledForTransport(String transport) {
+  public boolean enabledForTransport(String transport) {
     // For edge service, this filter executed before load balancer and transport is always null.
     return true;
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 2000;
   }
 

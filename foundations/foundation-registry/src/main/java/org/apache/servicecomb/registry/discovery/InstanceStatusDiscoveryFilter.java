@@ -17,17 +17,20 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.HistoryStatus;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.IsolationStatus;
+import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.PingStatus;
 
-import com.netflix.config.DynamicPropertyFactory;
+public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter {
+  public static final String PARAMETER = "status_level";
 
-public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
-  private static final String UP_INSTANCES = "upInstances";
+  public static final String GROUP_PREFIX = "status_group_";
+
+  public static final String GROUP_SIZE = "status_group_size";
 
   @Override
   public int getOrder() {
@@ -36,35 +39,77 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.status.enabled", true).get();
+    return environment.getProperty("servicecomb.loadbalance.filter.status.enabled", Boolean.class, true);
   }
 
   @Override
-  public boolean isGroupingFilter() {
-    return true;
+  protected String groupsSizeParameter() {
+    return GROUP_SIZE;
   }
 
   @Override
-  protected String findChildName(DiscoveryContext context, DiscoveryTreeNode parent) {
-    return UP_INSTANCES;
+  protected String contextParameter() {
+    return PARAMETER;
+  }
+
+  @Override
+  protected String groupPrefix() {
+    return GROUP_PREFIX;
   }
 
   @Override
   public void init(DiscoveryContext context, DiscoveryTreeNode parent) {
-    Map<String, MicroserviceInstance> instances = parent.data();
-    Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    for (Entry<String, MicroserviceInstance> instanceEntry : instances.entrySet()) {
-      MicroserviceInstance instance = instanceEntry.getValue();
-      if (MicroserviceInstanceStatus.UP == instance.getStatus()) {
-        filteredServers.put(instanceEntry.getKey(), instance);
+    List<StatefulDiscoveryInstance> instances = parent.data();
+    List<StatefulDiscoveryInstance> level0 = new ArrayList<>();
+    List<StatefulDiscoveryInstance> level1 = new ArrayList<>();
+    List<StatefulDiscoveryInstance> level2 = new ArrayList<>();
+    List<StatefulDiscoveryInstance> level3 = new ArrayList<>();
+
+    int groups = 1;
+
+    for (StatefulDiscoveryInstance instance : instances) {
+      if (HistoryStatus.CURRENT == instance.getHistoryStatus() &&
+          MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus() &&
+          PingStatus.OK == instance.getPingStatus() &&
+          IsolationStatus.NORMAL == instance.getIsolationStatus()) {
+        level0.add(instance);
+        continue;
       }
+      if (HistoryStatus.CURRENT == instance.getHistoryStatus() &&
+          MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus() &&
+          PingStatus.UNKNOWN == instance.getPingStatus() &&
+          IsolationStatus.NORMAL == instance.getIsolationStatus()) {
+        level1.add(instance);
+        continue;
+      }
+      if (HistoryStatus.HISTORY == instance.getHistoryStatus() &&
+          MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus() &&
+          PingStatus.OK == instance.getPingStatus() &&
+          IsolationStatus.NORMAL == instance.getIsolationStatus()) {
+        level2.add(instance);
+        continue;
+      }
+      level3.add(instance);
     }
 
-    if (filteredServers.isEmpty()) {
-      return;
+    if (!level0.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(level0));
+      groups++;
     }
-    DiscoveryTreeNode child = new DiscoveryTreeNode().subName(parent, UP_INSTANCES).data(filteredServers);
-    parent.child(UP_INSTANCES, child);
+    if (!level1.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(level1));
+      groups++;
+    }
+    if (!level2.isEmpty()) {
+      parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+          .subName(parent, GROUP_PREFIX + groups).data(level2));
+      groups++;
+    }
+    parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
+        .subName(parent, GROUP_PREFIX + groups).data(level3));
+
+    parent.attribute(GROUP_SIZE, groups);
   }
 }

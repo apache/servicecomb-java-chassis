@@ -25,14 +25,14 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class SchemaMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(SchemaMeta.class);
 
   private final MicroserviceMeta microserviceMeta;
 
-  private final Swagger swagger;
+  private final OpenAPI swagger;
 
   private final String schemaId;
 
@@ -43,7 +43,7 @@ public class SchemaMeta {
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
-  public SchemaMeta(MicroserviceMeta microserviceMeta, String schemaId, Swagger swagger) {
+  public SchemaMeta(MicroserviceMeta microserviceMeta, String schemaId, OpenAPI swagger) {
     this.microserviceMeta = microserviceMeta;
     this.schemaId = schemaId;
     this.swagger = swagger;
@@ -69,7 +69,7 @@ public class SchemaMeta {
     return microserviceMeta;
   }
 
-  public Swagger getSwagger() {
+  public OpenAPI getSwagger() {
     return swagger;
   }
 

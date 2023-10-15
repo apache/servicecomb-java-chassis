@@ -18,27 +18,31 @@ package org.apache.servicecomb.authentication.provider;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
-
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.beans.factory.annotation.Autowired;
 
-public class ProviderAuthFilter implements ProducerFilter {
-  private final ProviderTokenManager authenticationTokenManager = new ProviderTokenManager();
+import jakarta.ws.rs.core.Response.Status;
 
-  @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
-    return Filter.PRODUCER_SCHEDULE_FILTER_ORDER + 1010;
+public class ProviderAuthFilter implements ProviderFilter {
+  private ProviderTokenManager authenticationTokenManager;
+
+  @Autowired
+  public void setProviderTokenManager(ProviderTokenManager providerTokenManager) {
+    this.authenticationTokenManager = providerTokenManager;
   }
 
-  @Nonnull
+  @Override
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+    return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1010;
+  }
+
   @Override
   public String getName() {
     return "provider-public-key";
@@ -46,7 +50,7 @@ public class ProviderAuthFilter implements ProducerFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    String token = invocation.getContext(Const.AUTH_TOKEN);
+    String token = invocation.getContext(CoreConst.AUTH_TOKEN);
     if (null != token && authenticationTokenManager.valid(token)) {
       return nextNode.onFilter(invocation);
     }

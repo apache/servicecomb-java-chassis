@@ -19,13 +19,15 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestPart;
 
-import io.swagger.models.parameters.FormParameter;
-
 public class RequestPartAnnotationProcessor extends
-    AbstractSpringmvcSerializableParameterProcessor<FormParameter, RequestPart> {
+    SpringmvcParameterAnnotationsProcessor<RequestPart> {
   @Override
   public Type getProcessType() {
     return RequestPart.class;
@@ -37,21 +39,19 @@ public class RequestPartAnnotationProcessor extends
     if (value.isEmpty()) {
       value = annotation.name();
     }
-    return value;
-  }
-
-  @Override
-  public HttpParameterType getHttpParameterType(RequestPart parameterAnnotation) {
-    return HttpParameterType.FORM;
-  }
-
-  @Override
-  protected boolean readRequired(RequestPart requestPart) {
-    return requestPart.required();
-  }
-
-  @Override
-  protected String pureReadDefaultValue(RequestPart requestPart) {
+    if (StringUtils.isNotEmpty(value)) {
+      return value;
+    }
     return null;
+  }
+
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ParameterGenerator parameterGenerator, RequestPart annotation) {
+    parameterGenerator.setHttpParameterType(HttpParameterType.FORM);
+    if (StringUtils.isNotEmpty(getParameterName(annotation))) {
+      parameterGenerator.getParameterGeneratorContext().setParameterName(getParameterName(annotation));
+    }
+    parameterGenerator.getParameterGeneratorContext().setRequired(annotation.required());
   }
 }

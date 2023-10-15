@@ -31,7 +31,7 @@ import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ public class TestSpringmvcV2V2 {
   @Test
   public void add_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -48,7 +48,7 @@ public class TestSpringmvcV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("z", 3);
+    arguments.put("x-z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
@@ -62,7 +62,7 @@ public class TestSpringmvcV2V2 {
   @Test
   public void add_addWrapper() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -70,7 +70,7 @@ public class TestSpringmvcV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("z", 3);
+    arguments.put("x-z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
@@ -84,7 +84,7 @@ public class TestSpringmvcV2V2 {
   @Test
   public void add_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -108,7 +108,7 @@ public class TestSpringmvcV2V2 {
   @Test
   public void addBody_add() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -128,7 +128,7 @@ public class TestSpringmvcV2V2 {
   @Test
   public void addBody_addWrapper() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddWrapperV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
@@ -148,7 +148,7 @@ public class TestSpringmvcV2V2 {
   @Test
   public void addBody_addBody() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
+    OpenAPI swagger = SwaggerGenerator.generate(SpringmvcAddBodyV2.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();

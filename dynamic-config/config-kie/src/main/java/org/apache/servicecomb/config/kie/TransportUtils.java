@@ -19,13 +19,13 @@ package org.apache.servicecomb.config.kie;
 
 import static org.apache.servicecomb.foundation.ssl.SSLOption.DEFAULT_OPTION;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
+import org.springframework.core.env.Environment;
 
 public class TransportUtils {
-  public static SSLProperties createSSLProperties(boolean sslEnabled, Configuration configuration, String tag) {
+  public static SSLProperties createSSLProperties(boolean sslEnabled, Environment environment, String tag) {
     SSLProperties sslProperties = new SSLProperties();
     sslProperties.setEnabled(sslEnabled);
 
@@ -34,93 +34,93 @@ public class TransportUtils {
     }
 
     SSLOption option = new SSLOption();
-    option.setEngine(getStringProperty(configuration,
+    option.setEngine(getStringProperty(environment,
         DEFAULT_OPTION.getEngine(),
         "ssl." + tag + ".engine",
         "ssl.engine"));
     option.setProtocols(
-        getStringProperty(configuration,
+        getStringProperty(environment,
             DEFAULT_OPTION.getProtocols(),
             "ssl." + tag + ".protocols",
             "ssl.protocols"));
     option.setCiphers(
-        getStringProperty(configuration, DEFAULT_OPTION.getCiphers(), "ssl." + tag + ".ciphers", "ssl.ciphers"));
+        getStringProperty(environment, DEFAULT_OPTION.getCiphers(), "ssl." + tag + ".ciphers", "ssl.ciphers"));
     option.setAuthPeer(
-        getBooleanProperty(configuration, DEFAULT_OPTION.isAuthPeer(), "ssl." + tag + ".authPeer", "ssl.authPeer"));
+        getBooleanProperty(environment, DEFAULT_OPTION.isAuthPeer(), "ssl." + tag + ".authPeer", "ssl.authPeer"));
     option.setCheckCNHost(
-        getBooleanProperty(configuration,
+        getBooleanProperty(environment,
             DEFAULT_OPTION.isCheckCNHost(),
             "ssl." + tag + ".checkCN.host",
             "ssl.checkCN.host"));
     option.setCheckCNWhite(
-        getBooleanProperty(configuration,
+        getBooleanProperty(environment,
             DEFAULT_OPTION.isCheckCNWhite(),
             "ssl." + tag + ".checkCN.white",
             "ssl.checkCN.white"));
-    option.setCheckCNWhiteFile(getStringProperty(configuration,
+    option.setCheckCNWhiteFile(getStringProperty(environment,
         DEFAULT_OPTION.getCiphers(),
         "ssl." + tag + ".checkCN.white.file",
         "ssl.checkCN.white.file"));
-    option.setAllowRenegociate(getBooleanProperty(configuration,
+    option.setAllowRenegociate(getBooleanProperty(environment,
         DEFAULT_OPTION.isAllowRenegociate(),
         "ssl." + tag + ".allowRenegociate",
         "ssl.allowRenegociate"));
     option.setStorePath(
-        getStringProperty(configuration,
+        getStringProperty(environment,
             DEFAULT_OPTION.getStorePath(),
             "ssl." + tag + ".storePath",
             "ssl.storePath"));
     option.setClientAuth(
-        getStringProperty(configuration,
+        getStringProperty(environment,
             DEFAULT_OPTION.getClientAuth(),
             "ssl." + tag + ".clientAuth",
             "ssl.clientAuth"));
     option.setTrustStore(
-        getStringProperty(configuration,
+        getStringProperty(environment,
             DEFAULT_OPTION.getTrustStore(),
             "ssl." + tag + ".trustStore",
             "ssl.trustStore"));
-    option.setTrustStoreType(getStringProperty(configuration,
+    option.setTrustStoreType(getStringProperty(environment,
         DEFAULT_OPTION.getTrustStoreType(),
         "ssl." + tag + ".trustStoreType",
         "ssl.trustStoreType"));
-    option.setTrustStoreValue(getStringProperty(configuration,
+    option.setTrustStoreValue(getStringProperty(environment,
         DEFAULT_OPTION.getTrustStoreValue(),
         "ssl." + tag + ".trustStoreValue",
         "ssl.trustStoreValue"));
     option.setKeyStore(
-        getStringProperty(configuration, DEFAULT_OPTION.getKeyStore(), "ssl." + tag + ".keyStore", "ssl.keyStore"));
+        getStringProperty(environment, DEFAULT_OPTION.getKeyStore(), "ssl." + tag + ".keyStore", "ssl.keyStore"));
     option.setKeyStoreType(
-        getStringProperty(configuration,
+        getStringProperty(environment,
             DEFAULT_OPTION.getKeyStoreType(),
             "ssl." + tag + ".keyStoreType",
             "ssl.keyStoreType"));
-    option.setKeyStoreValue(getStringProperty(configuration,
+    option.setKeyStoreValue(getStringProperty(environment,
         DEFAULT_OPTION.getKeyStoreValue(),
         "ssl." + tag + ".keyStoreValue",
         "ssl.keyStoreValue"));
-    option.setCrl(getStringProperty(configuration, DEFAULT_OPTION.getCrl(), "ssl." + tag + ".crl", "ssl.crl"));
+    option.setCrl(getStringProperty(environment, DEFAULT_OPTION.getCrl(), "ssl." + tag + ".crl", "ssl.crl"));
     option.setSslCustomClass(
-        getStringProperty(configuration, null, "ssl." + tag + ".sslCustomClass", "ssl.sslCustomClass"));
+        getStringProperty(environment, null, "ssl." + tag + ".sslCustomClass", "ssl.sslCustomClass"));
 
     sslProperties.setSslOption(option);
     sslProperties.setSslCustom(SSLCustom.createSSLCustom(option.getSslCustomClass()));
     return sslProperties;
   }
 
-  private static String getStringProperty(Configuration configuration, String defaultValue, String... keys) {
+  private static String getStringProperty(Environment environment, String defaultValue, String... keys) {
     for (String key : keys) {
-      if (configuration.containsKey(key)) {
-        return configuration.getString(key);
+      if (environment.getProperty(key) != null) {
+        return environment.getProperty(key);
       }
     }
     return defaultValue;
   }
 
-  private static boolean getBooleanProperty(Configuration configuration, boolean defaultValue, String... keys) {
+  private static boolean getBooleanProperty(Environment environment, boolean defaultValue, String... keys) {
     for (String key : keys) {
-      if (configuration.containsKey(key)) {
-        return configuration.getBoolean(key);
+      if (environment.getProperty(key) != null) {
+        return environment.getProperty(key, boolean.class, false);
       }
     }
     return defaultValue;

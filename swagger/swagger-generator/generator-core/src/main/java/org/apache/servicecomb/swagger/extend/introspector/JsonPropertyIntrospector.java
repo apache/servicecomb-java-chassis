@@ -24,7 +24,8 @@ import org.apache.servicecomb.swagger.extend.SwaggerEnum;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 
-import io.swagger.jackson.SwaggerAnnotationIntrospector;
+import io.swagger.v3.core.jackson.SwaggerAnnotationIntrospector;
+
 
 public class JsonPropertyIntrospector extends SwaggerAnnotationIntrospector {
   private static final long serialVersionUID = 4157263023893695762L;

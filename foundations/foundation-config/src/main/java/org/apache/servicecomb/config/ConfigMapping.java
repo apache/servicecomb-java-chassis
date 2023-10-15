@@ -27,8 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.config.archaius.sources.AbstractConfigLoader;
+import org.apache.servicecomb.config.file.AbstractConfigLoader;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,15 +91,6 @@ public final class ConfigMapping {
     Map<String, Object> retMap = new LinkedHashMap<>();
     retMap.putAll(oldMap);
     configMap.entrySet().forEach(entry -> putConfigsToRetMap(retMap, entry, oldMap.get(entry.getKey())));
-    return retMap;
-  }
-
-  public static Map<String, Object> getConvertedMap(Configuration config) {
-    if (configMap == null) {
-      return new LinkedHashMap<>();
-    }
-    Map<String, Object> retMap = new LinkedHashMap<>();
-    configMap.entrySet().forEach(entry -> putConfigsToRetMap(retMap, entry, config.getProperty(entry.getKey())));
     return retMap;
   }
 

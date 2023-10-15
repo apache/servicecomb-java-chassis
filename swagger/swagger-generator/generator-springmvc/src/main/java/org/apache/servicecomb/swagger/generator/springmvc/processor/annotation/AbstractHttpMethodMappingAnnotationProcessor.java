@@ -17,19 +17,17 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
+import java.util.Arrays;
+
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.models.Operation;
 
 abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implements
     MethodAnnotationProcessor<ANNOTATION> {
   protected void doProcess(OperationGenerator operationGenerator, String[] paths, String[] pathValues,
       RequestMethod requestMethod, String[] consumes, String[] produces) {
-    Operation operation = operationGenerator.getOperation();
-
     // paths same to pathValues
     this.processPath(operationGenerator, paths);
     this.processPath(operationGenerator, pathValues);
@@ -37,8 +35,12 @@ abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implemen
     if (requestMethod != null) {
       operationGenerator.setHttpMethod(requestMethod.name());
     }
-    SwaggerUtils.setConsumes(operation, consumes);
-    SwaggerUtils.setProduces(operation, produces);
+    if (consumes.length > 0) {
+      operationGenerator.getOperationGeneratorContext().updateConsumes(Arrays.asList(consumes));
+    }
+    if (produces.length > 0) {
+      operationGenerator.getOperationGeneratorContext().updateProduces(Arrays.asList(produces));
+    }
   }
 
   protected void processPath(OperationGenerator operationGenerator, String[] paths) {

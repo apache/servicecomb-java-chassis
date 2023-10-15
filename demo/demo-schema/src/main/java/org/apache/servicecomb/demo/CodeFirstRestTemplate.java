@@ -21,27 +21,36 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
+import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.server.User;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import io.vertx.core.json.JsonObject;
 
 public class CodeFirstRestTemplate {
+  protected MicroserviceProperties microserviceProperties;
+
+  @Autowired
+  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
+    this.microserviceProperties = microserviceProperties;
+  }
+
   protected void changeTransport(String microserviceName, String transport) {
-    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
   }
 
@@ -50,7 +59,7 @@ public class CodeFirstRestTemplate {
     changeTransport(microserviceName, "highway");
     testOnlyHighway(template, cseUrlPrefix);
 
-    changeTransport(microserviceName, Const.RESTFUL);
+    changeTransport(microserviceName, CoreConst.RESTFUL);
     testOnlyRest(microserviceName, template, cseUrlPrefix);
 
     for (String transport : DemoConst.transports) {
@@ -110,10 +119,16 @@ public class CodeFirstRestTemplate {
     userMap.put("u1", user1);
     userMap.put("u2", user2);
 
-    @SuppressWarnings("unchecked")
-    Map<String, User> result = template.postForObject(cseUrlPrefix + "testUserMap",
-        userMap,
-        Map.class);
+    // TODO: shall we support this usage? Seams not valid, cause result should be Map<String, Object> and type not defined.
+//    @SuppressWarnings("unchecked")
+//    Map<String, User> result = template.postForObject(cseUrlPrefix + "testUserMap",
+//        userMap,
+//        Map.class);
+
+    Map<String, User> result = template.exchange(cseUrlPrefix + "testUserMap", HttpMethod.POST,
+        new HttpEntity<>(userMap),
+        new ParameterizedTypeReference<Map<String, User>>() {
+        }).getBody();
 
     TestMgr.check("u1", result.get("u1").getNames()[0]);
     TestMgr.check("u2", result.get("u1").getNames()[1]);
@@ -140,13 +155,13 @@ public class CodeFirstRestTemplate {
     TestMgr.check(2, result[2]);
   }
 
-  protected void checkStatusCode(String microserviceName, int expectStatusCode, HttpStatus httpStatus) {
+  protected void checkStatusCode(String microserviceName, int expectStatusCode, HttpStatusCode httpStatus) {
     TestMgr.check(expectStatusCode, httpStatus.value());
   }
 
   private void testCseResponse(String targetMicroserviceName, RestTemplate template,
       String cseUrlPrefix) {
-    String srcMicroserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    String srcMicroserviceName = microserviceProperties.getName();
 
     ResponseEntity<User> responseEntity =
         template.exchange(cseUrlPrefix + "cseResponse", HttpMethod.GET, null, User.class);
@@ -192,7 +207,7 @@ public class CodeFirstRestTemplate {
   private void testCodeFirstSayHi(RestTemplate template, String cseUrlPrefix) {
     ResponseEntity<String> responseEntity =
         template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "world");
-    TestMgr.check(202, responseEntity.getStatusCodeValue());
+    TestMgr.check(202, responseEntity.getStatusCode().value());
     TestMgr.check("world sayhi", responseEntity.getBody());
   }
 
@@ -278,7 +293,7 @@ public class CodeFirstRestTemplate {
   private void testTraceIdOnContextContainsTraceId(RestTemplate template, String cseUrlPrefix) {
     String traceIdUrl = cseUrlPrefix + "traceId";
     InvocationContext invocationContext = new InvocationContext();
-    invocationContext.addContext(Const.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
+    invocationContext.addContext(CoreConst.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
     ContextUtils.setInvocationContext(invocationContext);
     String result = template.getForObject(traceIdUrl, String.class);
     TestMgr.check(String.valueOf(Long.MIN_VALUE), result);

@@ -19,16 +19,12 @@ package org.apache.servicecomb.registry.lightweight;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Collection;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
-import org.apache.servicecomb.registry.api.registry.BasePath;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class AbstractLightweightRegistration implements Registration {
+public abstract class AbstractLightweightRegistration<R extends RegistrationInstance> implements Registration<R> {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLightweightRegistration.class);
 
   protected EventBus eventBus;
@@ -74,13 +70,6 @@ public abstract class AbstractLightweightRegistration implements Registration {
         .scheduleAtFixedRate(this::sendRegister, 0, interval.getSeconds(), TimeUnit.SECONDS);
   }
 
-  protected void postRegisteredEvent() {
-    eventBus.post(new MicroserviceInstanceRegisteredEvent(
-        name(),
-        self.getInstance().getInstanceId(),
-        false
-    ));
-  }
 
   protected void sendRegister() {
     try {
@@ -93,27 +82,6 @@ public abstract class AbstractLightweightRegistration implements Registration {
   protected abstract void doSendRegister() throws IOException;
 
   @Override
-  public MicroserviceInstance getMicroserviceInstance() {
-    return self.getInstance();
-  }
-
-  @Override
-  public Microservice getMicroservice() {
-    return self.getMicroservice();
-  }
-
-  @Override
-  public String getAppId() {
-    return self.getMicroservice().getAppId();
-  }
-
-  @Override
-  public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    self.getInstance().setStatus(status);
-    return true;
-  }
-
-  @Override
   public void addSchema(String schemaId, String content) {
     self.addSchema(schemaId, content);
   }
@@ -124,8 +92,13 @@ public abstract class AbstractLightweightRegistration implements Registration {
   }
 
   @Override
-  public void addBasePath(Collection<BasePath> basePaths) {
-    self.getMicroservice().getPaths().addAll(basePaths);
+  public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
+    return true;
+  }
+
+  @Override
+  public void addProperty(String key, String value) {
+
   }
 
   @Override

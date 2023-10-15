@@ -21,27 +21,31 @@ import java.util.concurrent.Executor;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestExecutorManager {
   @Mocked
   Executor defaultExecutor;
 
+  ExecutorManager executorManager = new ExecutorManager();
+
+  Environment environment = Mockito.mock(Environment.class);
+
   @Before
   public void setup() {
-    ArchaiusUtils.resetConfig();
+    executorManager.setEnvironment(environment);
   }
 
   @After
   public void teardown() {
-    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -53,7 +57,7 @@ public class TestExecutorManager {
       }
     };
 
-    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta));
+    Assertions.assertSame(executor, executorManager.findExecutor(operationMeta));
   }
 
   @Test
@@ -62,7 +66,8 @@ public class TestExecutorManager {
     // String schemaQualifiedName = "schemaId.opId";
     String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, opBeanId);
+    Mockito.when(environment.getProperty(
+        ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName)).thenReturn(opBeanId);
     new Expectations(BeanUtils.class) {
       {
         operationMeta.getMicroserviceQualifiedName();
@@ -72,7 +77,7 @@ public class TestExecutorManager {
       }
     };
 
-    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
+    Assertions.assertSame(executor, executorManager.findExecutor(operationMeta, null));
   }
 
   @Test
@@ -81,7 +86,8 @@ public class TestExecutorManager {
       @Mocked OperationMeta operationMeta) {
     String microserviceQualifiedName = "microserviceName.schemaId.opId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName, opBeanId);
+    Mockito.when(environment.getProperty(
+        ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceQualifiedName)).thenReturn(opBeanId);
     new Expectations(BeanUtils.class) {
       {
         operationMeta.getMicroserviceQualifiedName();
@@ -91,13 +97,13 @@ public class TestExecutorManager {
       }
     };
 
-    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, defExecutor));
+    Assertions.assertSame(executor, executorManager.findExecutor(operationMeta, defExecutor));
   }
 
   @Test
   public void findExecutor_twoParam_schemaCfg_withOpDef(@Mocked OperationMeta operationMeta,
       @Mocked Executor defExecutor) {
-    Assertions.assertSame(defExecutor, new ExecutorManager().findExecutor(operationMeta, defExecutor));
+    Assertions.assertSame(defExecutor, executorManager.findExecutor(operationMeta, defExecutor));
   }
 
   @Test
@@ -106,7 +112,8 @@ public class TestExecutorManager {
     String microserviceName = "serviceName";
     String schemaName = "schemaId";
     String opBeanId = "opBeanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceName + "." +  schemaName, opBeanId);
+    Mockito.when(environment.getProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + microserviceName + "." + schemaName))
+        .thenReturn(opBeanId);
     new Expectations(BeanUtils.class) {
       {
         operationMeta.getSchemaId();
@@ -117,7 +124,7 @@ public class TestExecutorManager {
         result = executor;
       }
     };
-    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
+    Assertions.assertSame(executor, executorManager.findExecutor(operationMeta, null));
   }
 
   @Test
@@ -125,7 +132,7 @@ public class TestExecutorManager {
       @Mocked SchemaMeta schemaMeta,
       @Mocked OperationMeta operationMeta) {
     String beanId = "beanId";
-    ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT, beanId);
+    Mockito.when(environment.getProperty(ExecutorManager.KEY_EXECUTORS_DEFAULT)).thenReturn(beanId);
     new Expectations(BeanUtils.class) {
       {
         BeanUtils.getBean(beanId);
@@ -133,6 +140,6 @@ public class TestExecutorManager {
       }
     };
 
-    Assertions.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
+    Assertions.assertSame(executor, executorManager.findExecutor(operationMeta, null));
   }
 }

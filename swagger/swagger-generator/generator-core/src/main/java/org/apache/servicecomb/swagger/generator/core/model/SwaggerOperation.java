@@ -16,15 +16,12 @@
  */
 package org.apache.servicecomb.swagger.generator.core.model;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import io.swagger.models.HttpMethod;
-import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+import io.swagger.v3.oas.models.PathItem.HttpMethod;
 
 public class SwaggerOperation {
-  private final Swagger swagger;
+  private final OpenAPI swagger;
 
   private final String path;
 
@@ -32,20 +29,25 @@ public class SwaggerOperation {
 
   private final Operation operation;
 
-  private final Map<String, Integer> parameterIndexes = new HashMap<>();
-
-  public SwaggerOperation(Swagger swagger, String path, HttpMethod httpMethod, Operation operation) {
+  public SwaggerOperation(OpenAPI swagger, String path, HttpMethod httpMethod, Operation operation) {
     this.swagger = swagger;
     this.path = path;
     this.httpMethod = httpMethod;
     this.operation = operation;
-
-    for (int idx = 0; idx < operation.getParameters().size(); idx++) {
-      parameterIndexes.put(operation.getParameters().get(idx).getName(), idx);
-    }
   }
 
-  public Swagger getSwagger() {
+  public int parameterCount() {
+    int result = 0;
+    if (operation.getRequestBody() != null) {
+      result++;
+    }
+    if (operation.getParameters() != null) {
+      result += operation.getParameters().size();
+    }
+    return result;
+  }
+
+  public OpenAPI getSwagger() {
     return swagger;
   }
 
@@ -63,9 +65,5 @@ public class SwaggerOperation {
 
   public String getOperationId() {
     return operation.getOperationId();
-  }
-
-  public Integer findPrameterIndex(String name) {
-    return parameterIndexes.get(name);
   }
 }

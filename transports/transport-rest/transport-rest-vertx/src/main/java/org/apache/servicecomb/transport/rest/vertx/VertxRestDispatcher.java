@@ -17,14 +17,10 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.Status.Family;
-
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -37,12 +33,14 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status.Family;
 
 public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestDispatcher.class);
@@ -59,18 +57,18 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
   @Override
   public int getOrder() {
-    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, Integer.MAX_VALUE).get();
+    return LegacyPropertyFactory.getIntProperty(KEY_ORDER, Integer.MAX_VALUE);
   }
 
   @Override
   public boolean enabled() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, true).get();
+    return LegacyPropertyFactory.getBooleanProperty(KEY_ENABLED, true);
   }
 
   @Override
   public void init(Router router) {
     // cookies handler are enabled by default start from 3.8.3
-    String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, null).get();
+    String pattern = LegacyPropertyFactory.getStringProperty(KEY_PATTERN);
     if (pattern == null) {
       router.route().handler(createBodyHandler());
       router.route().failureHandler(this::failureHandler).handler(this::onRequest);
@@ -180,7 +178,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
   protected void onRequest(RoutingContext context) {
     if (transport == null) {
-      transport = SCBEngine.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+      transport = SCBEngine.getInstance().getTransportManager().findTransport(CoreConst.RESTFUL);
       microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     }
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);

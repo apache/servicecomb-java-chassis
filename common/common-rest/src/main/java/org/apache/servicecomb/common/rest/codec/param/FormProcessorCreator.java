@@ -23,13 +23,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
@@ -37,28 +35,33 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.inject.util.Types;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.Property;
+import io.swagger.v3.oas.models.media.ArraySchema;
+import io.swagger.v3.oas.models.media.MediaType;
+import io.swagger.v3.oas.models.media.Schema;
+import io.swagger.v3.oas.models.parameters.RequestBody;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.Response.Status;
 
-public class FormProcessorCreator implements ParamValueProcessorCreator {
+@SuppressWarnings("unchecked")
+public class FormProcessorCreator implements ParamValueProcessorCreator<RequestBody> {
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
     private final boolean repeatedType;
 
-    public FormProcessor(FormParameter formParameter, JavaType targetType) {
-      super(formParameter.getName(), targetType, formParameter.getDefaultValue(), formParameter.getRequired());
+    public FormProcessor(String paraName, RequestBody formParameter, String mediaType, JavaType targetType) {
+      super(paraName, targetType,
+          formParameter.getContent().get(mediaType).getSchema().getDefault(),
+          formParameter.getRequired() != null && formParameter.getRequired());
 
-      this.repeatedType = ArrayProperty.isType(formParameter.getType());
+      this.repeatedType = formParameter.getContent().get(mediaType)
+          .getSchema().getProperties().get(paraName) instanceof ArraySchema;
     }
 
     @Override
     public Object getValue(HttpServletRequest request) {
-      @SuppressWarnings("unchecked")
-      Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
+      Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.BODY_PARAMETER);
       if (forms != null && !forms.isEmpty()) {
         return convertValue(forms.get(paramPath), targetType);
       }
@@ -98,31 +101,37 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   @Override
-  public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
+  public ParamValueProcessor create(OperationMeta operationMeta,
+      String paramName, RequestBody parameter, Type genericParamType) {
     JavaType targetType =
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
 
-    if (isPart(parameter)) {
-      return new PartProcessor((FormParameter) parameter, genericParamType);
+    if (isPart(parameter, paramName)) {
+      return new PartProcessor(paramName, parameter, genericParamType);
     }
-    return new FormProcessor((FormParameter) parameter, targetType);
+    String mediaType = SwaggerConst.FORM_MEDIA_TYPE;
+    if (parameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE) != null) {
+      mediaType = SwaggerConst.FILE_MEDIA_TYPE;
+    }
+    return new FormProcessor(paramName, parameter, mediaType, targetType);
   }
 
-  private boolean isPart(Parameter parameter) {
-    // no need to check Part[][] and so on
-    FormParameter formParameter = (FormParameter) parameter;
-    if ("array".equals(formParameter.getType())) {
-      Property items = formParameter.getItems();
-      return new FileProperty().getType().equals(items.getType());
+  private boolean isPart(RequestBody parameter, String paramName) {
+    MediaType file = parameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE);
+    if (file != null) {
+      Schema<?> schema = (Schema<?>) file.getSchema().getProperties().get(paramName);
+      return schema instanceof ArraySchema ||
+          ("string".equals(schema.getType()) && "binary".equals(schema.getFormat()));
     }
-    return new FileProperty().getType().equals(formParameter.getType());
+    return false;
   }
 
   public static class PartProcessor extends AbstractParamProcessor {
     private static final Type partListType = Types.newParameterizedType(List.class, Part.class);
 
     // key is target type
-    private static final Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
+    private static final Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(
+            Converter.class)
         .stream()
         .filter(c -> partListType.equals(c.getSrcType()))
         .collect(Collectors.toMap(Converter::getTargetType, Function.identity()));
@@ -135,15 +144,15 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
 
     private final boolean repeatedType;
 
-    private final Type genericParamType;
-
     private Converter converter;
 
-    PartProcessor(FormParameter formParameter, Type genericParamType) {
-      super(formParameter.getName(), null, formParameter.getDefaultValue(), formParameter.getRequired());
+    PartProcessor(String paramName, RequestBody formParameter, Type genericParamType) {
+      super(paramName, null,
+          formParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema().getDefault(),
+          formParameter.getRequired() != null && formParameter.getRequired());
 
-      this.genericParamType = genericParamType;
-      this.repeatedType = ArrayProperty.isType(formParameter.getType());
+      this.repeatedType = formParameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE)
+          .getSchema().getProperties().get(paramName) instanceof ArraySchema;
       initConverter(genericParamType);
     }
 

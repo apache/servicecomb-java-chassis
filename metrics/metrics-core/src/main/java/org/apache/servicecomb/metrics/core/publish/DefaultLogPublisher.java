@@ -44,11 +44,12 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Meter;
 
 import io.vertx.core.Vertx;
@@ -95,29 +96,29 @@ public class DefaultLogPublisher implements MetricsInitializer {
    */
   private String latencyDistributionFormat = "";
 
+  private Environment environment;
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    if (!DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ENABLED, false)
-        .get()) {
+    if (!environment.getProperty(ENABLED, boolean.class, false)) {
       return;
     }
 
-    initLatencyDistribution();
+    initLatencyDistribution(config);
 
     eventBus.register(this);
   }
 
-  private void initLatencyDistribution() {
+  private void initLatencyDistribution(MetricsBootstrapConfig config) {
     // default length is 7 which include a space, one minute 999999 requests, TPS is 16666, mostly it's enough
-    int leastLatencyScopeStrLength = DynamicPropertyFactory.getInstance()
-        .getIntProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, 7)
-        .get();
+    int leastLatencyScopeStrLength = config.getMinScopeLength();
 
-    String config = DynamicPropertyFactory.getInstance()
-        .getStringProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION, null)
-        .get();
-    latencyDistributionConfig = new LatencyDistributionConfig(config);
+    latencyDistributionConfig = new LatencyDistributionConfig(config.getLatencyDistribution());
     String header;
     for (LatencyScopeConfig scopeConfig : latencyDistributionConfig.getScopeConfigs()) {
       if (scopeConfig.getMsMax() == Long.MAX_VALUE) {
@@ -242,9 +243,9 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
     sb.append(""
-        + "edge:\n"
-        + " simple:\n"
-        + "  status      tps      latency            ")
+            + "edge:\n"
+            + " simple:\n"
+            + "  status      tps      latency            ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
@@ -266,9 +267,9 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
     sb.append(""
-        + "consumer:\n"
-        + " simple:\n"
-        + "  status      tps      latency            ")
+            + "consumer:\n"
+            + " simple:\n"
+            + "  status      tps      latency            ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
@@ -290,9 +291,9 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
     sb.append(""
-        + "producer:\n"
-        + " simple:\n"
-        + "  status      tps      latency            ")
+            + "producer:\n"
+            + " simple:\n"
+            + "  status      tps      latency            ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     // use detailsBuilder, we can traverse the map only once
@@ -510,10 +511,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     if (client.isExists() || server.isExists()) {
       appendLine(sb, "  transport:");
       if (client.isExists()) {
-        client.print(DynamicPropertyFactory
-            .getInstance()
-            .getBooleanProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, true)
-            .get());
+        client.print(environment.getProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, boolean.class, true));
       }
 
       if (server.isExists()) {

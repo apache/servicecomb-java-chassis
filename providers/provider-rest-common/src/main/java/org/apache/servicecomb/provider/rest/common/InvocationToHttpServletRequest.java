@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
@@ -44,7 +44,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   }
 
   private SocketAddress getSockerAddress() {
-    return (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
+    return (SocketAddress) invocation.getHandlerContext().get(CoreConst.REMOTE_ADDRESS);
   }
 
   @Override

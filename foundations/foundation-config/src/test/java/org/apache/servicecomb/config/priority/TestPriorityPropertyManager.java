@@ -17,14 +17,10 @@
 
 package org.apache.servicecomb.config.priority;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
-import org.apache.servicecomb.config.inject.TestConfigObjectFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import com.netflix.config.DynamicProperty;
 
 public class TestPriorityPropertyManager extends TestPriorityPropertyBase {
   String high = "ms.schema.op";
@@ -37,7 +33,7 @@ public class TestPriorityPropertyManager extends TestPriorityPropertyBase {
 
   @InjectProperties(prefix = "root")
   public static class ConfigWithAnnotation {
-    @InjectProperty(prefix = "override", keys = {"high", "low"})
+    @InjectProperty(prefix = "override", keys = {"high", "low"}, defaultValue = "abc")
     public String strValue;
   }
 
@@ -65,9 +61,9 @@ public class TestPriorityPropertyManager extends TestPriorityPropertyBase {
 
     for (int i = 0; i < 100; i++) {
       for (int j = 0; j < 100; j++) {
-        TestConfigObjectFactory.ConfigWithAnnotation configConfigObject = priorityPropertyManager.createConfigObject(
-            TestConfigObjectFactory.ConfigWithAnnotation.class);
-        Assertions.assertEquals("abc", configConfigObject.strDef);
+        ConfigWithAnnotation configConfigObject = priorityPropertyManager.createConfigObject(
+            ConfigWithAnnotation.class);
+        Assertions.assertEquals("abc", configConfigObject.strValue);
         PriorityProperty<Long> configPriorityProperty = propertyFactory.getOrCreate(Long.class, -1L, -2L, keys);
         Assertions.assertEquals(-2L, (long) configPriorityProperty.getValue());
       }
@@ -76,10 +72,6 @@ public class TestPriorityPropertyManager extends TestPriorityPropertyBase {
     waitKeyForGC(priorityPropertyManager);
 
     Assertions.assertTrue(priorityPropertyManager.getConfigObjectMap().isEmpty());
-    for (DynamicProperty property : ConfigUtil.getAllDynamicProperties().values()) {
-      Assertions.assertTrue(ConfigUtil.getCallbacks(property).isEmpty());
-    }
-
     System.out.println("Token : " + (System.currentTimeMillis() - timeBegin));
   }
 }

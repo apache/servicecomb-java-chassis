@@ -90,13 +90,6 @@
         <version>${project.version}</version>
       </dependency>
 
-      <!-- ServiceComb： deployment -->
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>deployment</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
       <!-- ServiceComb： dynamic-config -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
@@ -216,14 +209,8 @@
         <artifactId>handler-tracing-zipkin</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- ServiceComb： inspector -->
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>inspector</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <!-- ServiceComb： metrics -->
 
+      <!-- ServiceComb： metrics -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>metrics-core</artifactId>
@@ -268,17 +255,17 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>registry-schema-discovery</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
         <artifactId>registry-service-center</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>registry-zero-config</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-nacos</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- ServiceComb： solutions -->

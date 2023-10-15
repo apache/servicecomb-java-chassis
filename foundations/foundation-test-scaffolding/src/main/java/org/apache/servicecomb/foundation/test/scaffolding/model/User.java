@@ -19,8 +19,14 @@ package org.apache.servicecomb.foundation.test.scaffolding.model;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 public class User {
   public String name;
 
+  // An issue not fixed by open api
+  // see: https://github.com/swagger-api/swagger-core/issues/3484
+  @ArraySchema(schema = @Schema(implementation = User.class))
   public List<User> friends;
 }

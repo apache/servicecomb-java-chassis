@@ -26,7 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.IntStream;
 
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
@@ -38,7 +39,6 @@ import org.apache.servicecomb.demo.smartcare.Application;
 import org.apache.servicecomb.demo.smartcare.Group;
 import org.apache.servicecomb.demo.smartcare.SmartCare;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.springboot.starter.EnableServiceComb;
@@ -63,7 +63,7 @@ public class PojoClient {
   @RpcReference(microserviceName = "notExist")
   public static Test notExist;
 
-  @RpcReference(microserviceName = "pojo")
+  @RpcReference(microserviceName = "pojo", schemaId = "server")
   public static Test test;
 
   public static Test testFromXml;
@@ -83,12 +83,14 @@ public class PojoClient {
 
     try {
       run();
-    } catch (Exception e) {
+    } catch (Throwable e) {
       TestMgr.check("success", "failed");
       LOGGER.error("-------------- test failed -------------");
       LOGGER.error("", e);
       LOGGER.error("-------------- test failed -------------");
     }
+    TestMgr.summary();
+    LOGGER.info("-------------- last time updated checks(maybe more/less): 785 -------------");
   }
 
   private static void testContextClassLoaderIsNull() throws Exception {
@@ -112,7 +114,7 @@ public class PojoClient {
     String microserviceName = "pojo";
 
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+      InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 
@@ -122,9 +124,9 @@ public class PojoClient {
 
       // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
       // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
-      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "WeightedResponse");
+      InMemoryDynamicPropertiesSource.update("servicecomb.loadbalance.strategy.name", "WeightedResponse");
       testStringArray(test);
-      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "RoundRobin");
+      InMemoryDynamicPropertiesSource.update("servicecomb.loadbalance.strategy.name", "RoundRobin");
       testStringArray(test);
 
       boolean checkerDestroyed = true;
@@ -165,19 +167,13 @@ public class PojoClient {
 
       testTraceIdOnContextContainsTraceId();
     }
-
-    TestMgr.summary();
   }
 
   private static void testHttpClientsIsOk() {
-    TestMgr.check(HttpClients.getClient("registry") != null, true);
-    TestMgr.check(HttpClients.getClient("registry-watch") != null, false);
     TestMgr.check(HttpClients.getClient("config-center") != null, false);
     TestMgr.check(HttpClients.getClient("http-transport-client") != null, false);
     TestMgr.check(HttpClients.getClient("http2-transport-client") != null, true);
 
-    TestMgr.check(HttpClients.getClient("registry", false) != null, true);
-    TestMgr.check(HttpClients.getClient("registry-watch", false) != null, false);
     TestMgr.check(HttpClients.getClient("config-center", false) != null, false);
     TestMgr.check(HttpClients.getClient("http-transport-client", false) != null, false);
     TestMgr.check(HttpClients.getClient("http2-transport-client", false) != null, true);
@@ -194,7 +190,7 @@ public class PojoClient {
 
   private static void testTraceIdOnContextContainsTraceId() {
     InvocationContext context = new InvocationContext();
-    context.addContext(Const.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
+    context.addContext(CoreConst.TRACE_ID_NAME, String.valueOf(Long.MIN_VALUE));
     ContextUtils.setInvocationContext(context);
     String traceId = test.testTraceId();
     TestMgr.check(String.valueOf(Long.MIN_VALUE), traceId);
@@ -272,24 +268,28 @@ public class PojoClient {
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=1]", result);
   }
 
-  @SuppressWarnings({"deprecation"})
+  @SuppressWarnings("rawtypes")
   private static void testCommonInvoke(String transport) {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("index", 2);
     arguments.put("user", new User());
-    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", arguments);
+    Map<String, Object> warpArguments = new HashMap<>();
+    warpArguments.put("splitParamBody", arguments);
+    User result = InvokerUtils.syncInvoke("pojo", "server",
+        "splitParam", warpArguments, User.class);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=2]", result);
 
     arguments = new HashMap<>();
     arguments.put("index", 3);
     arguments.put("user", new User());
+    warpArguments = new HashMap<>();
+    warpArguments.put("splitParamBody", arguments);
     result =
         InvokerUtils.syncInvoke("pojo",
-            "0.0.4",
             transport,
             "server",
             "splitParam",
-            arguments);
+            warpArguments, User.class);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=3]", result);
   }
 

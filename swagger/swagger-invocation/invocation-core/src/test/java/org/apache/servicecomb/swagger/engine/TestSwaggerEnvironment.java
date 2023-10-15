@@ -27,7 +27,7 @@ import org.hamcrest.MatcherAssert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.swagger.models.Swagger;
+import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 
 public class TestSwaggerEnvironment {
@@ -62,7 +62,7 @@ public class TestSwaggerEnvironment {
 
   @Test
   public void createConsumer_consumerMethodSetBigger() {
-    Swagger swagger = SwaggerGenerator.generate(ContractIntf.class);
+    OpenAPI swagger = SwaggerGenerator.generate(ContractIntf.class);
     SwaggerConsumer swaggerConsumer = env.createConsumer(ConsumerIntf.class, swagger);
 
     Assertions.assertNotNull(swaggerConsumer.findOperation("exist"));

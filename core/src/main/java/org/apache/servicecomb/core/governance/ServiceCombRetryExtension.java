@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.governance;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
 import org.apache.servicecomb.swagger.invocation.Response;

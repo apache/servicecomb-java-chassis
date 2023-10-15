@@ -20,11 +20,9 @@ import java.util.List;
 
 import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecCsv;
-import org.apache.servicecomb.common.rest.codec.query.QueryCodecJson;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecMulti;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecPipes;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecSsv;
-import org.apache.servicecomb.common.rest.codec.query.QueryCodecTsv;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecs;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecsUtils;
 import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
@@ -36,11 +34,6 @@ public class CommonRestConfiguration {
   @Bean
   public QueryCodecCsv queryCodecCsv() {
     return new QueryCodecCsv();
-  }
-
-  @Bean
-  public QueryCodecTsv queryCodecTsv() {
-    return new QueryCodecTsv();
   }
 
   @Bean
@@ -59,11 +52,6 @@ public class CommonRestConfiguration {
   }
 
   @Bean
-  public QueryCodecJson queryCodecJson() {
-    return new QueryCodecJson();
-  }
-
-  @Bean
   public QueryCodecsUtils queryCodecsUtils(QueryCodecs queryCodecs) {
     return new QueryCodecsUtils(queryCodecs);
   }
@@ -76,5 +64,10 @@ public class CommonRestConfiguration {
   @Bean
   public QueryCodecs queryCodecs(List<QueryCodec> orderedCodecs) {
     return new QueryCodecs(orderedCodecs);
+  }
+
+  @Bean
+  public RestEngineSchemaListener restEngineSchemaListener() {
+    return new RestEngineSchemaListener();
   }
 }

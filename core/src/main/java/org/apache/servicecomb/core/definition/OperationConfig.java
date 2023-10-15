@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
-import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CoreConst;
 
 @InjectProperties(prefix = "servicecomb")
 public class OperationConfig {
@@ -75,8 +75,8 @@ public class OperationConfig {
   /**
    * whether to remove certain headers from the 3rd party invocations
    */
-  @InjectProperty(keys = {"request.clientRequestHeaderFilterEnabled${consumer-op-priority}"}, defaultValue = "true")
-  private boolean clientRequestHeaderFilterEnabled = true;
+  @InjectProperty(keys = {"request.clientRequestHeaderFilterEnabled${consumer-op-priority}"}, defaultValue = "false")
+  private boolean clientRequestHeaderFilterEnabled = false;
 
   /**
    * producer wait in thread pool timeout
@@ -168,7 +168,7 @@ public class OperationConfig {
   public void setMsHighwayRequestWaitInPoolTimeout(long msHighwayRequestWaitInPoolTimeout) {
     this.msHighwayRequestWaitInPoolTimeout = msHighwayRequestWaitInPoolTimeout;
     this.nanoHighwayRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msHighwayRequestWaitInPoolTimeout);
-    registerRequestWaitInPoolTimeout(Const.HIGHWAY, msHighwayRequestWaitInPoolTimeout);
+    registerRequestWaitInPoolTimeout(CoreConst.HIGHWAY, msHighwayRequestWaitInPoolTimeout);
   }
 
   public long getNanoHighwayRequestWaitInPoolTimeout() {
@@ -182,7 +182,7 @@ public class OperationConfig {
   public void setMsRestRequestWaitInPoolTimeout(long msRestRequestWaitInPoolTimeout) {
     this.msRestRequestWaitInPoolTimeout = msRestRequestWaitInPoolTimeout;
     this.nanoRestRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msRestRequestWaitInPoolTimeout);
-    registerRequestWaitInPoolTimeout(Const.RESTFUL, msRestRequestWaitInPoolTimeout);
+    registerRequestWaitInPoolTimeout(CoreConst.RESTFUL, msRestRequestWaitInPoolTimeout);
   }
 
   public long getNanoRestRequestWaitInPoolTimeout() {
@@ -224,7 +224,7 @@ public class OperationConfig {
 
   public void setTransport(String transport) {
     if (transport == null) {
-      transport = Const.ANY_TRANSPORT;
+      transport = CoreConst.ANY_TRANSPORT;
     }
     this.transport = transport;
   }

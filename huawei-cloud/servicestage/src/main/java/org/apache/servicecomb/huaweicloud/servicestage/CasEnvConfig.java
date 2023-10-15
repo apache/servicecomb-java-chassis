@@ -25,8 +25,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 public class CasEnvConfig {
   private static final String APPLICATION_ID = "CAS_APPLICATION_ID";
@@ -51,36 +50,36 @@ public class CasEnvConfig {
       return rs;
     }
     return Arrays.stream(value.split(",")).map(v -> v.split(":"))
-            .filter(v -> v.length == 2)
-            .collect(Collectors.toMap(v -> v[0], v -> v[1]));
+        .filter(v -> v.length == 2)
+        .collect(Collectors.toMap(v -> v[0], v -> v[1]));
   }
 
   public Map<String, String> getNonEmptyInstanceProperties() {
     Map<String, String> map = new HashMap<>();
 
-    map.put(APPLICATION_ID, DynamicPropertyFactory
-            .getInstance().getStringProperty(APPLICATION_ID, EMPTY).get());
-    map.put(COMPONENT_NAME, DynamicPropertyFactory
-            .getInstance().getStringProperty(COMPONENT_NAME, EMPTY).get());
-    map.put(INSTANCE_VERSION, DynamicPropertyFactory
-            .getInstance().getStringProperty(INSTANCE_VERSION, EMPTY).get());
-    map.put(INSTANCE_ID, DynamicPropertyFactory
-            .getInstance().getStringProperty(INSTANCE_ID, EMPTY).get());
-    map.put(ENVIRONMENT_ID, DynamicPropertyFactory
-            .getInstance().getStringProperty(ENVIRONMENT_ID, EMPTY).get());
+    map.put(APPLICATION_ID, LegacyPropertyFactory
+        .getStringProperty(APPLICATION_ID, EMPTY));
+    map.put(COMPONENT_NAME, LegacyPropertyFactory
+        .getStringProperty(COMPONENT_NAME, EMPTY));
+    map.put(INSTANCE_VERSION, LegacyPropertyFactory
+        .getStringProperty(INSTANCE_VERSION, EMPTY));
+    map.put(INSTANCE_ID, LegacyPropertyFactory
+        .getStringProperty(INSTANCE_ID, EMPTY));
+    map.put(ENVIRONMENT_ID, LegacyPropertyFactory
+        .getStringProperty(ENVIRONMENT_ID, EMPTY));
 
     Map<String, String> instanceProps = map.entrySet().stream()
-            .filter(entry -> StringUtils.isNotEmpty(entry.getValue()))
-            .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+        .filter(entry -> StringUtils.isNotEmpty(entry.getValue()))
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
-    instanceProps.putAll(parseProps(DynamicPropertyFactory
-            .getInstance().getStringProperty(INSTANCE_PROPS, EMPTY).get()));
+    instanceProps.putAll(parseProps(LegacyPropertyFactory
+        .getStringProperty(INSTANCE_PROPS, EMPTY)));
 
     return instanceProps;
   }
 
   public Map<String, String> getNonEmptyServiceProperties() {
-    return parseProps(DynamicPropertyFactory
-                    .getInstance().getStringProperty(SERVICE_PROPS, EMPTY).get());
+    return parseProps(LegacyPropertyFactory
+        .getStringProperty(SERVICE_PROPS, EMPTY));
   }
 }

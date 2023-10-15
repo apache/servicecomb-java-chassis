@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.core.governance;
 
+import org.apache.servicecomb.core.SCBEngine;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -32,8 +33,8 @@ public class CoreGovernanceConfiguration {
   }
 
   @Bean
-  public ServiceCombMicroserviceMeta serviceCombMicroserviceMeta() {
-    return new ServiceCombMicroserviceMeta();
+  public ServiceCombMicroserviceMeta serviceCombMicroserviceMeta(SCBEngine scbEngine) {
+    return new ServiceCombMicroserviceMeta(scbEngine);
   }
 
   @Bean

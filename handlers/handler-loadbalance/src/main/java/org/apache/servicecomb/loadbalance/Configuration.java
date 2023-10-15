@@ -19,9 +19,8 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.Map;
 
-import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 /**
  * configuration items
@@ -189,13 +188,13 @@ public final class Configuration {
 
   public Map<String, String> getFlowsplitFilterOptions(String microservice) {
     String keyPrefix = String.format(TRANSACTIONCONTROL_OPTIONS_PREFIX_PATTERN, microservice);
-    return ConfigurePropertyUtils.getPropertiesWithPrefix(keyPrefix);
+    return ConfigUtil.stringPropertiesWithPrefix(LegacyPropertyFactory.getEnvironment(), keyPrefix);
   }
 
   public static String getStringProperty(String defaultValue, String... keys) {
     String property;
     for (String key : keys) {
-      property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      property = LegacyPropertyFactory.getStringProperty(key);
       if (property != null) {
         return property;
       }

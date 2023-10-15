@@ -26,7 +26,12 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class MessageExecutor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MessageExecutor.class);
+
   private final Self self;
 
   private final StoreService storeService;
@@ -67,8 +72,8 @@ public class MessageExecutor {
     taskExecutor.execute(() -> {
       try {
         consumer.accept(message.getBody());
-      } catch (Exception ignore) {
-        // already log inside message processor
+      } catch (Throwable e) {
+        LOGGER.error("process message error. ", e);
       }
     });
   }

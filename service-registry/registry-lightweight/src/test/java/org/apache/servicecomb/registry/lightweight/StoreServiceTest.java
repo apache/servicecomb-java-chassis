@@ -18,27 +18,41 @@
 package org.apache.servicecomb.registry.lightweight;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.catchThrowable;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.test.scaffolding.time.MockTicker;
-import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
 import org.apache.servicecomb.registry.lightweight.store.InstanceStore;
-import org.apache.servicecomb.registry.lightweight.store.MicroserviceStore;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.json.Json;
 
-class StoreServiceTest extends TestBase {
+public class StoreServiceTest {
+  static Endpoint endpoint = Mockito.mock(Endpoint.class);
+
+  static class MockRegisterRequest extends RegisterRequest {
+    @Override
+    public Endpoint selectFirstEndpoint() {
+      return endpoint;
+    }
+  }
+
+  static ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+
+  Self self;
+
   EventBus eventBus = new EventBus();
 
   MockTicker ticker = new MockTicker();
@@ -51,6 +65,26 @@ class StoreServiceTest extends TestBase {
 
   @BeforeEach
   void setUp() {
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    EnumerablePropertySource<?> propertySource = Mockito.mock(EnumerablePropertySource.class);
+    mutablePropertySources.addLast(propertySource);
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {});
+    Mockito.when(environment.getProperty("servicecomb.service.application")).thenReturn("app");
+    Mockito.when(environment.getProperty("servicecomb.service.name")).thenReturn("svc");
+    Mockito.when(environment.getProperty("servicecomb.service.version")).thenReturn("1.0.0.0");
+    Mockito.when(environment.getProperty("servicecomb.instance.initialStatus")).thenReturn("UP");
+
+    self = new Self() {
+      @Override
+      protected RegisterRequest createRegisterRequest() {
+        return new MockRegisterRequest();
+      }
+    }
+        .init(environment)
+        .addSchema("schema-1", "s1")
+        .addEndpoint("rest://1.1.1.1:80");
+
     Mockito.when(discoveryClient.getInfoAsync(ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(CompletableFuture.completedFuture(self.getMicroserviceInfo()));
     Mockito.when(discoveryClient.getInstanceAsync(ArgumentMatchers.any(), ArgumentMatchers.any()))
@@ -71,7 +105,7 @@ class StoreServiceTest extends TestBase {
   @Test
   void should_register_instance_when_microservice_exist() {
     Microservice microservice = Json.decodeValue(Json.encode(self.getMicroservice()), Microservice.class);
-    store.addMicroservice(microservice, self.getSchemasSummary());
+    store.addMicroservice(microservice);
 
     RegisterRequest request = self.buildRegisterRequest();
     InstanceStore instanceStore = service.register(request);
@@ -82,46 +116,6 @@ class StoreServiceTest extends TestBase {
     assertThat(instanceStore.getInstance()).isSameAs(self.getInstance());
   }
 
-  @Test
-  void should_reject_when_schema_changed_and_has_existing_instance() {
-    should_register_microservice_and_instance_when_both_not_exist();
-
-    RegisterRequest request = self.buildRegisterRequest()
-        .setInstanceId("new id")
-        .setSchemasSummary("new summary");
-    Throwable throwable = catchThrowable(() -> service.register(request));
-
-    assertThat(throwable)
-        .isInstanceOf(RegisterException.class)
-        .hasMessage("schemas changed, but version not changed, and has 1 existing instances");
-  }
-
-  SchemaChangedEvent schemaChangedEvent;
-
-  @Subscribe
-  public void onSchemaChanged(SchemaChangedEvent event) {
-    this.schemaChangedEvent = event;
-  }
-
-  @Test
-  void should_register_and_notify_when_schema_changed_and_has_not_existing_instance() {
-    should_register_microservice_and_instance_when_both_not_exist();
-
-    MicroserviceStore microserviceStore = store.findMicroserviceStore(self.getServiceId());
-    assertThat(microserviceStore.hasInstance()).isTrue();
-    store.deleteInstance(self.getServiceId(), self.getInstanceId());
-    assertThat(microserviceStore.hasInstance()).isFalse();
-
-    eventBus.register(this);
-
-    RegisterRequest request = self.buildRegisterRequest()
-        .setSchemasSummary("new summary");
-    InstanceStore instanceStore = service.register(request);
-
-    assertThat(microserviceStore.isSchemaChanged("new summary")).isFalse();
-    assertThat(instanceStore.getInstance()).isSameAs(self.getInstance());
-    assertThat(schemaChangedEvent.getMicroservice()).isSameAs(self.getMicroservice());
-  }
 
   @Test
   void should_allow_update_instance_status() {

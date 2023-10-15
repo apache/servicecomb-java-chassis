@@ -23,24 +23,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProducerFilter;
+import org.apache.servicecomb.core.filter.ProviderFilter;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 
 public class RouterAddHeaderFilter implements Filter {
 
@@ -48,48 +44,28 @@ public class RouterAddHeaderFilter implements Filter {
 
   private static final String SERVICECOMB_ROUTER_HEADER = "servicecomb.router.header";
 
-  private static List<String> allHeader = new ArrayList<>();
+  private List<String> allHeader = new ArrayList<>();
+
+  public RouterAddHeaderFilter() {
+    loadHeaders();
+  }
 
   /**
    * read config and get Header
    */
-  private boolean loadHeaders() {
-    if (!CollectionUtils.isEmpty(allHeader)) {
-      return true;
-    }
-    DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
-        .getStringProperty(SERVICECOMB_ROUTER_HEADER, null, () -> {
-          DynamicStringProperty temHeader = DynamicPropertyFactory.getInstance()
-              .getStringProperty(SERVICECOMB_ROUTER_HEADER, null);
-          if (!addAllHeaders(temHeader.get())) {
-            allHeader = new ArrayList<>();
-          }
-        });
-    return addAllHeaders(headerStr.get());
+  private void loadHeaders() {
+    addAllHeaders(LegacyPropertyFactory.getStringProperty(SERVICECOMB_ROUTER_HEADER));
   }
 
-  /**
-   * if don't have headers rule , avoid registered too many callback
-   */
-  private boolean isHaveHeadersRule() {
-    DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
-        .getStringProperty(SERVICECOMB_ROUTER_HEADER, null);
-    return StringUtils.isNotEmpty(headerStr.get());
-  }
-
-  private boolean addAllHeaders(String str) {
+  private void addAllHeaders(String str) {
     if (StringUtils.isEmpty(str)) {
-      return false;
+      return;
     }
     try {
-      if (CollectionUtils.isEmpty(allHeader)) {
-        allHeader = Arrays.asList(str.split(","));
-      }
+      allHeader = Arrays.asList(str.split(","));
     } catch (Exception e) {
       LOGGER.error("route management Serialization failed: {}", e.getMessage());
-      return false;
     }
-    return true;
   }
 
   private Map<String, String> getHeaderMap(HttpServletRequestEx httpServletRequestEx) {
@@ -104,18 +80,16 @@ public class RouterAddHeaderFilter implements Filter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String microservice) {
-    return ProducerFilter.PRODUCER_SCHEDULE_FILTER_ORDER - 1970;
+  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+    return ProviderFilter.PROVIDER_SCHEDULE_FILTER_ORDER - 1970;
   }
 
-  @Nonnull
   @Override
-  public boolean isEnabledForInvocationType(InvocationType invocationType) {
+  public boolean enabledForInvocationType(InvocationType invocationType) {
     // enable for both edge and producer
     return true;
   }
 
-  @Nonnull
   @Override
   public String getName() {
     return "router-add-header";
@@ -131,20 +105,17 @@ public class RouterAddHeaderFilter implements Filter {
       return nextNode.onFilter(invocation);
     }
 
-    if (!isHaveHeadersRule()) {
+    if (allHeader.isEmpty()) {
       return nextNode.onFilter(invocation);
     }
 
-    if (loadHeaders()) {
-      Map<String, String> headerMap = getHeaderMap(invocation.getRequestEx());
-      try {
-        invocation
-            .addContext(RouterServerListFilter.ROUTER_HEADER, JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
-      } catch (JsonProcessingException e) {
-        LOGGER.error("canary context serialization failed");
-      }
+    Map<String, String> headerMap = getHeaderMap(invocation.getRequestEx());
+    try {
+      invocation.addContext(RouterServerListFilter.ROUTER_HEADER,
+          JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
+    } catch (JsonProcessingException e) {
+      LOGGER.error("canary context serialization failed");
     }
-
     return nextNode.onFilter(invocation);
   }
 }

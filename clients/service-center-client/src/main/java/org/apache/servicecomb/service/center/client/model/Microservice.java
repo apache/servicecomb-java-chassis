@@ -208,4 +208,8 @@ public class Microservice {
   public void setPaths(List<BasePath> paths) {
     this.paths = paths;
   }
+
+  public void addSchema(String schema) {
+    this.schemas.add(schema);
+  }
 }

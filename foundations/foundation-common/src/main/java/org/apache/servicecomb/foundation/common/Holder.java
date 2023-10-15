@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.common;
 
-// do not use javax.xml.ws.Holder, use this one. Because JDK 11 above do not have javax.ws.Holder
+// do not use javax.xml.ws.Holder, use this one. Because JDK 11 above do not have jakarta.ws.Holder
 public final class Holder<T> {
 
   /**

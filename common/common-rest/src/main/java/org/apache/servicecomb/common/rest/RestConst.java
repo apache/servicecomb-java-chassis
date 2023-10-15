@@ -43,9 +43,6 @@ public final class RestConst {
   // in HttpServletRequest attribute
   public static final String BODY_PARAMETER = "servicecomb-body";
 
-  // in HttpServletRequest attribute
-  public static final String FORM_PARAMETERS = "servicecomb-forms";
-
   //in invocation response
   public static final String INVOCATION_HANDLER_RESPONSE = "servicecomb-invocation-hanlder-response";
 

@@ -19,36 +19,44 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import java.util.Set;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.media.Content;
+import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
 import io.vertx.core.http.impl.headers.HeadersMultiMap;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 
 public class TestBodyProcessor {
+  Environment environment = Mockito.mock(Environment.class);
 
   final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
 
@@ -67,11 +75,24 @@ public class TestBodyProcessor {
   String value;
 
   private void createProcessor(Class<?> type) {
-    processor = new BodyProcessor(TypeFactory.defaultInstance().constructType(type), type.equals(String.class), true);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+    OpenAPI openAPI = Mockito.mock(OpenAPI.class);
+    Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    Mockito.when(schemaMeta.getSwagger()).thenReturn(openAPI);
+    RequestBody requestBody = Mockito.mock(RequestBody.class);
+    Content content = Mockito.mock(Content.class);
+    Mockito.when(requestBody.getContent()).thenReturn(content);
+    Mockito.when(requestBody.getRequired()).thenReturn(true);
+    Set<String> supported = new HashSet<>();
+    supported.add(MediaType.APPLICATION_JSON);
+    supported.add(MediaType.TEXT_PLAIN);
+    Mockito.when(content.keySet()).thenReturn(supported);
+    processor = new BodyProcessor(operationMeta, TypeFactory.defaultInstance().constructType(type), requestBody);
   }
 
   private void createRawJsonProcessor() {
-    processor = new RawJsonBodyProcessor(TypeFactory.defaultInstance().constructType(String.class), true, true);
+    processor = new RawJsonBodyProcessor(TypeFactory.defaultInstance().constructType(String.class), true);
   }
 
   private void createClientRequest() {
@@ -94,6 +115,9 @@ public class TestBodyProcessor {
 
   @BeforeEach
   public void before() {
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
+        .thenReturn(false);
     headers = new HeadersMultiMap();
     value = "value";
   }
@@ -179,20 +203,6 @@ public class TestBodyProcessor {
     Assertions.assertEquals(value, outputBodyBuffer.toString());
   }
 
-  @Test
-  public void testSetValueTextPlainTypeMismatch() {
-    createClientRequest();
-    createProcessor(String.class);
-    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
-
-    try {
-      processor.setValue(clientRequest, new Date());
-      Assertions.fail("an exception is expected!");
-    } catch (Exception e) {
-      Assertions.assertEquals(IllegalArgumentException.class, e.getClass());
-      Assertions.assertEquals("Content-Type is text/plain while arg type is not String", e.getMessage());
-    }
-  }
 
   @Test
   public void testGetParameterPath() {
