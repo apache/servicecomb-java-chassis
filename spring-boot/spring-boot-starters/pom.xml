@@ -32,7 +32,6 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>java-chassis-spring-boot-starter</module>
     <module>java-chassis-spring-boot-starter-servlet</module>
     <module>java-chassis-spring-boot-starter-standalone</module>
   </modules>

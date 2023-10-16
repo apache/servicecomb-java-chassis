@@ -31,16 +31,24 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-rest-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
     </dependency>
     <dependency>
       <groupId>jakarta.servlet</groupId>
@@ -50,6 +58,7 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

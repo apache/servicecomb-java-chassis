@@ -277,11 +277,6 @@
       <!-- ServiceComb: spring boot -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-spring-boot-starter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
         <version>${project.version}</version>
       </dependency>

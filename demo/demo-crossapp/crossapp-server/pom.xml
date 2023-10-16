@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-pojo</artifactId>
+      <artifactId>provider-jaxrs</artifactId>
     </dependency>
   </dependencies>
 

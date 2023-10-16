@@ -18,8 +18,10 @@ package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+@Configuration
 public class DashboardConfiguration {
   @Bean
   public MonitorInformationCollector monitorInformationCollector() {
@@ -29,5 +31,25 @@ public class DashboardConfiguration {
   @Bean
   public MonitorConstant monitorConstant(Environment environment) {
     return new MonitorConstant(environment);
+  }
+
+  @Bean
+  public MonitorBootListener monitorBootListener() {
+    return new MonitorBootListener();
+  }
+
+  @Bean
+  public DataFactory dataFactory() {
+    return new DataFactory();
+  }
+
+  @Bean
+  public MetricsMonitorDataProvider metricsMonitorDataProvider() {
+    return new MetricsMonitorDataProvider();
+  }
+
+  @Bean
+  public DefaultMonitorDataPublisher defaultMonitorDataPublisher() {
+    return new DefaultMonitorDataPublisher();
   }
 }

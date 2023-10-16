@@ -42,7 +42,6 @@ import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -109,11 +108,7 @@ public class SCBEngine {
 
   private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
-  private final VendorExtensions vendorExtensions = new VendorExtensions();
-
   private SwaggerLoader swaggerLoader;
-
-  private Thread shutdownHook;
 
   private RegistrationManager registrationManager;
 
@@ -208,10 +203,6 @@ public class SCBEngine {
 
   public ApplicationContext getApplicationContext() {
     return applicationContext;
-  }
-
-  public VendorExtensions getVendorExtensions() {
-    return vendorExtensions;
   }
 
   public String getAppId() {
@@ -317,12 +308,14 @@ public class SCBEngine {
 
   @AllowConcurrentEvents
   @Subscribe
+  @SuppressWarnings("unused")
   public void onInvocationStart(InvocationStartEvent event) {
     invocationStartedCounter.incrementAndGet();
   }
 
   @AllowConcurrentEvents
   @Subscribe
+  @SuppressWarnings("unused")
   public void onInvocationFinish(InvocationFinishEvent event) {
     invocationFinishedCounter.incrementAndGet();
   }
@@ -400,9 +393,6 @@ public class SCBEngine {
     status = SCBStatus.UP;
     triggerEvent(EventType.AFTER_REGISTRY);
 
-    shutdownHook = new Thread(this::destroyForShutdownHook);
-    Runtime.getRuntime().addShutdownHook(shutdownHook);
-
     // Keep this message for tests cases work.
     LOGGER.warn("ServiceComb is ready.");
   }
@@ -414,11 +404,6 @@ public class SCBEngine {
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(
         this.microserviceProperties.getApplication(), microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
-  }
-
-  public void destroyForShutdownHook() {
-    shutdownHook = null;
-    destroy();
   }
 
   /**
@@ -435,10 +420,6 @@ public class SCBEngine {
   }
 
   private void doDestroy() {
-    if (shutdownHook != null) {
-      Runtime.getRuntime().removeShutdownHook(shutdownHook);
-    }
-
     //Step 0: turn down the status of this instance in service center,
     // so that the consumers can remove this instance record in advance
     turnDownInstanceStatus();

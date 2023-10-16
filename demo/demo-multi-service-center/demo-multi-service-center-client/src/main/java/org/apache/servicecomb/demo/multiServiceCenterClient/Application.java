@@ -23,14 +23,12 @@ import java.util.Set;
 
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.stereotype.Component;
 
 @SpringBootApplication
-@EnableServiceComb
 @Component
 public class Application {
 

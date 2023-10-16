@@ -68,7 +68,7 @@ public class RestServletInitializer
 
     // when running in embedded tomcat, web container did not listen now. Call ServletUtils.init needs server is ready,
     // so mock to listen, and then close.
-    try (ServerSocket ss = new ServerSocket(factory.getPort(), 0, factory.getAddress())) {
+    try (ServerSocket ignored = new ServerSocket(factory.getPort(), 0, factory.getAddress())) {
       ServletUtils.init(servletContext, environment);
     } catch (IOException e) {
       throw new ServletException(e);
