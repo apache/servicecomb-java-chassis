@@ -27,8 +27,6 @@ import org.springframework.context.ApplicationContext;
 
 
 public final class BeanUtils {
-  public static final String DEFAULT_BEAN_NORMAL_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
-
   private static ApplicationContext context;
 
   private BeanUtils() {

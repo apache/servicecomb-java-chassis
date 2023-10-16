@@ -49,8 +49,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
+@ImportResource(value = "classpath*:META-INF/spring/*.bean.xml")
 public class PojoClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 

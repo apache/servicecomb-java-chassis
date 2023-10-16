@@ -20,6 +20,7 @@ package org.apache.servicecomb.demo.springboot.pojo.client;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ImportResource;
 
 /**
  * SpringmvcClient
@@ -27,6 +28,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
  *
  */
 @SpringBootApplication
+@ImportResource(value = "classpath*:META-INF/spring/*.bean.xml")
 public class PojoClient {
 
   public static void main(final String[] args) throws Exception {

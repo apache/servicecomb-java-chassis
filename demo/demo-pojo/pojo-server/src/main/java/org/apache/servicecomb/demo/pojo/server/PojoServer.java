@@ -20,8 +20,10 @@ package org.apache.servicecomb.demo.pojo.server;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication
+@ImportResource(value = "classpath*:META-INF/spring/*.bean.xml")
 public class PojoServer {
   public static void main(String[] args) throws Exception {
     try {
