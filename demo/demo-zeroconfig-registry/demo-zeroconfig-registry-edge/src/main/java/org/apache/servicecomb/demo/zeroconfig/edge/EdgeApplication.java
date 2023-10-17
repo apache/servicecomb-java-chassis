@@ -21,13 +21,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-@EnableServiceComb
 public class EdgeApplication {
   public static void main(final String[] args) throws Exception {
     new SpringApplicationBuilder().sources(EdgeApplication.class).web(WebApplicationType.NONE).build().run(args);

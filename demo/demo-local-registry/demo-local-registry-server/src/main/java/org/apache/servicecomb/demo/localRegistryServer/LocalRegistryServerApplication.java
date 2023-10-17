@@ -21,16 +21,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-@EnableServiceComb
 public class LocalRegistryServerApplication {
   public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(LocalRegistryServerApplication.class).web(WebApplicationType.SERVLET).build().run(args);
+    new SpringApplicationBuilder().sources(LocalRegistryServerApplication.class).web(WebApplicationType.SERVLET).build()
+        .run(args);
 
     SelfServiceInvoker invoker = BeanUtils.getBean("SelfServiceInvoker");
     invoker.latch.await(10, TimeUnit.SECONDS);

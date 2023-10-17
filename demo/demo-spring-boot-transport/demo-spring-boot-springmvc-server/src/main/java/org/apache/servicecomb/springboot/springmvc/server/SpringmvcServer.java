@@ -19,7 +19,6 @@ package org.apache.servicecomb.springboot.springmvc.server;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
@@ -28,7 +27,6 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication(exclude = {WebMvcAutoConfiguration.class})
-@EnableServiceComb
 public class SpringmvcServer {
   private static final Logger LOGGER = LoggerFactory.getLogger(SpringmvcServer.class);
 

@@ -78,13 +78,6 @@ public class SCBApplicationListener
         ((AbstractApplicationContext) applicationContext).registerShutdownHook();
       }
 
-      //SCBEngine init first, hence we do not need worry that when other beans need use the
-      //producer microserviceMeta, the SCBEngine is not inited.
-//        String serviceName = RegistryUtils.getMicroservice().getServiceName();
-//        SCBEngine.getInstance().setProducerMicroserviceMeta(new MicroserviceMeta(serviceName).setConsumer(false));
-//        SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
-//        SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
-//        SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
       scbEngine.setPriorityPropertyManager(applicationContext.getBean(PriorityPropertyManager.class));
       scbEngine.setFilterChainsManager(applicationContext.getBean(FilterChainsManager.class));
       scbEngine.getConsumerProviderManager().getConsumerProviderList()
