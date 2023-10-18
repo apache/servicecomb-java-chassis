@@ -14,18 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core;
+package org.apache.servicecomb.config;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.config.ConfigMapping;
-import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.config.file.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.annotation.Conditional;
@@ -36,20 +36,20 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 
 /**
- * Add microservice.yaml to Environment earlier<br>
- * to affect {@link Conditional}<br>
+ * Initialize configuration.
  */
-public class ConfigurationSpringBootInitializer implements EnvironmentPostProcessor {
+public class ConfigEnvironmentPostProcessor implements EnvironmentPostProcessor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigEnvironmentPostProcessor.class);
+
   public static final String MICROSERVICE_PROPERTY_SOURCE_NAME = "microservice.yaml";
 
   public static final String MAPPING_PROPERTY_SOURCE_NAME = "mapping.yaml";
-
-  private final List<BootStrapService> bootStrapServices = SPIServiceUtils.getSortedService(BootStrapService.class);
 
   @Override
   public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
     addMicroserviceDefinitions(environment);
     startupBootStrapService(environment);
+    addDynamicConfigurationToSpring(environment);
   }
 
   public static void addMicroserviceDefinitions(Environment environment) {
@@ -58,7 +58,9 @@ public class ConfigurationSpringBootInitializer implements EnvironmentPostProces
   }
 
   private void startupBootStrapService(Environment environment) {
-    bootStrapServices.forEach(bootStrapService -> bootStrapService.startup(environment));
+    for (BootStrapService bootStrapService : SPIServiceUtils.getSortedService(BootStrapService.class)) {
+      bootStrapService.startup(environment);
+    }
   }
 
   /**
@@ -125,5 +127,20 @@ public class ConfigurationSpringBootInitializer implements EnvironmentPostProces
 
     Map<String, Object> mappings = ConfigMapping.getConvertedMap(environment);
     propertySources.addFirst(new MapPropertySource(MAPPING_PROPERTY_SOURCE_NAME, mappings));
+  }
+
+  private void addDynamicConfigurationToSpring(Environment environment) {
+    if (!(environment instanceof ConfigurableEnvironment)) {
+      return;
+    }
+    try {
+      for (DynamicPropertiesSource dynamicPropertiesSource :
+          SPIServiceUtils.getOrLoadSortedService(DynamicPropertiesSource.class)) {
+        ((ConfigurableEnvironment) environment).getPropertySources()
+            .addFirst(dynamicPropertiesSource.create(environment));
+      }
+    } catch (Exception e) {
+      LOGGER.warn("set up dynamic property source to spring failed.", e);
+    }
   }
 }

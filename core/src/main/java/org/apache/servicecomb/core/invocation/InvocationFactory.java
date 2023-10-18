@@ -19,6 +19,7 @@ package org.apache.servicecomb.core.invocation;
 
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
@@ -41,7 +42,8 @@ public final class InvocationFactory {
   }
 
   public static Invocation setSrcMicroservice(Invocation invocation) {
-    invocation.addContext(CoreConst.SRC_MICROSERVICE, SCBEngine.getInstance().getMicroserviceProperties().getName());
+    invocation.addContext(CoreConst.SRC_MICROSERVICE,
+        BootStrapProperties.readServiceName(SCBEngine.getInstance().getEnvironment()));
     // TODO: hard code registry name here. This is an old feature not for all registry implementations.
     if (addSourceServiceId()) {
       invocation.addContext(CoreConst.SRC_SERVICE_ID,

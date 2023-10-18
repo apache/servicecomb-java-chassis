@@ -18,7 +18,6 @@ package org.apache.servicecomb.registry.sc;
 
 import java.util.List;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterWatch;
@@ -67,11 +66,11 @@ public class SCConfiguration {
   }
 
   @Bean
-  public SCAddressManager scAddressManager(MicroserviceProperties microserviceProperties,
+  public SCAddressManager scAddressManager(
       @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
       SCRegistration scRegistration,
       @Qualifier("serviceCenterClient") ServiceCenterClient serviceCenterClient) {
-    return new SCAddressManager(microserviceProperties, scConfigurationProperties,
+    return new SCAddressManager(scConfigurationProperties,
         serviceCenterClient, scRegistration);
   }
 }

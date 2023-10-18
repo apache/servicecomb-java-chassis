@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core.governance;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.governance.MicroserviceMeta;
 
@@ -29,11 +30,11 @@ public class ServiceCombMicroserviceMeta implements MicroserviceMeta {
 
   @Override
   public String getName() {
-    return scbEngine.getMicroserviceProperties().getName();
+    return BootStrapProperties.readServiceName(scbEngine.getEnvironment());
   }
 
   @Override
   public String getVersion() {
-    return scbEngine.getMicroserviceProperties().getVersion();
+    return BootStrapProperties.readServiceVersion(scbEngine.getEnvironment());
   }
 }

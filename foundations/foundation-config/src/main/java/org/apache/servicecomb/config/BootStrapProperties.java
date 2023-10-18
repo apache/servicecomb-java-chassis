@@ -28,6 +28,18 @@ import org.springframework.core.env.Environment;
 /**
  * This class holds configurations that need to be configured
  * through property files or environment variables.
+ *
+ * These properties are core model for java chassis, e.g.
+ * <pre>
+ *   servicecomb:
+ *     service:
+ *       application:
+ *       name:
+ *       version:
+ *       environment:
+ *       properties:
+ * </pre>
+ *
  */
 public class BootStrapProperties {
   // start of : service definition keys
@@ -39,6 +51,8 @@ public class BootStrapProperties {
   public static final String OLD_CONFIG_SERVICE_VERSION = "service_description.version";
 
   public static final String OLD_CONFIG_SERVICE_ROLE = "service_description.role";
+
+  public static final String OLD_CONFIG_SERVICE_ALIAS = "service_description.alias";
 
   public static final String OLD_CONFIG_SERVICE_DESCRIPTION = "service_description.description";
 
@@ -63,6 +77,8 @@ public class BootStrapProperties {
   public static final String CONFIG_SERVICE_VERSION = "servicecomb.service.version";
 
   public static final String CONFIG_SERVICE_ROLE = "servicecomb.service.role";
+
+  public static final String CONFIG_SERVICE_ALIAS = "servicecomb.service.alias";
 
   public static final String CONFIG_SERVICE_DESCRIPTION = "servicecomb.service.description";
 
@@ -111,6 +127,10 @@ public class BootStrapProperties {
 
   public static String readServiceRole(Environment environment) {
     return readStringValue(environment, CONFIG_SERVICE_ROLE, OLD_CONFIG_SERVICE_ROLE, DEFAULT_MICROSERVICE_ROLE);
+  }
+
+  public static String readServiceAlias(Environment environment) {
+    return readStringValue(environment, CONFIG_SERVICE_ALIAS, OLD_CONFIG_SERVICE_ALIAS, null);
   }
 
   public static String readServiceDescription(Environment environment) {

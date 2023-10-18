@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -75,7 +76,12 @@ public class TestLoadBalanceFilter {
   public void setUp() {
     Environment environment = Mockito.mock(Environment.class);
     scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
-    scbEngine.setEnvironment(environment);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION))
+        .thenReturn(BootStrapProperties.DEFAULT_APPLICATION);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_NAME))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_NAME);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_ENVIRONMENT);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
     Mockito.when(environment.getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",

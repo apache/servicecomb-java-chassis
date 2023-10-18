@@ -20,7 +20,7 @@ package org.apache.servicecomb.registry.nacos;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,8 +50,6 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   private String application;
 
-  private MicroserviceProperties microserviceProperties;
-
   private NamingService namingService;
 
   private NamingMaintainService namingMaintainService;
@@ -65,18 +63,13 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     this.instancesChangeEventListener = instancesChangeEventListener;
   }
 
-  @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
-  }
-
   @Override
   public void init() {
-    instance = NacosMicroserviceHandler.createMicroserviceInstance(nacosDiscoveryProperties, environment,
-        microserviceProperties);
-    nacosRegistrationInstance = new NacosRegistrationInstance(instance, nacosDiscoveryProperties, microserviceProperties);
-    serviceId = microserviceProperties.getName();
-    application = microserviceProperties.getApplication();
+    instance = NacosMicroserviceHandler.createMicroserviceInstance(nacosDiscoveryProperties, environment);
+    nacosRegistrationInstance = new NacosRegistrationInstance(instance, nacosDiscoveryProperties,
+        environment);
+    serviceId = BootStrapProperties.readServiceName(environment);
+    application = BootStrapProperties.readApplication(environment);
     namingService = NamingServiceManager.buildNamingService(nacosDiscoveryProperties);
     namingMaintainService = NamingServiceManager.buildNamingMaintainService(nacosDiscoveryProperties);
     NotifyCenter.registerSubscriber(instancesChangeEventListener);
@@ -96,7 +89,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     if (CollectionUtils.isEmpty(schemas)) {
       return;
     }
-    for (Map.Entry<String, String> entry: schemas.entrySet()) {
+    for (Map.Entry<String, String> entry : schemas.entrySet()) {
       metadata.put(NacosConst.SCHEMA_PREFIX + entry.getKey(), entry.getValue());
     }
   }

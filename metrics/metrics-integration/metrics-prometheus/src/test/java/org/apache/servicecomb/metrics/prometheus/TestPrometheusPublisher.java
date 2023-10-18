@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
@@ -99,11 +99,10 @@ public class TestPrometheusPublisher {
 
   @Test
   public void collect() throws IllegalAccessException, IOException {
-    MicroserviceProperties microserviceProperties = Mockito.mock(MicroserviceProperties.class);
-    Mockito.when(microserviceProperties.getApplication()).thenReturn("testAppId");
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION)).thenReturn("testAppId");
     Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
         .thenReturn("localhost:0");
-    publisher.setMicroserviceProperties(microserviceProperties);
+    publisher.setEnvironment(environment);
     publisher.init(globalRegistry, null, new MetricsBootstrapConfig(environment));
 
     Registry registry = new DefaultRegistry(new ManualClock());

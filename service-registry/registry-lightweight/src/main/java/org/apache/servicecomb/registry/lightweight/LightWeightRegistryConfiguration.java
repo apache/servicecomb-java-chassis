@@ -19,7 +19,7 @@ package org.apache.servicecomb.registry.lightweight;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.localregistry.RegistryBean;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
 import org.apache.servicecomb.localregistry.RegistryBean.Instances;
@@ -27,6 +27,7 @@ import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.registry.lightweight.store.Store;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 
@@ -62,8 +63,8 @@ public class LightWeightRegistryConfiguration {
   }
 
   @Bean
-  public RegistryBean zeroConfigDiscoveryServer(MicroserviceProperties microserviceProperties) {
-    return new RegistryBean().setAppId(microserviceProperties.getApplication())
+  public RegistryBean zeroConfigDiscoveryServer(Environment environment) {
+    return new RegistryBean().setAppId(BootStrapProperties.readApplication(environment))
         .setServiceName(ZERO_CONFIG_DISCOVERY_CLIENT)
         .addSchemaInterface(ZERO_CONFIG_DISCOVERY_CLIENT, DiscoveryClient.class)
         // add an empty instance endpoint so that can invoke by endpoint

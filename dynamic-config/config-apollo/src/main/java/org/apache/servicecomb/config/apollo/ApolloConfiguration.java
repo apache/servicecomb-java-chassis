@@ -16,19 +16,9 @@
  */
 package org.apache.servicecomb.config.apollo;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 @Configuration
 public class ApolloConfiguration {
-  @Bean
-  public ApolloDynamicPropertiesSource apolloDynamicPropertiesSource() {
-    return new ApolloDynamicPropertiesSource();
-  }
 
-  @Bean
-  public ApolloConfig apolloConfig(Environment environment) {
-    return new ApolloConfig(environment);
-  }
 }

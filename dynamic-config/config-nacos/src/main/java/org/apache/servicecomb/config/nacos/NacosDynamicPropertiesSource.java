@@ -27,13 +27,12 @@ import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class NacosDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
+public class NacosDynamicPropertiesSource implements DynamicPropertiesSource {
   public static final String SOURCE_NAME = "kie";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NacosDynamicPropertiesSource.class);
@@ -52,7 +51,7 @@ public class NacosDynamicPropertiesSource implements DynamicPropertiesSource<Map
 
 
   private void init(Environment environment) {
-    NacosClient nacosClient = new NacosClient(updateHandler);
+    NacosClient nacosClient = new NacosClient(updateHandler, environment);
     nacosClient.refreshNacosConfig();
   }
 
@@ -77,7 +76,7 @@ public class NacosDynamicPropertiesSource implements DynamicPropertiesSource<Map
   }
 
   @Override
-  public EnumerablePropertySource<Map<String, Object>> create(Environment environment) {
+  public MapPropertySource create(Environment environment) {
     init(environment);
     return new MapPropertySource(SOURCE_NAME, valueCache);
   }
