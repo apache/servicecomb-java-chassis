@@ -19,15 +19,16 @@ package org.apache.servicecomb.config.kie.collect;
 
 import org.apache.servicecomb.config.kie.KieConfig;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 
-
-public class KieClientInformationCollector implements BootUpInformationCollector {
+public class KieClientInformationCollector implements BootUpInformationCollector, EnvironmentAware {
   private KieConfig kieConfig;
 
-  @Autowired
-  public void setKieConfig(KieConfig kieConfig) {
-    this.kieConfig = kieConfig;
+  @Override
+  public void setEnvironment(@NonNull Environment environment) {
+    this.kieConfig = new KieConfig(environment);
   }
 
   @Override

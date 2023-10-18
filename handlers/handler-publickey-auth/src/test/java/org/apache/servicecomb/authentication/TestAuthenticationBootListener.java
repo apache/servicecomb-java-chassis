@@ -22,6 +22,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
@@ -32,7 +33,6 @@ import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -41,10 +41,11 @@ import org.springframework.core.env.Environment;
 public class TestAuthenticationBootListener {
   private SCBEngine engine;
 
-  static Environment environment = Mockito.mock(Environment.class);
+  private Environment environment;
 
-  @BeforeAll
-  public static void setUpClass() {
+  @BeforeEach
+  public void setUp() {
+    environment = Mockito.mock(Environment.class);
     LegacyPropertyFactory.setEnvironment(environment);
     Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA"))
         .thenReturn("RSA");
@@ -54,10 +55,13 @@ public class TestAuthenticationBootListener {
         .thenReturn(2048);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
-  }
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION))
+        .thenReturn(BootStrapProperties.DEFAULT_APPLICATION);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_NAME))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_NAME);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_ENVIRONMENT);
 
-  @BeforeEach
-  public void setUp() {
     engine = SCBBootstrap.createSCBEngineForTest(environment);
     engine.run();
   }

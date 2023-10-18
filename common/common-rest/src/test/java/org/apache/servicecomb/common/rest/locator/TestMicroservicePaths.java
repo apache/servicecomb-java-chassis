@@ -25,31 +25,36 @@ import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 public class TestMicroservicePaths {
-  static SCBEngine scbEngine;
+  SCBEngine scbEngine;
 
-  static MicroservicePaths paths;
+  MicroservicePaths paths;
 
-  @BeforeAll
-  public static void setup() {
+  @BeforeEach
+  public void setup() {
     Environment environment = Mockito.mock(Environment.class);
     scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
-    LegacyPropertyFactory.setEnvironment(environment);
-    scbEngine.setEnvironment(environment);
+
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION))
+        .thenReturn(BootStrapProperties.DEFAULT_APPLICATION);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_NAME))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_NAME);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_ENVIRONMENT);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
     Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
@@ -68,8 +73,8 @@ public class TestMicroservicePaths {
     paths = spm.producerPaths;
   }
 
-  @AfterAll
-  public static void teardown() {
+  @AfterEach
+  public void teardown() {
     scbEngine.destroy();
   }
 

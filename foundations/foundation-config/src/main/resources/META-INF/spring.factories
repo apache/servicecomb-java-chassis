@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 org.springframework.boot.env.EnvironmentPostProcessor=\
-  org.apache.servicecomb.core.ConfigurationSpringBootInitializer
+  org.apache.servicecomb.config.ConfigEnvironmentPostProcessor

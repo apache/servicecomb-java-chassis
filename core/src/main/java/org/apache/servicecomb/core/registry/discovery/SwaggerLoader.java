@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
@@ -32,6 +32,7 @@ import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
@@ -50,10 +51,10 @@ public class SwaggerLoader {
   // third key : schemaId
   private final Map<String, Map<String, Map<String, OpenAPI>>> apps = new ConcurrentHashMapEx<>();
 
-  private final MicroserviceProperties microserviceProperties;
+  private final Environment environment;
 
-  public SwaggerLoader(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
+  public SwaggerLoader(Environment environment) {
+    this.environment = environment;
   }
 
   public void registerSwaggersInLocation(String microserviceName, String swaggersLocation) {
@@ -78,7 +79,7 @@ public class SwaggerLoader {
   }
 
   public void registerSwagger(String microserviceName, String schemaId, OpenAPI swagger) {
-    MicroserviceNameParser parser = new MicroserviceNameParser(microserviceProperties.getApplication(),
+    MicroserviceNameParser parser = new MicroserviceNameParser(BootStrapProperties.readApplication(environment),
         microserviceName);
     registerSwagger(parser.getAppId(), parser.getMicroserviceName(), schemaId, swagger);
   }
@@ -131,7 +132,7 @@ public class SwaggerLoader {
   }
 
   protected OpenAPI loadFromResource(String appId, String shortName, String schemaId) {
-    if (appId.equals(microserviceProperties.getApplication())) {
+    if (appId.equals(BootStrapProperties.readApplication(environment))) {
       OpenAPI swagger = loadFromResource(String.format("microservices/%s/%s.yaml", shortName, schemaId));
       if (swagger != null) {
         return swagger;

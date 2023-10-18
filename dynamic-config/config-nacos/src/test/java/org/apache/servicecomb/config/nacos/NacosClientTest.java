@@ -24,6 +24,7 @@ import org.apache.servicecomb.config.nacos.NacosDynamicPropertiesSource.UpdateHa
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class NacosClientTest {
 
@@ -33,12 +34,13 @@ public class NacosClientTest {
     Map<String, Object> before = new HashMap<>();
     Map<String, Object> after = new HashMap<>();
 
+    Environment environment = Mockito.mock(Environment.class);
+    Mockito.when(environment.getProperty(NacosConfig.CONTENT_TYPE, "yaml")).thenReturn("yaml");
     NacosDynamicPropertiesSource impl = new NacosDynamicPropertiesSource();
     UpdateHandler updateHandler = impl.new UpdateHandler();
-    NacosClient nacosClient = new NacosClient(updateHandler);
+    NacosClient nacosClient = new NacosClient(updateHandler, environment);
     NacosConfig nacosConfig = Mockito.mock(NacosConfig.class);
     Mockito.when(nacosConfig.getContentType()).thenReturn("yaml");
-    nacosClient.setNacosConfig(nacosConfig);
 
     NacosClient.ConfigRefresh cr = nacosClient.new ConfigRefresh();
 

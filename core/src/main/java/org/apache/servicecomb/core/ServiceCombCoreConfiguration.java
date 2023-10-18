@@ -16,10 +16,6 @@
  */
 package org.apache.servicecomb.core;
 
-import java.util.List;
-
-import org.apache.servicecomb.config.DynamicPropertiesSource;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
 import org.apache.servicecomb.core.executor.ExecutorManager;
@@ -35,12 +31,6 @@ import org.springframework.core.env.Environment;
 @Configuration
 @SuppressWarnings("unused")
 public class ServiceCombCoreConfiguration {
-  @Bean
-  public ConfigurationSpringInitializer configurationSpringInitializer(
-      List<DynamicPropertiesSource<?>> dynamicPropertiesSources) {
-    return new ConfigurationSpringInitializer(dynamicPropertiesSources);
-  }
-
   @Bean
   public SCBApplicationListener scbApplicationListener(SCBEngine scbEngine) {
     SCBApplicationListener scbApplicationListener = new SCBApplicationListener(scbEngine);
@@ -60,8 +50,8 @@ public class ServiceCombCoreConfiguration {
   }
 
   @Bean
-  public SwaggerLoader swaggerLoader(MicroserviceProperties microserviceProperties) {
-    return new SwaggerLoader(microserviceProperties);
+  public SwaggerLoader swaggerLoader(Environment environment) {
+    return new SwaggerLoader(environment);
   }
 
   @Bean

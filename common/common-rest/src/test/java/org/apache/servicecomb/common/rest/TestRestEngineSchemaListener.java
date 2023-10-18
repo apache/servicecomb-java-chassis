@@ -26,6 +26,7 @@ import java.util.List;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.common.rest.locator.TestPathSchema;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
@@ -59,6 +60,13 @@ public class TestRestEngineSchemaListener {
         .thenReturn(false);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION))
+        .thenReturn(BootStrapProperties.DEFAULT_APPLICATION);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_NAME))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_NAME);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_ENVIRONMENT);
+
     List<BootListener> listeners = new ArrayList<>();
     listeners.add(new RestEngineSchemaListener());
     scbEngine.setBootListeners(listeners);

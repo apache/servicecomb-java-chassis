@@ -17,7 +17,8 @@
 
 package org.apache.servicecomb.demo.edge.model;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.springframework.core.env.Environment;
 
 public class ResultWithInstance {
   private int result;
@@ -28,10 +29,10 @@ public class ResultWithInstance {
 
   private String version;
 
-  public static ResultWithInstance create(int value, MicroserviceProperties microserviceProperties) {
+  public static ResultWithInstance create(int value, Environment environment) {
     ResultWithInstance result = new ResultWithInstance();
     result.setResult(value);
-    result.setVersion(microserviceProperties.getVersion());
+    result.setVersion(BootStrapProperties.readServiceVersion(environment));
 
     return result;
   }

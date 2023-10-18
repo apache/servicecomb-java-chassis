@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.KeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
@@ -134,10 +134,10 @@ public class TestProviderTokenManager {
     String instanceId = "test";
     ConsumerTokenManager consumerTokenManager = new ConsumerTokenManager();
 
-    MicroserviceProperties microserviceProperties = Mockito.mock(MicroserviceProperties.class);
-    Mockito.when(microserviceProperties.getName()).thenReturn("test");
-    Mockito.when(microserviceProperties.getApplication()).thenReturn("test");
-    consumerTokenManager.setMicroserviceProperties(microserviceProperties);
+    ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_NAME)).thenReturn("test");
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION)).thenReturn("test");
+    consumerTokenManager.setEnvironment(environment);
     DiscoveryInstance microserviceInstance = Mockito.mock(DiscoveryInstance.class);
     Mockito.when(microserviceInstance.getInstanceId()).thenReturn(instanceId);
     Map<String, String> properties = new HashMap<>();
@@ -151,7 +151,7 @@ public class TestProviderTokenManager {
     // use cache token
     Assertions.assertEquals(token, consumerTokenManager.getToken());
     ProviderTokenManager rsaProviderTokenManager = new ProviderTokenManager();
-    ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+
     MutablePropertySources mutablePropertySources = new MutablePropertySources();
     Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
     rsaProviderTokenManager.setAccessController(new AccessController(environment));

@@ -27,12 +27,10 @@ import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
-public class ApolloDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
+public class ApolloDynamicPropertiesSource implements DynamicPropertiesSource {
   public static final String SOURCE_NAME = "apollo";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ApolloDynamicPropertiesSource.class);
@@ -42,11 +40,7 @@ public class ApolloDynamicPropertiesSource implements DynamicPropertiesSource<Ma
   private final ApolloDynamicPropertiesSource.UpdateHandler updateHandler =
       new ApolloDynamicPropertiesSource.UpdateHandler();
 
-  private ApolloConfig apolloConfig;
-
-  @Autowired
-  public void setApolloConfig(ApolloConfig apolloConfig) {
-    this.apolloConfig = apolloConfig;
+  public ApolloDynamicPropertiesSource() {
   }
 
   @Override
@@ -54,7 +48,8 @@ public class ApolloDynamicPropertiesSource implements DynamicPropertiesSource<Ma
     return 300;
   }
 
-  private void init() {
+  private void init(Environment environment) {
+    ApolloConfig apolloConfig = new ApolloConfig(environment);
     ApolloClient apolloClient = new ApolloClient(updateHandler, apolloConfig);
     apolloClient.refreshApolloConfig();
   }
@@ -80,8 +75,8 @@ public class ApolloDynamicPropertiesSource implements DynamicPropertiesSource<Ma
   }
 
   @Override
-  public EnumerablePropertySource<Map<String, Object>> create(Environment environment) {
-    init();
+  public MapPropertySource create(Environment environment) {
+    init(environment);
     return new MapPropertySource(SOURCE_NAME, valueCache);
   }
 }

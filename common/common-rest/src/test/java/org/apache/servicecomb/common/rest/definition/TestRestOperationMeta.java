@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
@@ -35,8 +36,8 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -156,25 +157,33 @@ public class TestRestOperationMeta {
     }
   }
 
-  static SCBEngine scbEngine;
+  SCBEngine scbEngine;
 
-  static OpenAPI swagger;
+  OpenAPI swagger;
 
   OperationMeta meta;
 
   RestOperationMeta operationMeta;
 
-  @BeforeAll
-  public static void classSetup() {
+  @BeforeEach
+  public void setUp() {
     Environment environment = Mockito.mock(Environment.class);
     scbEngine = SCBBootstrap.createSCBEngineForTest(environment);
     ExecutorManager executorManager = Mockito.mock(ExecutorManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     scbEngine.setTransportManager(transportManager);
     scbEngine.setExecutorManager(executorManager);
-    scbEngine.setEnvironment(environment);
+
+    Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
+        .thenReturn(false);
     Mockito.when(environment.getProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC,
         long.class, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)).thenReturn(DEFAULT_TURN_DOWN_STATUS_WAIT_SEC);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION))
+        .thenReturn(BootStrapProperties.DEFAULT_APPLICATION);
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_NAME))
+        .thenReturn("test");
+    Mockito.when(environment.getProperty(BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT))
+        .thenReturn(BootStrapProperties.DEFAULT_MICROSERVICE_ENVIRONMENT);
 
     List<BootListener> listeners = new ArrayList<>();
     listeners.add(new RestEngineSchemaListener());
@@ -185,8 +194,8 @@ public class TestRestOperationMeta {
     swagger = Mockito.spy(scbEngine.getProducerMicroserviceMeta().ensureFindSchemaMeta("sid1").getSwagger());
   }
 
-  @AfterAll
-  public static void classTeardown() {
+  @AfterEach
+  public void teardown() {
     scbEngine.destroy();
   }
 

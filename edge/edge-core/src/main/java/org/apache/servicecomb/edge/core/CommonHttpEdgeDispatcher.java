@@ -20,8 +20,8 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -98,8 +98,8 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
   }
 
   // Maybe future change to beans
-  protected MicroserviceProperties getMicroserviceProperties() {
-    return BeanUtils.getBean(MicroserviceProperties.class);
+  protected Environment getEnvironment() {
+    return BeanUtils.getBean(Environment.class);
   }
 
   // Maybe future change to beans
@@ -223,7 +223,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
     VersionedCache serversVersionedCache = getDiscoveryTree().discovery(context,
-        getMicroserviceProperties().getApplication(),
+        BootStrapProperties.readApplication(environment),
         microserviceName);
     invocation.addLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
     return loadBalancerMap

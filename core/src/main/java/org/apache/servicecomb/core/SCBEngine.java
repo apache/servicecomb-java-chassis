@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
@@ -112,8 +112,6 @@ public class SCBEngine {
 
   private RegistrationManager registrationManager;
 
-  private MicroserviceProperties microserviceProperties;
-
   private DiscoveryManager discoveryManager;
 
   private Environment environment;
@@ -183,11 +181,6 @@ public class SCBEngine {
   }
 
   @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
-  }
-
-  @Autowired
   public void setExecutorManager(ExecutorManager executorManager) {
     this.executorManager = executorManager;
   }
@@ -206,11 +199,7 @@ public class SCBEngine {
   }
 
   public String getAppId() {
-    return this.microserviceProperties.getApplication();
-  }
-
-  public MicroserviceProperties getMicroserviceProperties() {
-    return this.microserviceProperties;
+    return BootStrapProperties.readApplication(environment);
   }
 
   public void setStatus(SCBStatus status) {
@@ -398,11 +387,11 @@ public class SCBEngine {
   }
 
   private void createProducerMicroserviceMeta() {
-    String microserviceName = this.microserviceProperties.getName();
+    String microserviceName = BootStrapProperties.readServiceName(environment);
     producerMicroserviceMeta = new MicroserviceMeta(this,
-        this.microserviceProperties.getApplication(), microserviceName, false);
+        BootStrapProperties.readApplication(environment), microserviceName, false);
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(
-        this.microserviceProperties.getApplication(), microserviceName));
+        BootStrapProperties.readApplication(environment), microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
   }
 

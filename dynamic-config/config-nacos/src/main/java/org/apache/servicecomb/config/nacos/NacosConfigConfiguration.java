@@ -16,17 +16,6 @@
  */
 package org.apache.servicecomb.config.nacos;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
-
 public class NacosConfigConfiguration {
-  @Bean
-  public NacosConfig nacosConfig(Environment environment) {
-    return new NacosConfig(environment);
-  }
 
-  @Bean
-  public NacosDynamicPropertiesSource nacosDynamicPropertiesSource() {
-    return new NacosDynamicPropertiesSource();
-  }
 }

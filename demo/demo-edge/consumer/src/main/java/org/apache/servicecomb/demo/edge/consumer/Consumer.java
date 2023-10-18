@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
 import org.apache.servicecomb.demo.edge.model.DependTypeB;
@@ -37,6 +37,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -65,7 +66,7 @@ public class Consumer {
 
   DiscoveryManager discoveryManager = BeanUtils.getBean(DiscoveryManager.class);
 
-  MicroserviceProperties microserviceProperties = BeanUtils.getBean(MicroserviceProperties.class);
+  Environment environment = BeanUtils.getBean(Environment.class);
 
   public Consumer() {
     request.setDeviceId("2a5cc42ff60006ac");
@@ -270,7 +271,8 @@ public class Consumer {
   }
 
   private URIEndpointObject prepareEdge(String prefix) {
-    DiscoveryInstance instance = discoveryManager.findServiceInstances(microserviceProperties.getApplication(), "edge")
+    DiscoveryInstance instance = discoveryManager.findServiceInstances(
+            BootStrapProperties.readApplication(environment), "edge")
         .stream()
         .findFirst()
         .get();

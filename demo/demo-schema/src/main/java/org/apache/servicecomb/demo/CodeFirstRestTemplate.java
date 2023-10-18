@@ -21,8 +21,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
@@ -32,6 +32,7 @@ import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -42,11 +43,11 @@ import org.springframework.web.client.RestTemplate;
 import io.vertx.core.json.JsonObject;
 
 public class CodeFirstRestTemplate {
-  protected MicroserviceProperties microserviceProperties;
+  protected Environment environment;
 
   @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   protected void changeTransport(String microserviceName, String transport) {
@@ -161,7 +162,7 @@ public class CodeFirstRestTemplate {
 
   private void testCseResponse(String targetMicroserviceName, RestTemplate template,
       String cseUrlPrefix) {
-    String srcMicroserviceName = microserviceProperties.getName();
+    String srcMicroserviceName = BootStrapProperties.readServiceName(environment);
 
     ResponseEntity<User> responseEntity =
         template.exchange(cseUrlPrefix + "cseResponse", HttpMethod.GET, null, User.class);

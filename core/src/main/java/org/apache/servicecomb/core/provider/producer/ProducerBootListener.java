@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -50,18 +50,11 @@ public class ProducerBootListener implements BootListener {
 
   private RegistrationManager registrationManager;
 
-  private MicroserviceProperties microserviceProperties;
-
   private Environment environment;
 
   @Autowired
   public void setRegistrationManager(RegistrationManager registrationManager) {
     this.registrationManager = registrationManager;
-  }
-
-  @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
   }
 
   @Autowired
@@ -83,7 +76,8 @@ public class ProducerBootListener implements BootListener {
       OpenAPI swagger = schemaMeta.getSwagger();
       String content = SwaggerUtils.swaggerToString(swagger);
       if (exportToFile) {
-        exportToFile(String.format(filePath, microserviceProperties.getName(), schemaMeta.getSchemaId()), content);
+        exportToFile(String.format(filePath,
+            BootStrapProperties.readServiceName(environment), schemaMeta.getSchemaId()), content);
       } else {
         LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
             microserviceMeta.getAppId(),

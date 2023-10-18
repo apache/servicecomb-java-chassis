@@ -18,15 +18,17 @@
 package org.apache.servicecomb.config.cc;
 
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.EnvironmentAware;
+import org.springframework.core.env.Environment;
+import org.springframework.lang.NonNull;
 
 
-public class ConfigCenterInformationCollector implements BootUpInformationCollector {
+public class ConfigCenterInformationCollector implements BootUpInformationCollector, EnvironmentAware {
   private ConfigCenterConfig configCenterConfig;
 
-  @Autowired
-  public void setConfigCenterConfig(ConfigCenterConfig configCenterConfig) {
-    this.configCenterConfig = configCenterConfig;
+  @Override
+  public void setEnvironment(@NonNull Environment environment) {
+    this.configCenterConfig = new ConfigCenterConfig(environment);
   }
 
   @Override

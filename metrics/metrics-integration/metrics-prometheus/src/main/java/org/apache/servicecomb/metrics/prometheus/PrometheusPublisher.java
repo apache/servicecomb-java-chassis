@@ -21,7 +21,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
@@ -51,14 +51,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
 
   private GlobalRegistry globalRegistry;
 
-  private MicroserviceProperties microserviceProperties;
-
   private Environment environment;
-
-  @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
-  }
 
   @Autowired
   public void setEnvironment(Environment environment) {
@@ -119,7 +112,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     List<String> labelValues = new ArrayList<>();
 
     labelNames.add("appId");
-    labelValues.add(microserviceProperties.getApplication());
+    labelValues.add(BootStrapProperties.readApplication(environment));
 
     for (Tag tag : measurement.id().tags()) {
       labelNames.add(tag.key());

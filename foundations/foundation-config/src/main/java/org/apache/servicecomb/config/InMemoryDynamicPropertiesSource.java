@@ -20,20 +20,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 /**
  * This DynamicPropertiesSource is created for easier system tests.
  */
-public class InMemoryDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
+public class InMemoryDynamicPropertiesSource implements DynamicPropertiesSource {
   public static final String SOURCE_NAME = "in-memory";
 
   private static final Map<String, Object> DYNAMIC = new HashMap<>();
 
   @Override
-  public EnumerablePropertySource<Map<String, Object>> create(Environment environment) {
+  public MapPropertySource create(Environment environment) {
     return new MapPropertySource(SOURCE_NAME, DYNAMIC);
   }
 

@@ -30,5 +30,6 @@ public interface HealthEndpoint {
    * the target instance is alive.
    */
   @GET
+  @Path("/health")
   boolean health(@QueryParam("instanceId") String instanceId, @QueryParam("registryName") String registryName);
 }

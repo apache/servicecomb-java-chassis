@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.springframework.core.env.Environment;
 
@@ -46,8 +46,7 @@ public class NacosMicroserviceHandler {
 
   private static final String INSTANCE_PROPS = "SERVICECOMB_INSTANCE_PROPS";
 
-  public static Instance createMicroserviceInstance(NacosDiscoveryProperties properties, Environment environment,
-      MicroserviceProperties microserviceProperties) {
+  public static Instance createMicroserviceInstance(NacosDiscoveryProperties properties, Environment environment) {
     Instance instance = new Instance();
     instance.setIp(StringUtils.isEmpty(properties.getIp()) ? NetUtils.getHostName() : properties.getIp());
     instance.setPort(getEnvPort(environment));
@@ -55,9 +54,9 @@ public class NacosMicroserviceHandler {
     instance.setWeight(properties.getWeight());
     instance.setEnabled(properties.isInstanceEnabled());
     Map<String, String> metadata = properties.getMetadata();
-    metadata.put("version", microserviceProperties.getVersion());
-    metadata.put("alias", microserviceProperties.getAlias());
-    metadata.put("description", microserviceProperties.getDescription());
+    metadata.put("version", BootStrapProperties.readServiceVersion(environment));
+    metadata.put("alias", BootStrapProperties.readServiceAlias(environment));
+    metadata.put("description", BootStrapProperties.readServiceDescription(environment));
     metadata.put("secure", String.valueOf(properties.isSecure()));
     if (!StringUtils.isEmpty(environment.getProperty(VERSION_MAPPING)) &&
         !StringUtils.isEmpty(environment.getProperty(environment.getProperty(VERSION_MAPPING)))) {
@@ -67,7 +66,7 @@ public class NacosMicroserviceHandler {
     instance.setMetadata(metadata);
     instance.setClusterName(properties.getClusterName());
     instance.setEphemeral(properties.isEphemeral());
-    instance.setServiceName(microserviceProperties.getName());
+    instance.setServiceName(BootStrapProperties.readServiceName(environment));
     return instance;
   }
 

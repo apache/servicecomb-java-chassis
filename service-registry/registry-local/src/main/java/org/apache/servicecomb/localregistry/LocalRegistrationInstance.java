@@ -22,14 +22,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
+import org.springframework.core.env.Environment;
 
 public class LocalRegistrationInstance implements RegistrationInstance {
-  private final MicroserviceProperties microserviceProperties;
+  private final Environment environment;
 
   private final DataCenterInfo dataCenterInfo;
 
@@ -42,18 +43,16 @@ public class LocalRegistrationInstance implements RegistrationInstance {
   private final Map<String, String> properties = new HashMap<>();
 
   public LocalRegistrationInstance(
-      MicroserviceProperties microserviceProperties,
+      Environment environment,
       DataCenterProperties dataCenterProperties) {
-    this.microserviceProperties = microserviceProperties;
+    this.environment = environment;
 
     this.dataCenterInfo = new DataCenterInfo();
     this.dataCenterInfo.setName(dataCenterProperties.getName());
     this.dataCenterInfo.setRegion(dataCenterProperties.getRegion());
     this.dataCenterInfo.setAvailableZone(dataCenterProperties.getAvailableZone());
 
-    if (this.microserviceProperties.getProperties() != null) {
-      this.properties.putAll(this.microserviceProperties.getProperties());
-    }
+    this.properties.putAll(BootStrapProperties.readServiceProperties(environment));
 
     this.instanceId = System.currentTimeMillis() + "-" +
         ManagementFactory.getRuntimeMXBean().getPid();
@@ -61,27 +60,27 @@ public class LocalRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getEnvironment() {
-    return microserviceProperties.getEnvironment();
+    return BootStrapProperties.readServiceEnvironment(environment);
   }
 
   @Override
   public String getApplication() {
-    return microserviceProperties.getApplication();
+    return BootStrapProperties.readApplication(environment);
   }
 
   @Override
   public String getServiceName() {
-    return microserviceProperties.getName();
+    return BootStrapProperties.readServiceName(environment);
   }
 
   @Override
   public String getAlias() {
-    return microserviceProperties.getAlias();
+    return BootStrapProperties.readServiceAlias(environment);
   }
 
   @Override
   public String getVersion() {
-    return microserviceProperties.getVersion();
+    return BootStrapProperties.readServiceVersion(environment);
   }
 
   @Override
@@ -91,7 +90,7 @@ public class LocalRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getDescription() {
-    return microserviceProperties.getDescription();
+    return BootStrapProperties.readServiceDescription(environment);
   }
 
   @Override
