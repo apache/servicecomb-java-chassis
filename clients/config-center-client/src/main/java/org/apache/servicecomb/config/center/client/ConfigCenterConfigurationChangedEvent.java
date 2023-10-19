@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config;
+package org.apache.servicecomb.config.center.client;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,11 +24,9 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * This event is fired when configuration changed. And the change is already applied to Environment.
- *
- * Listeners can use Environment to get the latest value.
+ * This event is fired when configuration changed of config center.
  */
-public class ConfigurationChangedEvent {
+public class ConfigCenterConfigurationChangedEvent {
   private final Map<String, Object> added;
 
   private final Map<String, Object> deleted;
@@ -37,7 +35,7 @@ public class ConfigurationChangedEvent {
 
   private Set<String> changed;
 
-  private ConfigurationChangedEvent(Map<String, Object> added, Map<String, Object> updated,
+  private ConfigCenterConfigurationChangedEvent(Map<String, Object> added, Map<String, Object> updated,
       Map<String, Object> deleted) {
     this.added = added;
     this.deleted = deleted;
@@ -48,7 +46,8 @@ public class ConfigurationChangedEvent {
     this.changed.addAll(deleted.keySet());
   }
 
-  public static ConfigurationChangedEvent createIncremental(Map<String, Object> latest, Map<String, Object> last) {
+  public static ConfigCenterConfigurationChangedEvent createIncremental(Map<String, Object> latest,
+      Map<String, Object> last) {
     Map<String, Object> itemsCreated = new HashMap<>();
     Map<String, Object> itemsDeleted = new HashMap<>();
     Map<String, Object> itemsModified = new HashMap<>();
@@ -66,18 +65,19 @@ public class ConfigurationChangedEvent {
         itemsDeleted.put(itemKey, null);
       }
     }
-    ConfigurationChangedEvent event = ConfigurationChangedEvent
+    ConfigCenterConfigurationChangedEvent event = ConfigCenterConfigurationChangedEvent
         .createIncremental(itemsCreated, itemsModified, itemsDeleted);
     return event;
   }
 
-  public static ConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
+  public static ConfigCenterConfigurationChangedEvent createIncremental(Map<String, Object> added,
+      Map<String, Object> updated,
       Map<String, Object> deleted) {
-    return new ConfigurationChangedEvent(added, updated, deleted);
+    return new ConfigCenterConfigurationChangedEvent(added, updated, deleted);
   }
 
-  public static ConfigurationChangedEvent createIncremental(Map<String, Object> updated) {
-    return new ConfigurationChangedEvent(new HashMap<>(), updated, new HashMap<>());
+  public static ConfigCenterConfigurationChangedEvent createIncremental(Map<String, Object> updated) {
+    return new ConfigCenterConfigurationChangedEvent(new HashMap<>(), updated, new HashMap<>());
   }
 
   public final Map<String, Object> getAdded() {

@@ -23,7 +23,6 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 
 import org.apache.servicecomb.config.common.ConfigConverter;
-import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequest;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequestFactory;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;
@@ -90,9 +89,9 @@ public class KieConfigManager extends AbstractTask {
     this.configurationsRequests.forEach(r -> latestData.putAll(r.getLastRawData()));
 
     Map<String, Object> lastData = configConverter.updateData(latestData);
-    ConfigurationChangedEvent event = ConfigurationChangedEvent
+    KieConfigurationChangedEvent event = KieConfigurationChangedEvent
         .createIncremental(configConverter.getCurrentData(), lastData);
-    if (event.isChanged()) {
+    if (!event.getChanged().isEmpty()) {
       eventBus.post(event);
     }
   }
@@ -128,9 +127,11 @@ public class KieConfigManager extends AbstractTask {
           onDataChanged();
         }
         if (KieConfigManager.this.kieConfiguration.isEnableLongPolling()) {
-          startTask(new BackOffSleepTask(LONG_POLLING_INTERVAL, new PollConfigurationTask(0, this.configurationsRequest)));
+          startTask(
+              new BackOffSleepTask(LONG_POLLING_INTERVAL, new PollConfigurationTask(0, this.configurationsRequest)));
         } else {
-          startTask(new BackOffSleepTask(kieConfiguration.getRefreshIntervalInMillis(), new PollConfigurationTask(0, this.configurationsRequest)));
+          startTask(new BackOffSleepTask(kieConfiguration.getRefreshIntervalInMillis(),
+              new PollConfigurationTask(0, this.configurationsRequest)));
         }
       } catch (Exception e) {
         LOGGER.error("get configurations from KieConfigCenter failed, and will try again.", e);

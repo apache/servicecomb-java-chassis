@@ -33,17 +33,28 @@ import org.springframework.core.env.Environment;
 import com.google.common.eventbus.Subscribe;
 
 public class DynamicPropertiesImpl implements DynamicProperties {
-  private final Map<String, Set<Consumer<String>>> stringCallbacks = new HashMap<>();
+  private static class Holder<C, D> {
+    C callback;
 
-  private final Map<String, Set<IntConsumer>> intCallbacks = new HashMap<>();
+    D defaultValue;
 
-  private final Map<String, Set<LongConsumer>> longCallbacks = new HashMap<>();
+    Holder(C callback, D defaultValue) {
+      this.callback = callback;
+      this.defaultValue = defaultValue;
+    }
+  }
 
-  private final Map<String, Set<DoubleConsumer>> floatCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<Consumer<String>, String>>> stringCallbacks = new HashMap<>();
 
-  private final Map<String, Set<DoubleConsumer>> doubleCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<IntConsumer, Integer>>> intCallbacks = new HashMap<>();
 
-  private final Map<String, Set<Consumer<Boolean>>> booleanCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<LongConsumer, Long>>> longCallbacks = new HashMap<>();
+
+  private final Map<String, Set<Holder<DoubleConsumer, Float>>> floatCallbacks = new HashMap<>();
+
+  private final Map<String, Set<Holder<DoubleConsumer, Double>>> doubleCallbacks = new HashMap<>();
+
+  private final Map<String, Set<Holder<Consumer<Boolean>, Boolean>>> booleanCallbacks = new HashMap<>();
 
   private final Environment environment;
 
@@ -63,79 +74,46 @@ public class DynamicPropertiesImpl implements DynamicProperties {
     }
 
     for (Entry<String, Object> entry : event.getDeleted().entrySet()) {
-      updateDefault(entry);
-    }
-  }
-
-  private void updateDefault(Entry<String, Object> entry) {
-    if (stringCallbacks.containsKey(entry.getKey())) {
-      for (Consumer<String> callbacks : stringCallbacks.get(entry.getKey())) {
-        callbacks.accept(null);
-      }
-    }
-    if (intCallbacks.containsKey(entry.getKey())) {
-      for (IntConsumer callbacks : intCallbacks.get(entry.getKey())) {
-        callbacks.accept(0);
-      }
-    }
-    if (longCallbacks.containsKey(entry.getKey())) {
-      for (LongConsumer callbacks : longCallbacks.get(entry.getKey())) {
-        callbacks.accept(0L);
-      }
-    }
-    if (floatCallbacks.containsKey(entry.getKey())) {
-      for (DoubleConsumer callbacks : floatCallbacks.get(entry.getKey())) {
-        callbacks.accept(0F);
-      }
-    }
-    if (doubleCallbacks.containsKey(entry.getKey())) {
-      for (DoubleConsumer callbacks : doubleCallbacks.get(entry.getKey())) {
-        callbacks.accept(0D);
-      }
-    }
-    if (booleanCallbacks.containsKey(entry.getKey())) {
-      for (Consumer<Boolean> callbacks : booleanCallbacks.get(entry.getKey())) {
-        callbacks.accept(false);
-      }
+      updateValue(entry);
     }
   }
 
   private void updateValue(Entry<String, Object> entry) {
     if (stringCallbacks.containsKey(entry.getKey())) {
-      for (Consumer<String> callbacks : stringCallbacks.get(entry.getKey())) {
-        callbacks.accept((String) entry.getValue());
+      for (Holder<Consumer<String>, String> callbacks : stringCallbacks.get(entry.getKey())) {
+        callbacks.callback.accept(environment.getProperty(entry.getKey(), callbacks.defaultValue));
       }
     }
     if (intCallbacks.containsKey(entry.getKey())) {
-      for (IntConsumer callbacks : intCallbacks.get(entry.getKey())) {
-        callbacks.accept((int) entry.getValue());
+      for (Holder<IntConsumer, Integer> callbacks : intCallbacks.get(entry.getKey())) {
+        callbacks.callback.accept(environment.getProperty(entry.getKey(), Integer.class, callbacks.defaultValue));
       }
     }
     if (longCallbacks.containsKey(entry.getKey())) {
-      for (LongConsumer callbacks : longCallbacks.get(entry.getKey())) {
-        callbacks.accept((long) entry.getValue());
+      for (Holder<LongConsumer, Long> callbacks : longCallbacks.get(entry.getKey())) {
+        callbacks.callback.accept(environment.getProperty(entry.getKey(), Long.class, callbacks.defaultValue));
       }
     }
     if (floatCallbacks.containsKey(entry.getKey())) {
-      for (DoubleConsumer callbacks : floatCallbacks.get(entry.getKey())) {
-        callbacks.accept((float) entry.getValue());
+      for (Holder<DoubleConsumer, Float> callbacks : floatCallbacks.get(entry.getKey())) {
+        callbacks.callback.accept(environment.getProperty(entry.getKey(), Float.class, callbacks.defaultValue));
       }
     }
     if (doubleCallbacks.containsKey(entry.getKey())) {
-      for (DoubleConsumer callbacks : doubleCallbacks.get(entry.getKey())) {
-        callbacks.accept((double) entry.getValue());
+      for (Holder<DoubleConsumer, Double> callbacks : doubleCallbacks.get(entry.getKey())) {
+        callbacks.callback.accept(environment.getProperty(entry.getKey(), Double.class, callbacks.defaultValue));
       }
     }
     if (booleanCallbacks.containsKey(entry.getKey())) {
-      for (Consumer<Boolean> callbacks : booleanCallbacks.get(entry.getKey())) {
-        callbacks.accept((Boolean) entry.getValue());
+      for (Holder<Consumer<Boolean>, Boolean> callbacks : booleanCallbacks.get(entry.getKey())) {
+        callbacks.callback.accept(environment.getProperty(entry.getKey(), Boolean.class, callbacks.defaultValue));
       }
     }
   }
 
   @Override
   public String getStringProperty(String propertyName, Consumer<String> consumer, String defaultValue) {
-    stringCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    stringCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(new Holder<>(consumer, defaultValue));
     return environment.getProperty(propertyName, defaultValue);
   }
 
@@ -146,7 +124,7 @@ public class DynamicPropertiesImpl implements DynamicProperties {
 
   @Override
   public int getIntProperty(String propertyName, IntConsumer consumer, int defaultValue) {
-    intCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    intCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(new Holder<>(consumer, defaultValue));
     return environment.getProperty(propertyName, int.class, defaultValue);
   }
 
@@ -157,7 +135,7 @@ public class DynamicPropertiesImpl implements DynamicProperties {
 
   @Override
   public long getLongProperty(String propertyName, LongConsumer consumer, long defaultValue) {
-    longCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    longCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(new Holder<>(consumer, defaultValue));
     return environment.getProperty(propertyName, long.class, defaultValue);
   }
 
@@ -168,7 +146,7 @@ public class DynamicPropertiesImpl implements DynamicProperties {
 
   @Override
   public float getFloatProperty(String propertyName, DoubleConsumer consumer, float defaultValue) {
-    floatCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    floatCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(new Holder<>(consumer, defaultValue));
     return environment.getProperty(propertyName, float.class, defaultValue);
   }
 
@@ -179,7 +157,7 @@ public class DynamicPropertiesImpl implements DynamicProperties {
 
   @Override
   public double getDoubleProperty(String propertyName, DoubleConsumer consumer, double defaultValue) {
-    doubleCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    doubleCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(new Holder<>(consumer, defaultValue));
     return environment.getProperty(propertyName, double.class, defaultValue);
   }
 
@@ -190,7 +168,7 @@ public class DynamicPropertiesImpl implements DynamicProperties {
 
   @Override
   public boolean getBooleanProperty(String propertyName, Consumer<Boolean> consumer, boolean defaultValue) {
-    booleanCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(consumer);
+    booleanCallbacks.computeIfAbsent(propertyName, key -> new HashSet<>()).add(new Holder<>(consumer, defaultValue));
     return environment.getProperty(propertyName, boolean.class, defaultValue);
   }
 

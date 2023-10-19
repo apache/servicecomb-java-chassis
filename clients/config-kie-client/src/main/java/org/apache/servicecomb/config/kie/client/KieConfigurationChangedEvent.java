@@ -15,62 +15,67 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.common;
+package org.apache.servicecomb.config.kie.client;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
-public class ConfigurationChangedEvent {
+/**
+ * This event is fired when configuration changed of kie.
+ */
+public class KieConfigurationChangedEvent {
   private final Map<String, Object> added;
 
   private final Map<String, Object> deleted;
 
   private final Map<String, Object> updated;
 
-  private final boolean changed;
+  private Set<String> changed;
 
-  private Map<String, Object> complete;
-
-  private ConfigurationChangedEvent(Map<String, Object> added, Map<String, Object> updated,
-      Map<String, Object> deleted, boolean changed) {
+  private KieConfigurationChangedEvent(Map<String, Object> added, Map<String, Object> updated,
+      Map<String, Object> deleted) {
     this.added = added;
     this.deleted = deleted;
     this.updated = updated;
-    this.changed = changed;
+    this.changed = new HashSet<>();
+    this.changed.addAll(added.keySet());
+    this.changed.addAll(updated.keySet());
+    this.changed.addAll(deleted.keySet());
   }
 
-  public static ConfigurationChangedEvent createIncremental(Map<String, Object> latest, Map<String, Object> last) {
+  public static KieConfigurationChangedEvent createIncremental(Map<String, Object> latest, Map<String, Object> last) {
     Map<String, Object> itemsCreated = new HashMap<>();
     Map<String, Object> itemsDeleted = new HashMap<>();
     Map<String, Object> itemsModified = new HashMap<>();
-    boolean changed = false;
 
     for (Map.Entry<String, Object> entry : latest.entrySet()) {
       String itemKey = entry.getKey();
       if (!last.containsKey(itemKey)) {
         itemsCreated.put(itemKey, entry.getValue());
-        changed = true;
       } else if (!Objects.equals(last.get(itemKey), latest.get(itemKey))) {
         itemsModified.put(itemKey, entry.getValue());
-        changed = true;
       }
     }
     for (String itemKey : last.keySet()) {
       if (!latest.containsKey(itemKey)) {
         itemsDeleted.put(itemKey, null);
-        changed = true;
       }
     }
-    ConfigurationChangedEvent event = ConfigurationChangedEvent
-        .createIncremental(itemsCreated, itemsModified, itemsDeleted, changed);
-    event.complete = latest;
+    KieConfigurationChangedEvent event = KieConfigurationChangedEvent
+        .createIncremental(itemsCreated, itemsModified, itemsDeleted);
     return event;
   }
 
-  private static ConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
-      Map<String, Object> deleted, boolean changed) {
-    return new ConfigurationChangedEvent(added, updated, deleted, changed);
+  public static KieConfigurationChangedEvent createIncremental(Map<String, Object> added, Map<String, Object> updated,
+      Map<String, Object> deleted) {
+    return new KieConfigurationChangedEvent(added, updated, deleted);
+  }
+
+  public static KieConfigurationChangedEvent createIncremental(Map<String, Object> updated) {
+    return new KieConfigurationChangedEvent(new HashMap<>(), updated, new HashMap<>());
   }
 
   public final Map<String, Object> getAdded() {
@@ -87,11 +92,7 @@ public class ConfigurationChangedEvent {
     return deleted;
   }
 
-  public final Map<String, Object> getComplete() {
-    return complete;
-  }
-
-  public final boolean isChanged() {
+  public final Set<String> getChanged() {
     return changed;
   }
 }
