@@ -50,7 +50,7 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getEnvironment() {
-    return nacosDiscoveryProperties.getNamespace();
+    return BootStrapProperties.readServiceEnvironment(environment);
   }
 
   @Override

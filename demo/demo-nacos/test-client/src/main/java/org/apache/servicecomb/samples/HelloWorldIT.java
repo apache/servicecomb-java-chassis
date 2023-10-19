@@ -34,6 +34,6 @@ public class HelloWorldIT implements CategorizedTestCase {
   private void testHelloWorld() {
     String result = template
         .getForObject(Config.GATEWAY_URL + "/sayHello?name=World", String.class);
-    TestMgr.check("\"Hello World\"", result);
+    TestMgr.check("Hello World", result);
   }
 }
