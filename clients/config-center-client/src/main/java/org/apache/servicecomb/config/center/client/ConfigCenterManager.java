@@ -23,7 +23,6 @@ import org.apache.servicecomb.config.center.client.model.ConfigCenterConfigurati
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 import org.apache.servicecomb.config.common.ConfigConverter;
-import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
 import org.slf4j.Logger;
@@ -76,11 +75,14 @@ public class ConfigCenterManager extends AbstractTask {
         if (response.isChanged()) {
           queryConfigurationsRequest.setRevision(response.getRevision());
           Map<String, Object> lastData = configConverter.updateData(response.getConfigurations());
-          ConfigurationChangedEvent event = ConfigurationChangedEvent
+          ConfigCenterConfigurationChangedEvent event = ConfigCenterConfigurationChangedEvent
               .createIncremental(configConverter.getCurrentData(), lastData);
-          eventBus.post(event);
+          if (!event.getChanged().isEmpty()) {
+            eventBus.post(event);
+          }
         }
-        startTask(new BackOffSleepTask(configCenterConfiguration.getRefreshIntervalInMillis(), new PollConfigurationTask(0)));
+        startTask(
+            new BackOffSleepTask(configCenterConfiguration.getRefreshIntervalInMillis(), new PollConfigurationTask(0)));
       } catch (Exception e) {
         LOGGER.error("get configurations from ConfigCenter failed, and will try again.", e);
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));

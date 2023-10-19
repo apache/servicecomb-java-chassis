@@ -29,11 +29,12 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
 import org.apache.servicecomb.config.common.ConfigConverter;
-import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.KieClient;
 import org.apache.servicecomb.config.kie.client.KieConfigManager;
+import org.apache.servicecomb.config.kie.client.KieConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
 import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
@@ -43,12 +44,16 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.google.common.eventbus.Subscribe;
 
 public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(KieDynamicPropertiesSource.class);
+
   public static final String SOURCE_NAME = "kie";
 
   private final Map<String, Object> data = new ConcurrentHashMapEx<>();
@@ -84,10 +89,13 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+  public void onConfigurationChangedEvent(KieConfigurationChangedEvent event) {
+    LOGGER.info("Dynamic configuration changed: {}", event.getChanged());
     data.putAll(event.getAdded());
     data.putAll(event.getUpdated());
     event.getDeleted().forEach((k, v) -> data.remove(k));
+    EventManager.post(ConfigurationChangedEvent.createIncremental(event.getAdded(),
+        event.getUpdated(), event.getDeleted()));
   }
 
   private KieConfiguration createKieConfiguration(KieConfig kieConfig, Environment environment) {

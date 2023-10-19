@@ -28,15 +28,16 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
 import org.apache.servicecomb.config.center.client.ConfigCenterAddressManager;
 import org.apache.servicecomb.config.center.client.ConfigCenterClient;
+import org.apache.servicecomb.config.center.client.ConfigCenterConfigurationChangedEvent;
 import org.apache.servicecomb.config.center.client.ConfigCenterManager;
 import org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 import org.apache.servicecomb.config.common.ConfigConverter;
-import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -108,10 +109,13 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+  public void onConfigurationChangedEvent(ConfigCenterConfigurationChangedEvent event) {
+    LOGGER.info("Dynamic configuration changed: {}", event.getChanged());
     data.putAll(event.getAdded());
     data.putAll(event.getUpdated());
     event.getDeleted().forEach((k, v) -> data.remove(k));
+    EventManager.post(ConfigurationChangedEvent.createIncremental(event.getAdded(),
+        event.getUpdated(), event.getDeleted()));
   }
 
   private QueryConfigurationsRequest createQueryConfigurationsRequest(Environment environment) {
