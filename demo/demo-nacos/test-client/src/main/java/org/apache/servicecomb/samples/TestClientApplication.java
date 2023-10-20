@@ -33,7 +33,7 @@ public class TestClientApplication {
     try {
       new SpringApplicationBuilder().web(WebApplicationType.NONE).sources(TestClientApplication.class).run(args);
 
-      CategorizedTestCaseRunner.runCategorizedTestCase("consumer");
+      run();
     } catch (Exception e) {
       TestMgr.failed("test case run failed", e);
       LOGGER.error("-------------- test failed -------------");
@@ -41,5 +41,9 @@ public class TestClientApplication {
       LOGGER.error("-------------- test failed -------------");
     }
     TestMgr.summary();
+  }
+
+  public static void run() throws Exception {
+    CategorizedTestCaseRunner.runCategorizedTestCase("consumer");
   }
 }

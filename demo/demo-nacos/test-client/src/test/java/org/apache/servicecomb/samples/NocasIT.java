@@ -36,7 +36,7 @@ public class NocasIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    TestClientApplication.main(new String[0]);
+    TestClientApplication.run();
 
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
