@@ -37,17 +37,20 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final String application;
 
+  private final String serviceName;
+
   private final Environment environment;
 
   private final Map<String, String> schemas;
 
   private final List<String> endpoints;
 
-  public NacosDiscoveryInstance(Instance instance, String application,
+  public NacosDiscoveryInstance(Instance instance, String application, String serviceName,
       Environment environment) {
     this.instance = instance;
     this.environment = environment;
     this.application = application;
+    this.serviceName = serviceName;
     this.endpoints = readEndpoints(instance);
     this.schemas = readSchemas(instance);
   }
@@ -74,7 +77,8 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public String getServiceName() {
-    return instance.getServiceName();
+    // nacos instance service name may contain group and `@` annotations
+    return this.serviceName;
   }
 
   @Override

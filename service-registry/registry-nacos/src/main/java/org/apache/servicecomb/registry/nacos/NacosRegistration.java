@@ -35,14 +35,11 @@ import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.alibaba.nacos.common.notify.NotifyCenter;
 
 public class NacosRegistration implements Registration<NacosRegistrationInstance> {
   private final NacosDiscoveryProperties nacosDiscoveryProperties;
 
   private final Environment environment;
-
-  private final InstancesChangeEventListener instancesChangeEventListener;
 
   private final String instanceId;
 
@@ -58,12 +55,11 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Autowired
   public NacosRegistration(DataCenterProperties dataCenterProperties, NacosDiscoveryProperties nacosDiscoveryProperties,
-      Environment environment, InstancesChangeEventListener instancesChangeEventListener) {
+      Environment environment) {
     this.instanceId = buildInstanceId();
     this.dataCenterProperties = dataCenterProperties;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
     this.environment = environment;
-    this.instancesChangeEventListener = instancesChangeEventListener;
   }
 
   @Override
@@ -76,7 +72,6 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
     namingService = NamingServiceManager.buildNamingService(environment, nacosDiscoveryProperties);
     namingMaintainService = NamingServiceManager.buildNamingMaintainService(environment, nacosDiscoveryProperties);
-    NotifyCenter.registerSubscriber(instancesChangeEventListener);
   }
 
   @Override

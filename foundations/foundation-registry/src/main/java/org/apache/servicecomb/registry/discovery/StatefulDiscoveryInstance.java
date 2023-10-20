@@ -56,7 +56,7 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private PingStatus pingStatus = PingStatus.UNKNOWN;
 
-  private long pingSuccessTime;
+  private long pingTime = 0;
 
   private HistoryStatus historyStatus = HistoryStatus.CURRENT;
 
@@ -114,12 +114,12 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
     this.isolateDuration = isolateDuration;
   }
 
-  public long getPingSuccessTime() {
-    return pingSuccessTime;
+  public long getPingTime() {
+    return pingTime;
   }
 
-  public void setPingSuccessTime(long pingSuccessTime) {
-    this.pingSuccessTime = pingSuccessTime;
+  public void setPingTime(long pingTime) {
+    this.pingTime = pingTime;
   }
 
   @Override

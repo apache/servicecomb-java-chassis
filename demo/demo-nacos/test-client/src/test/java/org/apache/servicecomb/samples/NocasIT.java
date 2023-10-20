@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.registry.nacos;
+package org.apache.servicecomb.samples;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.servicecomb.demo.TestMgr;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.alibaba.nacos.client.naming.event.InstancesChangeEvent;
-import com.alibaba.nacos.common.notify.Event;
-import com.alibaba.nacos.common.notify.listener.Subscriber;
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(classes = TestClientApplication.class)
+public class NocasIT {
 
-public class InstancesChangeEventListener extends Subscriber<InstancesChangeEvent> {
-  private final NacosDiscovery nacosDiscovery;
-
-  @Autowired
-  public InstancesChangeEventListener(NacosDiscovery nacosDiscovery) {
-    this.nacosDiscovery = nacosDiscovery;
+  @BeforeEach
+  public void setUp() {
+    TestMgr.errors().clear();
   }
 
-  @Override
-  public void onEvent(InstancesChangeEvent event) {
-    nacosDiscovery.onInstanceChangedEvent(event);
-  }
+  @Test
+  public void clientGetsNoError() throws Exception {
+    TestClientApplication.main(new String[0]);
 
-  @Override
-  public Class<? extends Event> subscribeType() {
-    return InstancesChangeEvent.class;
+    Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }

@@ -19,20 +19,26 @@ package org.apache.servicecomb.registry.nacos;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.registry.api.Discovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
-import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
+import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.alibaba.nacos.client.naming.event.InstancesChangeEvent;
 
 public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   public static final String NACOS_DISCOVERY_ENABLED = "servicecomb.registry.nacos.%s.%s.enabled";
+
+  private static final Map<String, Map<String, AtomicBoolean>> SUBSCRIBES = new HashMap<>();
+
+  private final Object lock = new Object();
 
   private final NacosDiscoveryProperties nacosDiscoveryProperties;
 
@@ -48,6 +54,7 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   }
 
   @Autowired
+  @SuppressWarnings("unused")
   public void setEnvironment(Environment environment) {
     this.environment = environment;
   }
@@ -66,20 +73,39 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   @Override
   public List<NacosDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     try {
+      AtomicBoolean result = SUBSCRIBES.computeIfAbsent(application,
+          k -> new HashMap<>()).computeIfAbsent(serviceName, k -> new AtomicBoolean(true));
+      if (result.get()) {
+        synchronized (lock) {
+          if (result.get()) {
+            namingService.subscribe(serviceName, application, (event) -> {
+              if (result.getAndSet(false)) {
+                // ignore the first event.
+                return;
+              }
+              if (event instanceof NamingEvent) {
+                this.instanceChangedListener.onInstanceChanged(name(), application, serviceName,
+                    convertServiceInstanceList(((NamingEvent) event).getInstances(), application, serviceName));
+              }
+            });
+          }
+        }
+      }
       List<Instance> instances = namingService.getAllInstances(serviceName, application, true);
-      return convertServiceInstanceList(instances, application);
-    } catch (NacosException e) {
-      throw new IllegalStateException("updateMicroserviceInstanceStatus process is interrupted.");
+      return convertServiceInstanceList(instances, application, serviceName);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
     }
   }
 
-  private List<NacosDiscoveryInstance> convertServiceInstanceList(List<Instance> instances, String application) {
+  private List<NacosDiscoveryInstance> convertServiceInstanceList(
+      List<Instance> instances, String application, String serviceName) {
     if (CollectionUtils.isEmpty(instances)) {
       return Collections.emptyList();
     }
     List<NacosDiscoveryInstance> result = new ArrayList<>();
     for (Instance instance : instances) {
-      result.add(new NacosDiscoveryInstance(instance, application, environment));
+      result.add(new NacosDiscoveryInstance(instance, application, serviceName, environment));
     }
     return result;
   }
@@ -87,11 +113,6 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   @Override
   public void setInstanceChangedListener(InstanceChangedListener<NacosDiscoveryInstance> instanceChangedListener) {
     this.instanceChangedListener = instanceChangedListener;
-  }
-
-  public void onInstanceChangedEvent(InstancesChangeEvent event) {
-    this.instanceChangedListener.onInstanceChanged(name(), event.getGroupName(), event.getServiceName(),
-        convertServiceInstanceList(event.getHosts(), event.getGroupName()));
   }
 
   @Override
