@@ -18,6 +18,24 @@
 package org.apache.servicecomb.registry.nacos;
 
 public class NacosConst {
+  public static final String PROPERTY_VERSION = "scb-version";
+
+  public static final String PROPERTY_ALIAS = "scb-alias";
+
+  public static final String PROPERTY_DESCRIPTION = "scb-description";
+
+  public static final String PROPERTY_ENDPOINT = "scb-endpoint";
+
+  public static final String PROPERTY_REGION = "scb-region";
+
+  public static final String PROPERTY_ZONE = "scb-zone";
+
+  public static final String PROPERTY_DATACENTER = "scb-datacenter";
+
+  public static final String PROPERTY_SCHEMA_PREFIX = "scb-schema-";
+
+  public static final String ENDPOINT_PROPERTY_SEPARATOR = ",";
+
   public static final String NACOS_REGISTRY_PREFIX = "servicecomb.registry.nacos";
 
   public static final String SERVER_ADDR = "serverAddr";
@@ -39,6 +57,4 @@ public class NacosConst {
   public static final String NAMING_LOAD_CACHE_AT_START = "namingLoadCacheAtStart";
 
   public static final String NACOS_REGISTRY_NAME = "nacos-registry";
-
-  public static final String SCHEMA_PREFIX = "schema_";
 }

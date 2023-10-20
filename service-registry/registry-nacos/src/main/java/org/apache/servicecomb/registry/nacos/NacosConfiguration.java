@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.registry.nacos;
 
+import org.apache.servicecomb.config.DataCenterProperties;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -33,10 +34,12 @@ public class NacosConfiguration {
 
   @Bean
   public NacosRegistration nacosRegistration(
+      DataCenterProperties dataCenterProperties,
       @Qualifier("nacosDiscoveryProperties") NacosDiscoveryProperties nacosDiscoveryProperties,
-      @Qualifier("nacosDiscovery") NacosDiscovery nacosDiscovery, Environment environment,
+      Environment environment,
       @Qualifier("instancesChangeEventListener") InstancesChangeEventListener instancesChangeEventListener) {
-    return new NacosRegistration(nacosDiscoveryProperties, nacosDiscovery, environment, instancesChangeEventListener);
+    return new NacosRegistration(dataCenterProperties, nacosDiscoveryProperties, environment,
+        instancesChangeEventListener);
   }
 
   @Bean

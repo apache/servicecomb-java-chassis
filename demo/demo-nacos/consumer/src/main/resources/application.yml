@@ -29,8 +29,5 @@ servicecomb:
   rest:
     address: 0.0.0.0:9092
 
-server:
-  port: 9092
-
 
 

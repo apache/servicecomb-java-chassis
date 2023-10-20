@@ -17,32 +17,39 @@
 
 package org.apache.servicecomb.registry.nacos;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.springframework.util.CollectionUtils;
+import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
 public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
-  private final NacosDiscoveryProperties nacosDiscoveryProperties;
-
   private final Instance instance;
 
-  private final Map<String, String> schemas = new HashMap<>();
+  private final String application;
 
-  private String application;
+  private final Environment environment;
 
-  public NacosDiscoveryInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
-      String application) {
+  private final Map<String, String> schemas;
+
+  private final List<String> endpoints;
+
+  public NacosDiscoveryInstance(Instance instance, String application,
+      Environment environment) {
     this.instance = instance;
-    this.nacosDiscoveryProperties = nacosDiscoveryProperties;
+    this.environment = environment;
     this.application = application;
+    this.endpoints = readEndpoints(instance);
+    this.schemas = readSchemas(instance);
   }
 
   @Override
@@ -57,12 +64,12 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public String getEnvironment() {
-    return nacosDiscoveryProperties.getNamespace();
+    return BootStrapProperties.readServiceEnvironment(environment);
   }
 
   @Override
   public String getApplication() {
-    return application;
+    return this.application;
   }
 
   @Override
@@ -72,25 +79,26 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public String getAlias() {
-    return instance.getMetadata().get("alias");
+    return instance.getMetadata().get(NacosConst.PROPERTY_ALIAS);
   }
 
   @Override
   public String getVersion() {
-    return instance.getMetadata().get("version");
+    return instance.getMetadata().get(NacosConst.PROPERTY_VERSION);
   }
 
   @Override
   public DataCenterInfo getDataCenterInfo() {
     DataCenterInfo dataCenterInfo = new DataCenterInfo();
-    dataCenterInfo.setRegion(instance.getMetadata().get("region"));
-    dataCenterInfo.setAvailableZone(instance.getMetadata().get("zone"));
+    dataCenterInfo.setRegion(instance.getMetadata().get(NacosConst.PROPERTY_REGION));
+    dataCenterInfo.setAvailableZone(instance.getMetadata().get(NacosConst.PROPERTY_ZONE));
+    dataCenterInfo.setName(instance.getMetadata().get(NacosConst.PROPERTY_DATACENTER));
     return dataCenterInfo;
   }
 
   @Override
   public String getDescription() {
-    return instance.getMetadata().get("description");
+    return instance.getMetadata().get(NacosConst.PROPERTY_DESCRIPTION);
   }
 
   @Override
@@ -100,29 +108,32 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public Map<String, String> getSchemas() {
-    if (CollectionUtils.isEmpty(schemas)) {
-      Map<String, String> metaData = instance.getMetadata();
-      Map<String, String> instanceSchemas = new HashMap<>();
-      for (Map.Entry<String, String> entry: metaData.entrySet()) {
-        if (entry.getKey().startsWith(NacosConst.SCHEMA_PREFIX)) {
-          instanceSchemas.put(entry.getKey().substring(NacosConst.SCHEMA_PREFIX.length()), entry.getValue());
-        }
-      }
-      schemas.putAll(instanceSchemas);
-    }
     return schemas;
+  }
+
+  private static Map<String, String> readSchemas(Instance instance) {
+    Map<String, String> metaData = instance.getMetadata();
+    Map<String, String> instanceSchemas = new HashMap<>();
+    for (Map.Entry<String, String> entry : metaData.entrySet()) {
+      if (entry.getKey().startsWith(NacosConst.PROPERTY_SCHEMA_PREFIX)) {
+        instanceSchemas.put(entry.getKey().substring(NacosConst.PROPERTY_SCHEMA_PREFIX.length()),
+            entry.getValue());
+      }
+    }
+    return instanceSchemas;
   }
 
   @Override
   public List<String> getEndpoints() {
-    List<String> endpoints = new ArrayList<>();
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append("rest://")
-      .append(instance.getIp())
-      .append(":")
-      .append(instance.getPort());
-    endpoints.add(stringBuilder.toString());
     return endpoints;
+  }
+
+  private static List<String> readEndpoints(Instance instance) {
+    if (StringUtils.isEmpty(instance.getMetadata().get(NacosConst.PROPERTY_ENDPOINT))) {
+      return Collections.emptyList();
+    }
+    return Arrays.asList(instance.getMetadata().get(NacosConst.PROPERTY_ENDPOINT)
+        .split(NacosConst.ENDPOINT_PROPERTY_SEPARATOR));
   }
 
   @Override

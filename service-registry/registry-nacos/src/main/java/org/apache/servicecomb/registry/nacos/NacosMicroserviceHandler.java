@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.registry.nacos;
 
-import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +25,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.common.net.NetUtils;
+import org.apache.servicecomb.config.DataCenterProperties;
 import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
@@ -46,36 +45,29 @@ public class NacosMicroserviceHandler {
 
   private static final String INSTANCE_PROPS = "SERVICECOMB_INSTANCE_PROPS";
 
-  public static Instance createMicroserviceInstance(NacosDiscoveryProperties properties, Environment environment) {
+  public static Instance createMicroserviceInstance(
+      DataCenterProperties dataCenterProperties, NacosDiscoveryProperties properties, Environment environment) {
     Instance instance = new Instance();
-    instance.setIp(StringUtils.isEmpty(properties.getIp()) ? NetUtils.getHostName() : properties.getIp());
-    instance.setPort(getEnvPort(environment));
-    instance.setInstanceId(buildInstanceId());
+    instance.setServiceName(BootStrapProperties.readServiceName(environment));
     instance.setWeight(properties.getWeight());
     instance.setEnabled(properties.isInstanceEnabled());
+    instance.setClusterName(properties.getClusterName());
+    instance.setEphemeral(properties.isEphemeral());
+
     Map<String, String> metadata = properties.getMetadata();
-    metadata.put("version", BootStrapProperties.readServiceVersion(environment));
-    metadata.put("alias", BootStrapProperties.readServiceAlias(environment));
-    metadata.put("description", BootStrapProperties.readServiceDescription(environment));
-    metadata.put("secure", String.valueOf(properties.isSecure()));
+    metadata.put(NacosConst.PROPERTY_VERSION, BootStrapProperties.readServiceVersion(environment));
+    metadata.put(NacosConst.PROPERTY_ALIAS, BootStrapProperties.readServiceAlias(environment));
+    metadata.put(NacosConst.PROPERTY_DESCRIPTION, BootStrapProperties.readServiceDescription(environment));
+    metadata.put(NacosConst.PROPERTY_DATACENTER, dataCenterProperties.getName());
+    metadata.put(NacosConst.PROPERTY_REGION, dataCenterProperties.getRegion());
+    metadata.put(NacosConst.PROPERTY_ZONE, dataCenterProperties.getAvailableZone());
     if (!StringUtils.isEmpty(environment.getProperty(VERSION_MAPPING)) &&
         !StringUtils.isEmpty(environment.getProperty(environment.getProperty(VERSION_MAPPING)))) {
       metadata.put("version", environment.getProperty(environment.getProperty(VERSION_MAPPING)));
     }
     metadata.putAll(genCasProperties(environment));
     instance.setMetadata(metadata);
-    instance.setClusterName(properties.getClusterName());
-    instance.setEphemeral(properties.isEphemeral());
-    instance.setServiceName(BootStrapProperties.readServiceName(environment));
     return instance;
-  }
-
-  private static String buildInstanceId() {
-    return System.currentTimeMillis() + "-" + ManagementFactory.getRuntimeMXBean().getPid();
-  }
-
-  private static int getEnvPort(Environment environment) {
-    return Integer.parseInt(environment.getProperty("server.port"));
   }
 
   private static Map<String, String> genCasProperties(Environment environment) {
