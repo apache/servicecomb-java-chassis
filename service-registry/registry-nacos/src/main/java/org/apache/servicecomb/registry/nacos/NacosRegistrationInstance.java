@@ -22,10 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
+import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
@@ -38,33 +39,33 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   private final List<String> endpoints = new ArrayList<>();
 
-  private final MicroserviceProperties microserviceProperties;
+  private final Environment environment;
 
   public NacosRegistrationInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
-      MicroserviceProperties microserviceProperties) {
+      Environment environment) {
     this.instance = instance;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
-    this.microserviceProperties = microserviceProperties;
+    this.environment = environment;
   }
 
   @Override
   public String getEnvironment() {
-    return nacosDiscoveryProperties.getNamespace();
+    return BootStrapProperties.readServiceEnvironment(environment);
   }
 
   @Override
   public String getApplication() {
-    return microserviceProperties.getApplication();
+    return BootStrapProperties.readApplication(environment);
   }
 
   @Override
   public String getServiceName() {
-    return microserviceProperties.getName();
+    return BootStrapProperties.readServiceName(environment);
   }
 
   @Override
   public String getAlias() {
-    return microserviceProperties.getAlias();
+    return BootStrapProperties.readServiceAlias(environment);
   }
 
   @Override
@@ -82,7 +83,7 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getDescription() {
-    return microserviceProperties.getDescription();
+    return BootStrapProperties.readServiceDescription(environment);
   }
 
   @Override

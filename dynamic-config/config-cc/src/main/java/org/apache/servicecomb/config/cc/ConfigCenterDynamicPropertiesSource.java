@@ -27,16 +27,17 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.config.center.client.ConfigCenterAddressManager;
 import org.apache.servicecomb.config.center.client.ConfigCenterClient;
+import org.apache.servicecomb.config.center.client.ConfigCenterConfigurationChangedEvent;
 import org.apache.servicecomb.config.center.client.ConfigCenterManager;
 import org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsRequest;
 import org.apache.servicecomb.config.center.client.model.QueryConfigurationsResponse;
 import org.apache.servicecomb.config.common.ConfigConverter;
-import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -46,62 +47,51 @@ import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.google.common.eventbus.Subscribe;
 
-public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
+public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSource {
   public static final String SOURCE_NAME = "config-center";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterDynamicPropertiesSource.class);
 
   private final Map<String, Object> data = new ConcurrentHashMapEx<>();
 
-  private ConfigCenterManager configCenterManager;
-
   private ConfigConverter configConverter;
 
-  private ConfigCenterConfig configCenterConfig;
-
-  private MicroserviceProperties microserviceProperties;
-
-  @Autowired
-  public void setConfigCenterConfig(ConfigCenterConfig configCenterConfig) {
-    this.configCenterConfig = configCenterConfig;
-  }
-
-  @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
+  public ConfigCenterDynamicPropertiesSource() {
   }
 
   private void init(Environment environment) {
+    ConfigCenterConfig configCenterConfig = new ConfigCenterConfig(environment);
     configConverter = new ConfigConverter(configCenterConfig.getFileSources());
 
-    ConfigCenterAddressManager kieAddressManager = configKieAddressManager();
+    ConfigCenterAddressManager kieAddressManager = configKieAddressManager(configCenterConfig);
 
     HttpTransport httpTransport = createHttpTransport(kieAddressManager,
         HttpTransportFactory.defaultRequestConfig().build(),
-        environment);
+        environment, configCenterConfig);
     ConfigCenterClient configCenterClient = new ConfigCenterClient(kieAddressManager, httpTransport);
     EventManager.register(this);
 
-    org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration configCenterConfiguration = createConfigCenterConfiguration();
+    ConfigCenterConfiguration configCenterConfiguration =
+        createConfigCenterConfiguration(configCenterConfig);
 
-    QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterClient);
+    QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterConfig, configCenterClient,
+        environment);
 
-    configCenterManager = new ConfigCenterManager(configCenterClient, EventManager.getEventBus(),
+    ConfigCenterManager configCenterManager = new ConfigCenterManager(configCenterClient, EventManager.getEventBus(),
         configConverter, configCenterConfiguration);
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
     data.putAll(configConverter.getCurrentData());
   }
 
-  private QueryConfigurationsRequest firstPull(ConfigCenterClient configCenterClient) {
-    QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest();
+  private QueryConfigurationsRequest firstPull(ConfigCenterConfig configCenterConfig,
+      ConfigCenterClient configCenterClient, Environment environment) {
+    QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest(environment);
     try {
       QueryConfigurationsResponse response = configCenterClient
           .queryConfigurations(queryConfigurationsRequest);
@@ -119,30 +109,34 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+  public void onConfigurationChangedEvent(ConfigCenterConfigurationChangedEvent event) {
+    LOGGER.info("Dynamic configuration changed: {}", event.getChanged());
     data.putAll(event.getAdded());
     data.putAll(event.getUpdated());
     event.getDeleted().forEach((k, v) -> data.remove(k));
+    EventManager.post(ConfigurationChangedEvent.createIncremental(event.getAdded(),
+        event.getUpdated(), event.getDeleted()));
   }
 
-  private QueryConfigurationsRequest createQueryConfigurationsRequest() {
+  private QueryConfigurationsRequest createQueryConfigurationsRequest(Environment environment) {
     QueryConfigurationsRequest request = new QueryConfigurationsRequest();
-    request.setApplication(microserviceProperties.getApplication());
-    request.setServiceName(microserviceProperties.getName());
-    request.setVersion(microserviceProperties.getVersion());
-    request.setEnvironment(microserviceProperties.getEnvironment());
+    request.setApplication(BootStrapProperties.readApplication(environment));
+    request.setServiceName(BootStrapProperties.readServiceName(environment));
+    request.setVersion(BootStrapProperties.readServiceVersion(environment));
+    request.setEnvironment(BootStrapProperties.readServiceEnvironment(environment));
     // 需要设置为 null， 并且 query 参数为 revision=null 才会返回 revision 信息。 revision = 是不行的。
     request.setRevision(null);
     return request;
   }
 
-  private org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration createConfigCenterConfiguration() {
+  private ConfigCenterConfiguration createConfigCenterConfiguration(
+      ConfigCenterConfig configCenterConfig) {
     return new ConfigCenterConfiguration().setRefreshIntervalInMillis(configCenterConfig.getRefreshInterval());
   }
 
   private HttpTransport createHttpTransport(ConfigCenterAddressManager kieAddressManager,
       RequestConfig requestConfig,
-      Environment environment) {
+      Environment environment, ConfigCenterConfig configCenterConfig) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
     if (configCenterConfig.isProxyEnable()) {
@@ -179,14 +173,14 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     };
   }
 
-  private ConfigCenterAddressManager configKieAddressManager() {
+  private ConfigCenterAddressManager configKieAddressManager(ConfigCenterConfig configCenterConfig) {
     return new ConfigCenterAddressManager(configCenterConfig.getDomainName(),
         configCenterConfig.getServerUri(),
         EventManager.getEventBus());
   }
 
   @Override
-  public EnumerablePropertySource<Map<String, Object>> create(Environment environment) {
+  public MapPropertySource create(Environment environment) {
     init(environment);
     return new MapPropertySource(SOURCE_NAME, data);
   }

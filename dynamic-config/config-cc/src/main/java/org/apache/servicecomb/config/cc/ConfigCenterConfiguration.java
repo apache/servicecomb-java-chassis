@@ -17,21 +17,10 @@
 package org.apache.servicecomb.config.cc;
 
 import org.springframework.context.annotation.Bean;
-import org.springframework.core.env.Environment;
 
 public class ConfigCenterConfiguration {
   @Bean
   public ConfigCenterInformationCollector configCenterInformationCollector() {
     return new ConfigCenterInformationCollector();
-  }
-
-  @Bean
-  public ConfigCenterDynamicPropertiesSource configCenterDynamicPropertiesSource() {
-    return new ConfigCenterDynamicPropertiesSource();
-  }
-
-  @Bean
-  public ConfigCenterConfig configCenterConfig(Environment environment) {
-    return new ConfigCenterConfig(environment);
   }
 }

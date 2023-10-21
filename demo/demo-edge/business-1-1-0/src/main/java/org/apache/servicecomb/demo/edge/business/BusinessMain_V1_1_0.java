@@ -17,13 +17,11 @@
 
 package org.apache.servicecomb.demo.edge.business;
 
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-@EnableServiceComb
 public class BusinessMain_V1_1_0 {
   public static void main(String[] args) throws Exception {
     new SpringApplicationBuilder(BusinessMain_V1_1_0.class).web(WebApplicationType.NONE).run(args);

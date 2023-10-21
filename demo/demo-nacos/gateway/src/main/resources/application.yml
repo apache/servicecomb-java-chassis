@@ -15,9 +15,6 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
-server:
-  port: 9090
-
 servicecomb:
   service:
     application: demo-nacos
@@ -27,7 +24,6 @@ servicecomb:
     nacos:
       enabled: true
       serverAddr: ${PAAS_CSE_NACOS_ENDPOINT:http://127.0.0.1:8848}
-      version: 0.0.1
 
   rest:
     address: 0.0.0.0:9090?sslEnabled=false

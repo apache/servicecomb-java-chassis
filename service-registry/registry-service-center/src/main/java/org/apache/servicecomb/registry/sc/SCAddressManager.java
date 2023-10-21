@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.HeartBeatEvent;
@@ -54,17 +53,13 @@ public class SCAddressManager {
 
   private final ServiceCenterClient serviceCenterClient;
 
-  private final MicroserviceProperties microserviceProperties;
-
   private final SCRegistration scRegistration;
 
   private final SCConfigurationProperties configurationProperties;
 
-  public SCAddressManager(MicroserviceProperties microserviceProperties,
-      SCConfigurationProperties configurationProperties,
+  public SCAddressManager(SCConfigurationProperties configurationProperties,
       ServiceCenterClient serviceCenterClient,
       SCRegistration scRegistration) {
-    this.microserviceProperties = microserviceProperties;
     this.configurationProperties = configurationProperties;
     this.serviceCenterClient = serviceCenterClient;
     this.scRegistration = scRegistration;

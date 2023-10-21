@@ -19,14 +19,12 @@ package org.apache.servicecomb.demo.prefix;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-@EnableServiceComb
 public class Application {
   public static void main(final String[] args) throws Exception {
     new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET).build().run(args);

@@ -32,14 +32,24 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-rest-vertx</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-loadbalance</artifactId>
+    </dependency>
     <!--ConditionEvaluationReportLoggingListener need in autoconfigure-->
     <dependency>
       <groupId>org.hibernate.validator</groupId>
@@ -49,6 +59,7 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

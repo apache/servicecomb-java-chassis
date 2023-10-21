@@ -27,13 +27,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -74,9 +75,9 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   private TestContentType testContentType = new TestContentType();
 
   @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
-    testResponse.setMicroserviceProperties(microserviceProperties);
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+    testResponse.setEnvironment(environment);
   }
 
   @Override
@@ -184,7 +185,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     CseHttpEntity<Map<String, Object>> httpEntity = new CseHttpEntity<>(body);
     httpEntity.addContext("contextKey", "contextValue");
 
-    String srcName = microserviceProperties.getName();
+    String srcName = BootStrapProperties.readServiceName(environment);
 
     ResponseEntity<Date> responseEntity =
         template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);

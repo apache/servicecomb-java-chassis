@@ -18,6 +18,10 @@
 package org.apache.servicecomb.registry.nacos;
 
 import java.util.Objects;
+import java.util.Properties;
+
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingMaintainService;
@@ -30,12 +34,12 @@ public class NamingServiceManager {
 
   private static volatile NamingMaintainService namingMaintainService;
 
-  public static NamingService buildNamingService(NacosDiscoveryProperties properties) {
+  public static NamingService buildNamingService(Environment environment, NacosDiscoveryProperties properties) {
     if (Objects.isNull(namingService)) {
       synchronized (NamingServiceManager.class) {
         if (Objects.isNull(namingService)) {
           try {
-            namingService = new NacosNamingService(properties.getProperties());
+            namingService = new NacosNamingService(getProperties(environment, properties));
           } catch (NacosException e) {
             throw new IllegalStateException("build namingService failed.");
           }
@@ -45,12 +49,13 @@ public class NamingServiceManager {
     return namingService;
   }
 
-  public static NamingMaintainService buildNamingMaintainService(NacosDiscoveryProperties properties) {
+  public static NamingMaintainService buildNamingMaintainService(Environment environment,
+      NacosDiscoveryProperties properties) {
     if (Objects.isNull(namingMaintainService)) {
       synchronized (NamingServiceManager.class) {
         if (Objects.isNull(namingMaintainService)) {
           try {
-            namingMaintainService = new NacosNamingMaintainService(properties.getProperties());
+            namingMaintainService = new NacosNamingMaintainService(getProperties(environment, properties));
           } catch (NacosException e) {
             throw new IllegalStateException("build namingMaintainService failed.");
           }
@@ -58,5 +63,20 @@ public class NamingServiceManager {
       }
     }
     return namingMaintainService;
+  }
+
+  private static Properties getProperties(Environment environment,
+      NacosDiscoveryProperties nacosDiscoveryProperties) {
+    Properties properties = new Properties();
+    properties.put(NacosConst.NAMESPACE, BootStrapProperties.readServiceEnvironment(environment));
+    properties.put(NacosConst.SERVER_ADDR, nacosDiscoveryProperties.getServerAddr());
+    properties.put(NacosConst.USERNAME, Objects.toString(nacosDiscoveryProperties.getUsername(), ""));
+    properties.put(NacosConst.PASSWORD, Objects.toString(nacosDiscoveryProperties.getPassword(), ""));
+    properties.put(NacosConst.NACOS_NAMING_LOG_NAME, Objects.toString(nacosDiscoveryProperties.getLogName(), ""));
+    properties.put(NacosConst.ACCESS_KEY, Objects.toString(nacosDiscoveryProperties.getAccessKey(), ""));
+    properties.put(NacosConst.SECRET_KEY, Objects.toString(nacosDiscoveryProperties.getSecretKey(), ""));
+    properties.put(NacosConst.CLUSTER_NAME, nacosDiscoveryProperties.getClusterName());
+    properties.put(NacosConst.NAMING_LOAD_CACHE_AT_START, nacosDiscoveryProperties.getNamingLoadCacheAtStart());
+    return properties;
   }
 }

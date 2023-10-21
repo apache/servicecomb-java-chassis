@@ -17,11 +17,9 @@
 
 package org.apache.servicecomb.demo.multiple.a.server;
 
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-@EnableServiceComb
 public class AServerMain {
   public static void main(String[] args) throws Exception {
     new SpringApplicationBuilder(AServerMain.class).web(WebApplicationType.NONE).run(args);

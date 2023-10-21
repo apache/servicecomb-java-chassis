@@ -25,7 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
@@ -34,6 +34,7 @@ import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import jakarta.validation.constraints.NotNull;
 
@@ -48,11 +49,11 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   private String propertyKey;
 
-  private MicroserviceProperties microserviceProperties;
+  private Environment environment;
 
   @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   @Override
@@ -85,7 +86,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
     String initPropertyValue = invocation.getContext()
         .computeIfAbsent("x-" + propertyKey,
             key -> new PriorityInstanceProperty(propertyKey,
-                microserviceProperties.getProperties().get(propertyKey))
+                BootStrapProperties.readServiceProperties(environment).get(propertyKey))
                 .getPropertyValue());
 
     PriorityInstanceProperty currentProperty = context.getContextParameter(propertyKey);

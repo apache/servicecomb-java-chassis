@@ -45,11 +45,6 @@ public class FoundationConfigConfiguration {
   }
 
   @Bean
-  public LastPropertyPlaceholderConfigurer lastPropertyPlaceholderConfigurer() {
-    return new LastPropertyPlaceholderConfigurer();
-  }
-
-  @Bean
   public DynamicPropertiesImpl dynamicProperties(Environment environment) {
     return new DynamicPropertiesImpl(environment);
   }
@@ -57,12 +52,6 @@ public class FoundationConfigConfiguration {
   @Bean
   public ConfigObjectFactory configObjectFactory(PriorityPropertyFactory propertyFactory) {
     return new ConfigObjectFactory(propertyFactory);
-  }
-
-  @Bean
-  @ConfigurationProperties(prefix = MicroserviceProperties.PREFIX)
-  public MicroserviceProperties microserviceProperties() {
-    return new MicroserviceProperties();
   }
 
   @Bean

@@ -23,6 +23,11 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * This event is fired when configuration changed. And the change is already applied to Environment.
+ *
+ * Listeners can use Environment to get the latest value.
+ */
 public class ConfigurationChangedEvent {
   private final Map<String, Object> added;
 

@@ -28,12 +28,13 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.config.common.ConfigConverter;
-import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.KieClient;
 import org.apache.servicecomb.config.kie.client.KieConfigManager;
+import org.apache.servicecomb.config.kie.client.KieConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
 import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
@@ -43,14 +44,16 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.EnumerablePropertySource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 
 import com.google.common.eventbus.Subscribe;
 
-public class KieDynamicPropertiesSource implements DynamicPropertiesSource<Map<String, Object>> {
+public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(KieDynamicPropertiesSource.class);
+
   public static final String SOURCE_NAME = "kie";
 
   private final Map<String, Object> data = new ConcurrentHashMapEx<>();
@@ -59,23 +62,14 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource<Map<S
 
   private ConfigConverter configConverter;
 
-  private KieConfig kieConfig;
+  public KieDynamicPropertiesSource() {
 
-  private MicroserviceProperties microserviceProperties;
-
-  @Autowired
-  public void setKieConfig(KieConfig kieConfig) {
-    this.kieConfig = kieConfig;
-  }
-
-  @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
   }
 
   private void init(Environment environment) {
+    KieConfig kieConfig = new KieConfig(environment);
     configConverter = new ConfigConverter(kieConfig.getFileSources());
-    KieAddressManager kieAddressManager = configKieAddressManager();
+    KieAddressManager kieAddressManager = configKieAddressManager(kieConfig);
 
     RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
     if (kieConfig.enableLongPolling()
@@ -84,8 +78,8 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource<Map<S
       requestBuilder.setSocketTimeout(kieConfig.getPollingWaitTime() * 2 * 1000);
     }
     HttpTransport httpTransport = createHttpTransport(kieAddressManager, requestBuilder.build(),
-        environment);
-    KieConfiguration kieConfiguration = createKieConfiguration();
+        kieConfig, environment);
+    KieConfiguration kieConfiguration = createKieConfiguration(kieConfig, environment);
     KieClient kieClient = new KieClient(kieAddressManager, httpTransport, kieConfiguration);
     EventManager.register(this);
     kieConfigManager = new KieConfigManager(kieClient, EventManager.getEventBus(), kieConfiguration, configConverter);
@@ -95,14 +89,21 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource<Map<S
   }
 
   @Subscribe
-  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+  public void onConfigurationChangedEvent(KieConfigurationChangedEvent event) {
+    LOGGER.info("Dynamic configuration changed: {}", event.getChanged());
     data.putAll(event.getAdded());
     data.putAll(event.getUpdated());
     event.getDeleted().forEach((k, v) -> data.remove(k));
+    EventManager.post(ConfigurationChangedEvent.createIncremental(event.getAdded(),
+        event.getUpdated(), event.getDeleted()));
   }
 
-  private KieConfiguration createKieConfiguration() {
-    return new KieConfiguration().setAppName(microserviceProperties.getApplication())
+  private KieConfiguration createKieConfiguration(KieConfig kieConfig, Environment environment) {
+    return new KieConfiguration()
+        .setAppName(BootStrapProperties.readApplication(environment))
+        .setServiceName(BootStrapProperties.readServiceName(environment))
+        .setEnvironment(BootStrapProperties.readServiceEnvironment(environment))
+        .setVersion(BootStrapProperties.readServiceVersion(environment))
         .setFirstPullRequired(kieConfig.firstPullRequired())
         .setCustomLabel(kieConfig.getCustomLabel())
         .setCustomLabelValue(kieConfig.getCustomLabelValue())
@@ -111,15 +112,13 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource<Map<S
         .setEnableLongPolling(kieConfig.enableLongPolling())
         .setEnableServiceConfig(kieConfig.enableServiceConfig())
         .setEnableVersionConfig(kieConfig.enableVersionConfig())
-        .setEnvironment(microserviceProperties.getEnvironment())
-        .setVersion(microserviceProperties.getVersion())
         .setPollingWaitInSeconds(kieConfig.getPollingWaitTime())
         .setProject(kieConfig.getDomainName())
-        .setRefreshIntervalInMillis(kieConfig.getRefreshInterval())
-        .setServiceName(microserviceProperties.getName());
+        .setRefreshIntervalInMillis(kieConfig.getRefreshInterval());
   }
 
-  private HttpTransport createHttpTransport(KieAddressManager kieAddressManager, RequestConfig requestConfig,
+  private HttpTransport createHttpTransport(KieAddressManager kieAddressManager,
+      RequestConfig requestConfig, KieConfig kieConfig,
       Environment environment) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
@@ -157,13 +156,13 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource<Map<S
     };
   }
 
-  private KieAddressManager configKieAddressManager() {
+  private KieAddressManager configKieAddressManager(KieConfig kieConfig) {
     return new KieAddressManager(
         Arrays.asList(kieConfig.getServerUri().split(",")), EventManager.getEventBus());
   }
 
   @Override
-  public EnumerablePropertySource<Map<String, Object>> create(Environment environment) {
+  public MapPropertySource create(Environment environment) {
     init(environment);
     return new MapPropertySource(SOURCE_NAME, data);
   }

@@ -27,9 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
@@ -38,11 +36,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 
 import com.google.common.collect.Sets;
-
-import mockit.Injectable;
 
 /**
  * Test for PriorityInstancePropertyDiscoveryFilter
@@ -55,26 +53,28 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
 
   private List<StatefulDiscoveryInstance> instances;
 
-  private MicroserviceProperties self;
-
-  @Injectable
-  RegistrationManager registrationManager;
-
-  RegistrationManager original;
-
   StatefulDiscoveryInstance instance1;
 
-  Environment environment = Mockito.mock(Environment.class);
+  ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+
+  EnumerablePropertySource propertySource;
 
   @Before
   public void setUp() {
+    propertySource = Mockito.mock(EnumerablePropertySource.class);
+    MutablePropertySources mutablePropertySources = new MutablePropertySources();
+    mutablePropertySources.addLast(propertySource);
+    Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
+    Mockito.when(propertySource.getPropertyNames()).thenReturn(new String[] {
+        "servicecomb.service.properties." + PROPERTY_KEY
+    });
+
     filter = new PriorityInstancePropertyDiscoveryFilter();
     filter.setEnvironment(environment);
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key",
         String.class, "environment")).thenReturn("environment");
     instances = new ArrayList<>();
-    self = new MicroserviceProperties();
-    filter.setMicroserviceProperties(self);
+    filter.setEnvironment(environment);
     DiscoveryInstance discoveryInstance1 = Mockito.mock(DiscoveryInstance.class);
     instance1 = new StatefulDiscoveryInstance(discoveryInstance1);
     Mockito.when(discoveryInstance1.getInstanceId()).thenReturn("instance.empty");
@@ -135,10 +135,11 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
 
 
   private void executeTest(String selfProperty, Set<String> expectedMatchedKeys) {
+    Mockito.when(environment.getProperty("servicecomb.service.properties." + PROPERTY_KEY)).thenReturn(selfProperty);
+
     Invocation invocation = new Invocation();
     DiscoveryContext discoveryContext = new DiscoveryContext();
     discoveryContext.setInputParameters(invocation);
-    self.getProperties().put(PROPERTY_KEY, selfProperty);
 
     DiscoveryTreeNode parent = new DiscoveryTreeNode();
     parent.name("parent");

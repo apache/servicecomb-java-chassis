@@ -14,28 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.config;
 
-package org.apache.servicecomb.core;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.config.ConfigMapping;
-import org.apache.servicecomb.config.DynamicPropertiesSource;
-import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.config.file.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -43,50 +36,19 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 
 /**
- *  Add dynamic configuration, microserive.yaml to spring
+ * Initialize configuration.
  */
-public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderConfigurer implements EnvironmentAware {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationSpringInitializer.class);
+public class ConfigEnvironmentPostProcessor implements EnvironmentPostProcessor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigEnvironmentPostProcessor.class);
 
   public static final String MICROSERVICE_PROPERTY_SOURCE_NAME = "microservice.yaml";
 
   public static final String MAPPING_PROPERTY_SOURCE_NAME = "mapping.yaml";
 
-  public static final String EXTERNAL_INIT = "scb-config-external-init";
-
-  public static void setExternalInit(boolean value) {
-    System.setProperty(EXTERNAL_INIT, String.valueOf(value));
-  }
-
-  public static boolean isExternalInit() {
-    return Boolean.getBoolean(EXTERNAL_INIT);
-  }
-
-  private final List<BootStrapService> bootStrapServices = SPIServiceUtils.getSortedService(BootStrapService.class);
-
-  private final List<DynamicPropertiesSource<?>> dynamicPropertiesSources;
-
-  public ConfigurationSpringInitializer(List<DynamicPropertiesSource<?>> dynamicPropertiesSources) {
-    setOrder(Ordered.LOWEST_PRECEDENCE / 2);
-    setIgnoreUnresolvablePlaceholders(true);
-    this.dynamicPropertiesSources = dynamicPropertiesSources;
-  }
-
-  /**
-   * Get configurations from Spring, merge them into the configurations of ServiceComb.
-   * @param environment From which to get the extra config.
-   */
   @Override
-  public void setEnvironment(Environment environment) {
-    super.setEnvironment(environment);
-    if (isExternalInit()) {
-      return;
-    }
-
+  public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
     addMicroserviceDefinitions(environment);
-
     startupBootStrapService(environment);
-
     addDynamicConfigurationToSpring(environment);
   }
 
@@ -96,7 +58,9 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
   }
 
   private void startupBootStrapService(Environment environment) {
-    bootStrapServices.forEach(bootStrapService -> bootStrapService.startup(environment));
+    for (BootStrapService bootStrapService : SPIServiceUtils.getSortedService(BootStrapService.class)) {
+      bootStrapService.startup(environment);
+    }
   }
 
   /**
@@ -170,22 +134,13 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
       return;
     }
     try {
-      for (DynamicPropertiesSource<?> dynamicPropertiesSource : dynamicPropertiesSources) {
+      for (DynamicPropertiesSource dynamicPropertiesSource :
+          SPIServiceUtils.getOrLoadSortedService(DynamicPropertiesSource.class)) {
         ((ConfigurableEnvironment) environment).getPropertySources()
             .addFirst(dynamicPropertiesSource.create(environment));
       }
     } catch (Exception e) {
-      if (environment.getProperty(CoreConst.PRINT_SENSITIVE_ERROR_MESSAGE, boolean.class,
-          false)) {
-        LOGGER.warn("set up spring property source failed.", e);
-      } else {
-        LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
-      }
+      LOGGER.warn("set up dynamic property source to spring failed.", e);
     }
-  }
-
-  @Override
-  protected Properties mergeProperties() throws IOException {
-    return super.mergeProperties();
   }
 }

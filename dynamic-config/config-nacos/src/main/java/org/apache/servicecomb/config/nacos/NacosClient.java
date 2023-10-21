@@ -32,7 +32,7 @@ import org.apache.servicecomb.config.nacos.NacosDynamicPropertiesSource.UpdateHa
 import org.apache.servicecomb.config.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
@@ -46,15 +46,11 @@ public class NacosClient {
 
   private final UpdateHandler updateHandler;
 
-  private NacosConfig nacosConfig;
+  private final NacosConfig nacosConfig;
 
-  public NacosClient(UpdateHandler updateHandler) {
+  public NacosClient(UpdateHandler updateHandler, Environment environment) {
     this.updateHandler = updateHandler;
-  }
-
-  @Autowired
-  public void setNacosConfig(NacosConfig nacosConfig) {
-    this.nacosConfig = nacosConfig;
+    this.nacosConfig = new NacosConfig(environment);
   }
 
   public void refreshNacosConfig() {

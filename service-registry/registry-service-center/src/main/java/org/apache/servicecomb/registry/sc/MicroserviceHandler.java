@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.DataCenterProperties;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.service.center.client.model.DataCenterInfo;
 import org.apache.servicecomb.service.center.client.model.Framework;
@@ -59,30 +59,28 @@ public class MicroserviceHandler {
   private static final String INSTANCE_PROPS = "SERVICECOMB_INSTANCE_PROPS";
 
   public static Microservice createMicroservice(
-      Environment environment,
-      SCConfigurationProperties bootstrapProperties,
-      MicroserviceProperties microserviceProperties) {
+      Environment environment) {
     Microservice microservice = new Microservice();
-    microservice.setProperties(microserviceProperties.getProperties());
+    microservice.setProperties(BootStrapProperties.readServiceProperties(environment));
     if (!StringUtils.isEmpty(environment.getProperty(APP_MAPPING)) &&
         !StringUtils.isEmpty(environment.getProperty(environment.getProperty(APP_MAPPING)))) {
       microservice.setAppId(environment.getProperty(environment.getProperty(APP_MAPPING)));
     } else {
-      microservice.setAppId(microserviceProperties.getApplication());
+      microservice.setAppId(BootStrapProperties.readApplication(environment));
     }
     if (!StringUtils.isEmpty(environment.getProperty(SERVICE_MAPPING)) &&
         !StringUtils.isEmpty(environment.getProperty(environment.getProperty(SERVICE_MAPPING)))) {
       microservice.setServiceName(environment.getProperty(environment.getProperty(SERVICE_MAPPING)));
     } else {
-      microservice.setServiceName(microserviceProperties.getName());
+      microservice.setServiceName(BootStrapProperties.readServiceName(environment));
     }
     if (!StringUtils.isEmpty(environment.getProperty(VERSION_MAPPING)) &&
         !StringUtils.isEmpty(environment.getProperty(environment.getProperty(VERSION_MAPPING)))) {
       microservice.setVersion(environment.getProperty(environment.getProperty(VERSION_MAPPING)));
     } else {
-      microservice.setVersion(microserviceProperties.getVersion());
+      microservice.setVersion(BootStrapProperties.readServiceVersion(environment));
     }
-    microservice.setEnvironment(microserviceProperties.getEnvironment());
+    microservice.setEnvironment(BootStrapProperties.readServiceEnvironment(environment));
 
     Framework framework = createFramework();
     microservice.setFramework(framework);
@@ -106,7 +104,6 @@ public class MicroserviceHandler {
   public static MicroserviceInstance createMicroserviceInstance(
       Environment environment,
       SCConfigurationProperties scConfigurationProperties,
-      MicroserviceProperties microserviceProperties,
       DataCenterProperties dataCenterProperties) {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     String hostName = StringUtils.isEmpty(scConfigurationProperties.getHostname()) ? NetUtils.getHostName()
@@ -138,11 +135,11 @@ public class MicroserviceHandler {
         !StringUtils.isEmpty(environment.getProperty(environment.getProperty(VERSION_MAPPING)))) {
       microserviceInstance.setVersion(environment.getProperty(environment.getProperty(VERSION_MAPPING)));
     } else {
-      microserviceInstance.setVersion(microserviceProperties.getVersion());
+      microserviceInstance.setVersion(BootStrapProperties.readServiceVersion(environment));
     }
 
     Map<String, String> properties = new HashMap<>();
-    properties.putAll(microserviceProperties.getProperties());
+    properties.putAll(BootStrapProperties.readServiceProperties(environment));
     properties.putAll(genCasProperties(environment));
     microserviceInstance.setProperties(properties);
     microserviceInstance.setStatus(MicroserviceInstanceStatus.valueOf(scConfigurationProperties.getInitialStatus()));

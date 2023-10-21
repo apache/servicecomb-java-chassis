@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
@@ -42,7 +42,6 @@ import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -109,15 +108,9 @@ public class SCBEngine {
 
   private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
-  private final VendorExtensions vendorExtensions = new VendorExtensions();
-
   private SwaggerLoader swaggerLoader;
 
-  private Thread shutdownHook;
-
   private RegistrationManager registrationManager;
-
-  private MicroserviceProperties microserviceProperties;
 
   private DiscoveryManager discoveryManager;
 
@@ -188,11 +181,6 @@ public class SCBEngine {
   }
 
   @Autowired
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
-  }
-
-  @Autowired
   public void setExecutorManager(ExecutorManager executorManager) {
     this.executorManager = executorManager;
   }
@@ -210,16 +198,8 @@ public class SCBEngine {
     return applicationContext;
   }
 
-  public VendorExtensions getVendorExtensions() {
-    return vendorExtensions;
-  }
-
   public String getAppId() {
-    return this.microserviceProperties.getApplication();
-  }
-
-  public MicroserviceProperties getMicroserviceProperties() {
-    return this.microserviceProperties;
+    return BootStrapProperties.readApplication(environment);
   }
 
   public void setStatus(SCBStatus status) {
@@ -317,12 +297,14 @@ public class SCBEngine {
 
   @AllowConcurrentEvents
   @Subscribe
+  @SuppressWarnings("unused")
   public void onInvocationStart(InvocationStartEvent event) {
     invocationStartedCounter.incrementAndGet();
   }
 
   @AllowConcurrentEvents
   @Subscribe
+  @SuppressWarnings("unused")
   public void onInvocationFinish(InvocationFinishEvent event) {
     invocationFinishedCounter.incrementAndGet();
   }
@@ -400,25 +382,17 @@ public class SCBEngine {
     status = SCBStatus.UP;
     triggerEvent(EventType.AFTER_REGISTRY);
 
-    shutdownHook = new Thread(this::destroyForShutdownHook);
-    Runtime.getRuntime().addShutdownHook(shutdownHook);
-
     // Keep this message for tests cases work.
     LOGGER.warn("ServiceComb is ready.");
   }
 
   private void createProducerMicroserviceMeta() {
-    String microserviceName = this.microserviceProperties.getName();
+    String microserviceName = BootStrapProperties.readServiceName(environment);
     producerMicroserviceMeta = new MicroserviceMeta(this,
-        this.microserviceProperties.getApplication(), microserviceName, false);
+        BootStrapProperties.readApplication(environment), microserviceName, false);
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(
-        this.microserviceProperties.getApplication(), microserviceName));
+        BootStrapProperties.readApplication(environment), microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
-  }
-
-  public void destroyForShutdownHook() {
-    shutdownHook = null;
-    destroy();
   }
 
   /**
@@ -435,10 +409,6 @@ public class SCBEngine {
   }
 
   private void doDestroy() {
-    if (shutdownHook != null) {
-      Runtime.getRuntime().removeShutdownHook(shutdownHook);
-    }
-
     //Step 0: turn down the status of this instance in service center,
     // so that the consumers can remove this instance record in advance
     turnDownInstanceStatus();

@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.config.MicroserviceProperties;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;
@@ -28,6 +28,7 @@ import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -35,10 +36,10 @@ import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 public class TestResponse {
   private CodeFirstSpringmvcIntf intf;
 
-  private MicroserviceProperties microserviceProperties;
+  private Environment environment;
 
-  public void setMicroserviceProperties(MicroserviceProperties microserviceProperties) {
-    this.microserviceProperties = microserviceProperties;
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   public TestResponse() {
@@ -69,7 +70,7 @@ public class TestResponse {
   }
 
   private void testCseResponse() {
-    String srcName = microserviceProperties.getName();
+    String srcName = BootStrapProperties.readServiceName(environment);
     Response cseResponse = intf.cseResponse();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
     TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
@@ -78,7 +79,7 @@ public class TestResponse {
   }
 
   private void testCseResponseCorrect() {
-    String srcName = microserviceProperties.getName();
+    String srcName = BootStrapProperties.readServiceName(environment);
     Response cseResponse = intf.cseResponseCorrect();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
     TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
@@ -89,7 +90,7 @@ public class TestResponse {
   private void testResponseEntity() {
     Date date = new Date();
 
-    String srcName = microserviceProperties.getName();
+    String srcName = BootStrapProperties.readServiceName(environment);
 
     ResponseEntity<Date> responseEntity = intf.responseEntity(date);
     TestMgr.check(date, responseEntity.getBody());

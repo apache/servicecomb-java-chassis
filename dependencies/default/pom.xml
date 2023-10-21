@@ -49,14 +49,14 @@
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
     <governator-annotations.version>1.17.12</governator-annotations.version>
     <governator-api.version>1.17.13</governator-api.version>
-    <guava.version>32.1.2-jre</guava.version>
+    <guava.version>32.1.3-jre</guava.version>
     <guice.version>5.1.0</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
     <hdr-histogram.version>2.1.12</hdr-histogram.version>
     <hibernate-validator.version>8.0.0.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.14</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
-    <jackson.version>2.15.0</jackson.version>
+    <jackson.version>2.15.3</jackson.version>
     <java-websocket.version>1.5.4</java-websocket.version>
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
@@ -89,7 +89,7 @@
     <servlet-api.version>6.0.0</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>1.33</snakeyaml.version>
-    <spectator.version>1.6.8</spectator.version>
+    <spectator.version>1.6.11</spectator.version>
     <spring.version>6.0.9</spring.version>
     <spring-boot.version>3.0.7</spring-boot.version>
     <swagger.version>2.2.15</swagger.version>

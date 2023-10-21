@@ -17,17 +17,17 @@
 package org.apache.servicecomb.localregistry;
 
 import org.apache.servicecomb.config.DataCenterProperties;
-import org.apache.servicecomb.config.MicroserviceProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 @Configuration
 public class LocalRegistryConfiguration {
   @Bean
   public LocalRegistrationInstance localRegistrationInstance(
-      MicroserviceProperties microserviceProperties,
+      Environment environment,
       DataCenterProperties dataCenterProperties) {
-    return new LocalRegistrationInstance(microserviceProperties, dataCenterProperties);
+    return new LocalRegistrationInstance(environment, dataCenterProperties);
   }
 
   @Bean

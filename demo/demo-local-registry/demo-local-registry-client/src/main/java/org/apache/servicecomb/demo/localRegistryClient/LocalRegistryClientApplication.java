@@ -20,13 +20,11 @@ package org.apache.servicecomb.demo.localRegistryClient;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
-@EnableServiceComb
 public class LocalRegistryClientApplication {
   public static void main(final String[] args) throws Exception {
     new SpringApplicationBuilder().sources(LocalRegistryClientApplication.class)
