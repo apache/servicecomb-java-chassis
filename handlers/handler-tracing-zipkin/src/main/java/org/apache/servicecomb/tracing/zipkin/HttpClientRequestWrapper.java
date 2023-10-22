@@ -19,9 +19,19 @@ package org.apache.servicecomb.tracing.zipkin;
 
 import brave.http.HttpClientRequest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class HttpClientRequestWrapper extends HttpClientRequest {
+  private static final Logger LOG = LoggerFactory.getLogger(HttpClientRequestWrapper.class);
 
   private Invocation invocation;
 
@@ -50,6 +60,13 @@ class HttpClientRequestWrapper extends HttpClientRequest {
 
   @Override
   public String path() {
+    if (LegacyPropertyFactory.getBooleanProperty(TracingConfiguration.TRACING_WORK_WITH_THIRDPARTY, false)) {
+      try {
+        return TracingConfiguration.createRequestPath(invocation);
+      } catch (Exception e) {
+        LOG.warn("generate rest path failed: {}", e.getMessage());
+      }
+    }
     return invocation.getOperationMeta().getOperationPath();
   }
 

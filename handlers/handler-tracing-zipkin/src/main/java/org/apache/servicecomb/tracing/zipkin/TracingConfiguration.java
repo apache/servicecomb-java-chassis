@@ -26,8 +26,14 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 
 import java.text.MessageFormat;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DynamicProperties;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,6 +57,8 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
     havingValue = "true")
 public class TracingConfiguration {
   public static final String TRACING_PREFIX = "servicecomb.tracing.zipkin";
+
+  public static final String TRACING_WORK_WITH_THIRDPARTY = "servicecomb.tracing.workWithThirdParty";
 
   public static final String TRACING_ENABLED = TRACING_PREFIX + ".enabled";
 
@@ -109,5 +117,21 @@ public class TracingConfiguration {
   @Bean
   ZipkinTracingFilter zipkinTracingFilter() {
     return new ZipkinTracingFilter();
+  }
+
+  public static String createRequestPath(Invocation invocation) throws Exception {
+    URIEndpointObject address = (URIEndpointObject) invocation.getEndpoint().getAddress();
+    String urlPrefix = address.getFirst(DefinitionConst.URL_PREFIX);
+    RestOperationMeta swaggerRestOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
+    String path = (String) invocation.getHandlerContext().get(RestConst.REST_CLIENT_REQUEST_PATH);
+    if (path == null) {
+      path = swaggerRestOperation.getPathBuilder().createRequestPath(invocation.getSwaggerArguments());
+    }
+
+    if (StringUtils.isEmpty(urlPrefix) || path.startsWith(urlPrefix)) {
+      return path;
+    }
+
+    return urlPrefix + path;
   }
 }

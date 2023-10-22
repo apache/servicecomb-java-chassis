@@ -20,8 +20,13 @@ package org.apache.servicecomb.tracing.zipkin;
 import brave.http.HttpServerRequest;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class HttpServeRequestWrapper extends HttpServerRequest {
+  private static final Logger LOG = LoggerFactory.getLogger(HttpServeRequestWrapper.class);
+
   private Invocation invocation;
 
   HttpServeRequestWrapper() {
@@ -43,6 +48,13 @@ class HttpServeRequestWrapper extends HttpServerRequest {
 
   @Override
   public String path() {
+    if (LegacyPropertyFactory.getBooleanProperty(TracingConfiguration.TRACING_WORK_WITH_THIRDPARTY, false)) {
+      try {
+        return TracingConfiguration.createRequestPath(invocation);
+      } catch (Exception e) {
+        LOG.warn("generate rest path failed: {}", e.getMessage());
+      }
+    }
     return invocation.getOperationMeta().getOperationPath();
   }
 
