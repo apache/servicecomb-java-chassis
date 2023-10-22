@@ -19,9 +19,13 @@ package org.apache.servicecomb.tracing.zipkin;
 
 import brave.http.HttpClientRequest;
 
+import com.netflix.config.DynamicPropertyFactory;
 import org.apache.servicecomb.core.Invocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 class HttpClientRequestWrapper extends HttpClientRequest {
+  private static final Logger LOG = LoggerFactory.getLogger(HttpClientRequestWrapper.class);
 
   private Invocation invocation;
 
@@ -50,6 +54,13 @@ class HttpClientRequestWrapper extends HttpClientRequest {
 
   @Override
   public String path() {
+    if (DynamicPropertyFactory.getInstance().getBooleanProperty(TracingConfiguration.TRACING_WORK_WITH_THIRDPARTY, false).get()) {
+      try {
+        return TracingConfiguration.createRequestPath(invocation);
+      } catch (Exception e) {
+        LOG.warn("generate rest path failed: {}", e.getMessage());
+      }
+    }
     return invocation.getOperationMeta().getOperationPath();
   }
 
