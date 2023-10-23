@@ -19,14 +19,8 @@ package org.apache.servicecomb.tracing.zipkin;
 
 import brave.http.HttpClientRequest;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
