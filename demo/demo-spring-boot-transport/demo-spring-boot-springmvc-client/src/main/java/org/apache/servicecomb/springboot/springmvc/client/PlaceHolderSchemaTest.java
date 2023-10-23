@@ -21,13 +21,13 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class PlaceHolderSchemaTest implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
-    RestTemplate template = RestTemplateBuilder.create();
+    RestOperations template = RestTemplateBuilder.create();
     String result = template.getForObject("servicecomb://springmvc/placeholder/schema?name=test", String.class);
     TestMgr.check("test", result);
   }

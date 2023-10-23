@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
+import java.util.Collections;
+
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
@@ -24,9 +26,7 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Collections;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestDownloadSchema implements CategorizedTestCase {
@@ -39,7 +39,7 @@ public class TestDownloadSchema implements CategorizedTestCase {
   }
 
   private void testDownloadFileAndDeleted() throws Exception {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
     ReadStreamPart readStreamPart = restTemplate
         .getForObject("servicecomb://springmvc/download/deleteAfterFinished?content=hello", ReadStreamPart.class);
     String hello = readStreamPart.saveAsString().get();
@@ -51,7 +51,7 @@ public class TestDownloadSchema implements CategorizedTestCase {
   }
 
   private void testDownloadFileWithNull() throws Exception {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
     ReadStreamPart readStreamPart = restTemplate
         .getForObject("servicecomb://springmvc/download/partIsNull?content=test", ReadStreamPart.class);
     String result = readStreamPart.saveAsString().get();
@@ -64,7 +64,7 @@ public class TestDownloadSchema implements CategorizedTestCase {
   }
 
   private void testDownloadFileNotDeleted() throws Exception {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
     ReadStreamPart readStreamPart = restTemplate
         .getForObject("servicecomb://springmvc/download/notDeleteAfterFinished?content=hello", ReadStreamPart.class);
     String hello = readStreamPart.saveAsString().get();
@@ -76,10 +76,11 @@ public class TestDownloadSchema implements CategorizedTestCase {
   }
 
   private void testSetContentTypeByResponseEntity() throws Exception {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
     ResponseEntity<ReadStreamPart> responseEntity = restTemplate
-            .getForEntity("servicecomb://springmvc/download/setContentTypeByResponseEntity?content=hello&contentType=customType",
-                    ReadStreamPart.class);
+        .getForEntity(
+            "servicecomb://springmvc/download/setContentTypeByResponseEntity?content=hello&contentType=customType",
+            ReadStreamPart.class);
     String hello = responseEntity.getBody().saveAsString().get();
     TestMgr.check(responseEntity.getHeaders().get(HttpHeaders.CONTENT_TYPE), Collections.singletonList("customType"));
     TestMgr.check(hello, "hello");

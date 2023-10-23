@@ -22,11 +22,12 @@ import java.util.List;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class ConsumerConfigIT implements CategorizedTestCase {
-  RestTemplate template = new RestTemplate();
+  RestOperations template = new RestTemplate();
 
   @Override
   public void testRestTransport() throws Exception {

@@ -30,7 +30,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import jakarta.ws.rs.core.MediaType;
 
@@ -41,7 +41,7 @@ public class TestFileUploadSchema implements CategorizedTestCase {
     testUpload(RestTemplateBuilder.create(), "servicecomb://jaxrs/fileUpload");
   }
 
-  private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
+  private void testUpload(RestOperations template, String cseUrlPrefix) throws IOException {
     String file1Content = "Hello World";
     File file1 = File.createTempFile("jaxrstest1", ".txt");
     FileUtils.writeStringToFile(file1, file1Content, StandardCharsets.UTF_8, false);
@@ -50,7 +50,7 @@ public class TestFileUploadSchema implements CategorizedTestCase {
     testFileAndStringUpload(template, cseUrlPrefix, file1, file1Content);
   }
 
-  private void testFileUpload(RestTemplate template, String cseUrlPrefix, File file1, String file1Content)
+  private void testFileUpload(RestOperations template, String cseUrlPrefix, File file1, String file1Content)
       throws IOException {
     String result1 = template.postForObject(cseUrlPrefix + "/upload1", new HttpEntity<>(new HashMap<>()), String.class);
     TestMgr.check("null file", result1);
@@ -72,7 +72,7 @@ public class TestFileUploadSchema implements CategorizedTestCase {
     TestMgr.check(expect, result2);
   }
 
-  private void testFileAndStringUpload(RestTemplate template, String cseUrlPrefix, File file1, String file1Content) {
+  private void testFileAndStringUpload(RestOperations template, String cseUrlPrefix, File file1, String file1Content) {
     Map<String, Object> map = new HashMap<>();
     String message = "hi";
     map.put("file1", new FileSystemResource(file1));

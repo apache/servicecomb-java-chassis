@@ -41,7 +41,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestUploadSchema implements CategorizedTestCase {
@@ -63,7 +63,7 @@ public class TestUploadSchema implements CategorizedTestCase {
   }
 
   private void testServerStartupSuccess() {
-    RestTemplate template = RestTemplateBuilder.create();
+    RestOperations template = RestTemplateBuilder.create();
     boolean result = template.getForObject("servicecomb://springmvc/upload/isServerStartUpSuccess", Boolean.class);
     TestMgr.check(result, true);
   }
@@ -83,7 +83,7 @@ public class TestUploadSchema implements CategorizedTestCase {
       fo.close();
     }
 
-    RestTemplate template = RestTemplateBuilder.create();
+    RestOperations template = RestTemplateBuilder.create();
 
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
     for (int i = 0; i < fileNum; i++) {
@@ -111,7 +111,7 @@ public class TestUploadSchema implements CategorizedTestCase {
   }
 
   private void testUploadFileAndAttribute() throws Exception {
-    RestTemplate template = RestTemplateBuilder.create();
+    RestOperations template = RestTemplateBuilder.create();
     Map<String, Object> map = new HashMap<>();
     String message = "hi";
     File file = File.createTempFile("file", ".txt");
@@ -127,7 +127,7 @@ public class TestUploadSchema implements CategorizedTestCase {
   }
 
   private void testUploadFileRequestPartAttribute() throws Exception {
-    RestTemplate template = RestTemplateBuilder.create();
+    RestOperations template = RestTemplateBuilder.create();
     Map<String, Object> map = new HashMap<>();
     String message = "hi";
     File file = File.createTempFile("file", ".txt");

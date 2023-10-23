@@ -34,14 +34,14 @@ import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import io.vertx.core.json.JsonObject;
 
 @Component
 public class ServerTest implements CategorizedTestCase {
 
-  RestTemplate template = RestTemplateBuilder.create();
+  RestOperations template = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {

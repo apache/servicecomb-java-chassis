@@ -26,17 +26,17 @@ import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestClientTimeout implements CategorizedTestCase {
-  private static RestTemplate template = RestTemplateBuilder.create();
+  private static RestOperations template = RestTemplateBuilder.create();
 
   public void testAllTransport() throws Exception {
     testClientTimeOut(template);
   }
 
-  private static void testClientTimeOut(RestTemplate template) {
+  private static void testClientTimeOut(RestOperations template) {
     String microserviceName = "jaxrs";
 
     String cseUrlPrefix = "cse://" + microserviceName + "/clientreqtimeout/";
@@ -45,7 +45,7 @@ public class TestClientTimeout implements CategorizedTestCase {
     testClientTimeoutAdd(template, cseUrlPrefix);
   }
 
-  private static void testClientTimeoutSayHi(RestTemplate template, String cseUrlPrefix) {
+  private static void testClientTimeoutSayHi(RestOperations template, String cseUrlPrefix) {
     Student student = new Student();
     student.setName("timeout");
     student.setAge(30);
@@ -53,7 +53,7 @@ public class TestClientTimeout implements CategorizedTestCase {
     TestMgr.check("hello timeout 30", result);
   }
 
-  private static void testClientTimeoutAdd(RestTemplate template, String cseUrlPrefix) {
+  private static void testClientTimeoutAdd(RestOperations template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "20");

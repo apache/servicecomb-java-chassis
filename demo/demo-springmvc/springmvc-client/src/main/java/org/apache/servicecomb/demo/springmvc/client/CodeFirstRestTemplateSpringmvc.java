@@ -45,7 +45,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import jakarta.servlet.http.Part;
 
@@ -81,7 +81,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   }
 
   @Override
-  protected void testOnlyRest(String microservcieName, RestTemplate template, String cseUrlPrefix) {
+  protected void testOnlyRest(String microservcieName, RestOperations template, String cseUrlPrefix) {
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
@@ -100,7 +100,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   }
 
   @Override
-  protected void testOnlyHighway(RestTemplate template, String cseUrlPrefix) {
+  protected void testOnlyHighway(RestOperations template, String cseUrlPrefix) {
     testResponse.runHighway();
     testObject.runHighway();
     testGeneric.runHighway();
@@ -109,7 +109,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   }
 
   @Override
-  protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+  protected void testAllTransport(String microserviceName, RestOperations template, String cseUrlPrefix) {
     testResponse.runAllTransport();
     testObject.runAllTransport();
     testGeneric.runAllTransport();
@@ -120,7 +120,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
 
-  private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
+  private void testUpload(RestOperations template, String cseUrlPrefix) throws IOException {
     String file1Content = "hello world";
     File file1 = File.createTempFile("测 试", ".txt");
     FileUtils.writeStringToFile(file1, file1Content, StandardCharsets.UTF_8, false);
@@ -166,7 +166,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check(expect, result);
   }
 
-  private String testRestTemplateUpload(RestTemplate template, String cseUrlPrefix, File file1, File someFile) {
+  private String testRestTemplateUpload(RestOperations template, String cseUrlPrefix, File file1, File someFile) {
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
     map.add("file1", new FileSystemResource(file1));
     map.add("someFile", new FileSystemResource(someFile));
@@ -177,7 +177,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
         String.class);
   }
 
-  private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+  private void testResponseEntity(String microserviceName, RestOperations template, String cseUrlPrefix) {
     Map<String, Object> body = new HashMap<>();
     Date date = new Date();
     body.put("date", date);
@@ -207,7 +207,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check(retryResult, 5);
   }
 
-  private void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstTestForm(RestOperations template, String cseUrlPrefix) {
     HttpHeaders formHeaders = new HttpHeaders();
     formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     Map<String, String> map = new HashMap<>();
@@ -221,7 +221,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
         .check(code + "hello", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
 
-  private void testCodeFirstTestFormHighway(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstTestFormHighway(RestOperations template, String cseUrlPrefix) {
     HttpHeaders formHeaders = new HttpHeaders();
     formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     Map<String, String> map = new HashMap<>();
@@ -240,7 +240,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
         template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
 
-  private void testCodeFirstTestFormRest(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstTestFormRest(RestOperations template, String cseUrlPrefix) {
     HttpHeaders formHeaders = new HttpHeaders();
     formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     Map<String, String> map = new HashMap<>();

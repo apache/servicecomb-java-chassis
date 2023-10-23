@@ -25,7 +25,7 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @RestSchema(schemaId = "ClientExceptionSchema")
 @RequestMapping(path = "/exception", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -38,7 +38,7 @@ public class ClientExceptionSchema {
 
   private IExceptionSchema exceptionSchema;
 
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   @RpcReference(microserviceName = "filterServer", schemaId = "ExceptionSchema")
   public void setExceptionSchema(IExceptionSchema exceptionSchema) {

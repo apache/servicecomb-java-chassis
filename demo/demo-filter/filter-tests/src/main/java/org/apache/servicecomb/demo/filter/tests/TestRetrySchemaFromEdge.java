@@ -23,6 +23,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -36,7 +37,7 @@ public class TestRetrySchemaFromEdge implements CategorizedTestCase {
   @RpcReference(microserviceName = "filterEdge", schemaId = "RetryClientSchema")
   private RetrySchemaInf retrySchemaInf;
 
-  RestTemplate restTemplate = RestTemplateBuilder.create();
+  RestOperations restTemplate = RestTemplateBuilder.create();
 
   RestTemplate springRestTemplate = new RestTemplate();
 

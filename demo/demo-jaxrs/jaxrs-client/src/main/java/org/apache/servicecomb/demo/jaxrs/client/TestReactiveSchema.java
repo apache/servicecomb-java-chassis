@@ -24,13 +24,13 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestReactiveSchema implements CategorizedTestCase {
   @SuppressWarnings("rawtypes")
   public void testRestTransport() throws Exception {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
     try {
       restTemplate.getForObject("cse://jaxrs/reactive/testSyncInvokeInEventLoop?a=1&b=2", int.class);
       TestMgr.check(true, false);

@@ -32,7 +32,7 @@ import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -118,7 +118,7 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
   @RpcReference(microserviceName = "${servicecomb.service.application}:springmvc", schemaId = "weakSpringmvc")
   private SpecialNameModelInf specialNameModelInfWithAppId;
 
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {

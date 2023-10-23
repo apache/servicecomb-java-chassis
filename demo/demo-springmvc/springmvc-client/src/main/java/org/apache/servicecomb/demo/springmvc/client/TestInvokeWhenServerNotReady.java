@@ -26,7 +26,7 @@ import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestInvokeWhenServerNotReady {
@@ -44,7 +44,7 @@ public class TestInvokeWhenServerNotReady {
     new Thread(() -> {
       for (int i = 0; i < 100; i++) {
         try {
-          RestTemplate template = RestTemplateBuilder.create();
+          RestOperations template = RestTemplateBuilder.create();
           template.getForObject("servicecomb://springmvc/upload/isServerStartUpSuccess", Boolean.class);
         } catch (Throwable e) {
           // ignore

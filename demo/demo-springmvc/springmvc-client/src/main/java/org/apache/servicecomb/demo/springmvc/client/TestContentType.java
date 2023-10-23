@@ -25,13 +25,13 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import jakarta.ws.rs.core.MediaType;
 
 public class TestContentType {
 
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   public void runAllTest() {
     testGlobalSetting();

@@ -33,7 +33,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -43,7 +43,7 @@ import jakarta.ws.rs.core.Response.Status;
 public class MultiErrorCodeServiceClient implements CategorizedTestCase {
   private static final String SERVER = "cse://jaxrs";
 
-  private static RestTemplate template = RestTemplateBuilder.create();
+  private static RestOperations template = RestTemplateBuilder.create();
 
   @Override
   public void testAllTransport() throws Exception {

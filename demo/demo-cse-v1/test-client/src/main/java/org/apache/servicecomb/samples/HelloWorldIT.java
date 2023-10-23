@@ -24,12 +24,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 
 @Component
 public class HelloWorldIT implements CategorizedTestCase {
-  RestTemplate template = new RestTemplate();
+  RestOperations template = new RestTemplate();
 
   @Override
   public void testRestTransport() throws Exception {

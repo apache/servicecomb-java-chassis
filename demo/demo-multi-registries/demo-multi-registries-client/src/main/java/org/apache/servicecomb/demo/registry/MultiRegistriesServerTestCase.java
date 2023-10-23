@@ -26,11 +26,11 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class MultiRegistriesServerTestCase implements CategorizedTestCase {
-  RestTemplate template = RestTemplateBuilder.create();
+  RestOperations template = RestTemplateBuilder.create();
 
   private DiscoveryManager discoveryManager;
 

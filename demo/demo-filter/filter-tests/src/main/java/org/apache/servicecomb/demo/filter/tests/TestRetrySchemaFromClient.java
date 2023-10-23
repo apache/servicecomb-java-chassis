@@ -23,7 +23,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestRetrySchemaFromClient implements CategorizedTestCase {
@@ -36,7 +36,7 @@ public class TestRetrySchemaFromClient implements CategorizedTestCase {
   @RpcReference(microserviceName = "filterClient", schemaId = "RetryClientSchema")
   private RetrySchemaInf retrySchemaInf;
 
-  RestTemplate restTemplate = RestTemplateBuilder.create();
+  RestOperations restTemplate = RestTemplateBuilder.create();
 
   private static final String SERVER = "servicecomb://filterClient";
 

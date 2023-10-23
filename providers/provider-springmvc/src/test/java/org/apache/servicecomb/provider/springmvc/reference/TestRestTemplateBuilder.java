@@ -24,7 +24,7 @@ import java.net.URI;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import com.seanyinx.github.unit.scaffolding.Randomness;
 
@@ -51,7 +51,7 @@ public class TestRestTemplateBuilder {
   public void addsRestTemplateToWrapper() {
     RestTemplateBuilder.addAcceptableRestTemplate(1, underlying);
 
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
 
     MatcherAssert.assertThat(restTemplate, instanceOf(RestTemplateWrapper.class));
 

@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.provider.springmvc.reference;
 
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 public final class RestTemplateBuilder {
   private static final RestTemplateWrapper wrapper = new RestTemplateWrapper();
@@ -25,7 +25,7 @@ public final class RestTemplateBuilder {
   private RestTemplateBuilder() {
   }
 
-  public static RestTemplate create() {
+  public static RestOperations create() {
     return wrapper;
   }
 

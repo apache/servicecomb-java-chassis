@@ -21,7 +21,7 @@ import static org.hamcrest.core.IsInstanceOf.instanceOf;
 
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 public class ServiceCombRestTemplateConfigTest {
 
@@ -29,7 +29,7 @@ public class ServiceCombRestTemplateConfigTest {
 
   @Test
   public void exposesServiceCombRestTemplate() {
-    RestTemplate restTemplate = config.restTemplate();
+    RestOperations restTemplate = config.restTemplate();
 
     MatcherAssert.assertThat(restTemplate, instanceOf(RestTemplateWrapper.class));
   }

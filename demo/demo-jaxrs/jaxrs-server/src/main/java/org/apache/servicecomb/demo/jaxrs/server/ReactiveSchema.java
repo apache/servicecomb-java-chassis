@@ -17,15 +17,15 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.springframework.web.client.RestOperations;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
-
-import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.springframework.web.client.RestTemplate;
 
 @RestSchema(schemaId = "ReactiveSchema")
 @Path("/reactive")
@@ -35,7 +35,7 @@ public class ReactiveSchema {
   @Path("/testSyncInvokeInEventLoop")
   @GET
   public int testSyncInvokeInEventLoop(@QueryParam("a") int a, @QueryParam("b") int b) {
-    RestTemplate client = RestTemplateBuilder.create();
+    RestOperations client = RestTemplateBuilder.create();
     return client.getForObject("cse://jaxrs/compute/reduce?a=1&b=2", int.class);
   }
 }

@@ -32,11 +32,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class EdgeServiceGovernanceTest implements CategorizedTestCase {
-  RestTemplate template = RestTemplateBuilder.create();
+  RestOperations template = RestTemplateBuilder.create();
 
   String edgePrefix;
 

@@ -21,10 +21,10 @@ import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.jaxrs.server.pojoDefault.DefaultResponseModel;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 public class DefaultModelServiceClient {
-  private static RestTemplate template = RestTemplateBuilder.create();
+  private static RestOperations template = RestTemplateBuilder.create();
 
   private static String urlPrefix = "cse://jaxrs/DefaultModelService";
 

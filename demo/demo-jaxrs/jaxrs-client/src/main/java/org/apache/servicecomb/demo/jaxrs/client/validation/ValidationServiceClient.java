@@ -26,12 +26,12 @@ import org.apache.servicecomb.demo.validator.Teacher;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import jakarta.ws.rs.core.Response.Status;
 
 public class ValidationServiceClient {
-  private static RestTemplate template = RestTemplateBuilder.create();
+  private static RestOperations template = RestTemplateBuilder.create();
 
   private static String urlPrefix = "cse://jaxrs/ValidationService";
 
