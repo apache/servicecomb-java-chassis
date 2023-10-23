@@ -32,7 +32,6 @@
 
   <modules>
     <module>servicestage</module>
-    <module>environment</module>
     <module>dashboard</module>
     <module>darklaunch</module>
   </modules>
