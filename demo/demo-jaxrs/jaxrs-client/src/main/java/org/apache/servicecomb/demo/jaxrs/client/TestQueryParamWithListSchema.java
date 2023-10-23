@@ -21,11 +21,11 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestQueryParamWithListSchema implements CategorizedTestCase {
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testAllTransport() throws Exception {

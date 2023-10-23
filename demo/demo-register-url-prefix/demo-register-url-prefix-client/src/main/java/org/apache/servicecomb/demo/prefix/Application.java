@@ -22,7 +22,7 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @SpringBootApplication
 public class Application {
@@ -33,7 +33,7 @@ public class Application {
   }
 
   public static void runTest() {
-    RestTemplate template = RestTemplateBuilder.create();
+    RestOperations template = RestTemplateBuilder.create();
     TestMgr.check("2", template
         .getForObject("cse://demo-register-url-prefix-server/hellodemo/register/url/prefix/getName?name=2",
             String.class));

@@ -32,6 +32,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
@@ -52,7 +53,7 @@ public class CrossappClient {
         "sayHello", null, String.class);
     TestMgr.check("hello world", result);
 
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
     result = restTemplate.getForObject("cse://appServer:appService/helloworld/hello", String.class);
     TestMgr.check("hello world", result);
     result = restTemplate.getForObject("servicecomb://appServer:appService/helloworld/hello", String.class);
@@ -68,7 +69,7 @@ public class CrossappClient {
   }
 
   private static void testCorsHandler() {
-    RestTemplate springRestTemplate = new RestTemplate();
+    RestOperations springRestTemplate = new RestTemplate();
     MultiValueMap<String, String> requestHeaders = new LinkedMultiValueMap<>();
     requestHeaders.put("Origin", Collections.singletonList("http://localhost:8080"));
     requestHeaders.put("Access-Control-Request-Method", Collections.singletonList("PUT"));

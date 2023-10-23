@@ -22,31 +22,31 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   @Override
-  protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+  protected void testAllTransport(String microserviceName, RestOperations template, String cseUrlPrefix) {
     testDefaultPath(template, cseUrlPrefix);
     test404(template);
 
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
 
-  private void testDefaultPath(RestTemplate template, String cseUrlPrefix) {
+  private void testDefaultPath(RestOperations template, String cseUrlPrefix) {
     int result =
         template.getForObject(cseUrlPrefix.substring(0, cseUrlPrefix.length() - 1), Integer.class);
     TestMgr.check(100, result);
   }
 
   @Override
-  protected void testOnlyRest(String microserviceName, RestTemplate template, String cseUrlPrefix) {
+  protected void testOnlyRest(String microserviceName, RestOperations template, String cseUrlPrefix) {
     super.testOnlyRest(microserviceName, template, cseUrlPrefix);
   }
 
 
-  private void test404(RestTemplate template) {
+  private void test404(RestOperations template) {
     HttpClientErrorException exception = null;
     try {
       template.getForEntity("http://127.0.0.1:8080/aPathNotExist", String.class);

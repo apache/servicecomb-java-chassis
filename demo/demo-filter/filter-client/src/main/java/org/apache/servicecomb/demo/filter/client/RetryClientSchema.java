@@ -24,7 +24,7 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @RestSchema(schemaId = "RetryClientSchema")
 @RequestMapping(path = "/retry", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,7 +36,7 @@ public class RetryClientSchema {
   @RpcReference(microserviceName = "filterServer", schemaId = "RetrySchema")
   private RetrySchemaInf retrySchemaInf;
 
-  RestTemplate restTemplate = RestTemplateBuilder.create();
+  RestOperations restTemplate = RestTemplateBuilder.create();
 
   @GetMapping(path = "/governance/successWhenRetry")
   public boolean successWhenRetry() {

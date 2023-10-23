@@ -33,11 +33,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class BeanParamRestTemplateClient implements CategorizedTestCase {
-  RestTemplate restTemplate;
+  RestOperations restTemplate;
 
   public BeanParamRestTemplateClient() {
     restTemplate = RestTemplateBuilder.create();
@@ -77,9 +77,12 @@ public class BeanParamRestTemplateClient implements CategorizedTestCase {
   }
 
   private void testUpload() {
-    BufferedInputStream bufferedInputStream0 = new BufferedInputStream(new ByteArrayInputStream("up0".getBytes(StandardCharsets.UTF_8)));
-    BufferedInputStream bufferedInputStream1 = new BufferedInputStream(new ByteArrayInputStream("up1".getBytes(StandardCharsets.UTF_8)));
-    BufferedInputStream bufferedInputStream2 = new BufferedInputStream(new ByteArrayInputStream("up2".getBytes(StandardCharsets.UTF_8)));
+    BufferedInputStream bufferedInputStream0 = new BufferedInputStream(
+        new ByteArrayInputStream("up0".getBytes(StandardCharsets.UTF_8)));
+    BufferedInputStream bufferedInputStream1 = new BufferedInputStream(
+        new ByteArrayInputStream("up1".getBytes(StandardCharsets.UTF_8)));
+    BufferedInputStream bufferedInputStream2 = new BufferedInputStream(
+        new ByteArrayInputStream("up2".getBytes(StandardCharsets.UTF_8)));
 
     HashMap<String, Object> formData = new HashMap<>();
     formData.put("up0", bufferedInputStream0);

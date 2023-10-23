@@ -25,10 +25,10 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 public class TestRestTemplate {
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   public void runAllTest() {
     testvoidResponse();

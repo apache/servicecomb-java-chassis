@@ -26,13 +26,13 @@ import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class GovernanceTest implements CategorizedTestCase {
   String url = "servicecomb://demo-zeroconfig-registry-client/governance";
 
-  RestTemplate template = RestTemplateBuilder.create();
+  RestOperations template = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {

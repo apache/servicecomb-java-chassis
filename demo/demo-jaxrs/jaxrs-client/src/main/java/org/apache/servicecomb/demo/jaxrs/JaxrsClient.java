@@ -50,7 +50,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
@@ -59,7 +59,7 @@ import jakarta.ws.rs.core.Response.Status;
 public class JaxrsClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsClient.class);
 
-  private static RestTemplate templateNew = RestTemplateBuilder.create();
+  private static RestOperations templateNew = RestTemplateBuilder.create();
 
   public static void main(String[] args) throws Exception {
     new SpringApplicationBuilder(JaxrsClient.class).web(WebApplicationType.NONE).run(args);
@@ -100,7 +100,7 @@ public class JaxrsClient {
     testOnlyRest(templateNew);
   }
 
-  private static void testOnlyRest(RestTemplate template) {
+  private static void testOnlyRest(RestOperations template) {
     String microserviceName = "jaxrs";
     String cseUrlPrefix = "cse://" + microserviceName;
     InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, "rest");
@@ -109,7 +109,7 @@ public class JaxrsClient {
     testSpringMvcDefaultValuesJavaPrimitiveRest(templateNew);
   }
 
-  private static void testCompute(RestTemplate template) throws Exception {
+  private static void testCompute(RestOperations template) throws Exception {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
@@ -126,7 +126,7 @@ public class JaxrsClient {
     }
   }
 
-  private static void testValidator(RestTemplate template) {
+  private static void testValidator(RestOperations template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
@@ -150,7 +150,7 @@ public class JaxrsClient {
     }
   }
 
-  private static void testJaxRSDefaultValuesRest(RestTemplate template) {
+  private static void testJaxRSDefaultValuesRest(RestOperations template) {
     String result;
     String microserviceName = "jaxrs";
     String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
@@ -193,7 +193,7 @@ public class JaxrsClient {
     TestMgr.check(failed, true);
   }
 
-  private static void testJaxRSDefaultValuesAllTransport(RestTemplate template) {
+  private static void testJaxRSDefaultValuesAllTransport(RestOperations template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
@@ -288,7 +288,7 @@ public class JaxrsClient {
     }
   }
 
-  private static void testGetRest(RestTemplate template, String cseUrlPrefix) {
+  private static void testGetRest(RestOperations template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "3");
@@ -304,7 +304,7 @@ public class JaxrsClient {
     TestMgr.check(-1, result);
   }
 
-  private static void testGetAllTransport(RestTemplate template, String cseUrlPrefix) {
+  private static void testGetAllTransport(RestOperations template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "3");
@@ -320,7 +320,7 @@ public class JaxrsClient {
     TestMgr.check(-1, result);
   }
 
-  private static void testPost(RestTemplate template, String cseUrlPrefix) {
+  private static void testPost(RestOperations template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "3");
@@ -341,17 +341,17 @@ public class JaxrsClient {
         template.postForObject(cseUrlPrefix + "/compute/saysomething", reqEntity, String.class));
   }
 
-  private static void testPut(RestTemplate template, String cseUrlPrefix) {
+  private static void testPut(RestOperations template, String cseUrlPrefix) {
     template.put(cseUrlPrefix + "/compute/sayhi/{name}", null, "world");
   }
 
-  private static void testDelete(RestTemplate template, String cseUrlPrefix) {
+  private static void testDelete(RestOperations template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("name", "world");
     template.delete(cseUrlPrefix + "/compute/sayhei/?name={name}", params);
   }
 
-  private static void testExchange(RestTemplate template, String cseUrlPrefix) {
+  private static void testExchange(RestOperations template, String cseUrlPrefix) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON);
     Person person = new Person();
@@ -368,7 +368,7 @@ public class JaxrsClient {
     TestMgr.check("abcdef", resEntity2.getBody());
   }
 
-  private static void testRawJsonParam(RestTemplate template, String cseUrlPrefix) throws Exception {
+  private static void testRawJsonParam(RestOperations template, String cseUrlPrefix) throws Exception {
     Map<String, String> person = new HashMap<>();
     person.put("name", "Tom");
     String jsonPerson = RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(person);
@@ -377,7 +377,7 @@ public class JaxrsClient {
   }
 
   @SuppressWarnings({"rawtypes"})
-  private static void testValidatorAddFail(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorAddFail(RestOperations template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "3");
@@ -409,7 +409,7 @@ public class JaxrsClient {
     TestMgr.check(true, isExcep);
   }
 
-  private static void testValidatorAddSuccess(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorAddSuccess(RestOperations template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
     params.put("b", "20");
@@ -418,7 +418,7 @@ public class JaxrsClient {
   }
 
   @SuppressWarnings({"rawtypes"})
-  private static void testValidatorSayHiFail(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorSayHiFail(RestOperations template, String cseUrlPrefix) {
     boolean isExcep = false;
     try {
       template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "te");
@@ -443,7 +443,7 @@ public class JaxrsClient {
     TestMgr.check(true, isExcep);
   }
 
-  private static void testValidatorSayHiSuccess(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorSayHiSuccess(RestOperations template, String cseUrlPrefix) {
     ResponseEntity<String> responseEntity =
         template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "world");
     TestMgr.check(202, responseEntity.getStatusCode().value());
@@ -451,7 +451,7 @@ public class JaxrsClient {
   }
 
   @SuppressWarnings({"rawtypes"})
-  private static void testValidatorExchangeFail(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorExchangeFail(RestOperations template, String cseUrlPrefix) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON);
     Student student = new Student();
@@ -485,7 +485,7 @@ public class JaxrsClient {
     TestMgr.check(true, isExcep);
   }
 
-  private static void testValidatorExchangeSuccess(RestTemplate template, String cseUrlPrefix) {
+  private static void testValidatorExchangeSuccess(RestOperations template, String cseUrlPrefix) {
     Student student = new Student();
     student.setName("test");
     student.setAge(15);
@@ -493,7 +493,7 @@ public class JaxrsClient {
     TestMgr.check("hello test 15", result);
   }
 
-  private static void testSpringMvcDefaultValuesJavaPrimitiveRest(RestTemplate template) {
+  private static void testSpringMvcDefaultValuesJavaPrimitiveRest(RestOperations template) {
     String microserviceName = "jaxrs";
     String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
 
@@ -521,7 +521,7 @@ public class JaxrsClient {
     TestMgr.check("Hello false,\0,0,0,0,0,0.0,0.0,null", result);
   }
 
-  private static void testSpringMvcDefaultValuesJavaPrimitiveAllTransport(RestTemplate template) {
+  private static void testSpringMvcDefaultValuesJavaPrimitiveAllTransport(RestOperations template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       CategorizedTestCaseRunner.changeTransport(microserviceName, transport);

@@ -27,7 +27,7 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class LocalRegistryServerTest implements CategorizedTestCase {
@@ -90,7 +90,7 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   }
 
   private void testServerGetName() {
-    RestTemplate template = RestTemplateBuilder.create();
+    RestOperations template = RestTemplateBuilder.create();
     TestMgr.check("2", template
         .getForObject("cse://demo-local-registry-server/register/url/prefix/getName?name=2",
             String.class));

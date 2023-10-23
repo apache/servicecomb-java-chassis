@@ -22,12 +22,12 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestExceptionSchemaFromClient implements CategorizedTestCase {
 
-  RestTemplate restTemplate = RestTemplateBuilder.create();
+  RestOperations restTemplate = RestTemplateBuilder.create();
 
   private static final String SERVER = "servicecomb://filterClient";
 

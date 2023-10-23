@@ -17,22 +17,22 @@
 
 package org.apache.servicecomb.demo.zeroconfig.client;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
+
+import jakarta.ws.rs.core.Response.Status;
 
 @RestSchema(schemaId = "GovernanceEndpoint")
 @RequestMapping("/governance")
 public class GovernanceEndpoint {
   private static final String SERVER = "servicecomb://demo-zeroconfig-registry-server";
 
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   private int count = 0;
 

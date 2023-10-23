@@ -23,14 +23,14 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 public class TestGeneric {
   private CodeFirstSpringmvcIntf intf;
 
-  private RestTemplate restTemplate = new CseRestTemplate();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   private String prefix = "cse://springmvc/codeFirstSpringmvc";
 

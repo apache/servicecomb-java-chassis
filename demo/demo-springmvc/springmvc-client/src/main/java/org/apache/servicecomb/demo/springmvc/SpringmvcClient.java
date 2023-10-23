@@ -51,6 +51,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -63,7 +64,7 @@ public class SpringmvcClient {
 
   private static RestTemplate templateUrlWithProviderPrefix = new CseRestTemplate();
 
-  private static RestTemplate restTemplate;
+  private static RestOperations restTemplate;
 
   private static Controller controller;
 

@@ -21,12 +21,12 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 
 @Component
 public class TestControllerImpl implements CategorizedTestCase {
-  RestTemplate restTemplate = RestTemplateBuilder.create();
+  RestOperations restTemplate = RestTemplateBuilder.create();
 
   private static final String SERVER = "servicecomb://springmvc";
 

@@ -29,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 
 @Component
@@ -37,7 +37,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestFormRequestSchema.class);
 
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
+  private RestOperations restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {

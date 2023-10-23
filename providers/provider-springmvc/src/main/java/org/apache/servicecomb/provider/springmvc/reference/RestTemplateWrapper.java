@@ -40,9 +40,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriTemplateHandler;
 
 /**
- * 用于同时支持cse调用和非cse调用
+ * Wrapper class to support java chassis invocation and non java chassis invocation.
  */
-// TODO: 2017/7/1 what we want to expose is RestOperations instead, since some RestTemplate methods are not to be called by users
 class RestTemplateWrapper extends RestTemplate {
   private final List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
 

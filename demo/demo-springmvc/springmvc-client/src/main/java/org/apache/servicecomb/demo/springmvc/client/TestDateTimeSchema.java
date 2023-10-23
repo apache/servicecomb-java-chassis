@@ -42,7 +42,7 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 interface DateTimeSchemaInf {
   Date getDate(Date date);
@@ -167,7 +167,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
     VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc");
     List<String> enpoints = serversVersionedCache.data();
 
-    RestTemplate restTemplate = RestTemplateBuilder.create();
+    RestOperations restTemplate = RestTemplateBuilder.create();
 
     for (String endpoint : enpoints) {
       CseHttpEntity<?> entity = new CseHttpEntity<>(null);

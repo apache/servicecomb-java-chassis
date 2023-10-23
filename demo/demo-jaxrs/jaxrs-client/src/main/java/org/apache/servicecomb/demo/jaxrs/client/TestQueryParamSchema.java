@@ -22,7 +22,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestQueryParamSchema implements CategorizedTestCase {
@@ -30,7 +30,7 @@ public class TestQueryParamSchema implements CategorizedTestCase {
     String testQueryEncode(String param);
   }
 
-  private final RestTemplate restTemplate = RestTemplateBuilder.create();
+  private final RestOperations restTemplate = RestTemplateBuilder.create();
 
   @RpcReference(microserviceName = "jaxrs", schemaId = "QueryParamSchema")
   private QueryParamService queryParamService;
