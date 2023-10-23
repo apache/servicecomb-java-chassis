@@ -36,21 +36,13 @@ public class NacosConfiguration {
   public NacosRegistration nacosRegistration(
       DataCenterProperties dataCenterProperties,
       @Qualifier("nacosDiscoveryProperties") NacosDiscoveryProperties nacosDiscoveryProperties,
-      Environment environment,
-      @Qualifier("instancesChangeEventListener") InstancesChangeEventListener instancesChangeEventListener) {
-    return new NacosRegistration(dataCenterProperties, nacosDiscoveryProperties, environment,
-        instancesChangeEventListener);
+      Environment environment) {
+    return new NacosRegistration(dataCenterProperties, nacosDiscoveryProperties, environment);
   }
 
   @Bean
   public NacosDiscovery nacosDiscovery(
       @Qualifier("nacosDiscoveryProperties") NacosDiscoveryProperties nacosDiscoveryProperties) {
     return new NacosDiscovery(nacosDiscoveryProperties);
-  }
-
-  @Bean
-  public InstancesChangeEventListener instancesChangeEventListener(
-      @Qualifier("nacosDiscovery") NacosDiscovery nacosDiscovery) {
-    return new InstancesChangeEventListener(nacosDiscovery);
   }
 }

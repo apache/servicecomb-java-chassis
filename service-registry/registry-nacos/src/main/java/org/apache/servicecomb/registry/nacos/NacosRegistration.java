@@ -32,17 +32,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.alibaba.nacos.common.notify.NotifyCenter;
 
 public class NacosRegistration implements Registration<NacosRegistrationInstance> {
   private final NacosDiscoveryProperties nacosDiscoveryProperties;
 
   private final Environment environment;
-
-  private final InstancesChangeEventListener instancesChangeEventListener;
 
   private final String instanceId;
 
@@ -54,16 +50,13 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   private NamingService namingService;
 
-  private NamingMaintainService namingMaintainService;
-
   @Autowired
   public NacosRegistration(DataCenterProperties dataCenterProperties, NacosDiscoveryProperties nacosDiscoveryProperties,
-      Environment environment, InstancesChangeEventListener instancesChangeEventListener) {
+      Environment environment) {
     this.instanceId = buildInstanceId();
     this.dataCenterProperties = dataCenterProperties;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
     this.environment = environment;
-    this.instancesChangeEventListener = instancesChangeEventListener;
   }
 
   @Override
@@ -75,8 +68,6 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
         environment);
 
     namingService = NamingServiceManager.buildNamingService(environment, nacosDiscoveryProperties);
-    namingMaintainService = NamingServiceManager.buildNamingMaintainService(environment, nacosDiscoveryProperties);
-    NotifyCenter.registerSubscriber(instancesChangeEventListener);
   }
 
   @Override
@@ -87,7 +78,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
       namingService.registerInstance(nacosRegistrationInstance.getServiceName(),
           nacosRegistrationInstance.getApplication(), instance);
     } catch (NacosException e) {
-      throw new IllegalStateException("registry process is interrupted.");
+      throw new IllegalStateException(e);
     }
   }
 
@@ -139,14 +130,9 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    try {
-      instance.setEnabled(MicroserviceInstanceStatus.DOWN != status);
-      namingMaintainService.updateInstance(nacosRegistrationInstance.getServiceName(),
-          nacosRegistrationInstance.getApplication(), instance);
-      return true;
-    } catch (NacosException e) {
-      throw new IllegalStateException(e);
-    }
+    // Do not support Nacos update status now. Because update status will fail
+    // due to some unknown reasons(Maybe different constrains in register and maintain api).
+    return true;
   }
 
   @Override

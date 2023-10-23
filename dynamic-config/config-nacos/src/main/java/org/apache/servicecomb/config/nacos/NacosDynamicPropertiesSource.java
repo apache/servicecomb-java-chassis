@@ -33,7 +33,7 @@ import org.springframework.core.env.MapPropertySource;
 import com.google.common.annotations.VisibleForTesting;
 
 public class NacosDynamicPropertiesSource implements DynamicPropertiesSource {
-  public static final String SOURCE_NAME = "kie";
+  public static final String SOURCE_NAME = "nacos";
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NacosDynamicPropertiesSource.class);
 

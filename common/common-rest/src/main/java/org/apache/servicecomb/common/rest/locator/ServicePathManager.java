@@ -27,16 +27,12 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 
 /**
  * 对静态路径和动态路径的operation进行预先处理，加速operation的查询定位
  */
 public class ServicePathManager {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServicePathManager.class);
-
   private static final String REST_PATH_MANAGER = "RestServicePathManager";
 
   protected MicroserviceMeta microserviceMeta;
@@ -71,11 +67,6 @@ public class ServicePathManager {
       operationMeta.putExtData(RestConst.SWAGGER_REST_OPERATION, restOperationMeta);
       addResource(restOperationMeta);
     }
-
-    LOGGER.info("add schema to service paths. {}:{}:{}.",
-        schemaMeta.getAppId(),
-        schemaMeta.getMicroserviceName(),
-        schemaMeta.getSchemaId());
   }
 
   public OperationLocator consumerLocateOperation(String path, String httpMethod) {

@@ -27,7 +27,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.Discovery;
@@ -98,7 +97,7 @@ public class DiscoveryManager implements LifeCycle {
             changed = true;
           }
           // check ping status
-          if (System.currentTimeMillis() - instance.getPingSuccessTime() > 180_000L) {
+          if (System.currentTimeMillis() - instance.getPingTime() > 180_000L) {
             boolean pingResult = ping.ping(instance);
             if (pingResult && instance.getPingStatus() != PingStatus.OK) {
               instance.setPingStatus(PingStatus.OK);
@@ -107,9 +106,7 @@ public class DiscoveryManager implements LifeCycle {
               instance.setPingStatus(PingStatus.FAIL);
               changed = true;
             }
-            if (pingResult) {
-              instance.setPingSuccessTime(System.currentTimeMillis());
-            }
+            instance.setPingTime(System.currentTimeMillis());
           }
           // check unused
           if (instance.getHistoryStatus() == HistoryStatus.HISTORY) {
@@ -118,11 +115,16 @@ public class DiscoveryManager implements LifeCycle {
                 instance.getIsolationStatus() == IsolationStatus.ISOLATED) {
               removed.computeIfAbsent(apps.getKey(), k -> new HashMap<>())
                   .computeIfAbsent(services.getKey(), k -> new ArrayList<>()).add(instance.getInstanceId());
+              LOGGER.info("Remove instance {}/{}/{}/{}/{}/{}/{}/{}",
+                  apps.getKey(), services.getKey(), instance.getRegistryName(),
+                  instance.getInstanceId(), instance.getHistoryStatus(),
+                  instance.getStatus(), instance.getPingStatus(), instance.getIsolationStatus());
+              changed = true;
             }
           }
         }
         if (changed) {
-          rebuildVersionCache(apps.getKey(), apps.getKey());
+          rebuildVersionCache(apps.getKey(), services.getKey());
         }
       }
     }
@@ -130,12 +132,7 @@ public class DiscoveryManager implements LifeCycle {
     for (Entry<String, Map<String, List<String>>> apps : removed.entrySet()) {
       for (Entry<String, List<String>> services : apps.getValue().entrySet()) {
         for (String instance : services.getValue()) {
-          StatefulDiscoveryInstance removedInstance =
-              allInstances.get(apps.getKey()).get(services.getKey()).remove(instance);
-          LOGGER.info("Remove instance {}/{}/{}/{}/{}/{}/{}/{}",
-              apps.getKey(), services.getKey(), removedInstance.getRegistryName(),
-              instance, removedInstance.getHistoryStatus(),
-              removedInstance.getStatus(), removedInstance.getPingStatus(), removedInstance.getIsolationStatus());
+          allInstances.get(apps.getKey()).get(services.getKey()).remove(instance);
         }
       }
     }
@@ -152,26 +149,27 @@ public class DiscoveryManager implements LifeCycle {
         new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, key -> new ConcurrentHashMapEx<>());
 
     for (StatefulDiscoveryInstance statefulInstance : statefulInstances.values()) {
-      if (StringUtils.isEmpty(registryName)) {
-        statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
-        continue;
-      }
-      if (registryName.equals(statefulInstance.getRegistryName())) {
-        statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
+      if (registryName == null || registryName.equals(statefulInstance.getRegistryName())) {
+        if (!instances.contains(statefulInstance)) {
+          statefulInstance.setPingTime(0);
+          statefulInstance.setHistoryStatus(HistoryStatus.HISTORY);
+        }
       }
     }
 
     for (DiscoveryInstance instance : instances) {
-      StatefulDiscoveryInstance target = statefulInstances.get(instance.getInstanceId());
-      if (target == null) {
-        statefulInstances.put(instance.getInstanceId(), new StatefulDiscoveryInstance(instance));
+      StatefulDiscoveryInstance target = new StatefulDiscoveryInstance(instance);
+      StatefulDiscoveryInstance origin = statefulInstances.get(instance.getInstanceId());
+      if (origin == null) {
+        statefulInstances.put(instance.getInstanceId(), target);
         continue;
       }
-      target.setHistoryStatus(HistoryStatus.CURRENT);
-      target.setMicroserviceInstanceStatus(instance.getStatus());
+      target.setPingTime(origin.getPingTime());
+      target.setPingStatus(origin.getPingStatus());
+      target.setIsolateDuration(origin.getIsolateDuration());
+      target.setIsolationStatus(origin.getIsolationStatus());
+      statefulInstances.put(instance.getInstanceId(), target);
     }
-
-    rebuildVersionCache(application, serviceName);
 
     StringBuilder instanceInfo = new StringBuilder();
     for (DiscoveryInstance instance : instances) {
@@ -184,6 +182,8 @@ public class DiscoveryManager implements LifeCycle {
     }
     LOGGER.info("Applying new instance list for {}/{}/{}. Endpoints {}",
         application, serviceName, instances.size(), instanceInfo);
+
+    rebuildVersionCache(application, serviceName);
   }
 
   public void onInstanceIsolated(StatefulDiscoveryInstance instance, long isolateDuration) {
@@ -233,6 +233,20 @@ public class DiscoveryManager implements LifeCycle {
         result.add(instance);
       }
     }
+    StringBuilder instanceInfo = new StringBuilder();
+    for (StatefulDiscoveryInstance instance : result) {
+      instanceInfo.append("{")
+          .append(instance.getInstanceId()).append(",")
+          .append(instance.getHistoryStatus()).append(",")
+          .append(instance.getStatus()).append(",")
+          .append(instance.getPingStatus()).append(",")
+          .append(instance.getIsolationStatus()).append(",")
+          .append(instance.getEndpoints()).append(",")
+          .append(instance.getRegistryName())
+          .append("}");
+    }
+    LOGGER.info("Rebuild cached instance list for {}/{}/{}. Endpoints {}",
+        application, serviceName, result.size(), instanceInfo);
     return new VersionedCache()
         .name(application + ":" + serviceName)
         .autoCacheVersion()

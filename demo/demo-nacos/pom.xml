@@ -34,20 +34,6 @@
       <artifactId>solution-basic</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-nacos</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>servicestage-environment</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.servicecomb</groupId>
-          <artifactId>registry-service-center</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>

@@ -24,15 +24,11 @@ import org.apache.servicecomb.config.BootStrapProperties;
 import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingMaintainService;
 import com.alibaba.nacos.api.naming.NamingService;
-import com.alibaba.nacos.client.naming.NacosNamingMaintainService;
 import com.alibaba.nacos.client.naming.NacosNamingService;
 
 public class NamingServiceManager {
   private static volatile NamingService namingService;
-
-  private static volatile NamingMaintainService namingMaintainService;
 
   public static NamingService buildNamingService(Environment environment, NacosDiscoveryProperties properties) {
     if (Objects.isNull(namingService)) {
@@ -47,22 +43,6 @@ public class NamingServiceManager {
       }
     }
     return namingService;
-  }
-
-  public static NamingMaintainService buildNamingMaintainService(Environment environment,
-      NacosDiscoveryProperties properties) {
-    if (Objects.isNull(namingMaintainService)) {
-      synchronized (NamingServiceManager.class) {
-        if (Objects.isNull(namingMaintainService)) {
-          try {
-            namingMaintainService = new NacosNamingMaintainService(getProperties(environment, properties));
-          } catch (NacosException e) {
-            throw new IllegalStateException("build namingMaintainService failed.");
-          }
-        }
-      }
-    }
-    return namingMaintainService;
   }
 
   private static Properties getProperties(Environment environment,

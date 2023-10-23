@@ -26,7 +26,7 @@ public class MetricsBootstrapConfig {
   public static final String CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN =
       "servicecomb.metrics.publisher.defaultLog.invocation.latencyDistribution.minScopeLength";
 
-  public static final int DEFAULT_METRICS_WINDOW_TIME = 60000;
+  public static final int DEFAULT_METRICS_WINDOW_TIME = 300_000;
 
   private long msPollInterval;
 

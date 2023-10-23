@@ -76,11 +76,12 @@ public final class SPIServiceUtils {
         .map(Entry::getValue)
         .collect(Collectors.toList());
 
-    LOGGER.info("Found SPI service {}, count={}.", serviceType.getName(), services.size());
+    StringBuilder info = new StringBuilder();
     for (int idx = 0; idx < services.size(); idx++) {
       T service = services.get(idx);
-      LOGGER.info("  {}. {}.", idx, service.getClass().getName());
+      info.append("{").append(idx).append(",").append(service.getClass().getSimpleName()).append("}");
     }
+    LOGGER.info("Found SPI service {}, services={}.", serviceType.getSimpleName(), info);
 
     return services;
   }
