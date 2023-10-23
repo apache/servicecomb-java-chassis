@@ -33,18 +33,15 @@ import com.alibaba.nacos.api.naming.pojo.Instance;
 public class NacosRegistrationInstance implements RegistrationInstance {
   private final Instance instance;
 
-  private final NacosDiscoveryProperties nacosDiscoveryProperties;
-
   private final Map<String, String> schemas = new HashMap<>();
 
   private final List<String> endpoints = new ArrayList<>();
 
   private final Environment environment;
 
-  public NacosRegistrationInstance(Instance instance, NacosDiscoveryProperties nacosDiscoveryProperties,
+  public NacosRegistrationInstance(Instance instance,
       Environment environment) {
     this.instance = instance;
-    this.nacosDiscoveryProperties = nacosDiscoveryProperties;
     this.environment = environment;
   }
 
@@ -70,14 +67,14 @@ public class NacosRegistrationInstance implements RegistrationInstance {
 
   @Override
   public String getVersion() {
-    return instance.getMetadata().get("version");
+    return instance.getMetadata().get(NacosConst.PROPERTY_VERSION);
   }
 
   @Override
   public DataCenterInfo getDataCenterInfo() {
     DataCenterInfo dataCenterInfo = new DataCenterInfo();
-    dataCenterInfo.setRegion(instance.getMetadata().get("region"));
-    dataCenterInfo.setAvailableZone(instance.getMetadata().get("zone"));
+    dataCenterInfo.setRegion(instance.getMetadata().get(NacosConst.PROPERTY_REGION));
+    dataCenterInfo.setAvailableZone(instance.getMetadata().get(NacosConst.PROPERTY_ZONE));
     return dataCenterInfo;
   }
 

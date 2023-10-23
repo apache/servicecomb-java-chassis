@@ -64,8 +64,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     instance = NacosMicroserviceHandler.createMicroserviceInstance(dataCenterProperties, nacosDiscoveryProperties,
         environment);
     instance.setInstanceId(instanceId);
-    nacosRegistrationInstance = new NacosRegistrationInstance(instance, nacosDiscoveryProperties,
-        environment);
+    nacosRegistrationInstance = new NacosRegistrationInstance(instance, environment);
 
     namingService = NamingServiceManager.buildNamingService(environment, nacosDiscoveryProperties);
   }

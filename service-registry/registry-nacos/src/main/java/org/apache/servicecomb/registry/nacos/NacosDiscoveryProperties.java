@@ -23,7 +23,7 @@ import java.util.Map;
 public class NacosDiscoveryProperties {
   private boolean enabled = true;
 
-  private String serverAddr;
+  private String serverAddr = "127.0.0.1";
 
   private Map<String, String> metadata = new HashMap<>();
 
