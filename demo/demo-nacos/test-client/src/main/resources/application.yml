@@ -20,10 +20,6 @@ servicecomb:
     application: demo-nacos
     name: test-client
     version: 0.0.1
-  registry:
-    nacos:
-      enabled: true
-      serverAddr: ${PAAS_CSE_NACOS_ENDPOINT:http://127.0.0.1:8848}
 
   rest:
     address: 0.0.0.0:9097 # should be same with server.port to use web container
