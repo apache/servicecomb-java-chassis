@@ -130,7 +130,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    // Do not support Nacos update status now. Because not update status will fail
+    // Do not support Nacos update status now. Because update status will fail
     // due to some unknown reasons(Maybe different constrains in register and maintain api).
     return true;
   }
