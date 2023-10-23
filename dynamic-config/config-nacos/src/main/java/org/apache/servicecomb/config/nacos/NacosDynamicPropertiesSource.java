@@ -16,21 +16,16 @@
  */
 package org.apache.servicecomb.config.nacos;
 
-import static org.apache.servicecomb.config.nacos.ConfigurationAction.CREATE;
-import static org.apache.servicecomb.config.nacos.ConfigurationAction.DELETE;
-import static org.apache.servicecomb.config.nacos.ConfigurationAction.SET;
-
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.servicecomb.config.ConfigMapping;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
-
-import com.google.common.annotations.VisibleForTesting;
 
 public class NacosDynamicPropertiesSource implements DynamicPropertiesSource {
   public static final String SOURCE_NAME = "nacos";
@@ -44,34 +39,23 @@ public class NacosDynamicPropertiesSource implements DynamicPropertiesSource {
 
   private final UpdateHandler updateHandler = new UpdateHandler();
 
-  @VisibleForTesting
-  UpdateHandler getUpdateHandler() {
-    return updateHandler;
-  }
-
-
   private void init(Environment environment) {
     NacosClient nacosClient = new NacosClient(updateHandler, environment);
-    nacosClient.refreshNacosConfig();
+    try {
+      nacosClient.refreshNacosConfig();
+    } catch (Exception e) {
+      throw new IllegalStateException("Set up nacos config failed.", e);
+    }
   }
 
   public class UpdateHandler {
-    public void handle(ConfigurationAction action, Map<String, Object> config) {
-      if (config == null || config.isEmpty()) {
-        return;
-      }
-      Map<String, Object> configuration = ConfigMapping.getConvertedMap(config);
-      if (CREATE.equals(action)) {
-        valueCache.putAll(configuration);
-      } else if (SET.equals(action)) {
-        valueCache.putAll(configuration);
-      } else if (DELETE.equals(action)) {
-        configuration.keySet().forEach(valueCache::remove);
-      } else {
-        LOGGER.error("action: {} is invalid.", action.name());
-        return;
-      }
-      LOGGER.warn("Config value cache changed: action:{}; item:{}", action.name(), configuration.keySet());
+    public void handle(Map<String, Object> current, Map<String, Object> last) {
+      ConfigurationChangedEvent event = ConfigurationChangedEvent.createIncremental(current, last);
+      LOGGER.info("Dynamic configuration changed: {}", event.getChanged());
+      valueCache.putAll(event.getAdded());
+      valueCache.putAll(event.getUpdated());
+      event.getDeleted().forEach((k, v) -> valueCache.remove(k));
+      EventManager.post(event);
     }
   }
 

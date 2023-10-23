@@ -50,11 +50,22 @@ public class NamingServiceManager {
     Properties properties = new Properties();
     properties.put(NacosConst.NAMESPACE, BootStrapProperties.readServiceEnvironment(environment));
     properties.put(NacosConst.SERVER_ADDR, nacosDiscoveryProperties.getServerAddr());
-    properties.put(NacosConst.USERNAME, Objects.toString(nacosDiscoveryProperties.getUsername(), ""));
-    properties.put(NacosConst.PASSWORD, Objects.toString(nacosDiscoveryProperties.getPassword(), ""));
-    properties.put(NacosConst.NACOS_NAMING_LOG_NAME, Objects.toString(nacosDiscoveryProperties.getLogName(), ""));
-    properties.put(NacosConst.ACCESS_KEY, Objects.toString(nacosDiscoveryProperties.getAccessKey(), ""));
-    properties.put(NacosConst.SECRET_KEY, Objects.toString(nacosDiscoveryProperties.getSecretKey(), ""));
+    if (nacosDiscoveryProperties.getUsername() != null) {
+      properties.put(NacosConst.USERNAME, nacosDiscoveryProperties.getUsername());
+    }
+    if (nacosDiscoveryProperties.getPassword() != null) {
+      properties.put(NacosConst.PASSWORD, nacosDiscoveryProperties.getPassword());
+    }
+    if (nacosDiscoveryProperties.getAccessKey() != null) {
+      properties.put(NacosConst.ACCESS_KEY, nacosDiscoveryProperties.getAccessKey());
+    }
+    if (nacosDiscoveryProperties.getSecretKey() != null) {
+      properties.put(NacosConst.SECRET_KEY, nacosDiscoveryProperties.getSecretKey());
+    }
+    if (nacosDiscoveryProperties.getLogName() != null) {
+      properties.put(NacosConst.NACOS_NAMING_LOG_NAME, nacosDiscoveryProperties.getLogName());
+    }
+
     properties.put(NacosConst.CLUSTER_NAME, nacosDiscoveryProperties.getClusterName());
     properties.put(NacosConst.NAMING_LOAD_CACHE_AT_START, nacosDiscoveryProperties.getNamingLoadCacheAtStart());
     return properties;

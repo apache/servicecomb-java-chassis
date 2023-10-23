@@ -20,17 +20,35 @@ package org.apache.servicecomb.config.nacos;
 import org.springframework.core.env.Environment;
 
 public class NacosConfig {
-  public static final String DATA_ID = "servicecomb.nacos.dataId";
+  public static final String PROPERTY_DATA_ID = "servicecomb.nacos.dataId";
 
-  public static final String SERVER_ADDR = "servicecomb.nacos.serverAddr";
+  public static final String PROPERTY_SERVER_ADDR = "servicecomb.nacos.serverAddr";
 
-  public static final String GROUP = "servicecomb.nacos.group";
+  public static final String PROPERTY_GROUP = "servicecomb.nacos.group";
 
-  public static final String ADD_PREFIX = "servicecomb.nacos.addPrefix";
+  public static final String PROPERTY_ADD_PREFIX = "servicecomb.nacos.addPrefix";
 
-  public static final String NAME_SPACE = "servicecomb.nacos.namespace";
+  public static final String PROPERTY_CONTENT_TYPE = "servicecomb.nacos.contentType";
 
-  public static final String CONTENT_TYPE = "servicecomb.nacos.contentType";
+  public static final String PROPERTY_USERNAME = "servicecomb.nacos.username";
+
+  public static final String PROPERTY_PASSWORD = "servicecomb.nacos.password";
+
+  public static final String PROPERTY_ACCESS_KEY = "servicecomb.nacos.accessKey";
+
+  public static final String PROPERTY_SECRET_KEY = "servicecomb.nacos.secretKey";
+
+  public static final String PROP_NAMESPACE = "namespace";
+
+  public static final String PROP_ADDRESS = "serverAddr";
+
+  public static final String PROP_USERNAME = "username";
+
+  public static final String PROP_PASSWORD = "password";
+
+  public static final String PROP_ACCESS_KEY = "accessKey";
+
+  public static final String PROP_SECRET_KEY = "secretKey";
 
   private final Environment environment;
 
@@ -39,26 +57,38 @@ public class NacosConfig {
   }
 
   public String getServerAddr() {
-    return environment.getProperty(SERVER_ADDR);
+    return environment.getProperty(PROPERTY_SERVER_ADDR, "http://127.0.0.1:8848");
   }
 
   public String getDataId() {
-    return environment.getProperty(DATA_ID);
+    return environment.getProperty(PROPERTY_DATA_ID);
   }
 
   public String getGroup() {
-    return environment.getProperty(GROUP);
+    return environment.getProperty(PROPERTY_GROUP);
   }
 
-  public String getNameSpace() {
-    return environment.getProperty(NAME_SPACE, "public");
+  public String getUsername() {
+    return environment.getProperty(PROPERTY_USERNAME);
+  }
+
+  public String getPassword() {
+    return environment.getProperty(PROPERTY_PASSWORD);
+  }
+
+  public String getAccessKey() {
+    return environment.getProperty(PROPERTY_ACCESS_KEY);
+  }
+
+  public String getSecretKey() {
+    return environment.getProperty(PROPERTY_SECRET_KEY);
   }
 
   public String getContentType() {
-    return environment.getProperty(CONTENT_TYPE, "yaml");
+    return environment.getProperty(PROPERTY_CONTENT_TYPE, "yaml");
   }
 
   public boolean getAddPrefix() {
-    return environment.getProperty(ADD_PREFIX, boolean.class, true);
+    return environment.getProperty(PROPERTY_ADD_PREFIX, boolean.class, false);
   }
 }
