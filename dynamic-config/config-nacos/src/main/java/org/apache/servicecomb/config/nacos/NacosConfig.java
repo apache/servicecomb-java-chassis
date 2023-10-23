@@ -32,7 +32,7 @@ public class NacosConfig {
 
   public static final String PROPERTY_USERNAME = "servicecomb.nacos.username";
 
-  public static final String PROPERTY_PASSWORD = "servicecomb.nacos.username";
+  public static final String PROPERTY_PASSWORD = "servicecomb.nacos.password";
 
   public static final String PROPERTY_ACCESS_KEY = "servicecomb.nacos.accessKey";
 
@@ -57,7 +57,7 @@ public class NacosConfig {
   }
 
   public String getServerAddr() {
-    return environment.getProperty(PROPERTY_SERVER_ADDR);
+    return environment.getProperty(PROPERTY_SERVER_ADDR, "http://127.0.0.1:8848");
   }
 
   public String getDataId() {
