@@ -33,43 +33,11 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import com.netflix.loadbalancer.LoadBalancerStats;
-import com.netflix.loadbalancer.Server;
-
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestSessionSticknessRule {
-
-  @Test
-  public void testRuleFullOperation() {
-    SessionStickinessRule rule = new SessionStickinessRule();
-
-    LoadBalancer mockedLb = mock(LoadBalancer.class);
-    Transport transport = mock(Transport.class);
-    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance);
-    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("1234");
-
-    ServiceCombServer mockedServer =
-        new ServiceCombServer(null, new Endpoint(transport, "rest:127.0.0.1:8889", instance1));
-    Invocation invocation = mock(Invocation.class);
-    LoadBalancerStats stats = mock(LoadBalancerStats.class);
-    Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);
-    rule.chooseServerWhenTimeout(Arrays.asList(mockedServer), invocation);
-    mockedServer.setAlive(true);
-    mockedServer.setReadyToServe(true);
-    List<ServiceCombServer> allServers = Arrays.asList(mockedServer);
-    rule.setLoadBalancer(mockedLb);
-
-    Server s = rule.choose(allServers, invocation);
-    Assertions.assertEquals(s, mockedServer);
-
-    s = rule.choose(allServers, invocation);
-    Assertions.assertEquals(s, mockedServer);
-  }
-
   @Test
   public void testServerWithoutTimeoutAndWithThreshold() {
 
@@ -84,6 +52,9 @@ public class TestSessionSticknessRule {
 
     Deencapsulation.setField(ss, "lastServer", server);
 
+    ServerMetrics serverMetrics = new ServerMetrics();
+    Mockito.when(server.getServerMetrics()).thenReturn(serverMetrics);
+
     new MockUp<SessionStickinessRule>() {
 
       @Mock
@@ -95,7 +66,7 @@ public class TestSessionSticknessRule {
     new MockUp<SessionStickinessRule>() {
 
       @Mock
-      private boolean isErrorThresholdMet() {
+      private boolean isErrorThresholdMet(ServiceCombServer server) {
         return true;
       }
     };
@@ -103,6 +74,7 @@ public class TestSessionSticknessRule {
     try {
       ss.choose(servers, invocation);
     } catch (Exception e) {
+      e.printStackTrace();
       status = false;
     }
     Assertions.assertTrue(status);
@@ -194,7 +166,7 @@ public class TestSessionSticknessRule {
     new MockUp<SessionStickinessRule>() {
 
       @Mock
-      private boolean isErrorThresholdMet() {
+      private boolean isErrorThresholdMet(ServiceCombServer server) {
         return false;
       }
     };
@@ -202,31 +174,11 @@ public class TestSessionSticknessRule {
     new MockUp<SessionStickinessRule>() {
 
       @Mock
-      private boolean isLastServerExists(Server server) {
+      private boolean isLastServerExists(ServiceCombServer server) {
         return true;
       }
     };
 
-    try {
-      ss.choose(servers, invocation);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assertions.assertTrue(status);
-  }
-
-  @Test
-  public void testServerWithActualServerObj() {
-
-    boolean status = true;
-    SessionStickinessRule ss = new SessionStickinessRule();
-
-    Invocation invocation = mock(Invocation.class);
-    ServiceCombServer server = mock(ServiceCombServer.class);
-    List<ServiceCombServer> servers = new ArrayList<>();
-    servers.add(server);
-
-    Deencapsulation.setField(ss, "lastServer", server);
     try {
       ss.choose(servers, invocation);
     } catch (Exception e) {
@@ -246,9 +198,6 @@ public class TestSessionSticknessRule {
     Mockito.when(discoveryInstance.getInstanceId()).thenReturn("1234");
     ServiceCombServer mockedServer =
         new ServiceCombServer(null, new Endpoint(transport, "rest:127.0.0.1:8890", instance1));
-    mockedServer.setAlive(true);
-    mockedServer.setReadyToServe(true);
-    mockedServer.setId("mockedServer");
     List<ServiceCombServer> allServers = Arrays.asList(mockedServer);
     LoadBalancer lb = new LoadBalancer(rule, "mockedServer");
     when(invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST)).thenReturn(allServers);
@@ -264,11 +213,11 @@ public class TestSessionSticknessRule {
       }
 
       @Mock
-      private boolean isErrorThresholdMet() {
+      private boolean isErrorThresholdMet(ServiceCombServer server) {
         return false;
       }
     };
-    Server s = rule.choose(allServers, invocation);
+    ServiceCombServer s = rule.choose(allServers, invocation);
     Assertions.assertEquals(mockedServer, s);
   }
 }

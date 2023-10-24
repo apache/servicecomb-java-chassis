@@ -17,27 +17,31 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.servicecomb.core.Invocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import io.github.resilience4j.core.metrics.Metrics.Outcome;
 
 public class TestWeightedResponseTimeRuleExt {
   @Test
   public void testRoundRobin() {
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
-    LoadBalancer loadBalancer = new LoadBalancer(rule, "testService");
     List<ServiceCombServer> servers = new ArrayList<>();
     Invocation invocation = Mockito.mock(Invocation.class);
     for (int i = 0; i < 2; i++) {
       ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
+      ServerMetrics serverMetrics = new ServerMetrics();
+      Mockito.when(server.getServerMetrics()).thenReturn(serverMetrics);
       Mockito.when(server.toString()).thenReturn("server " + i);
       servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 1);
+      serverMetrics.record(1, TimeUnit.MILLISECONDS, Outcome.SUCCESS);
     }
 
     AtomicInteger server1 = new AtomicInteger(0);
@@ -53,25 +57,30 @@ public class TestWeightedResponseTimeRuleExt {
   }
 
   @Test
-  public void testWeighed() throws InterruptedException {
+  public void testWeighed() {
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
-    LoadBalancer loadBalancer = new LoadBalancer(rule, "testService");
     List<ServiceCombServer> servers = new ArrayList<>();
     Invocation invocation = Mockito.mock(Invocation.class);
 
     ServiceCombServer server1 = Mockito.mock(ServiceCombServer.class);
     Mockito.when(server1.toString()).thenReturn("server " + 0);
     servers.add(server1);
+    ServerMetrics serverMetrics1 = new ServerMetrics();
+    Mockito.when(server1.getServerMetrics()).thenReturn(serverMetrics1);
+
     ServiceCombServer server2 = Mockito.mock(ServiceCombServer.class);
     Mockito.when(server2.toString()).thenReturn("server " + 1);
     servers.add(server2);
+    ServerMetrics serverMetrics2 = new ServerMetrics();
+    Mockito.when(server2.getServerMetrics()).thenReturn(serverMetrics2);
 
     AtomicInteger serverCounter1 = new AtomicInteger(0);
     AtomicInteger serverCounter2 = new AtomicInteger(0);
+    for (int i = 0; i < 100; i++) {
+      serverMetrics1.record(200, TimeUnit.MILLISECONDS, Outcome.SUCCESS);
+      serverMetrics2.record(400, TimeUnit.MILLISECONDS, Outcome.SUCCESS);
+    }
     for (int i = 0; i < 2000; i++) {
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server1, 20);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server2, 400);
-      Thread.sleep(1);
       if (rule.choose(servers, invocation).toString().equals("server 0")) {
         serverCounter1.incrementAndGet();
       } else {
@@ -80,16 +89,15 @@ public class TestWeightedResponseTimeRuleExt {
     }
     double percent = (double) serverCounter1.get() / (serverCounter2.get() + serverCounter1.get());
     System.out.println("percent" + percent);
-    Assertions.assertTrue(percent > 0.60d);
-    Assertions.assertTrue(percent < 0.90d);
+    Assertions.assertEquals(0.67d, percent, 0.1);
     serverCounter1.set(0);
     serverCounter2.set(0);
 
-    Thread.sleep(1000);
+    for (int i = 0; i < 100; i++) {
+      serverMetrics1.record(20, TimeUnit.MILLISECONDS, Outcome.SUCCESS);
+      serverMetrics2.record(20, TimeUnit.MILLISECONDS, Outcome.SUCCESS);
+    }
     for (int i = 0; i < 2000; i++) {
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server1, 20);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server2, 20);
-      Thread.sleep(1);
       if (rule.choose(servers, invocation).toString().equals("server 0")) {
         serverCounter1.incrementAndGet();
       } else {
@@ -98,7 +106,7 @@ public class TestWeightedResponseTimeRuleExt {
     }
     percent = (double) serverCounter1.get() / (serverCounter2.get() + serverCounter1.get());
     System.out.println("percent" + percent);
-    Assertions.assertEquals(0.50d, percent, 0.2);
+    Assertions.assertEquals(0.50d, percent, 0.1);
   }
 
   @Test
@@ -106,17 +114,18 @@ public class TestWeightedResponseTimeRuleExt {
     // 100 instances will taken less than 0.1ms. Because we use weighed rule when response time more than 10ms,
     // This only taken 1/1000 time.
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
-    LoadBalancer loadBalancer = new LoadBalancer(rule, "testService");
     List<ServiceCombServer> servers = new ArrayList<>();
     Invocation invocation = Mockito.mock(Invocation.class);
     for (int i = 0; i < 100; i++) {
       ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
+      ServerMetrics serverMetrics = new ServerMetrics();
       Mockito.when(server.toString()).thenReturn("server " + i);
+      Mockito.when(server.getServerMetrics()).thenReturn(serverMetrics);
       servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, i);
+      serverMetrics.record(i, TimeUnit.MILLISECONDS, Outcome.SUCCESS);
     }
     long begin = System.currentTimeMillis();
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100000; i++) {
       rule.choose(servers, invocation);
     }
     long taken = System.currentTimeMillis() - begin;
@@ -128,17 +137,18 @@ public class TestWeightedResponseTimeRuleExt {
   public void testBenchmarkRobin() {
     // 100 instances will taken less than 0.02ms. Not as good as RoundRobinRule, which taken less than 0.001ms
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
-    LoadBalancer loadBalancer = new LoadBalancer(rule, "testService");
     List<ServiceCombServer> servers = new ArrayList<>();
     Invocation invocation = Mockito.mock(Invocation.class);
     for (int i = 0; i < 100; i++) {
       ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
+      ServerMetrics serverMetrics = new ServerMetrics();
       Mockito.when(server.toString()).thenReturn("server " + i);
+      Mockito.when(server.getServerMetrics()).thenReturn(serverMetrics);
       servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 2);
+      serverMetrics.record(2, TimeUnit.MILLISECONDS, Outcome.SUCCESS);
     }
     long begin = System.currentTimeMillis();
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100000; i++) {
       rule.choose(servers, invocation);
     }
     long taken = System.currentTimeMillis() - begin;

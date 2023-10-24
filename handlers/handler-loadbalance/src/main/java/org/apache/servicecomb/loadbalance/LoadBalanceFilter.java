@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
@@ -44,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import io.github.resilience4j.core.metrics.Metrics.Outcome;
 import jakarta.ws.rs.core.Response.Status;
 
 public class LoadBalanceFilter implements ConsumerFilter {
@@ -196,16 +198,12 @@ public class LoadBalanceFilter implements ConsumerFilter {
               String.format("No available address found for %s/%s.", invocation.getAppId(),
                   invocation.getMicroserviceName())));
     }
-    chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());
     return filterNode.onFilter(invocation).whenComplete((r, e) -> {
-      // The stats are for WeightedResponseTimeRule
-      chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (e != null || isFailedResponse(r)) {
-        // The stats are for SessionStickinessRule
-        chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
+        server.getServerMetrics().record((System.currentTimeMillis() - time), TimeUnit.MILLISECONDS, Outcome.ERROR);
       } else {
-        chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
+        server.getServerMetrics().record((System.currentTimeMillis() - time), TimeUnit.MILLISECONDS, Outcome.SUCCESS);
       }
     });
   }
@@ -239,8 +237,8 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
     LOGGER.info("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
         invocation.getMicroserviceQualifiedName(),
-        nextServer == null ? "" : nextServer.getHostPort(),
-        lastServer == null ? "" : lastServer.getHostPort(),
+        nextServer == null ? "" : nextServer.getEndpoint().getEndpoint(),
+        lastServer == null ? "" : nextServer.getEndpoint().getEndpoint(),
         invocation.getTraceId());
     invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, nextServer);
     return nextServer;

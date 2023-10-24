@@ -17,44 +17,27 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
-import com.netflix.loadbalancer.Server;
-
 /**
- * 服务器抽象，address只有transport识别， LB模块不识别
- * LB模块不提供服务器状态监测，这块功能是由注册中心进行处理的。
+ *  Server object used for transports and load balancer.
  *
  */
-public class ServiceCombServer extends Server {
+public class ServiceCombServer {
   private final Endpoint endpoint;
 
   private final String microserviceName;
 
+  private final ServerMetrics serverMetrics;
+
   public ServiceCombServer(String microserviceName, Endpoint endpoint) {
-    super(null);
     this.microserviceName = microserviceName;
     this.endpoint = endpoint;
-
-    // Different types of Robin Component Rule have different usages for server status and list.
-    // e.g. RoundRobinRule using getAllServers & alive & readyToServe
-    // RandomRule using getReachableServers & alive
-    // WeightedResponseTimeRule using getAllServers & alive
-    // To make all rules work only on "how to choose a server from alive servers", we do not rely on Robbin defined status
-    this.setAlive(true);
-    this.setReadyToServe(true);
-    try {
-      URI endpointURI = new URI(endpoint.getEndpoint());
-      setHost(endpointURI.getHost());
-      setPort(endpointURI.getPort());
-    } catch (URISyntaxException ignored) {
-    }
+    this.serverMetrics = new ServerMetrics();
   }
 
   public String getMicroserviceName() {
@@ -74,10 +57,12 @@ public class ServiceCombServer extends Server {
     return endpoint.getEndpoint();
   }
 
-  // used in LoadBalancerContext
-  @Override
   public String getHost() {
     return endpoint.getEndpoint();
+  }
+
+  public ServerMetrics getServerMetrics() {
+    return serverMetrics;
   }
 
   @Override

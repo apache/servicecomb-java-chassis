@@ -20,33 +20,40 @@ package org.apache.servicecomb.loadbalance;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
-
-import com.netflix.loadbalancer.ServerStats;
 
 /**
  * Rule based on response time.
  */
 public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
-  // 10ms
+  // when all servers are very fast(less than MIN_GAP), use round-robin rule.
   private static final double MIN_GAP = 10d;
 
-  private static final int RANDOM_PERCENT = 10;
+  // calculate stats once per RANDOM_PERCENT requests.
+  private static final int RANDOM_PERCENT = 1000;
 
-  private LoadBalancer loadBalancer;
+  private final Object lock = new Object();
 
-  private double totalWeightsCache = -1d;
+  private final AtomicInteger counter = new AtomicInteger(0);
 
-  @Override
-  public void setLoadBalancer(LoadBalancer loadBalancer) {
-    this.loadBalancer = loadBalancer;
-  }
+  // notices: rule will always use as a fixed group of instance, see LoadBalancer for details.
+  private volatile int size = -1;
+
+  private volatile List<Double> cacheStates = new ArrayList<>();
 
   @Override
   public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
-    List<Double> stats = calculateTotalWeights(servers);
+    int count = counter.getAndIncrement();
+    if (count % RANDOM_PERCENT == 0 || size != servers.size()) {
+      synchronized (lock) {
+        this.cacheStates = doCalculateTotalWeights(servers);
+        this.size = servers.size();
+      }
+    }
 
+    List<Double> stats = this.cacheStates;
     if (stats.size() > 0) {
       double finalTotal = stats.get(stats.size() - 1);
       List<Double> weights = new ArrayList<>(servers.size());
@@ -65,26 +72,13 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
     return super.choose(servers, invocation);
   }
 
-  private List<Double> calculateTotalWeights(List<ServiceCombServer> servers) {
-    if (Double.compare(totalWeightsCache, 0) < 0 || Double.compare(totalWeightsCache, MIN_GAP * servers.size()) > 0) {
-      return doCalculateTotalWeights(servers);
-    }
-    // 10% possibilities to use weighed response rule when the normal access is very fast.
-    if (ThreadLocalRandom.current().nextInt(RANDOM_PERCENT) == 0) {
-      return doCalculateTotalWeights(servers);
-    } else {
-      return new ArrayList<>();
-    }
-  }
-
-  private List<Double> doCalculateTotalWeights(List<ServiceCombServer> servers) {
+  private static List<Double> doCalculateTotalWeights(List<ServiceCombServer> servers) {
     List<Double> stats = new ArrayList<>(servers.size() + 1);
     double totalWeights = 0;
     boolean needRandom = false;
     for (ServiceCombServer server : servers) {
-      ServerStats serverStats = loadBalancer.getLoadBalancerStats().getSingleServerStat(server);
-      //getResponseTimeAvgRecent()按照时间窗口统计，时间窗口大小为1分钟；getResponseTimeAvg()一直累积
-      double avgTime = serverStats.getResponseTimeAvgRecent();
+      // this method will create new instance, so we cache the states.
+      double avgTime = server.getServerMetrics().getSnapshot().getAverageDuration().toMillis();
       if (!needRandom && avgTime > MIN_GAP) {
         needRandom = true;
       }
@@ -92,7 +86,6 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
       stats.add(avgTime);
     }
     stats.add(totalWeights);
-    totalWeightsCache = totalWeights;
     if (needRandom) {
       return stats;
     } else {

@@ -17,16 +17,23 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import java.util.concurrent.TimeUnit;
 
-public class TestLoadbalanceClientConfig {
+import io.github.resilience4j.core.metrics.FixedSizeSlidingWindowMetrics;
+import io.github.resilience4j.core.metrics.Metrics.Outcome;
+import io.github.resilience4j.core.metrics.Snapshot;
 
-  @Test
-  public void testLoadbalanceConstructor() {
+/**
+ * ServiceCombServer states
+ */
+public class ServerMetrics {
+  private final FixedSizeSlidingWindowMetrics metrics = new FixedSizeSlidingWindowMetrics(50);
 
-    LoadbalanceClientConfig lbc = new LoadbalanceClientConfig("test");
+  public Snapshot record(long duration, TimeUnit durationUnit, Outcome outcome) {
+    return metrics.record(duration, durationUnit, outcome);
+  }
 
-    Assertions.assertNotNull(lbc);
+  public Snapshot getSnapshot() {
+    return metrics.getSnapshot();
   }
 }

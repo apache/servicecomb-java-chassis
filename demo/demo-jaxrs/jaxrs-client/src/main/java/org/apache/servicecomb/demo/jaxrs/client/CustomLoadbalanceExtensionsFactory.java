@@ -22,28 +22,11 @@ import org.apache.servicecomb.loadbalance.RoundRobinRuleExt;
 import org.apache.servicecomb.loadbalance.RuleExt;
 import org.springframework.stereotype.Component;
 
-import com.netflix.client.DefaultLoadBalancerRetryHandler;
-import com.netflix.client.Utils;
-
 @Component
 public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
 
   static class MyCustomRule extends RoundRobinRuleExt {
 
-  }
-
-  static class MyCustomHandler extends DefaultLoadBalancerRetryHandler {
-    @Override
-    public boolean isRetriableException(Throwable e, boolean sameServer) {
-      if (retryEnabled) {
-        return Utils.isPresentAsCause(e, getRetriableExceptions());
-      }
-      return false;
-    }
-
-    public MyCustomHandler(int retrySameServer, int retryNextServer, boolean retryEnabled) {
-      super(retrySameServer, retryNextServer, retryEnabled);
-    }
   }
 
   @Override

@@ -19,13 +19,11 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Invocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.loadbalancer.LoadBalancerStats;
-import com.netflix.loadbalancer.ServerStats;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * 会话保持策略：优先选择上一次选中的服务器，保证请求都发送到同一个服务器上去。
@@ -36,8 +34,6 @@ public class SessionStickinessRule implements RuleExt {
   private static final Logger LOG = LoggerFactory.getLogger(SessionStickinessRule.class);
 
   private final Object lock = new Object();
-
-  private LoadBalancer loadBalancer;
 
   // use random rule as the trigger rule, to prevent consumer instance select the same producer instance.
   private final RuleExt triggerRule;
@@ -56,9 +52,9 @@ public class SessionStickinessRule implements RuleExt {
     triggerRule = new RoundRobinRuleExt();
   }
 
+  @Override
   public void setLoadBalancer(LoadBalancer loadBalancer) {
     this.microserviceName = loadBalancer.getMicroServiceName();
-    this.loadBalancer = loadBalancer;
   }
 
   private ServiceCombServer chooseNextServer(List<ServiceCombServer> servers, Invocation invocation) {
@@ -103,19 +99,10 @@ public class SessionStickinessRule implements RuleExt {
         * MILLI_COUNT_IN_SECOND);
   }
 
-  private boolean isErrorThresholdMet() {
-    LoadBalancerStats stats = loadBalancer.getLoadBalancerStats();
-
-    if (stats != null && stats.getServerStats() != null && stats.getServerStats().size() > 0) {
-      ServerStats serverStats = stats.getSingleServerStat(lastServer);
-      int successiveFailedCount = serverStats.getSuccessiveConnectionFailureCount();
-      if (Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName) > 0
-          && successiveFailedCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName)) {
-        serverStats.clearSuccessiveConnectionFailureCount();
-        return true;
-      }
-    }
-    return false;
+  private boolean isErrorThresholdMet(ServiceCombServer server) {
+    int successiveFailedCount = server.getServerMetrics().getSnapshot().getNumberOfFailedCalls();
+    return Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName) > 0
+        && successiveFailedCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName);
   }
 
   @Override
@@ -131,7 +118,7 @@ public class SessionStickinessRule implements RuleExt {
       this.lastAccessedTime = System.currentTimeMillis();
     }
 
-    if (isErrorThresholdMet()) {
+    if (isErrorThresholdMet(lastServer)) {
       LOG.warn("reached max error. choose another server.");
       errorThresholdMet = true;
       return chooseServerErrorThresholdMet(servers, invocation);
