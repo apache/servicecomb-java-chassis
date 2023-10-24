@@ -23,8 +23,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.servicecomb.core.Invocation;
 
-import com.netflix.loadbalancer.ServerStats;
-
 /**
  * Rule based on response time.
  */
@@ -78,25 +76,28 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
   }
 
   private List<Double> doCalculateTotalWeights(List<ServiceCombServer> servers) {
-    List<Double> stats = new ArrayList<>(servers.size() + 1);
-    double totalWeights = 0;
-    boolean needRandom = false;
-    for (ServiceCombServer server : servers) {
-      ServerStats serverStats = loadBalancer.getLoadBalancerStats().getSingleServerStat(server);
-      //getResponseTimeAvgRecent()按照时间窗口统计，时间窗口大小为1分钟；getResponseTimeAvg()一直累积
-      double avgTime = serverStats.getResponseTimeAvgRecent();
-      if (!needRandom && avgTime > MIN_GAP) {
-        needRandom = true;
-      }
-      totalWeights += avgTime;
-      stats.add(avgTime);
-    }
-    stats.add(totalWeights);
-    totalWeightsCache = totalWeights;
-    if (needRandom) {
-      return stats;
-    } else {
-      return new ArrayList<>();
-    }
+    // TODO: implements weighted response rule
+//    List<Double> stats = new ArrayList<>(servers.size() + 1);
+//    double totalWeights = 0;
+//    boolean needRandom = false;
+//    for (ServiceCombServer server : servers) {
+//      // TODO: implements weighted response rule
+//      ServerStats serverStats = loadBalancer.getLoadBalancerStats().getSingleServerStat(server);
+//      //getResponseTimeAvgRecent()按照时间窗口统计，时间窗口大小为1分钟；getResponseTimeAvg()一直累积
+//      double avgTime = serverStats.getResponseTimeAvgRecent();
+//      if (!needRandom && avgTime > MIN_GAP) {
+//        needRandom = true;
+//      }
+//      totalWeights += avgTime;
+//      stats.add(avgTime);
+//    }
+//    stats.add(totalWeights);
+//    totalWeightsCache = totalWeights;
+//    if (needRandom) {
+//      return stats;
+//    } else {
+//      return new ArrayList<>();
+//    }
+    return new ArrayList<>();
   }
 }

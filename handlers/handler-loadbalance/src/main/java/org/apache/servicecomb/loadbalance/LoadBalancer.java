@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.loadbalancer.LoadBalancerStats;
 
 /**
  *  A load balancer with RuleExt and ServerListFilterExt
@@ -38,8 +37,6 @@ public class LoadBalancer {
 
   private final RuleExt rule;
 
-  private final LoadBalancerStats lbStats;
-
   private final String microServiceName;
 
   private List<ServerListFilterExt> filters;
@@ -47,7 +44,6 @@ public class LoadBalancer {
   public LoadBalancer(RuleExt rule, String microServiceName) {
     this.microServiceName = microServiceName;
     this.rule = rule;
-    this.lbStats = new LoadBalancerStats(microServiceName + id.getAndDecrement());
     // load new instances, because filters work on service information
     this.filters = SPIServiceUtils.loadSortedService(ServerListFilterExt.class);
     this.rule.setLoadBalancer(this);
@@ -72,10 +68,6 @@ public class LoadBalancer {
       return null;
     }
     return server;
-  }
-
-  public LoadBalancerStats getLoadBalancerStats() {
-    return lbStats;
   }
 
   public String getMicroServiceName() {

@@ -47,8 +47,6 @@ public class TestExtensionsManager {
         .thenReturn("Random");
     Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest3.strategy.name"))
         .thenReturn("WeightedResponse");
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest4.strategy.name"))
-        .thenReturn("SessionStickiness");
 
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
@@ -60,7 +58,5 @@ public class TestExtensionsManager {
         extensionsManager.createLoadBalancerRule("mytest2").getClass().getName());
     Assertions.assertEquals(WeightedResponseTimeRuleExt.class.getName(),
         extensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
-    Assertions.assertEquals(SessionStickinessRule.class.getName(),
-        extensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
   }
 }

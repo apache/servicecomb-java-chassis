@@ -47,7 +47,6 @@ public class TestLoadBalancer {
     Mockito.when(rule.choose(newServers, invocation)).thenReturn(server);
 
     Assertions.assertEquals(server, loadBalancer.chooseServer(invocation));
-    Assertions.assertNotNull(loadBalancer.getLoadBalancerStats());
     Assertions.assertEquals("test", loadBalancer.getMicroServiceName());
   }
 }

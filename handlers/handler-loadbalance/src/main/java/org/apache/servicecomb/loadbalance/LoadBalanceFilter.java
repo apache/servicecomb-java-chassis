@@ -188,7 +188,6 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   @VisibleForTesting
   CompletableFuture<Response> send(Invocation invocation, FilterNode filterNode, LoadBalancer chosenLB) {
-    long time = System.currentTimeMillis();
     ServiceCombServer server = chooseServer(invocation, chosenLB);
     if (null == server) {
       return CompletableFuture.failedFuture(
@@ -196,18 +195,8 @@ public class LoadBalanceFilter implements ConsumerFilter {
               String.format("No available address found for %s/%s.", invocation.getAppId(),
                   invocation.getMicroserviceName())));
     }
-    chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());
-    return filterNode.onFilter(invocation).whenComplete((r, e) -> {
-      // The stats are for WeightedResponseTimeRule
-      chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
-      if (e != null || isFailedResponse(r)) {
-        // The stats are for SessionStickinessRule
-        chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
-      } else {
-        chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
-      }
-    });
+    return filterNode.onFilter(invocation);
   }
 
   private ServiceCombServer chooseServer(Invocation invocation, LoadBalancer chosenLB) {
@@ -239,8 +228,8 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
     LOGGER.info("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
         invocation.getMicroserviceQualifiedName(),
-        nextServer == null ? "" : nextServer.getHostPort(),
-        lastServer == null ? "" : lastServer.getHostPort(),
+        nextServer == null ? "" : nextServer.getEndpoint().getEndpoint(),
+        lastServer == null ? "" : nextServer.getEndpoint().getEndpoint(),
         invocation.getTraceId());
     invocation.addLocalContext(CONTEXT_KEY_LAST_SERVER, nextServer);
     return nextServer;

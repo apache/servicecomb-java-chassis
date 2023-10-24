@@ -19,17 +19,14 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.Invocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.loadbalancer.LoadBalancerStats;
-import com.netflix.loadbalancer.ServerStats;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
- * 会话保持策略：优先选择上一次选中的服务器，保证请求都发送到同一个服务器上去。
- * 提供当会话过期或者失败次数超过限制后，轮询选择其他服务器的能力。
+ * TODO: Implements new SessionStickinessRule. The old implementation is not correct.
  *
  */
 public class SessionStickinessRule implements RuleExt {
@@ -103,21 +100,6 @@ public class SessionStickinessRule implements RuleExt {
         * MILLI_COUNT_IN_SECOND);
   }
 
-  private boolean isErrorThresholdMet() {
-    LoadBalancerStats stats = loadBalancer.getLoadBalancerStats();
-
-    if (stats != null && stats.getServerStats() != null && stats.getServerStats().size() > 0) {
-      ServerStats serverStats = stats.getSingleServerStat(lastServer);
-      int successiveFailedCount = serverStats.getSuccessiveConnectionFailureCount();
-      if (Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName) > 0
-          && successiveFailedCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName)) {
-        serverStats.clearSuccessiveConnectionFailureCount();
-        return true;
-      }
-    }
-    return false;
-  }
-
   @Override
   public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
     if (lastServer == null) {
@@ -129,12 +111,6 @@ public class SessionStickinessRule implements RuleExt {
       return chooseServerWhenTimeout(servers, invocation);
     } else {
       this.lastAccessedTime = System.currentTimeMillis();
-    }
-
-    if (isErrorThresholdMet()) {
-      LOG.warn("reached max error. choose another server.");
-      errorThresholdMet = true;
-      return chooseServerErrorThresholdMet(servers, invocation);
     }
 
     if (!servers.contains(lastServer)) {

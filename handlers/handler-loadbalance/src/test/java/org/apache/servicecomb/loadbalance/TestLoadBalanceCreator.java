@@ -29,9 +29,6 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import com.netflix.loadbalancer.Server;
-
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
 
@@ -79,7 +76,7 @@ public class TestLoadBalanceCreator {
         result = servers;
       }
     };
-    Server s = lb.chooseServer(invocation);
+    ServiceCombServer s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
@@ -129,7 +126,7 @@ public class TestLoadBalanceCreator {
         result = servers;
       }
     };
-    Server s = lb.chooseServer(invocation);
+    ServiceCombServer s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
@@ -190,61 +187,11 @@ public class TestLoadBalanceCreator {
         result = servers;
       }
     };
-    Server s = lb.chooseServer(invocation);
+    ServiceCombServer s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
     Assertions.assertEquals(server2, s);
-  }
-
-  @Test
-  public void testLoadBalanceWithSessionSticknessRule(@Injectable Invocation invocation,
-      @Injectable Transport transport) {
-    SessionStickinessRule rule = new SessionStickinessRule();
-    LoadBalancer lb = new LoadBalancer(rule, "service");
-
-    List<ServiceCombServer> servers = new ArrayList<>();
-
-    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance instance1 = new StatefulDiscoveryInstance(discoveryInstance);
-    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("instance1");
-    Endpoint host1 = new Endpoint(transport, "host1", instance1);
-    ServiceCombServer server = new ServiceCombServer(null, host1);
-
-    DiscoveryInstance discoveryInstance2 = Mockito.mock(DiscoveryInstance.class);
-    StatefulDiscoveryInstance instance2 = new StatefulDiscoveryInstance(discoveryInstance2);
-    Mockito.when(discoveryInstance2.getInstanceId()).thenReturn("instance2");
-    Endpoint host2 = new Endpoint(transport, "host2", instance2);
-    ServiceCombServer server2 = new ServiceCombServer(null, host2);
-
-    servers.add(server);
-    servers.add(server2);
-
-    lb.setFilters(new ArrayList<>());
-    new Expectations() {
-      {
-        invocation.getLocalContext(LoadBalanceFilter.CONTEXT_KEY_SERVER_LIST);
-        result = servers;
-      }
-    };
-
-    Server s = lb.chooseServer(invocation);
-    Assertions.assertEquals(server, s);
-    s = lb.chooseServer(invocation);
-    Assertions.assertEquals(server, s);
-
-    long time = Deencapsulation.getField(rule, "lastAccessedTime");
-    Deencapsulation.setField(rule, "lastAccessedTime", time - 1000 * 300);
-    s = lb.chooseServer(invocation);
-    Assertions.assertEquals(server2, s);
-
-    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-    lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-    s = lb.chooseServer(invocation);
-    Assertions.assertEquals(server, s);
   }
 }

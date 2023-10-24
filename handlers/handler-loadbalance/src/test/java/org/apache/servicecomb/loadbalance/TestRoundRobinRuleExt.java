@@ -37,7 +37,7 @@ public class TestRoundRobinRuleExt {
       ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
       Mockito.when(server.toString()).thenReturn("server " + i);
       servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 1);
+//      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 1);
     }
 
     AtomicInteger server1 = new AtomicInteger(0);
@@ -63,7 +63,7 @@ public class TestRoundRobinRuleExt {
       ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
       Mockito.when(server.toString()).thenReturn("server " + i);
       servers.add(server);
-      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 2);
+//      loadBalancer.getLoadBalancerStats().noteResponseTime(server, 2);
     }
     long begin = System.currentTimeMillis();
     for (int i = 0; i < 10000; i++) {
