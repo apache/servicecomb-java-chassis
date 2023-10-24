@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
@@ -44,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import io.github.resilience4j.core.metrics.Metrics.Outcome;
 import jakarta.ws.rs.core.Response.Status;
 
 public class LoadBalanceFilter implements ConsumerFilter {
@@ -188,6 +190,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
 
   @VisibleForTesting
   CompletableFuture<Response> send(Invocation invocation, FilterNode filterNode, LoadBalancer chosenLB) {
+    long time = System.currentTimeMillis();
     ServiceCombServer server = chooseServer(invocation, chosenLB);
     if (null == server) {
       return CompletableFuture.failedFuture(
@@ -196,7 +199,13 @@ public class LoadBalanceFilter implements ConsumerFilter {
                   invocation.getMicroserviceName())));
     }
     invocation.setEndpoint(server.getEndpoint());
-    return filterNode.onFilter(invocation);
+    return filterNode.onFilter(invocation).whenComplete((r, e) -> {
+      if (e != null || isFailedResponse(r)) {
+        server.getServerMetrics().record((System.currentTimeMillis() - time), TimeUnit.MILLISECONDS, Outcome.ERROR);
+      } else {
+        server.getServerMetrics().record((System.currentTimeMillis() - time), TimeUnit.MILLISECONDS, Outcome.SUCCESS);
+      }
+    });
   }
 
   private ServiceCombServer chooseServer(Invocation invocation, LoadBalancer chosenLB) {

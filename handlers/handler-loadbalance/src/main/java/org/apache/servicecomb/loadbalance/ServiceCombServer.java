@@ -24,8 +24,7 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
 /**
- * 服务器抽象，address只有transport识别， LB模块不识别
- * LB模块不提供服务器状态监测，这块功能是由注册中心进行处理的。
+ *  Server object used for transports and load balancer.
  *
  */
 public class ServiceCombServer {
@@ -33,9 +32,12 @@ public class ServiceCombServer {
 
   private final String microserviceName;
 
+  private final ServerMetrics serverMetrics;
+
   public ServiceCombServer(String microserviceName, Endpoint endpoint) {
     this.microserviceName = microserviceName;
     this.endpoint = endpoint;
+    this.serverMetrics = new ServerMetrics();
   }
 
   public String getMicroserviceName() {
@@ -57,6 +59,10 @@ public class ServiceCombServer {
 
   public String getHost() {
     return endpoint.getEndpoint();
+  }
+
+  public ServerMetrics getServerMetrics() {
+    return serverMetrics;
   }
 
   @Override

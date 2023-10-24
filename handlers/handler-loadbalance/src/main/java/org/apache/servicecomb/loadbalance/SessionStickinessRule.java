@@ -26,15 +26,14 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 
 /**
- * TODO: Implements new SessionStickinessRule. The old implementation is not correct.
+ * 会话保持策略：优先选择上一次选中的服务器，保证请求都发送到同一个服务器上去。
+ * 提供当会话过期或者失败次数超过限制后，轮询选择其他服务器的能力。
  *
  */
 public class SessionStickinessRule implements RuleExt {
   private static final Logger LOG = LoggerFactory.getLogger(SessionStickinessRule.class);
 
   private final Object lock = new Object();
-
-  private LoadBalancer loadBalancer;
 
   // use random rule as the trigger rule, to prevent consumer instance select the same producer instance.
   private final RuleExt triggerRule;
@@ -53,9 +52,9 @@ public class SessionStickinessRule implements RuleExt {
     triggerRule = new RoundRobinRuleExt();
   }
 
+  @Override
   public void setLoadBalancer(LoadBalancer loadBalancer) {
     this.microserviceName = loadBalancer.getMicroServiceName();
-    this.loadBalancer = loadBalancer;
   }
 
   private ServiceCombServer chooseNextServer(List<ServiceCombServer> servers, Invocation invocation) {
@@ -100,6 +99,12 @@ public class SessionStickinessRule implements RuleExt {
         * MILLI_COUNT_IN_SECOND);
   }
 
+  private boolean isErrorThresholdMet(ServiceCombServer server) {
+    int successiveFailedCount = server.getServerMetrics().getSnapshot().getNumberOfFailedCalls();
+    return Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName) > 0
+        && successiveFailedCount >= Configuration.INSTANCE.getSuccessiveFailedTimes(microserviceName);
+  }
+
   @Override
   public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
     if (lastServer == null) {
@@ -111,6 +116,12 @@ public class SessionStickinessRule implements RuleExt {
       return chooseServerWhenTimeout(servers, invocation);
     } else {
       this.lastAccessedTime = System.currentTimeMillis();
+    }
+
+    if (isErrorThresholdMet(lastServer)) {
+      LOG.warn("reached max error. choose another server.");
+      errorThresholdMet = true;
+      return chooseServerErrorThresholdMet(servers, invocation);
     }
 
     if (!servers.contains(lastServer)) {
