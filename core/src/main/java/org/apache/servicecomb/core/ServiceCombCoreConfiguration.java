@@ -20,6 +20,7 @@ import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.executor.GroupExecutor;
+import org.apache.servicecomb.core.provider.consumer.ReferenceConfigManager;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -43,6 +44,10 @@ public class ServiceCombCoreConfiguration {
     return new SCBEngine();
   }
 
+  @Bean
+  public ReferenceConfigManager referenceConfigManager() {
+    return new ReferenceConfigManager();
+  }
 
   @Bean
   public ProducerBootListener producerBootListener() {

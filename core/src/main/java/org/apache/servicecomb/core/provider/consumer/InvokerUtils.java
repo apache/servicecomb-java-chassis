@@ -129,7 +129,7 @@ public final class InvokerUtils {
   public static Invocation createInvocation(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
-        .createMicroserviceReferenceConfig(microserviceName);
+        .getOrCreateReferenceConfig(microserviceName);
     if (microserviceReferenceConfig == null) {
       throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
           new CommonExceptionData(String.format("Failed to invoke service %s. Maybe service"

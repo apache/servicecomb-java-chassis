@@ -183,7 +183,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     String microserviceName = parseMicroserviceName(uri);
 
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
-        .createMicroserviceReferenceConfig(microserviceName);
+        .getOrCreateReferenceConfig(microserviceName);
     if (microserviceReferenceConfig == null) {
       throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
           new CommonExceptionData(String.format("Failed to invoke service %s. Maybe service"

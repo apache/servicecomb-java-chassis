@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.core.provider.consumer;
 
-import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 
@@ -28,18 +27,14 @@ public class MicroserviceReferenceConfig {
 
   private final String microserviceName;
 
-  private final ConsumerMicroserviceVersionsMeta microserviceVersionsMeta;
-
   private final MicroserviceMeta microserviceMeta;
 
   public MicroserviceReferenceConfig(
       String appId,
       String microserviceName,
-      ConsumerMicroserviceVersionsMeta microserviceVersionsMeta,
       MicroserviceMeta microserviceMeta) {
     this.appId = appId;
     this.microserviceName = microserviceName;
-    this.microserviceVersionsMeta = microserviceVersionsMeta;
     this.microserviceMeta = microserviceMeta;
   }
 
