@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.core.provider;
 
+import java.util.Set;
+
+import org.apache.servicecomb.core.provider.OpenAPIRegistryManager.OpenAPIChangeListener;
 import org.springframework.core.Ordered;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -24,7 +27,13 @@ import io.swagger.v3.oas.models.OpenAPI;
  * Register and load OpenAPI extensions.
  */
 public interface OpenAPIRegistry extends Ordered {
+  boolean enabled();
+
+  Set<String> getSchemaIds(String application, String serviceName);
+
   void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api);
 
   OpenAPI loadOpenAPI(String appId, String microserviceName, String schemaId);
+
+  void setOpenAPIChangeListener(OpenAPIChangeListener listener);
 }

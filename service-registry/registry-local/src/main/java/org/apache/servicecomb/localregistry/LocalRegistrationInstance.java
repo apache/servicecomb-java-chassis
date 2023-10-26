@@ -24,15 +24,21 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
+import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.springframework.core.env.Environment;
+
+import io.swagger.v3.oas.models.OpenAPI;
 
 public class LocalRegistrationInstance implements RegistrationInstance {
   private final Environment environment;
 
   private final DataCenterInfo dataCenterInfo;
+
+  private final LocalOpenAPIRegistry localOpenAPIRegistry;
 
   private final String instanceId;
 
@@ -44,8 +50,9 @@ public class LocalRegistrationInstance implements RegistrationInstance {
 
   public LocalRegistrationInstance(
       Environment environment,
-      DataCenterProperties dataCenterProperties) {
+      DataCenterProperties dataCenterProperties, LocalOpenAPIRegistry localOpenAPIRegistry) {
     this.environment = environment;
+    this.localOpenAPIRegistry = localOpenAPIRegistry;
 
     this.dataCenterInfo = new DataCenterInfo();
     this.dataCenterInfo.setName(dataCenterProperties.getName());
@@ -125,6 +132,9 @@ public class LocalRegistrationInstance implements RegistrationInstance {
 
   public void addSchema(String schemaId, String content) {
     this.schemas.put(schemaId, content);
+    // For self invoke, ensure can find self schema ids.
+    OpenAPI swagger = SwaggerUtils.parseSwagger(content);
+    this.localOpenAPIRegistry.registerOpenAPI(getApplication(), getServiceName(), schemaId, swagger);
   }
 
   public void addEndpoint(String endpoint) {

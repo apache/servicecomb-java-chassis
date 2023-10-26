@@ -17,6 +17,7 @@
 package org.apache.servicecomb.localregistry;
 
 import org.apache.servicecomb.config.DataCenterProperties;
+import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -26,8 +27,8 @@ public class LocalRegistryConfiguration {
   @Bean
   public LocalRegistrationInstance localRegistrationInstance(
       Environment environment,
-      DataCenterProperties dataCenterProperties) {
-    return new LocalRegistrationInstance(environment, dataCenterProperties);
+      DataCenterProperties dataCenterProperties, LocalOpenAPIRegistry localOpenAPIRegistry) {
+    return new LocalRegistrationInstance(environment, dataCenterProperties, localOpenAPIRegistry);
   }
 
   @Bean

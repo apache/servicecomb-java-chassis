@@ -16,13 +16,19 @@
  */
 package org.apache.servicecomb.core.provider;
 
+import java.net.URI;
 import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.core.provider.OpenAPIRegistryManager.OpenAPIChangeListener;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +49,42 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
 
   private final Environment environment;
 
+  private OpenAPIChangeListener openAPIChangeListener;
+
   public LocalOpenAPIRegistry(Environment environment) {
     this.environment = environment;
+  }
+
+  @Override
+  public boolean enabled() {
+    return true;
+  }
+
+  @Override
+  public Set<String> getSchemaIds(String application, String serviceName) {
+    Set<String> result = new HashSet<>();
+    if (apps.get(application) != null && apps.get(application).get(serviceName) != null) {
+      result.addAll(apps.get(application).get(serviceName).keySet());
+    }
+
+    String swaggersLocation;
+    if (application.equals(BootStrapProperties.readApplication(environment))) {
+      swaggersLocation = String.format("microservices/%s", serviceName);
+    } else {
+      swaggersLocation = String.format("applications/%s/%s", application, serviceName);
+    }
+    try {
+      List<URI> resourceUris = ResourceUtil.findResourcesBySuffix(swaggersLocation, ".yaml");
+      result.addAll(resourceUris.stream().map(item -> {
+        String path = item.getPath();
+        path = path.substring(path.lastIndexOf("/") + 1);
+        path = path.substring(0, path.indexOf(".yaml"));
+        return path;
+      }).toList());
+    } catch (Exception e) {
+      LOGGER.error("Load schema ids failed from location {}.", swaggersLocation);
+    }
+    return result;
   }
 
   @Override
@@ -52,6 +92,7 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
     apps.computeIfAbsent(application, k -> new ConcurrentHashMapEx<>())
         .computeIfAbsent(serviceName, k -> new ConcurrentHashMapEx<>())
         .put(schemaId, api);
+    openAPIChangeListener.onOpenAPIChanged(application, serviceName);
     LOGGER.info("register swagger appId={}, name={}, schemaId={}.",
         application, serviceName, schemaId);
   }
@@ -64,6 +105,11 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
     }
 
     return loadFromResource(application, serviceName, schemaId);
+  }
+
+  @Override
+  public void setOpenAPIChangeListener(OpenAPIChangeListener listener) {
+    this.openAPIChangeListener = listener;
   }
 
   protected OpenAPI loadFromResource(String application, String serviceName, String schemaId) {

@@ -18,7 +18,10 @@ package org.apache.servicecomb.core.provider;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
@@ -32,11 +35,38 @@ import io.swagger.v3.oas.models.OpenAPI;
  * Register and load OpenAPI from various OpenAPIRegistry
  */
 public class OpenAPIRegistryManager {
+  public interface OpenAPIChangeListener {
+    void onOpenAPIChanged(String application, String serviceName);
+  }
+
   private List<OpenAPIRegistry> openAPIRegistries;
+
+  private final List<OpenAPIChangeListener> changeListeners = new ArrayList<>();
 
   @Autowired
   public void setOpenAPIRegistries(List<OpenAPIRegistry> openAPIRegistries) {
     this.openAPIRegistries = openAPIRegistries;
+    for (OpenAPIRegistry registry : this.openAPIRegistries) {
+      registry.setOpenAPIChangeListener(this::onOpenAPIChanged);
+    }
+  }
+
+  public void addOpenAPIChangeListener(OpenAPIChangeListener changeListener) {
+    this.changeListeners.add(changeListener);
+  }
+
+  public void onOpenAPIChanged(String application, String serviceName) {
+    for (OpenAPIChangeListener listener : this.changeListeners) {
+      listener.onOpenAPIChanged(application, serviceName);
+    }
+  }
+
+  public Set<String> getSchemaIds(String application, String serviceName) {
+    Set<String> result = new HashSet<>();
+    for (OpenAPIRegistry registry : this.openAPIRegistries) {
+      result.addAll(registry.getSchemaIds(application, serviceName));
+    }
+    return result;
   }
 
   public void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api) {

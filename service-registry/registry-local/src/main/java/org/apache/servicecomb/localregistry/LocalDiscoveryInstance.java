@@ -67,23 +67,18 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
             registryBean.getAppId(), registryBean.getServiceName(), k));
       }
       schemas.put(k, schemaContent);
+      localOpenAPIRegistry.registerOpenAPI(registryBean.getAppId(), registryBean.getServiceName(),
+          k, openAPI);
     });
 
     for (String schemaId : registryBean.getSchemaIds()) {
       OpenAPI openAPI = localOpenAPIRegistry.loadOpenAPI(
           registryBean.getAppId(), registryBean.getServiceName(), schemaId);
       if (openAPI == null) {
-        // can be null, and will get it in rpc.
-        schemas.put(schemaId, "");
+        // Maybe register later after application is ready, so don't fail.
         continue;
       }
-      String schemaContent = SwaggerUtils.swaggerToString(openAPI);
-      if (StringUtils.isEmpty(schemaContent)) {
-        // can be null, and will get it in rpc.
-        schemas.put(schemaId, "");
-        continue;
-      }
-      schemas.put(schemaId, schemaContent);
+      schemas.put(schemaId, SwaggerUtils.swaggerToString(openAPI));
     }
   }
 

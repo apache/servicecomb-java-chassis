@@ -499,7 +499,7 @@ public class SCBEngine {
   public MicroserviceReferenceConfig getOrCreateReferenceConfig(
       String microserviceName) {
     ensureStatusUp();
-    return referenceConfigManager.getOrCreateReferenceConfig(microserviceName);
+    return referenceConfigManager.getOrCreateReferenceConfig(this, microserviceName);
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {
