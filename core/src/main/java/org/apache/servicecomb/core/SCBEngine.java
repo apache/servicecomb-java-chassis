@@ -33,11 +33,11 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
+import org.apache.servicecomb.core.provider.OpenAPIRegistryManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfigManager;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
-import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -100,7 +100,7 @@ public class SCBEngine {
 
   private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
-  private SwaggerLoader swaggerLoader;
+  private OpenAPIRegistryManager openAPIRegistryManager;
 
   private RegistrationManager registrationManager;
 
@@ -170,9 +170,8 @@ public class SCBEngine {
   }
 
   @Autowired
-  @SuppressWarnings("unused")
-  public void setSwaggerLoader(SwaggerLoader swaggerLoader) {
-    this.swaggerLoader = swaggerLoader;
+  public void setOpenAPIRegistryManager(OpenAPIRegistryManager openAPIRegistryManager) {
+    this.openAPIRegistryManager = openAPIRegistryManager;
   }
 
   @Autowired
@@ -205,8 +204,8 @@ public class SCBEngine {
     return status;
   }
 
-  public SwaggerLoader getSwaggerLoader() {
-    return swaggerLoader;
+  public OpenAPIRegistryManager getOpenAPIRegistryManager() {
+    return this.openAPIRegistryManager;
   }
 
   public FilterChainsManager getFilterChainsManager() {

@@ -102,8 +102,8 @@ public class ReferenceConfigManager {
       instance.getSchemas().forEach(schemas::putIfAbsent);
     }
     for (Entry<String, String> schema : schemas.entrySet()) {
-      OpenAPI swagger = this.engine.getSwaggerLoader()
-          .loadSwagger(application, microserviceName, schema.getKey(), schema.getValue());
+      OpenAPI swagger = this.engine.getOpenAPIRegistryManager()
+          .loadOpenAPI(application, microserviceName, schema.getKey());
       if (swagger != null) {
         microserviceMeta.registerSchemaMeta(schema.getKey(), swagger);
         continue;

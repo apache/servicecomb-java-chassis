@@ -42,10 +42,10 @@ public class LocalRegistryClientApplication {
   }
 
   private static void registerSchema() {
-    SCBEngine.getInstance().getSwaggerLoader().registerSwagger("demo-local-registry",
+    SCBEngine.getInstance().getOpenAPIRegistryManager().registerOpenAPI("demo-local-registry",
         "demo-local-registry-server",
         "CodeFirstEndpoint", CodeFirstService.class);
-    SCBEngine.getInstance().getSwaggerLoader().registerSwagger("demo-local-registry",
+    SCBEngine.getInstance().getOpenAPIRegistryManager().registerOpenAPI("demo-local-registry",
         "demo-local-registry-server-bean",
         "CodeFirstEndpoint", CodeFirstService.class);
   }

@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
@@ -45,7 +45,8 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final Map<String, String> schemas = new HashMap<>();
 
-  public LocalDiscoveryInstance(RegistryBean registryBean, List<String> endpoints,
+  public LocalDiscoveryInstance(LocalOpenAPIRegistry localOpenAPIRegistry,
+      RegistryBean registryBean, List<String> endpoints,
       LocalRegistrationInstance localRegistrationInstance) {
     this.registryBean = registryBean;
     this.localRegistrationInstance = localRegistrationInstance;
@@ -69,16 +70,16 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
     });
 
     for (String schemaId : registryBean.getSchemaIds()) {
-      OpenAPI openAPI = SCBEngine.getInstance().getSwaggerLoader().loadLocalSwagger(
+      OpenAPI openAPI = localOpenAPIRegistry.loadOpenAPI(
           registryBean.getAppId(), registryBean.getServiceName(), schemaId);
       if (openAPI == null) {
-        // can be null, and will get it in SwaggerLoader in rpc.
+        // can be null, and will get it in rpc.
         schemas.put(schemaId, "");
         continue;
       }
       String schemaContent = SwaggerUtils.swaggerToString(openAPI);
       if (StringUtils.isEmpty(schemaContent)) {
-        // can be null, and will get it in SwaggerLoader in rpc.
+        // can be null, and will get it in rpc.
         schemas.put(schemaId, "");
         continue;
       }
