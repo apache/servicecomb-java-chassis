@@ -18,6 +18,7 @@ package org.apache.servicecomb.core.provider.consumer;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBEngine.CreateMicroserviceMetaEvent;
@@ -26,6 +27,7 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.provider.OpenAPIRegistryManager;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.vertx.executor.VertxWorkerExecutor;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +55,33 @@ public class ReferenceConfigManager {
           serviceName);
       referenceConfigs.get(application).put(serviceName, config);
     }
+  }
+
+  public CompletableFuture<MicroserviceReferenceConfig> getOrCreateReferenceConfigAsync
+      (SCBEngine scbEngine, String qualifiedName) {
+    MicroserviceNameParser parser = parseMicroserviceName(scbEngine, qualifiedName);
+    MicroserviceReferenceConfig config = referenceConfigs.computeIfAbsent(parser.getAppId(),
+            app -> new ConcurrentHashMapEx<>())
+        .get(parser.getMicroserviceName());
+    if (config == null) {
+      CompletableFuture<MicroserviceReferenceConfig> result = new CompletableFuture<>();
+      VertxWorkerExecutor executor = new VertxWorkerExecutor();
+      executor.execute(() -> {
+        synchronized (referenceConfigsLock) {
+          MicroserviceReferenceConfig temp = referenceConfigs.get(parser.getAppId()).get(parser.getMicroserviceName());
+          if (temp != null) {
+            result.complete(temp);
+            return;
+          }
+          temp = buildMicroserviceReferenceConfig(scbEngine, parser.getAppId(),
+              parser.getMicroserviceName());
+          referenceConfigs.get(parser.getAppId()).put(parser.getMicroserviceName(), temp);
+          result.complete(temp);
+        }
+      });
+      return result;
+    }
+    return CompletableFuture.completedFuture(config);
   }
 
   public MicroserviceReferenceConfig getOrCreateReferenceConfig(SCBEngine scbEngine, String qualifiedName) {
@@ -86,9 +115,9 @@ public class ReferenceConfigManager {
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
     Set<String> schemaIds = this.openAPIRegistryManager.getSchemaIds(application, microserviceName);
+    Map<String, OpenAPI> schemas = this.openAPIRegistryManager.loadOpenAPI(application, microserviceName, schemaIds);
     for (String schemaId : schemaIds) {
-      OpenAPI swagger = this.openAPIRegistryManager
-          .loadOpenAPI(application, microserviceName, schemaId);
+      OpenAPI swagger = schemas.get(schemaId);
       if (swagger != null) {
         microserviceMeta.registerSchemaMeta(schemaId, swagger);
         continue;

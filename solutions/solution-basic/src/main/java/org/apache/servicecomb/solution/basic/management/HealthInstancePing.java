@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.solution.basic.health;
+package org.apache.servicecomb.solution.basic.management;
 
 import java.net.URI;
 import java.util.HashMap;
@@ -77,7 +77,7 @@ public class HealthInstancePing implements InstancePing {
         continue;
       }
       Invocation invocation = InvokerUtils.createInvocation(instance.getServiceName(), transportName,
-          "HealthEndpoint", "health",
+          ManagementEndpoint.NAME, "health",
           args, boolean.class);
       invocation.setEndpoint(new Endpoint(transport, endpoint, instance));
       boolean result;

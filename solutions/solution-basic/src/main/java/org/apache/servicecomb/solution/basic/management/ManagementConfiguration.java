@@ -14,20 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.solution.basic.health;
+package org.apache.servicecomb.solution.basic.management;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class HealthConfiguration {
+public class ManagementConfiguration {
+  @Bean
+  public ManagementEndpoint healthEndpoint() {
+    return new ManagementEndpointImpl();
+  }
+
   @Bean
   public HealthInstancePing healthInstancePing() {
     return new HealthInstancePing();
   }
 
   @Bean
-  public HealthEndpoint healthEndpoint() {
-    return new HealthEndpointImpl();
+  public InstanceOpenAPIRegistry instanceOpenAPIRegistry() {
+    return new InstanceOpenAPIRegistry();
   }
 }

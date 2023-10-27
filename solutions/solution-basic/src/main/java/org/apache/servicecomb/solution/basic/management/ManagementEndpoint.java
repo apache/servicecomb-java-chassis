@@ -14,14 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.solution.basic.health;
+package org.apache.servicecomb.solution.basic.management;
+
+import java.util.Map;
+import java.util.Set;
 
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
+/**
+ * Java Chassis internal apis.
+ */
 @Path("/scb")
-public interface HealthEndpoint {
+public interface ManagementEndpoint {
+  String NAME = "scb-management";
+
   /**
    * Health of this instance. If the instanceId match this instance, and this service is ready
    * to service return true. Otherwise, return false.
@@ -32,4 +41,17 @@ public interface HealthEndpoint {
   @GET
   @Path("/health")
   boolean health(@QueryParam("instanceId") String instanceId, @QueryParam("registryName") String registryName);
+
+  /**
+   * Schema ids of this instance.
+   *
+   * This api is for internal schema loading usage.
+   */
+  @GET
+  @Path("/schema/ids")
+  Set<String> schemaIds();
+
+  @POST
+  @Path("/schema/contents")
+  Map<String, String> schemaContents(Set<String> schemaIds);
 }

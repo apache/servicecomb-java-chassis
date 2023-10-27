@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.core.provider;
 
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.servicecomb.core.provider.OpenAPIRegistryManager.OpenAPIChangeListener;
@@ -33,7 +34,7 @@ public interface OpenAPIRegistry extends Ordered {
 
   void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api);
 
-  OpenAPI loadOpenAPI(String appId, String microserviceName, String schemaId);
+  Map<String, OpenAPI> loadOpenAPI(String appId, String microserviceName, Set<String> schemaIds);
 
   void setOpenAPIChangeListener(OpenAPIChangeListener listener);
 }

@@ -488,12 +488,9 @@ public class SCBEngine {
     }
   }
 
-  /**
-   * Only implement a sync method now.
-   */
   public CompletableFuture<MicroserviceReferenceConfig> getOrCreateReferenceConfigAsync(
       String microserviceName) {
-    return CompletableFuture.completedFuture(getOrCreateReferenceConfig(microserviceName));
+    return referenceConfigManager.getOrCreateReferenceConfigAsync(this, microserviceName);
   }
 
   public MicroserviceReferenceConfig getOrCreateReferenceConfig(

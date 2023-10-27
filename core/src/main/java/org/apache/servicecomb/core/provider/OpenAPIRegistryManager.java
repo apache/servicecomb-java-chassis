@@ -19,14 +19,18 @@ package org.apache.servicecomb.core.provider;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -35,6 +39,8 @@ import io.swagger.v3.oas.models.OpenAPI;
  * Register and load OpenAPI from various OpenAPIRegistry
  */
 public class OpenAPIRegistryManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OpenAPIRegistryManager.class);
+
   public interface OpenAPIChangeListener {
     void onOpenAPIChanged(String application, String serviceName);
   }
@@ -57,7 +63,11 @@ public class OpenAPIRegistryManager {
 
   public void onOpenAPIChanged(String application, String serviceName) {
     for (OpenAPIChangeListener listener : this.changeListeners) {
-      listener.onOpenAPIChanged(application, serviceName);
+      try {
+        listener.onOpenAPIChanged(application, serviceName);
+      } catch (Exception e) {
+        LOGGER.warn("event process error {}/{}, {}", application, serviceName, e.getMessage());
+      }
     }
   }
 
@@ -99,13 +109,11 @@ public class OpenAPIRegistryManager {
     }
   }
 
-  public OpenAPI loadOpenAPI(String appId, String microserviceName, String schemaId) {
+  public Map<String, OpenAPI> loadOpenAPI(String appId, String microserviceName, Set<String> schemaIds) {
+    Map<String, OpenAPI> result = new HashMap<>();
     for (OpenAPIRegistry registry : this.openAPIRegistries) {
-      OpenAPI result = registry.loadOpenAPI(appId, microserviceName, schemaId);
-      if (result != null) {
-        return result;
-      }
+      result.putAll(registry.loadOpenAPI(appId, microserviceName, schemaIds));
     }
-    return null;
+    return result;
   }
 }

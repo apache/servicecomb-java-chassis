@@ -17,7 +17,7 @@
 package org.apache.servicecomb.localregistry;
 
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -43,8 +43,6 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final String instanceId;
 
-  private final Map<String, String> schemas = new HashMap<>();
-
   public LocalDiscoveryInstance(LocalOpenAPIRegistry localOpenAPIRegistry,
       RegistryBean registryBean, List<String> endpoints,
       LocalRegistrationInstance localRegistrationInstance) {
@@ -66,20 +64,9 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
         throw new IllegalStateException(String.format("Generate schema for %s/%s/%s faild.",
             registryBean.getAppId(), registryBean.getServiceName(), k));
       }
-      schemas.put(k, schemaContent);
       localOpenAPIRegistry.registerOpenAPI(registryBean.getAppId(), registryBean.getServiceName(),
           k, openAPI);
     });
-
-    for (String schemaId : registryBean.getSchemaIds()) {
-      OpenAPI openAPI = localOpenAPIRegistry.loadOpenAPI(
-          registryBean.getAppId(), registryBean.getServiceName(), schemaId);
-      if (openAPI == null) {
-        // Maybe register later after application is ready, so don't fail.
-        continue;
-      }
-      schemas.put(schemaId, SwaggerUtils.swaggerToString(openAPI));
-    }
   }
 
   public LocalDiscoveryInstance(LocalRegistrationInstance registrationInstance) {
@@ -90,7 +77,6 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
     this.localRegistrationInstance = registrationInstance;
     this.endpoints = registrationInstance.getEndpoints();
     this.instanceId = registrationInstance.getInstanceId();
-    this.schemas.putAll(registrationInstance.getSchemas());
   }
 
   @Override
@@ -145,7 +131,8 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public Map<String, String> getSchemas() {
-    return schemas;
+    // not implement
+    return Collections.emptyMap();
   }
 
   @Override

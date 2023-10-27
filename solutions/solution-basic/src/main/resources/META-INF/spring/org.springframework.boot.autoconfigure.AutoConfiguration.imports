@@ -15,4 +15,4 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-org.apache.servicecomb.solution.basic.health.HealthConfiguration
+org.apache.servicecomb.solution.basic.management.ManagementConfiguration

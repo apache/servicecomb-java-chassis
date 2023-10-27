@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.ProducerProvider;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
@@ -97,6 +98,11 @@ public class ProducerProviderManager {
         .createProducer(instance, schemaInterface);
     OpenAPI swagger = swaggerProducer.getSwagger();
     registerUrlPrefixToSwagger(swagger);
+
+    // register self OpenAPI to registry
+    scbEngine.getOpenAPIRegistryManager()
+        .registerOpenAPI(BootStrapProperties.readApplication(scbEngine.getEnvironment()),
+            BootStrapProperties.readServiceName(scbEngine.getEnvironment()), schemaId, swagger);
 
     SchemaMeta schemaMeta = producerMicroserviceMeta.registerSchemaMeta(schemaId, swagger);
     schemaMeta.putExtData(CoreMetaUtils.SWAGGER_PRODUCER, swaggerProducer);

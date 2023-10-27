@@ -18,6 +18,7 @@ package org.apache.servicecomb.core.provider;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -98,13 +99,18 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
   }
 
   @Override
-  public OpenAPI loadOpenAPI(String application, String serviceName, String schemaId) {
-    OpenAPI api = loadFromMemory(application, serviceName, schemaId);
-    if (api != null) {
-      return api;
+  public Map<String, OpenAPI> loadOpenAPI(String application, String serviceName, Set<String> schemaIds) {
+    Map<String, OpenAPI> result = new HashMap<>(schemaIds.size());
+    for (String schemaId : schemaIds) {
+      OpenAPI api = loadFromMemory(application, serviceName, schemaId);
+      if (api == null) {
+        api = loadFromResource(application, serviceName, schemaId);
+      }
+      if (api != null) {
+        result.put(schemaId, api);
+      }
     }
-
-    return loadFromResource(application, serviceName, schemaId);
+    return result;
   }
 
   @Override

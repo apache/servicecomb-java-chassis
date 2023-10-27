@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
 /**
@@ -29,7 +30,7 @@ public class Endpoint {
 
   private final Transport transport;
 
-  private final StatefulDiscoveryInstance instance;
+  private final DiscoveryInstance instance;
 
   // Internal address format recognized by Transport
   private final Object address;
@@ -38,7 +39,7 @@ public class Endpoint {
     this(transport, endpoint, null);
   }
 
-  public Endpoint(Transport transport, String endpoint, StatefulDiscoveryInstance instance) {
+  public Endpoint(Transport transport, String endpoint, DiscoveryInstance instance) {
     this.transport = transport;
     this.endpoint = endpoint;
     this.instance = instance;
@@ -56,7 +57,7 @@ public class Endpoint {
     return endpoint;
   }
 
-  public StatefulDiscoveryInstance getMicroserviceInstance() {
+  public DiscoveryInstance getMicroserviceInstance() {
     return instance;
   }
 
