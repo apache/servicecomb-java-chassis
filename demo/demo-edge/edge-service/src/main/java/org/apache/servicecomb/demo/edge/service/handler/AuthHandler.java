@@ -51,10 +51,8 @@ public class AuthHandler implements ConsumerFilter {
 
   @Override
   public boolean enabledForMicroservice(String application, String serviceName) {
-    if ("auth".equals(serviceName)) {
-      return false;
-    }
-    return true;
+    // Do not enable for service auth and not enable for internal management access(myself)
+    return !"auth".equals(serviceName) && !"edge".equals(serviceName);
   }
 
   @Override

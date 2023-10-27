@@ -81,6 +81,9 @@ public class ManagementEndpointImpl implements ManagementEndpoint {
 
     Map<String, OpenAPI> apis = localOpenAPIRegistry.loadOpenAPI(BootStrapProperties.readApplication(environment),
         BootStrapProperties.readServiceName(environment), schemaIds);
+    if (apis.size() != schemaIds.size()) {
+      throw new InvocationException(Status.BAD_REQUEST, "Not exists schemaIds parameter.");
+    }
     Map<String, String> result = new HashMap<>(apis.size());
     apis.forEach((k, v) -> result.put(k, SwaggerUtils.swaggerToString(v)));
     return result;

@@ -19,8 +19,7 @@ package org.apache.servicecomb.core.provider;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,6 +31,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
@@ -72,11 +72,13 @@ public class OpenAPIRegistryManager {
   }
 
   public Set<String> getSchemaIds(String application, String serviceName) {
-    Set<String> result = new HashSet<>();
     for (OpenAPIRegistry registry : this.openAPIRegistries) {
-      result.addAll(registry.getSchemaIds(application, serviceName));
+      Set<String> content = registry.getSchemaIds(application, serviceName);
+      if (!CollectionUtils.isEmpty(content)) {
+        return content;
+      }
     }
-    return result;
+    return Collections.emptySet();
   }
 
   public void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api) {
@@ -110,10 +112,12 @@ public class OpenAPIRegistryManager {
   }
 
   public Map<String, OpenAPI> loadOpenAPI(String appId, String microserviceName, Set<String> schemaIds) {
-    Map<String, OpenAPI> result = new HashMap<>();
     for (OpenAPIRegistry registry : this.openAPIRegistries) {
-      result.putAll(registry.loadOpenAPI(appId, microserviceName, schemaIds));
+      Map<String, OpenAPI> result = registry.loadOpenAPI(appId, microserviceName, schemaIds);
+      if (!CollectionUtils.isEmpty(result) && result.size() == schemaIds.size()) {
+        return result;
+      }
     }
-    return result;
+    return Collections.emptyMap();
   }
 }

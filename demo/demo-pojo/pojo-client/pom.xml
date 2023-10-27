@@ -34,10 +34,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-pojo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
     <dependency>

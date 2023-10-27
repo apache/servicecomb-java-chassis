@@ -39,7 +39,7 @@ public class ReferenceConfigManager {
   // application -> microservice name
   private final Map<String, Map<String, MicroserviceReferenceConfig>> referenceConfigs = new ConcurrentHashMapEx<>();
 
-  private final Object referenceConfigsLock = new Object();
+  private final Map<String, Map<String, Object>> referenceConfigsLocks = new ConcurrentHashMapEx<>();
 
   private OpenAPIRegistryManager openAPIRegistryManager;
 
@@ -63,12 +63,19 @@ public class ReferenceConfigManager {
     MicroserviceReferenceConfig config = referenceConfigs.computeIfAbsent(parser.getAppId(),
             app -> new ConcurrentHashMapEx<>())
         .get(parser.getMicroserviceName());
-    if (config == null) {
+
+    if (config != null) {
+      return CompletableFuture.completedFuture(config);
+    }
+
+    if (InvokerUtils.isInEventLoop()) {
       CompletableFuture<MicroserviceReferenceConfig> result = new CompletableFuture<>();
       VertxWorkerExecutor executor = new VertxWorkerExecutor();
       executor.execute(() -> {
-        synchronized (referenceConfigsLock) {
-          MicroserviceReferenceConfig temp = referenceConfigs.get(parser.getAppId()).get(parser.getMicroserviceName());
+        synchronized (referenceConfigsLocks.computeIfAbsent(parser.getAppId(), key -> new ConcurrentHashMapEx<>())
+            .computeIfAbsent(parser.getMicroserviceName(), key -> new Object())) {
+          MicroserviceReferenceConfig temp = referenceConfigs.get(parser.getAppId())
+              .get(parser.getMicroserviceName());
           if (temp != null) {
             result.complete(temp);
             return;
@@ -80,8 +87,20 @@ public class ReferenceConfigManager {
         }
       });
       return result;
+    } else {
+      synchronized (referenceConfigsLocks.computeIfAbsent(parser.getAppId(), key -> new ConcurrentHashMapEx<>())
+          .computeIfAbsent(parser.getMicroserviceName(), key -> new Object())) {
+        MicroserviceReferenceConfig temp = referenceConfigs.get(parser.getAppId())
+            .get(parser.getMicroserviceName());
+        if (temp != null) {
+          return CompletableFuture.completedFuture(temp);
+        }
+        temp = buildMicroserviceReferenceConfig(scbEngine, parser.getAppId(),
+            parser.getMicroserviceName());
+        referenceConfigs.get(parser.getAppId()).put(parser.getMicroserviceName(), temp);
+        return CompletableFuture.completedFuture(temp);
+      }
     }
-    return CompletableFuture.completedFuture(config);
   }
 
   public MicroserviceReferenceConfig getOrCreateReferenceConfig(SCBEngine scbEngine, String qualifiedName) {
@@ -90,7 +109,8 @@ public class ReferenceConfigManager {
             app -> new ConcurrentHashMapEx<>())
         .get(parser.getMicroserviceName());
     if (config == null) {
-      synchronized (referenceConfigsLock) {
+      synchronized (referenceConfigsLocks.computeIfAbsent(parser.getAppId(), key -> new ConcurrentHashMapEx<>())
+          .computeIfAbsent(parser.getMicroserviceName(), key -> new Object())) {
         config = referenceConfigs.get(parser.getAppId()).get(parser.getMicroserviceName());
         if (config != null) {
           return config;

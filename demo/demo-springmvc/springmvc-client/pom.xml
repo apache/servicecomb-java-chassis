@@ -29,35 +29,6 @@
   <name>Java Chassis::Demo::Spring MVC::Client</name>
 
   <dependencies>
-    <dependency>
-      <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-schema</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-local</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-pojo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>config-cc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>handler-fault-injection</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-test-scaffolding</artifactId>
-    </dependency>
   </dependencies>
 
   <properties>

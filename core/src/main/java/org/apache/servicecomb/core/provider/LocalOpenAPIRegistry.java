@@ -18,6 +18,7 @@ package org.apache.servicecomb.core.provider;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -108,7 +109,10 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
       }
       if (api != null) {
         result.put(schemaId, api);
+        continue;
       }
+      LOGGER.warn("Local OpenAPI registry contains only partial schemas, this is not allowed.");
+      return Collections.emptyMap();
     }
     return result;
   }

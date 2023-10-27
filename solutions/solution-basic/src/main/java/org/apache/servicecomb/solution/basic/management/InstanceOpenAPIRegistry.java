@@ -18,7 +18,6 @@
 package org.apache.servicecomb.solution.basic.management;
 
 import java.net.URI;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,11 +79,6 @@ public class InstanceOpenAPIRegistry implements OpenAPIRegistry {
   @Override
   @SuppressWarnings("unchecked")
   public Set<String> getSchemaIds(String application, String serviceName) {
-    // For myself, read from local
-    if (BootStrapProperties.readApplication(environment).equals(application)
-        && BootStrapProperties.readServiceName(environment).equals(serviceName)) {
-      return Collections.emptySet();
-    }
     List<? extends DiscoveryInstance> discoveryInstances =
         discoveryManager.findServiceInstances(application, serviceName);
     if (discoveryInstances.isEmpty()) {
@@ -134,11 +128,6 @@ public class InstanceOpenAPIRegistry implements OpenAPIRegistry {
   @Override
   @SuppressWarnings("unchecked")
   public Map<String, OpenAPI> loadOpenAPI(String application, String serviceName, Set<String> schemaIds) {
-    // For myself, read from local
-    if (BootStrapProperties.readApplication(environment).equals(application)
-        && BootStrapProperties.readServiceName(environment).equals(serviceName)) {
-      return Collections.emptyMap();
-    }
     List<? extends DiscoveryInstance> discoveryInstances =
         discoveryManager.findServiceInstances(application, serviceName);
     if (discoveryInstances.isEmpty()) {

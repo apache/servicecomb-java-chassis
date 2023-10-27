@@ -29,11 +29,14 @@ public class FilterInvocationCaller implements InvocationCaller {
   @Override
   public Object call(Method method, PojoConsumerMetaRefresher metaRefresher, PojoInvocationCreator invocationCreator,
       Object[] args) {
+    if (isAsyncMethod(method)) {
+      CompletableFuture<PojoInvocation> invocationFuture = invocationCreator.createAsync(method, metaRefresher, args);
+      return invocationFuture.thenCompose(this::doCall);
+    }
     PojoInvocation invocation = invocationCreator.create(method, metaRefresher, args);
     CompletableFuture<Object> future = CompletableFuture.completedFuture(invocation)
         .thenCompose(this::doCall);
-
-    return isAsyncMethod(method) ? future : InvokerUtils.toSync(future, invocation.getWaitTime());
+    return InvokerUtils.toSync(future, invocation.getWaitTime());
   }
 
   protected CompletableFuture<Object> doCall(PojoInvocation invocation) {

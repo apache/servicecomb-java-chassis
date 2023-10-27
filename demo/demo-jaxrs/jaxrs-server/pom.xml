@@ -32,14 +32,6 @@
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-jaxrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
-    </dependency>
     <!-- This is a demo, user can choose any implementation you want -->
     <dependency>
       <groupId>org.glassfish.jersey.core</groupId>
