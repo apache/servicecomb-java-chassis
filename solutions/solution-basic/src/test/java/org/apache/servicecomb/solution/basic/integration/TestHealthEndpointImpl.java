@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.solution.basic.integration;
 
 import java.util.Map;
 
@@ -26,7 +26,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-public class TestHealthCheckerPublisher {
+public class TestHealthEndpointImpl {
   private final HealthChecker good = new HealthChecker() {
     @Override
     public String getName() {
@@ -61,7 +61,7 @@ public class TestHealthCheckerPublisher {
   @Test
   public void checkHealthGood() {
     HealthCheckerManager.getInstance().register(good);
-    HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
+    HealthEndpointImpl publisher = new HealthEndpointImpl();
     Assertions.assertTrue(publisher.checkHealth());
   }
 
@@ -69,7 +69,7 @@ public class TestHealthCheckerPublisher {
   public void checkHealthBad() {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
-    HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
+    HealthEndpointImpl publisher = new HealthEndpointImpl();
     Assertions.assertFalse(publisher.checkHealth());
   }
 
@@ -77,7 +77,7 @@ public class TestHealthCheckerPublisher {
   public void checkHealthDetails() {
     HealthCheckerManager.getInstance().register(good);
     HealthCheckerManager.getInstance().register(bad);
-    HealthCheckerRestPublisher publisher = new HealthCheckerRestPublisher();
+    HealthEndpointImpl publisher = new HealthEndpointImpl();
     Map<String, HealthCheckResult> content = publisher.checkHealthDetails();
     Assertions.assertTrue(content.get("test").isHealthy());
     Assertions.assertEquals("info", content.get("test").getInformation());

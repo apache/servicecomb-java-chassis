@@ -15,4 +15,4 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-org.apache.servicecomb.solution.basic.management.ManagementConfiguration
+org.apache.servicecomb.solution.basic.integration.IntegrationConfiguration

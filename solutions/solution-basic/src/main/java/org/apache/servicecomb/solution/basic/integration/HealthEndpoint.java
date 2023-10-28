@@ -14,25 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.solution.basic.management;
+package org.apache.servicecomb.solution.basic.integration;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.Map;
 
-@Configuration
-public class ManagementConfiguration {
-  @Bean
-  public ManagementEndpoint healthEndpoint() {
-    return new ManagementEndpointImpl();
-  }
+import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 
-  @Bean
-  public HealthInstancePing healthInstancePing() {
-    return new HealthInstancePing();
-  }
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
-  @Bean
-  public InstanceOpenAPIRegistry instanceOpenAPIRegistry() {
-    return new InstanceOpenAPIRegistry();
-  }
+/**
+ * Java Chassis health check extensions.
+ */
+@Path("/scb/health")
+public interface HealthEndpoint {
+  String NAME = "scb-health";
+
+  @Path("/")
+  @GET
+  boolean checkHealth();
+
+  @Path("/details")
+  @GET
+  Map<String, HealthCheckResult> checkHealthDetails();
 }

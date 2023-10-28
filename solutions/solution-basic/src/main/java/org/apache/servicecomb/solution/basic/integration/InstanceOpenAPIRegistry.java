@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.solution.basic.management;
+package org.apache.servicecomb.solution.basic.integration;
 
 import java.net.URI;
 import java.util.HashMap;
