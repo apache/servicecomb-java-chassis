@@ -22,7 +22,6 @@ public class HealthCheckResult {
 
   private String information;
 
-  //unsupport object or generic type,so string..
   private String extraData;
 
   private long timestamp;

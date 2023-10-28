@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.solution.basic.integration;
 
 import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN;
 import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.DEFAULT_METRICS_WINDOW_TIME;
@@ -35,8 +35,8 @@ import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
 
-public class TestMetricsRestPublisher {
-  MetricsRestPublisher publisher = new MetricsRestPublisher();
+public class TestMetricsEndpointImpl {
+  MetricsEndpointImpl publisher = new MetricsEndpointImpl();
 
   Environment environment = Mockito.mock(Environment.class);
 

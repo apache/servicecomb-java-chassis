@@ -16,19 +16,15 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
-import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
+import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class MetricsCoreConfiguration {
-  @Bean
-  public HealthBootListener healthBootListener() {
-    return new HealthBootListener();
-  }
-
   @Bean
   public MetricsBootListener metricsBootListener(MetricsBootstrap metricsBootstrap) {
     return new MetricsBootListener(metricsBootstrap);
@@ -72,8 +68,8 @@ public class MetricsCoreConfiguration {
   }
 
   @Bean
-  public MetricsRestPublisher metricsRestPublisher() {
-    return new MetricsRestPublisher();
+  public SlowInvocationLogger slowInvocationLogger(SCBEngine scbEngine) {
+    return new SlowInvocationLogger(scbEngine);
   }
 
   // End MetricsInitializers

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.solution.basic.integration;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,21 +25,15 @@ import java.util.stream.StreamSupport;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Registry;
 
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-
-@Path("/metrics")
-public class MetricsRestPublisher implements MetricsInitializer {
+@RestSchema(schemaId = MetricsEndpoint.NAME, schemaInterface = MetricsEndpoint.class)
+public class MetricsEndpointImpl implements MetricsInitializer, MetricsEndpoint {
   private GlobalRegistry globalRegistry;
 
   @Override
@@ -47,12 +41,7 @@ public class MetricsRestPublisher implements MetricsInitializer {
     this.globalRegistry = globalRegistry;
   }
 
-  @ApiResponses({
-      @ApiResponse(responseCode = "400", content = @Content(schema = @Schema(type = "string")),
-          description = "illegal request content"),
-  })
-  @GET
-  @Path("/")
+  @Override
   public Map<String, Double> measure() {
     Map<String, Double> measurements = new LinkedHashMap<>();
     if (globalRegistry == null) {

@@ -14,34 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.solution.basic.integration;
 
 import java.util.Map;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 
-import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
-import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
+/**
+ * Java Chassis metrics.
+ */
+@Path("/scb/metrics")
+public interface MetricsEndpoint {
+  String NAME = "scb-metrics";
 
-@Path("/health")
-public class HealthCheckerRestPublisher {
+  @GET
   @Path("/")
-  @GET
-  public boolean checkHealth() {
-    Map<String, HealthCheckResult> results = HealthCheckerManager.getInstance().check();
-    for (HealthCheckResult result : results.values()) {
-      if (!result.isHealthy()) {
-        return false;
-      }
-    }
-    return true;
-  }
-
-  @Path("/details")
-  @GET
-  public Map<String, HealthCheckResult> checkHealthDetails() {
-    return HealthCheckerManager.getInstance().check();
-  }
+  Map<String, Double> measure();
 }

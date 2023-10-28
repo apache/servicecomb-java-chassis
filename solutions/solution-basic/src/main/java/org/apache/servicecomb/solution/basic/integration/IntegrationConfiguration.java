@@ -14,28 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.metrics.core;
+package org.apache.servicecomb.solution.basic.integration;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class HealthBootListener implements BootListener {
-  private Environment environment;
-
-  @Autowired
-  public void setEnvironment(Environment environment) {
-    this.environment = environment;
+@Configuration
+public class IntegrationConfiguration {
+  @Bean
+  public ManagementEndpointImpl managementEndpoint() {
+    return new ManagementEndpointImpl();
   }
 
-  @Override
-  public void onBeforeProducerProvider(BootEvent event) {
-    if (!environment.getProperty("servicecomb.health.endpoint.enabled", boolean.class, true)) {
-      return;
-    }
+  @Bean
+  public HealthEndpointImpl healthEndpoint() {
+    return new HealthEndpointImpl();
+  }
 
-    event.getScbEngine().getProducerProviderManager()
-        .addProducerMeta("healthEndpoint", new HealthCheckerRestPublisher());
+  @Bean
+  public MetricsEndpointImpl metricsEndpoint() {
+    return new MetricsEndpointImpl();
+  }
+
+  @Bean
+  public HealthInstancePing healthInstancePing() {
+    return new HealthInstancePing();
+  }
+
+  @Bean
+  public InstanceOpenAPIRegistry instanceOpenAPIRegistry() {
+    return new InstanceOpenAPIRegistry();
   }
 }

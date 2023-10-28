@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.solution.basic.management;
+package org.apache.servicecomb.solution.basic.integration;
 
 import java.util.Map;
 import java.util.Set;
@@ -25,9 +25,9 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.QueryParam;
 
 /**
- * Java Chassis internal apis.
+ * Java Chassis internal management apis.
  */
-@Path("/scb")
+@Path("/scb/management")
 public interface ManagementEndpoint {
   String NAME = "scb-management";
 
