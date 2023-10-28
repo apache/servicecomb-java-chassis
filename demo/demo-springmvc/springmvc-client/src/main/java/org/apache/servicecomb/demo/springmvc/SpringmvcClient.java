@@ -155,7 +155,7 @@ public class SpringmvcClient {
 
     //0.5.0 later version metrics integration test
     @SuppressWarnings("unchecked")
-    Map<String, Double> metrics = restTemplate.getForObject(prefix + "/metrics", Map.class);
+    Map<String, Double> metrics = restTemplate.getForObject(prefix + "/scb/metrics", Map.class);
 
     //    TestMgr.check(true, metrics.get("jvm(name=heapUsed,statistic=gauge)") != 0);
     TestMgr.check(true, metrics.size() > 0);
