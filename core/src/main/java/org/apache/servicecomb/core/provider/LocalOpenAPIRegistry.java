@@ -80,6 +80,7 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
     try {
       List<URI> resourceUris = ResourceUtil.findResourcesBySuffix(swaggersLocation, ".yaml");
       result.addAll(resourceUris.stream().map(item -> {
+        LOGGER.error("Add test for github ....{} ", item);
         String path = item.getPath();
         path = path.substring(path.lastIndexOf("/") + 1);
         path = path.substring(0, path.indexOf(".yaml"));
