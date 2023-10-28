@@ -51,10 +51,14 @@ public class OpenAPIRegistryManager {
 
   @Autowired
   public void setOpenAPIRegistries(List<OpenAPIRegistry> openAPIRegistries) {
-    this.openAPIRegistries = openAPIRegistries;
-    for (OpenAPIRegistry registry : this.openAPIRegistries) {
-      registry.setOpenAPIChangeListener(this::onOpenAPIChanged);
+    List<OpenAPIRegistry> target = new ArrayList<>(openAPIRegistries.size());
+    for (OpenAPIRegistry registry : openAPIRegistries) {
+      if (registry.enabled()) {
+        registry.setOpenAPIChangeListener(this::onOpenAPIChanged);
+        target.add(registry);
+      }
     }
+    this.openAPIRegistries = target;
   }
 
   public void addOpenAPIChangeListener(OpenAPIChangeListener changeListener) {

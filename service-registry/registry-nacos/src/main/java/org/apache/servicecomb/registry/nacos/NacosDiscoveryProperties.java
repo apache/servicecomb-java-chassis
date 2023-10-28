@@ -47,6 +47,8 @@ public class NacosDiscoveryProperties {
 
   private String logName;
 
+  private boolean enableSwaggerRegistration = false;
+
   public String getServerAddr() {
     return serverAddr;
   }
@@ -149,5 +151,13 @@ public class NacosDiscoveryProperties {
 
   public void setLogName(String logName) {
     this.logName = logName;
+  }
+
+  public boolean isEnableSwaggerRegistration() {
+    return enableSwaggerRegistration;
+  }
+
+  public void setEnableSwaggerRegistration(boolean enableSwaggerRegistration) {
+    this.enableSwaggerRegistration = enableSwaggerRegistration;
   }
 }

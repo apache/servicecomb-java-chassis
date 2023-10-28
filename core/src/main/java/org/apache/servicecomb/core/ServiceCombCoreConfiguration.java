@@ -22,6 +22,7 @@ import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.core.provider.OpenAPIRegistryManager;
+import org.apache.servicecomb.core.provider.RegistryOpenAPIRegistry;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfigManager;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -58,6 +59,11 @@ public class ServiceCombCoreConfiguration {
   @Bean
   public LocalOpenAPIRegistry localOpenAPIRegistry(Environment environment) {
     return new LocalOpenAPIRegistry(environment);
+  }
+
+  @Bean
+  public RegistryOpenAPIRegistry registryOpenAPIRegistry() {
+    return new RegistryOpenAPIRegistry();
   }
 
   @Bean

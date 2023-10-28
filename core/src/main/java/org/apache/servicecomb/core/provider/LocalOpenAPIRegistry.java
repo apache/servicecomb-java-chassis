@@ -16,7 +16,9 @@
  */
 package org.apache.servicecomb.core.provider;
 
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,8 +85,8 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
         path = path.substring(0, path.indexOf(".yaml"));
         return path;
       }).toList());
-    } catch (Exception e) {
-      LOGGER.error("Load schema ids failed from location {}.", swaggersLocation);
+    } catch (IOException | URISyntaxException e) {
+      LOGGER.error("Load schema ids failed from location {}. {}.", swaggersLocation, e.getMessage());
     }
     return result;
   }
@@ -109,9 +111,14 @@ public class LocalOpenAPIRegistry implements OpenAPIRegistry {
       }
       if (api != null) {
         result.put(schemaId, api);
-        continue;
       }
-      LOGGER.warn("Local OpenAPI registry contains only partial schemas, this is not allowed.");
+    }
+    if (result.isEmpty()) {
+      return result;
+    }
+    if (result.size() != schemaIds.size()) {
+      LOGGER.warn("Local OpenAPI registry contains only partial schemas for {}/{}, this is not allowed.",
+          application, serviceName);
       return Collections.emptyMap();
     }
     return result;

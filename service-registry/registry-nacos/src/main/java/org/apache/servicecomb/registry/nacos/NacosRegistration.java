@@ -72,7 +72,9 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   @Override
   public void run() {
     try {
-      addSchemas(nacosRegistrationInstance.getSchemas(), instance);
+      if (nacosDiscoveryProperties.isEnableSwaggerRegistration()) {
+        addSchemas(nacosRegistrationInstance.getSchemas(), instance);
+      }
       addEndpoints(nacosRegistrationInstance.getEndpoints(), instance);
       namingService.registerInstance(nacosRegistrationInstance.getServiceName(),
           nacosRegistrationInstance.getApplication(), instance);
@@ -136,7 +138,9 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Override
   public void addSchema(String schemaId, String content) {
-    nacosRegistrationInstance.addSchema(schemaId, content);
+    if (nacosDiscoveryProperties.isEnableSwaggerRegistration()) {
+      nacosRegistrationInstance.addSchema(schemaId, content);
+    }
   }
 
   @Override

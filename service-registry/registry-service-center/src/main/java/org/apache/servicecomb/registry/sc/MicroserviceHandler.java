@@ -96,7 +96,7 @@ public class MicroserviceHandler {
 
   private static Framework createFramework() {
     Framework framework = new Framework();
-    framework.setName("springCloud");
+    framework.setName("ServiceComb");
     framework.setVersion(MicroserviceHandler.class.getPackage().getImplementationVersion());
     return framework;
   }

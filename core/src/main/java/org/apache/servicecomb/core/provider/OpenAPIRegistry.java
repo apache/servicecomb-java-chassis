@@ -28,13 +28,15 @@ import io.swagger.v3.oas.models.OpenAPI;
  * Register and load OpenAPI extensions.
  */
 public interface OpenAPIRegistry extends Ordered {
+  String CONFIG_PREFIX = "servicecomb.openAPI.registry";
+
   boolean enabled();
 
   Set<String> getSchemaIds(String application, String serviceName);
 
   void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api);
 
-  Map<String, OpenAPI> loadOpenAPI(String appId, String microserviceName, Set<String> schemaIds);
+  Map<String, OpenAPI> loadOpenAPI(String application, String serviceName, Set<String> schemaIds);
 
   void setOpenAPIChangeListener(OpenAPIChangeListener listener);
 }

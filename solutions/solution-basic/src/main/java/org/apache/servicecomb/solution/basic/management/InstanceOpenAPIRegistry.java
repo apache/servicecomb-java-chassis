@@ -73,7 +73,7 @@ public class InstanceOpenAPIRegistry implements OpenAPIRegistry {
 
   @Override
   public boolean enabled() {
-    return true;
+    return environment.getProperty(OpenAPIRegistry.CONFIG_PREFIX + ".instance.enabled", boolean.class, true);
   }
 
   @Override

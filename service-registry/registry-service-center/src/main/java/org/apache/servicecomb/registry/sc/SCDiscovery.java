@@ -28,7 +28,6 @@ import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChan
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterDiscovery;
 import org.apache.servicecomb.service.center.client.ServiceCenterDiscovery.SubscriptionKey;
-import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,17 +100,21 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
     if (CollectionUtils.isEmpty(instances)) {
       return Collections.emptyList();
     }
-    Microservice microservice = serviceCenterClient.getMicroserviceByServiceId(instances.get(0).getServiceId());
-    List<SchemaInfo> schemas = serviceCenterClient.getServiceSchemasList(instances.get(0).getServiceId(), true);
+
     Map<String, String> schemaResult;
-    if (schemas == null) {
-      schemaResult = Collections.emptyMap();
+    if (configurationProperties.isEnableSwaggerRegistration()) {
+      List<SchemaInfo> schemas = serviceCenterClient.getServiceSchemasList(instances.get(0).getServiceId(), true);
+      if (schemas == null) {
+        schemaResult = Collections.emptyMap();
+      } else {
+        schemaResult = new HashMap<>(schemas.size());
+        schemas.forEach(info -> schemaResult.put(info.getSchemaId(), info.getSchema()));
+      }
     } else {
-      schemaResult = new HashMap<>(schemas.size());
-      schemas.forEach(info -> schemaResult.put(info.getSchemaId(), info.getSchema()));
+      schemaResult = new HashMap<>();
     }
     List<SCDiscoveryInstance> result = new ArrayList<>(instances.size());
-    instances.forEach(instance -> result.add(new SCDiscoveryInstance(microservice, instance, schemaResult)));
+    instances.forEach(instance -> result.add(new SCDiscoveryInstance(instance, schemaResult)));
     return result;
   }
 

@@ -23,6 +23,7 @@ servicecomb:
   registry:
     sc:
       address: http://127.0.0.1:30100
+      enableSwaggerRegistration: true
   rest:
     address: 0.0.0.0:8080
     server:
@@ -40,4 +41,14 @@ servicecomb:
   invocation:
     timeout:
       check:
+        enabled: false
+
+  # use service center to find schema info
+  openAPI:
+    registry:
+      # enable service center OpenAPI registry, and need set enableSwaggerRegistration: true
+      registry:
+        enabled: true
+      # disable instance OpenAPI registry
+      instance:
         enabled: false

@@ -32,10 +32,9 @@ public class SCDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final Map<String, String> schemas;
 
-  public SCDiscoveryInstance(Microservice microservice,
-      MicroserviceInstance microserviceInstance,
+  public SCDiscoveryInstance(MicroserviceInstance microserviceInstance,
       Map<String, String> schemas) {
-    this.microservice = microservice;
+    this.microservice = microserviceInstance.getMicroservice();
     this.microserviceInstance = microserviceInstance;
     this.schemas = schemas;
   }

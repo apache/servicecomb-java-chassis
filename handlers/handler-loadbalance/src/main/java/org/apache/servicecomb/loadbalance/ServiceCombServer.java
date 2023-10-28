@@ -22,7 +22,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
-import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
 /**
  *  Server object used for transports and load balancer.

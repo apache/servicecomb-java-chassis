@@ -151,10 +151,12 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
 
   @Override
   public void addSchema(String schemaId, String content) {
-    this.microservice.addSchema(schemaId);
+    if (configurationProperties.isEnableSwaggerRegistration()) {
+      this.microservice.addSchema(schemaId);
 
-    this.serviceCenterRegistration.addSchemaInfo(
-        new SchemaInfo(schemaId, content, calcSchemaSummary(content)));
+      this.serviceCenterRegistration.addSchemaInfo(
+          new SchemaInfo(schemaId, content, calcSchemaSummary(content)));
+    }
   }
 
   @SuppressWarnings("UnstableApiUsage")

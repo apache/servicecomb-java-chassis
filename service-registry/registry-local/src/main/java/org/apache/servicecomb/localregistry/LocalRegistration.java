@@ -68,7 +68,7 @@ public class LocalRegistration implements Registration<LocalRegistrationInstance
 
   @Override
   public void addSchema(String schemaId, String content) {
-    localRegistrationInstance.addSchema(schemaId, content);
+    // not implement
   }
 
   @Override

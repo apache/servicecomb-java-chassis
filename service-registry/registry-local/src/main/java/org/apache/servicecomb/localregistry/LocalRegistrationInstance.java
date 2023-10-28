@@ -28,10 +28,7 @@ import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.springframework.core.env.Environment;
-
-import io.swagger.v3.oas.models.OpenAPI;
 
 public class LocalRegistrationInstance implements RegistrationInstance {
   private final Environment environment;
@@ -128,13 +125,6 @@ public class LocalRegistrationInstance implements RegistrationInstance {
   @Override
   public MicroserviceInstanceStatus getReadyStatus() {
     return MicroserviceInstanceStatus.UP;
-  }
-
-  public void addSchema(String schemaId, String content) {
-    this.schemas.put(schemaId, content);
-    // For self invoke, ensure can find self schema ids.
-    OpenAPI swagger = SwaggerUtils.parseSwagger(content);
-    this.localOpenAPIRegistry.registerOpenAPI(getApplication(), getServiceName(), schemaId, swagger);
   }
 
   public void addEndpoint(String endpoint) {

@@ -148,6 +148,11 @@ public class MicroserviceInstance {
   }
 
   @JsonIgnore
+  public Microservice getMicroservice() {
+    return this.microservice;
+  }
+
+  @JsonIgnore
   public String getServiceName() {
     return this.microservice.getServiceName();
   }
