@@ -26,14 +26,6 @@
   <artifactId>authentication</artifactId>
   <name>Java Chassis::Demo::Edge::Authentication</name>
   <dependencies>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-vertx</artifactId>
-    </dependency>
   </dependencies>
   <properties>
     <demo.main>org.apache.servicecomb.demo.edge.authentication.AuthMain</demo.main>

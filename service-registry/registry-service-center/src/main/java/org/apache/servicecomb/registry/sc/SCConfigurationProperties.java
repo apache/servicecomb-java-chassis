@@ -26,6 +26,8 @@ public class SCConfigurationProperties {
 
   private String address = null;
 
+  private boolean enableSwaggerRegistration = false;
+
   /**
    * for registration service
    * when swagger is different between local with remote serviceCenter. if ignoreSwaggerDifferent is true.
@@ -160,5 +162,13 @@ public class SCConfigurationProperties {
 
   public void setRegistrationWaitTimeInMillis(long registrationWaitTimeInMillis) {
     this.registrationWaitTimeInMillis = registrationWaitTimeInMillis;
+  }
+
+  public boolean isEnableSwaggerRegistration() {
+    return enableSwaggerRegistration;
+  }
+
+  public void setEnableSwaggerRegistration(boolean enableSwaggerRegistration) {
+    this.enableSwaggerRegistration = enableSwaggerRegistration;
   }
 }

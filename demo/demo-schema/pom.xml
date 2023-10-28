@@ -30,32 +30,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>handler-loadbalance</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-vertx</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>handler-flowcontrol-qps</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>swagger-generator-springmvc</artifactId>
+      <artifactId>solution-basic</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

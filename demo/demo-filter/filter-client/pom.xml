@@ -35,10 +35,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>solution-basic</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
   </dependencies>

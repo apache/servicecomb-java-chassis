@@ -14,22 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.solution.basic.health;
+package org.apache.servicecomb.solution.basic.management;
 
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.QueryParam;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@Path("/scb")
-public interface HealthEndpoint {
-  /**
-   * Health of this instance. If the instanceId match this instance, and this service is ready
-   * to service return true. Otherwise, return false.
-   *
-   * This api is for internal instance status usage. Load balancer will call this api to check if
-   * the target instance is alive.
-   */
-  @GET
-  @Path("/health")
-  boolean health(@QueryParam("instanceId") String instanceId, @QueryParam("registryName") String registryName);
+@Configuration
+public class ManagementConfiguration {
+  @Bean
+  public ManagementEndpoint healthEndpoint() {
+    return new ManagementEndpointImpl();
+  }
+
+  @Bean
+  public HealthInstancePing healthInstancePing() {
+    return new HealthInstancePing();
+  }
+
+  @Bean
+  public InstanceOpenAPIRegistry instanceOpenAPIRegistry() {
+    return new InstanceOpenAPIRegistry();
+  }
 }

@@ -36,6 +36,10 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>solution-basic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
     </dependency>
     <dependency>

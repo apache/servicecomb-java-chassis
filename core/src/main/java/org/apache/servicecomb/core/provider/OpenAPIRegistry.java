@@ -14,20 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.solution.basic.health;
+package org.apache.servicecomb.core.provider;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import java.util.Map;
+import java.util.Set;
 
-@Configuration
-public class HealthConfiguration {
-  @Bean
-  public HealthInstancePing healthInstancePing() {
-    return new HealthInstancePing();
-  }
+import org.apache.servicecomb.core.provider.OpenAPIRegistryManager.OpenAPIChangeListener;
+import org.springframework.core.Ordered;
 
-  @Bean
-  public HealthEndpoint healthEndpoint() {
-    return new HealthEndpointImpl();
-  }
+import io.swagger.v3.oas.models.OpenAPI;
+
+/**
+ * Register and load OpenAPI extensions.
+ */
+public interface OpenAPIRegistry extends Ordered {
+  String CONFIG_PREFIX = "servicecomb.openAPI.registry";
+
+  boolean enabled();
+
+  Set<String> getSchemaIds(String application, String serviceName);
+
+  void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api);
+
+  Map<String, OpenAPI> loadOpenAPI(String application, String serviceName, Set<String> schemaIds);
+
+  void setOpenAPIChangeListener(OpenAPIChangeListener listener);
 }

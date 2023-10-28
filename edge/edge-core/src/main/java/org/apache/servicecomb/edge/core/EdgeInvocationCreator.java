@@ -58,7 +58,7 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
 
   protected CompletableFuture<Void> createMicroserviceReferenceConfig() {
     return SCBEngine.getInstance()
-        .createMicroserviceReferenceConfigAsync(microserviceName)
+        .getOrCreateReferenceConfigAsync(microserviceName)
         .thenAccept(mrc -> {
           this.microserviceReferenceConfig = mrc;
           this.microserviceMeta = mrc.getMicroserviceMeta();

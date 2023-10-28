@@ -33,16 +33,8 @@
   </properties>
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-service-center</artifactId>
-    </dependency>
-    <dependency>
       <groupId>jakarta.ws.rs</groupId>
       <artifactId>jakarta.ws.rs-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
     </dependency>
   </dependencies>
   <build>

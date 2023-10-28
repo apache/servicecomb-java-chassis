@@ -43,6 +43,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 public class DiscoveryManager implements LifeCycle {
+  public interface InstanceChangeListener {
+    void onInstancesChanged(String registryName, String application, String serviceName,
+        List<? extends DiscoveryInstance> instances);
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryManager.class);
 
   private final ScheduledExecutorService task;
@@ -60,6 +65,8 @@ public class DiscoveryManager implements LifeCycle {
       versionedCache = new ConcurrentHashMapEx<>();
 
   private final Object cacheLock = new Object();
+
+  private final List<InstanceChangeListener> instanceChangeListeners = new ArrayList<>();
 
   public DiscoveryManager(List<Discovery<? extends DiscoveryInstance>> discoveryList,
       List<InstancePing> pings) {
@@ -145,6 +152,10 @@ public class DiscoveryManager implements LifeCycle {
 
   private void onInstancesChanged(String registryName, String application, String serviceName,
       List<? extends DiscoveryInstance> instances) {
+    for (InstanceChangeListener listener : this.instanceChangeListeners) {
+      listener.onInstancesChanged(registryName, application, serviceName, instances);
+    }
+
     Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(application, key ->
         new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, key -> new ConcurrentHashMapEx<>());
 
@@ -186,7 +197,11 @@ public class DiscoveryManager implements LifeCycle {
     rebuildVersionCache(application, serviceName);
   }
 
-  public void onInstanceIsolated(StatefulDiscoveryInstance instance, long isolateDuration) {
+  public void addInstanceChangeListener(InstanceChangeListener instanceChangeListener) {
+    this.instanceChangeListeners.add(instanceChangeListener);
+  }
+
+  public void onInstanceIsolated(DiscoveryInstance instance, long isolateDuration) {
     Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(
         instance.getApplication(), key ->
             new ConcurrentHashMapEx<>()).computeIfAbsent(instance.getServiceName(), key

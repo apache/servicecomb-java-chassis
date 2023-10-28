@@ -17,13 +17,13 @@
 package org.apache.servicecomb.localregistry;
 
 import java.lang.management.ManagementFactory;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.registry.api.AbstractDiscoveryInstance;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
@@ -43,9 +43,8 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final String instanceId;
 
-  private final Map<String, String> schemas = new HashMap<>();
-
-  public LocalDiscoveryInstance(RegistryBean registryBean, List<String> endpoints,
+  public LocalDiscoveryInstance(LocalOpenAPIRegistry localOpenAPIRegistry,
+      RegistryBean registryBean, List<String> endpoints,
       LocalRegistrationInstance localRegistrationInstance) {
     this.registryBean = registryBean;
     this.localRegistrationInstance = localRegistrationInstance;
@@ -65,25 +64,9 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
         throw new IllegalStateException(String.format("Generate schema for %s/%s/%s faild.",
             registryBean.getAppId(), registryBean.getServiceName(), k));
       }
-      schemas.put(k, schemaContent);
+      localOpenAPIRegistry.registerOpenAPI(registryBean.getAppId(), registryBean.getServiceName(),
+          k, openAPI);
     });
-
-    for (String schemaId : registryBean.getSchemaIds()) {
-      OpenAPI openAPI = SCBEngine.getInstance().getSwaggerLoader().loadLocalSwagger(
-          registryBean.getAppId(), registryBean.getServiceName(), schemaId);
-      if (openAPI == null) {
-        // can be null, and will get it in SwaggerLoader in rpc.
-        schemas.put(schemaId, "");
-        continue;
-      }
-      String schemaContent = SwaggerUtils.swaggerToString(openAPI);
-      if (StringUtils.isEmpty(schemaContent)) {
-        // can be null, and will get it in SwaggerLoader in rpc.
-        schemas.put(schemaId, "");
-        continue;
-      }
-      schemas.put(schemaId, schemaContent);
-    }
   }
 
   public LocalDiscoveryInstance(LocalRegistrationInstance registrationInstance) {
@@ -94,7 +77,6 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
     this.localRegistrationInstance = registrationInstance;
     this.endpoints = registrationInstance.getEndpoints();
     this.instanceId = registrationInstance.getInstanceId();
-    this.schemas.putAll(registrationInstance.getSchemas());
   }
 
   @Override
@@ -149,7 +131,8 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public Map<String, String> getSchemas() {
-    return schemas;
+    // not implement
+    return Collections.emptyMap();
   }
 
   @Override

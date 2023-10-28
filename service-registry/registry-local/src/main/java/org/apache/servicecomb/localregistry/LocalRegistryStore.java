@@ -29,6 +29,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.config.YAMLUtil;
+import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
@@ -39,6 +40,8 @@ public class LocalRegistryStore {
   private static final String REGISTRY_FILE_NAME = "registry.yaml";
 
   private LocalRegistrationInstance selfMicroserviceInstance;
+
+  private LocalOpenAPIRegistry localOpenAPIRegistry;
 
   // application:serviceName
   private final Map<String, Map<String, List<LocalDiscoveryInstance>>>
@@ -51,6 +54,11 @@ public class LocalRegistryStore {
   @Autowired
   public void setLocalRegistrationInstance(LocalRegistrationInstance selfMicroserviceInstance) {
     this.selfMicroserviceInstance = selfMicroserviceInstance;
+  }
+
+  @Autowired
+  public void setLocalOpenAPIRegistry(LocalOpenAPIRegistry localOpenAPIRegistry) {
+    this.localOpenAPIRegistry = localOpenAPIRegistry;
   }
 
   public void init() {
@@ -123,7 +131,8 @@ public class LocalRegistryStore {
         return;
       }
       for (Instance instance : bean.getInstances().getInstances()) {
-        instances.add(new LocalDiscoveryInstance(bean, instance.getEndpoints(), selfMicroserviceInstance));
+        instances.add(new LocalDiscoveryInstance(localOpenAPIRegistry,
+            bean, instance.getEndpoints(), selfMicroserviceInstance));
       }
     }));
   }

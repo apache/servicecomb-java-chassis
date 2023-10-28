@@ -33,22 +33,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-pojo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-vertx</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-servlet</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
     </dependency>

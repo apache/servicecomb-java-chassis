@@ -17,6 +17,7 @@
 package org.apache.servicecomb.provider.pojo;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
 import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
@@ -32,5 +33,21 @@ public class PojoInvocationCreator {
     invocation.setSync(consumerOperationMeta.isSync());
 
     return invocation;
+  }
+
+  public CompletableFuture<PojoInvocation> createAsync(Method method, PojoConsumerMetaRefresher metaRefresher,
+      Object[] args) {
+    CompletableFuture<PojoConsumerMeta> pojoConsumerMetaFuture = metaRefresher.getLatestMetaAsync();
+    return pojoConsumerMetaFuture.thenCompose(pojoConsumerMeta -> {
+      PojoConsumerOperationMeta consumerOperationMeta = pojoConsumerMeta.ensureFindOperationMeta(method);
+
+      PojoInvocation invocation = new PojoInvocation(consumerOperationMeta);
+      invocation.setSuccessResponseType(consumerOperationMeta.getResponsesType());
+      invocation.setInvocationArguments(
+          consumerOperationMeta.getSwaggerConsumerOperation().toInvocationArguments(args));
+      invocation.setSync(consumerOperationMeta.isSync());
+
+      return CompletableFuture.completedFuture(invocation);
+    });
   }
 }

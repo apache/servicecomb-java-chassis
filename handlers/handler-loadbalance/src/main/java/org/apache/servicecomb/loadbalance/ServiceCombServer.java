@@ -21,7 +21,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
+import org.apache.servicecomb.registry.api.DiscoveryInstance;
 
 /**
  *  Server object used for transports and load balancer.
@@ -48,7 +48,7 @@ public class ServiceCombServer {
     return endpoint;
   }
 
-  public StatefulDiscoveryInstance getInstance() {
+  public DiscoveryInstance getInstance() {
     return endpoint.getMicroserviceInstance();
   }
 

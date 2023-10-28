@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
+import org.apache.servicecomb.core.provider.OpenAPIRegistryManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -44,6 +46,9 @@ public class SCBBootstrap {
     result.setExecutorManager(new ExecutorManager());
     result.setTransportManager(new TransportManager());
     result.setEnvironment(environment);
+    OpenAPIRegistryManager openAPIRegistryManager = new OpenAPIRegistryManager();
+    openAPIRegistryManager.setOpenAPIRegistries(List.of(new LocalOpenAPIRegistry(environment)));
+    result.setOpenAPIRegistryManager(openAPIRegistryManager);
     return result;
   }
 }

@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.provider.pojo;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -59,6 +61,11 @@ public class PojoConsumerMetaRefresher {
     return consumerMeta;
   }
 
+  public CompletableFuture<PojoConsumerMeta> getLatestMetaAsync() {
+    ensureStatusUp();
+    return ensureMetaAvailableAsync().thenCompose(v -> CompletableFuture.completedFuture(consumerMeta));
+  }
+
   private void ensureStatusUp() {
     if (scbEngine == null) {
       if (SCBEngine.getInstance() == null) {
@@ -84,13 +91,20 @@ public class PojoConsumerMetaRefresher {
     }
   }
 
+  private CompletableFuture<Void> ensureMetaAvailableAsync() {
+    if (isNeedRefresh()) {
+      return refreshMetaAsync();
+    }
+    return CompletableFuture.completedFuture(null);
+  }
+
   private boolean isNeedRefresh() {
     return consumerMeta == null;
   }
 
   protected PojoConsumerMeta refreshMeta() {
     MicroserviceReferenceConfig microserviceReferenceConfig = scbEngine
-        .createMicroserviceReferenceConfig(microserviceName);
+        .getOrCreateReferenceConfig(microserviceName);
     if (microserviceReferenceConfig == null) {
       throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
           new CommonExceptionData(String.format("Failed to invoke service %s. Maybe service"
@@ -112,6 +126,39 @@ public class PojoConsumerMetaRefresher {
     SwaggerConsumer swaggerConsumer = scbEngine.getSwaggerEnvironment()
         .createConsumer(consumerIntf, schemaMeta.getSwagger());
     return new PojoConsumerMeta(microserviceReferenceConfig, swaggerConsumer, schemaMeta);
+  }
+
+  protected CompletableFuture<Void> refreshMetaAsync() {
+    CompletableFuture<MicroserviceReferenceConfig> microserviceReferenceConfigFuture = scbEngine
+        .getOrCreateReferenceConfigAsync(microserviceName);
+    return microserviceReferenceConfigFuture.thenCompose((microserviceReferenceConfig) -> {
+      if (microserviceReferenceConfig == null) {
+        return CompletableFuture.failedFuture(new InvocationException(Status.INTERNAL_SERVER_ERROR,
+            new CommonExceptionData(String.format("Failed to invoke service %s. Maybe service"
+                + " not registered or no active instance.", microserviceName))));
+      }
+      synchronized (this) {
+        if (isNeedRefresh()) {
+          MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getMicroserviceMeta();
+
+          SchemaMeta schemaMeta = findSchemaMeta(microserviceMeta);
+          if (schemaMeta == null) {
+            return CompletableFuture.failedFuture(new IllegalStateException(
+                String.format(
+                    "Schema not exist, microserviceName=%s, schemaId=%s, consumer interface=%s; "
+                        + "new producer not running or not deployed.",
+                    microserviceName,
+                    schemaId,
+                    consumerIntf.getName())));
+          }
+
+          SwaggerConsumer swaggerConsumer = scbEngine.getSwaggerEnvironment()
+              .createConsumer(consumerIntf, schemaMeta.getSwagger());
+          consumerMeta = new PojoConsumerMeta(microserviceReferenceConfig, swaggerConsumer, schemaMeta);
+        }
+        return CompletableFuture.completedFuture(null);
+      }
+    });
   }
 
   private SchemaMeta findSchemaMeta(MicroserviceMeta microserviceMeta) {

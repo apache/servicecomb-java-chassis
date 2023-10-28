@@ -20,8 +20,11 @@ import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.executor.GroupExecutor;
+import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
+import org.apache.servicecomb.core.provider.OpenAPIRegistryManager;
+import org.apache.servicecomb.core.provider.RegistryOpenAPIRegistry;
+import org.apache.servicecomb.core.provider.consumer.ReferenceConfigManager;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
-import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
@@ -43,15 +46,29 @@ public class ServiceCombCoreConfiguration {
     return new SCBEngine();
   }
 
+  @Bean
+  public ReferenceConfigManager referenceConfigManager() {
+    return new ReferenceConfigManager();
+  }
+
+  @Bean
+  public OpenAPIRegistryManager openAPIRegistryManager() {
+    return new OpenAPIRegistryManager();
+  }
+
+  @Bean
+  public LocalOpenAPIRegistry localOpenAPIRegistry(Environment environment) {
+    return new LocalOpenAPIRegistry(environment);
+  }
+
+  @Bean
+  public RegistryOpenAPIRegistry registryOpenAPIRegistry() {
+    return new RegistryOpenAPIRegistry();
+  }
 
   @Bean
   public ProducerBootListener producerBootListener() {
     return new ProducerBootListener();
-  }
-
-  @Bean
-  public SwaggerLoader swaggerLoader(Environment environment) {
-    return new SwaggerLoader(environment);
   }
 
   @Bean

@@ -43,8 +43,7 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   public void testSchemaNotChange(SCBEngine scbEngine) {
     LOGGER.info("ProducerTestsAfterBootup testing start");
-    //we can not set microserviceName any more
-    SchemaMeta meta = scbEngine.getProducerProviderManager().registerSchema("test1", new CodeFirstSpringmvcForSchema());
+    SchemaMeta meta = scbEngine.getProducerMicroserviceMeta().findSchemaMeta("CodeFirstSpringmvcForSchema");
     String codeFirst = getSwaggerContent(meta.getSwagger());
 
     String expectSchema = UnitTestSwaggerUtils.loadExpect("schemas/CodeFirstSpringmvcForSchema.yaml")

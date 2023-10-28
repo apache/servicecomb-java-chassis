@@ -16,10 +16,7 @@
  */
 package org.apache.servicecomb.core;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -30,27 +27,24 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
-import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
+import org.apache.servicecomb.core.provider.OpenAPIRegistryManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
+import org.apache.servicecomb.core.provider.consumer.ReferenceConfigManager;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
-import org.apache.servicecomb.core.registry.discovery.SwaggerLoader;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -59,13 +53,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
-import org.springframework.util.CollectionUtils;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.ws.rs.core.Response.Status;
 
 public class SCBEngine {
@@ -108,7 +100,7 @@ public class SCBEngine {
 
   private final SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
-  private SwaggerLoader swaggerLoader;
+  private OpenAPIRegistryManager openAPIRegistryManager;
 
   private RegistrationManager registrationManager;
 
@@ -116,9 +108,7 @@ public class SCBEngine {
 
   private Environment environment;
 
-  private final Map<String, MicroserviceReferenceConfig> referenceConfigs = new ConcurrentHashMapEx<>();
-
-  private final Object referenceConfigsLock = new Object();
+  private ReferenceConfigManager referenceConfigManager;
 
   public SCBEngine() {
     eventBus = EventManager.getEventBus();
@@ -136,6 +126,11 @@ public class SCBEngine {
           new CommonExceptionData("SCBEngine is not initialized yet."));
     }
     return INSTANCE;
+  }
+
+  @Autowired
+  public void setReferenceConfigManager(ReferenceConfigManager referenceConfigManager) {
+    this.referenceConfigManager = referenceConfigManager;
   }
 
   @Autowired
@@ -175,9 +170,8 @@ public class SCBEngine {
   }
 
   @Autowired
-  @SuppressWarnings("unused")
-  public void setSwaggerLoader(SwaggerLoader swaggerLoader) {
-    this.swaggerLoader = swaggerLoader;
+  public void setOpenAPIRegistryManager(OpenAPIRegistryManager openAPIRegistryManager) {
+    this.openAPIRegistryManager = openAPIRegistryManager;
   }
 
   @Autowired
@@ -210,8 +204,8 @@ public class SCBEngine {
     return status;
   }
 
-  public SwaggerLoader getSwaggerLoader() {
-    return swaggerLoader;
+  public OpenAPIRegistryManager getOpenAPIRegistryManager() {
+    return this.openAPIRegistryManager;
   }
 
   public FilterChainsManager getFilterChainsManager() {
@@ -494,65 +488,15 @@ public class SCBEngine {
     }
   }
 
-  /**
-   * Only implement a sync method now.
-   */
-  public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(
+  public CompletableFuture<MicroserviceReferenceConfig> getOrCreateReferenceConfigAsync(
       String microserviceName) {
-    return CompletableFuture.completedFuture(createMicroserviceReferenceConfig(microserviceName));
+    return referenceConfigManager.getOrCreateReferenceConfigAsync(this, microserviceName);
   }
 
-  public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName) {
+  public MicroserviceReferenceConfig getOrCreateReferenceConfig(
+      String microserviceName) {
     ensureStatusUp();
-    MicroserviceReferenceConfig config = referenceConfigs.get(microserviceName);
-    if (config == null) {
-      synchronized (referenceConfigsLock) {
-        config = referenceConfigs.get(microserviceName);
-        if (config != null) {
-          return config;
-        }
-        MicroserviceNameParser parser = parseMicroserviceName(microserviceName);
-        List<? extends DiscoveryInstance> discoveryInstances = discoveryManager.findServiceInstances(
-            parser.getAppId(),
-            parser.getMicroserviceName());
-        if (CollectionUtils.isEmpty(discoveryInstances)) {
-          return null;
-        }
-        config = buildMicroserviceReferenceConfig(parser.getAppId(), parser.getMicroserviceName(),
-            discoveryInstances);
-        referenceConfigs.put(microserviceName, config);
-        return config;
-      }
-    }
-    return config;
-  }
-
-  private MicroserviceReferenceConfig buildMicroserviceReferenceConfig(String application,
-      String microserviceName, List<? extends DiscoveryInstance> instances) {
-    ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(this);
-    MicroserviceMeta microserviceMeta = new MicroserviceMeta(this, application, microserviceName, true);
-    microserviceMeta.setFilterChain(getFilterChainsManager().findConsumerChain(application, microserviceName));
-    microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
-
-    Map<String, String> schemas = new HashMap<>();
-    for (DiscoveryInstance instance : instances) {
-      instance.getSchemas().forEach(schemas::putIfAbsent);
-    }
-    for (Entry<String, String> schema : schemas.entrySet()) {
-      OpenAPI swagger = swaggerLoader
-          .loadSwagger(application, microserviceName, schema.getKey(), schema.getValue());
-      if (swagger != null) {
-        microserviceMeta.registerSchemaMeta(schema.getKey(), swagger);
-        continue;
-      }
-      throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
-          String.format("Swagger %s/%s/%s can not be empty or load swagger failed.",
-              application, microserviceName, schema.getKey()));
-    }
-
-    eventBus.post(new CreateMicroserviceMetaEvent(microserviceMeta));
-    return new MicroserviceReferenceConfig(application,
-        microserviceName, microserviceVersionsMeta, microserviceMeta);
+    return referenceConfigManager.getOrCreateReferenceConfig(this, microserviceName);
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {
@@ -563,9 +507,6 @@ public class SCBEngine {
     this.producerMicroserviceMeta = producerMicroserviceMeta;
   }
 
-  public MicroserviceNameParser parseMicroserviceName(String microserviceName) {
-    return new MicroserviceNameParser(getAppId(), microserviceName);
-  }
 
   public static class CreateMicroserviceMetaEvent {
     private final MicroserviceMeta microserviceMeta;

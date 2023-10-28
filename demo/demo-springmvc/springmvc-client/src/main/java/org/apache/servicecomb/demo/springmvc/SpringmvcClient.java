@@ -202,6 +202,7 @@ public class SpringmvcClient {
         TestMgr.check("true", "false");
       }
     } catch (Exception e) {
+      LOGGER.error("", e);
       TestMgr.check("true", "false");
     }
   }
