@@ -17,15 +17,26 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import jakarta.validation.constraints.Min;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Min;
 
 @RestSchema(schemaId = "SchemeInterfaceSpringmvc", schemaInterface = SchemeInterfaceSpringmvc.class)
 public class SchemeInterfaceSpringmvcImpl implements SchemeInterfaceSpringmvc {
   @Override
   public int add(@Min(1) int a, @Min(1) int b) {
     return a + b;
+  }
+
+  @Override
+  public String tailingSlash(HttpServletRequest request, int a, int b) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(request.getRequestURI()).append(";")
+        .append(request.getRequestURL()).append(";")
+        .append(request.getPathInfo()).append(";")
+        .append(a - b);
+    return sb.toString();
   }
 
   public int reduce(int a, int b) {

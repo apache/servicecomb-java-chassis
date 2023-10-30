@@ -21,6 +21,8 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
@@ -75,7 +77,11 @@ public class RepeatedReadSchemas {
     public final int mergeFrom(InputEx input, T message) throws IOException {
       Collection<ELE_TYPE> collection = getter.get(message);
       if (collection == null) {
-        collection = new ArrayList<>();
+        if (Set.class.equals(javaType.getRawClass())) {
+          collection = new HashSet<>();
+        } else {
+          collection = new ArrayList<>();
+        }
         setter.set(message, collection);
       }
 

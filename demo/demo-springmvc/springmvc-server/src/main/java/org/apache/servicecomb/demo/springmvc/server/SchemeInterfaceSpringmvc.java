@@ -17,15 +17,19 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import jakarta.validation.constraints.Min;
-import jakarta.ws.rs.core.MediaType;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Min;
+import jakarta.ws.rs.core.MediaType;
 
 @RequestMapping(path = "/springmvc/schemaInterface", produces = MediaType.APPLICATION_JSON)
 public interface SchemeInterfaceSpringmvc {
   @GetMapping(path = "/add")
   int add(@Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
+
+  @GetMapping(path = "/tailingSlash/")
+  String tailingSlash(HttpServletRequest request, @Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
 }

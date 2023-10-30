@@ -27,13 +27,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.AsyncContext;
-import jakarta.servlet.ServletInputStream;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-
-import io.vertx.ext.web.impl.RoutingContextInternal;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.slf4j.Logger;
@@ -45,6 +38,12 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.impl.RoutingContextInternal;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
 
 // wrap vertx http request to Servlet http request
 public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletRequest {
@@ -241,6 +240,14 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
       this.path = vertxRequest.path();
     }
     return this.path;
+  }
+
+  @Override
+  public StringBuffer getRequestURL() {
+    if (this.path == null) {
+      this.path = vertxRequest.path();
+    }
+    return new StringBuffer(this.path);
   }
 
   @Override

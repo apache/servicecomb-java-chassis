@@ -52,10 +52,6 @@ public class URLPathBuilder {
   }
 
   private void initPathWriterList(String rawPath, Map<String, RestParam> paramMap) {
-    // 去掉末尾'/'
-    if (rawPath.endsWith(SLASH)) {
-      rawPath = rawPath.substring(0, rawPath.length() - 1);
-    }
     // 首部加上'/'
     if (!rawPath.startsWith(SLASH)) {
       rawPath = SLASH + rawPath;
