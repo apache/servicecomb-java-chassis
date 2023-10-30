@@ -174,10 +174,14 @@ public final class VertxTLSBuilder {
       return true;
     }
 
-    ClassLoader classLoader =
-        Thread.currentThread().getContextClassLoader() == null ? VertxTLSBuilder.class.getClassLoader()
-            : Thread.currentThread().getContextClassLoader();
-    URL resource = classLoader.getResource(name);
-    return resource != null;
+    try {
+      ClassLoader classLoader =
+          Thread.currentThread().getContextClassLoader() == null ? VertxTLSBuilder.class.getClassLoader()
+              : Thread.currentThread().getContextClassLoader();
+      URL resource = classLoader.getResource(name);
+      return resource != null;
+    } catch (Exception e) {
+      return false;
+    }
   }
 }

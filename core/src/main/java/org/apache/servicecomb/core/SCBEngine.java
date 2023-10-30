@@ -313,6 +313,7 @@ public class SCBEngine {
     if (SCBStatus.DOWN.equals(status)) {
       try {
         doRun();
+        printServiceInfo();
       } catch (Throwable e) {
         LOGGER.error("Failed to start ServiceComb due to errors and close", e);
         try {
@@ -322,8 +323,6 @@ public class SCBEngine {
         }
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
-      } finally {
-        printServiceInfo();
       }
     }
 
