@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -115,6 +116,9 @@ public class InstanceIsolationDiscoveryFilter implements DiscoveryFilter {
     // Create new child. And all later DiscoveryFilter will re-calculate based on this result.
     DiscoveryTreeNode child = new DiscoveryTreeNode().subName(parent, KEY_ISOLATED).data(result);
     parent.child(KEY_ISOLATED, child);
+    Invocation invocation = context.getInputParameters();
+    LOGGER.info("instance isolation discovery filter changed, current cached size {}/{}/{}",
+        invocation.getAppId(), invocation.getMicroserviceName(), result.size());
     return child;
   }
 }

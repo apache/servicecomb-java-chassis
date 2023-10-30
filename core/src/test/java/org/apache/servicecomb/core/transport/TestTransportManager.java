@@ -25,28 +25,36 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 public class TestTransportManager {
   @Test
-  public void testTransportManagerInitFail(@Mocked SCBEngine scbEngine, @Injectable Transport transport)
+  public void testTransportManagerInitFail()
       throws Exception {
-    new Expectations() {
-      {
-        transport.getName();
-        result = "test";
-        transport.init();
-        result = false;
-        transport.canInit();
-        result = true;
-      }
-    };
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Transport transport = Mockito.mock(Transport.class);
+    Mockito.when(transport.getName()).thenReturn("test");
+    Mockito.when(transport.init()).thenReturn(false);
+    Mockito.when(transport.canInit()).thenReturn(true);
+    List<Transport> transports = Arrays.asList(transport);
+    TransportManager manager = new TransportManager();
+    manager.addTransportsBeforeInit(transports);
+
+    manager.init(scbEngine);
+    Assertions.assertEquals(manager.findTransport("test"), transport);
+  }
+
+  @Test
+  public void testTransportManagerInitSuccess() throws Exception {
+    SCBEngine scbEngine = Mockito.mock(SCBEngine.class);
+    Transport transport = Mockito.mock(Transport.class);
+    Endpoint endpoint = Mockito.mock(Endpoint.class);
+    Mockito.when(transport.getName()).thenReturn("test");
+    Mockito.when(transport.init()).thenReturn(true);
+    Mockito.when(transport.canInit()).thenReturn(true);
+    Mockito.when(transport.getPublishEndpoint()).thenReturn(endpoint);
     List<Transport> transports = Arrays.asList(transport);
 
     TransportManager manager = new TransportManager();
@@ -57,66 +65,31 @@ public class TestTransportManager {
   }
 
   @Test
-  public void testTransportManagerInitSucc(@Mocked SCBEngine scbEngine, @Injectable Transport transport,
-      @Injectable Endpoint endpoint, @Injectable MicroserviceInstance instance) throws Exception {
-    new Expectations() {
-      {
-        transport.getName();
-        result = "test";
-        transport.canInit();
-        result = true;
-        transport.init();
-        result = true;
-        transport.getPublishEndpoint();
-        result = endpoint;
-      }
-    };
-    List<Transport> transports = Arrays.asList(transport);
-
+  public void testGroupByName() {
+    Transport t1 = Mockito.mock(Transport.class);
+    Mockito.when(t1.getName()).thenReturn("t1");
+    Transport t21 = Mockito.mock(Transport.class);
+    Mockito.when(t21.getName()).thenReturn("t2");
+    Transport t22 = Mockito.mock(Transport.class);
+    Mockito.when(t22.getName()).thenReturn("t2");
     TransportManager manager = new TransportManager();
-    manager.addTransportsBeforeInit(transports);
-
-    manager.init(scbEngine);
-    Assertions.assertEquals(manager.findTransport("test"), transport);
-  }
-
-  @Test
-  public void testGroupByName(@Mocked Transport t1, @Mocked Transport t2_1, @Mocked Transport t2_2) {
-    new Expectations() {
-      {
-        t1.getName();
-        result = "t1";
-
-        t2_1.getName();
-        result = "t2";
-        t2_2.getName();
-        result = "t2";
-      }
-    };
-
-    TransportManager manager = new TransportManager();
-    manager.addTransportsBeforeInit(Arrays.asList(t1, t2_1, t2_2));
+    manager.addTransportsBeforeInit(Arrays.asList(t1, t21, t22));
 
     Map<String, List<Transport>> groups = manager.groupByName();
     Assertions.assertEquals(2, groups.size());
     Assertions.assertEquals(1, groups.get("t1").size());
     Assertions.assertEquals(t1, groups.get("t1").get(0));
     Assertions.assertEquals(2, groups.get("t2").size());
-    Assertions.assertEquals(t2_1, groups.get("t2").get(0));
-    Assertions.assertEquals(t2_2, groups.get("t2").get(1));
+    Assertions.assertEquals(t21, groups.get("t2").get(0));
+    Assertions.assertEquals(t22, groups.get("t2").get(1));
   }
 
   @Test
-  public void testCheckTransportGroupInvalid(@Mocked Transport t1, @Mocked Transport t2) {
-    new Expectations() {
-      {
-        t1.getOrder();
-        result = 1;
-
-        t2.getOrder();
-        result = 1;
-      }
-    };
+  public void testCheckTransportGroupInvalid() {
+    Transport t1 = Mockito.mock(Transport.class);
+    Mockito.when(t1.getOrder()).thenReturn(1);
+    Transport t2 = Mockito.mock(Transport.class);
+    Mockito.when(t2.getOrder()).thenReturn(1);
 
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
@@ -125,23 +98,16 @@ public class TestTransportManager {
       manager.checkTransportGroup(group);
       Assertions.fail("must throw exception");
     } catch (ServiceCombException e) {
-      Assertions.assertEquals(
-          "org.apache.servicecomb.core.$Impl_Transport and org.apache.servicecomb.core.$Impl_Transport have the same order 1",
-          e.getMessage());
+      Assertions.assertTrue(e.getMessage().contains("have the same order"));
     }
   }
 
   @Test
-  public void testCheckTransportGroupValid(@Mocked Transport t1, @Mocked Transport t2) {
-    new Expectations() {
-      {
-        t1.getOrder();
-        result = 1;
-
-        t2.getOrder();
-        result = 2;
-      }
-    };
+  public void testCheckTransportGroupValid() {
+    Transport t1 = Mockito.mock(Transport.class);
+    Mockito.when(t1.getOrder()).thenReturn(1);
+    Transport t2 = Mockito.mock(Transport.class);
+    Mockito.when(t2.getOrder()).thenReturn(2);
 
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
@@ -154,18 +120,12 @@ public class TestTransportManager {
   }
 
   @Test
-  public void testChooseOneTransportFirst(@Mocked Transport t1, @Mocked Transport t2) {
-    new Expectations() {
-      {
-        t1.getOrder();
-        result = 1;
-        t1.canInit();
-        result = true;
-
-        t2.getOrder();
-        result = 2;
-      }
-    };
+  public void testChooseOneTransportFirst() {
+    Transport t1 = Mockito.mock(Transport.class);
+    Mockito.when(t1.getOrder()).thenReturn(1);
+    Mockito.when(t1.canInit()).thenReturn(true);
+    Transport t2 = Mockito.mock(Transport.class);
+    Mockito.when(t2.getOrder()).thenReturn(2);
 
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
@@ -174,21 +134,13 @@ public class TestTransportManager {
   }
 
   @Test
-  public void testChooseOneTransportSecond(@Mocked Transport t1, @Mocked Transport t2) {
-    new Expectations() {
-      {
-        t1.getOrder();
-        result = Integer.MAX_VALUE;
-        t1.canInit();
-        result = true;
-
-        t2.getOrder();
-        result = -1000;
-        t2.canInit();
-        result = false;
-      }
-    };
-
+  public void testChooseOneTransportSecond() {
+    Transport t1 = Mockito.mock(Transport.class);
+    Mockito.when(t1.getOrder()).thenReturn(Integer.MAX_VALUE);
+    Mockito.when(t1.canInit()).thenReturn(true);
+    Transport t2 = Mockito.mock(Transport.class);
+    Mockito.when(t2.getOrder()).thenReturn(-1000);
+    Mockito.when(t2.canInit()).thenReturn(false);
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
 
@@ -196,22 +148,14 @@ public class TestTransportManager {
   }
 
   @Test
-  public void testChooseOneTransportNone(@Mocked Transport t1, @Mocked Transport t2) {
-    new Expectations() {
-      {
-        t1.getName();
-        result = "t";
-        t1.getOrder();
-        result = 1;
-        t1.canInit();
-        result = false;
-
-        t2.getOrder();
-        result = 2;
-        t2.canInit();
-        result = false;
-      }
-    };
+  public void testChooseOneTransportNone() {
+    Transport t1 = Mockito.mock(Transport.class);
+    Mockito.when(t1.getName()).thenReturn("t");
+    Mockito.when(t1.getOrder()).thenReturn(1);
+    Mockito.when(t1.canInit()).thenReturn(false);
+    Transport t2 = Mockito.mock(Transport.class);
+    Mockito.when(t2.getOrder()).thenReturn(2);
+    Mockito.when(t2.canInit()).thenReturn(false);
 
     TransportManager manager = new TransportManager();
     List<Transport> group = Arrays.asList(t1, t2);
