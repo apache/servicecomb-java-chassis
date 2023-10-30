@@ -321,6 +321,7 @@ public class SCBEngine {
       try {
         doRun();
         waitStatusUp();
+        printServiceInfo();
       } catch (TimeoutException e) {
         LOGGER.warn("{}", e.getMessage());
       } catch (Throwable e) {
@@ -332,8 +333,6 @@ public class SCBEngine {
         }
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
-      } finally {
-        printServiceInfo();
       }
     }
 
