@@ -211,7 +211,7 @@ public class TestRestOperationMeta {
   public void generatesAbsolutePathWithRootBasePath() {
     findOperation("textCharJsonChar");
 
-    MatcherAssert.assertThat(operationMeta.getAbsolutePath(), is("/textCharJsonChar/"));
+    MatcherAssert.assertThat(operationMeta.getAbsolutePath(), is("/textCharJsonChar"));
   }
 
   @Test
@@ -223,7 +223,7 @@ public class TestRestOperationMeta {
     RestOperationMeta restOperationMeta = new RestOperationMeta();
     restOperationMeta.init(meta);
 
-    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/textCharJsonChar/"));
+    MatcherAssert.assertThat(restOperationMeta.getAbsolutePath(), is("/rest/textCharJsonChar"));
   }
 
   @Test

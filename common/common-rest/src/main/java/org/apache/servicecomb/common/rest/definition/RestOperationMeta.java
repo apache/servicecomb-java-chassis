@@ -28,6 +28,7 @@ import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
+import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
@@ -194,7 +195,7 @@ public class RestOperationMeta {
    * e.g. "/prefix" + "/ope" = /prefix/ope/
    */
   private String concatPath(String basePath, String operationPath) {
-    return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath) + "/")
+    return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath))
         .replaceAll("/{2,}", "/");
   }
 
@@ -225,7 +226,7 @@ public class RestOperationMeta {
       throw new Error("null rest url is not supported");
     }
     try {
-      return new PathRegExp(path);
+      return new PathRegExp(OperationLocator.getStandardPath(path));
     } catch (Exception e) {
       LOGGER.error(e.getMessage());
       return null;

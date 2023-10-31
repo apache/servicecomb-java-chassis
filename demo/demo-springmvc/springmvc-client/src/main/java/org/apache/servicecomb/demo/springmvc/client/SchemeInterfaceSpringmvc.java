@@ -21,4 +21,8 @@ public interface SchemeInterfaceSpringmvc {
   int add(int a, int b);
 
   int reduce(int a, int b);
+
+  String tailingSlash(int a, int b);
+
+  String nonTailingSlash(int a, int b);
 }

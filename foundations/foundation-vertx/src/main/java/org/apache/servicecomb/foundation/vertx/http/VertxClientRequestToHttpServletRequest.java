@@ -20,12 +20,11 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.util.Collections;
 import java.util.Enumeration;
 
-import jakarta.ws.rs.core.HttpHeaders;
-
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
+import jakarta.ws.rs.core.HttpHeaders;
 
 public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletRequest {
   private final HttpClientRequest clientRequest;
@@ -40,6 +39,11 @@ public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletR
   @Override
   public String getRequestURI() {
     return clientRequest.path();
+  }
+
+  @Override
+  public StringBuffer getRequestURL() {
+    return new StringBuffer(clientRequest.path());
   }
 
   @Override
