@@ -58,7 +58,7 @@ public class MicroservicePaths {
 
   protected void addStaticPathResource(RestOperationMeta operation) {
     String httpMethod = operation.getHttpMethod();
-    String path = operation.getAbsolutePath();
+    String path = OperationLocator.getStandardPath(operation.getAbsolutePath());
     OperationGroup group = staticPathOperations.get(path);
     if (group == null) {
       group = new OperationGroup();

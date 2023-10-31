@@ -62,6 +62,31 @@ public class TestManagementEndpoint implements CategorizedTestCase {
                     schema:
                       type: integer
                       format: int32
+        /nonTailingSlash:
+          get:
+            operationId: nonTailingSlash
+            parameters:
+            - name: a
+              in: query
+              required: true
+              schema:
+                minimum: 1
+                type: integer
+                format: int32
+            - name: b
+              in: query
+              required: true
+              schema:
+                minimum: 1
+                type: integer
+                format: int32
+            responses:
+              "200":
+                description: response of 200
+                content:
+                  application/json:
+                    schema:
+                      type: string
         /tailingSlash/:
           get:
             operationId: tailingSlash
@@ -104,6 +129,7 @@ public class TestManagementEndpoint implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
     testSchemeInterfaceSpringmvcPathSlashCorrect();
+    testSchemeInterfaceSpringmvcPathNonSlashCorrect();
   }
 
   private void testSchemeInterfaceSpringmvcPathSlashCorrect() {
@@ -111,6 +137,14 @@ public class TestManagementEndpoint implements CategorizedTestCase {
     TestMgr.check("/api/springmvc/schemaInterface/tailingSlash/;" +
         "/api/springmvc/schemaInterface/tailingSlash/;" +
         "/api/springmvc/schemaInterface/tailingSlash/;" +
+        "-2", result);
+  }
+
+  private void testSchemeInterfaceSpringmvcPathNonSlashCorrect() {
+    String result = schemeInterfaceSpringmvc.nonTailingSlash(3, 5);
+    TestMgr.check("/api/springmvc/schemaInterface/nonTailingSlash;" +
+        "/api/springmvc/schemaInterface/nonTailingSlash;" +
+        "/api/springmvc/schemaInterface/nonTailingSlash;" +
         "-2", result);
   }
 

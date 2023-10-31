@@ -107,9 +107,9 @@ public class OperationLocator {
     return operation.getHttpMethod().equals(httpMethod);
   }
 
-  // Almost always change path, this make performance lower.
-  // Path: /a/b/c -> /a/b/c/
-  static String getStandardPath(String path) {
+  // Make path standard in order to build path mapping and find path operation.
+  // NOTE: Path: /a/b/c -> /a/b/c/. Almost change path every time, this make performance lower.
+  public static String getStandardPath(String path) {
     if (path.length() > 0 && !path.endsWith(SLASH)) {
       path += SLASH;
     }

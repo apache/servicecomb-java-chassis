@@ -32,4 +32,7 @@ public interface SchemeInterfaceSpringmvc {
 
   @GetMapping(path = "/tailingSlash/")
   String tailingSlash(HttpServletRequest request, @Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
+
+  @GetMapping(path = "/nonTailingSlash")
+  String nonTailingSlash(HttpServletRequest request, @Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
 }

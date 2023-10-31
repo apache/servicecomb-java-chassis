@@ -39,6 +39,16 @@ public class SchemeInterfaceSpringmvcImpl implements SchemeInterfaceSpringmvc {
     return sb.toString();
   }
 
+  @Override
+  public String nonTailingSlash(HttpServletRequest request, int a, int b) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(request.getRequestURI()).append(";")
+        .append(request.getRequestURL()).append(";")
+        .append(request.getPathInfo()).append(";")
+        .append(a - b);
+    return sb.toString();
+  }
+
   public int reduce(int a, int b) {
     return a - b;
   }
