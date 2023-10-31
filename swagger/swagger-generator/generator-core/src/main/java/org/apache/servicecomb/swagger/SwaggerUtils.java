@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -110,19 +111,6 @@ public final class SwaggerUtils {
       return internalParseSwagger(swaggerContent);
     } catch (Throwable e) {
       throw new ServiceCombException("Parse swagger from content failed, ", e);
-    }
-  }
-
-  public static OpenAPI parseAndValidateSwagger(String appId, String microserviceName,
-      String schemaId, String swaggerContent) {
-    try {
-      OpenAPI result = internalParseSwagger(swaggerContent);
-      validateSwagger(result);
-      return result;
-    } catch (Throwable e) {
-      throw new ServiceCombException(
-          String.format("Parse swagger from content failed, %s/%s/%s",
-              appId, microserviceName, schemaId), e);
     }
   }
 
@@ -287,7 +275,28 @@ public final class SwaggerUtils {
         && StringUtils.equals(schema1.get$ref(), schema2.get$ref())
         && schemaEquals(schema1.getItems(), schema2.getItems())
         && schemaEquals((Schema<?>) schema1.getAdditionalProperties(), (Schema<?>) schema2.getAdditionalProperties())
-        && propertiesEquals(schema1.getProperties(), schema2.getProperties());
+        && propertiesEquals(schema1.getProperties(), schema2.getProperties())
+        && extensionEquals(schema1.getExtensions(), schema2.getExtensions());
+  }
+
+  private static boolean extensionEquals(Map<String, Object> extensions1, Map<String, Object> extensions2) {
+    if (extensions1 == null && extensions2 == null) {
+      return true;
+    }
+    if (extensions1 == null || extensions2 == null) {
+      return false;
+    }
+    if (extensions1.size() != extensions2.size()) {
+      return false;
+    }
+    boolean result = true;
+    for (Entry<String, Object> item : extensions1.entrySet()) {
+      if (!Objects.equals(item.getValue(), extensions2.get(item.getKey()))) {
+        result = false;
+        break;
+      }
+    }
+    return result;
   }
 
   public static boolean propertiesEquals(Map<String, Schema> properties1, Map<String, Schema> properties2) {

@@ -120,9 +120,6 @@ public class ModelResolverExt extends ModelResolver {
         if (propType.getType() instanceof JavaType) {
           referencedSchema.getExtensions().put(SwaggerConst.EXT_JAVA_CLASS,
               ((JavaType) propType.getType()).toCanonical());
-        } else if (propType.getType() instanceof Class<?>) {
-          referencedSchema.getExtensions().put(SwaggerConst.EXT_JAVA_CLASS,
-              ((Class<?>) propType.getType()).getCanonicalName());
         } else {
           referencedSchema.getExtensions().put(SwaggerConst.EXT_JAVA_CLASS,
               TypeFactory.defaultInstance().constructType(propType.getType()).toCanonical());
