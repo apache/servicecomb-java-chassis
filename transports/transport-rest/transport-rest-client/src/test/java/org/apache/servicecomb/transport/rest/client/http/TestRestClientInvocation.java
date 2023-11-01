@@ -179,7 +179,8 @@ public class TestRestClientInvocation {
     MatcherAssert.assertThat(headers.names(),
         Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
             org.apache.servicecomb.core.Const.CSE_CONTEXT));
-    Assertions.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
+    Assertions.assertEquals(TARGET_MICROSERVICE_NAME,
+        headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
     Assertions.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
     Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
   }
@@ -216,7 +217,8 @@ public class TestRestClientInvocation {
     MatcherAssert.assertThat(headers.names(),
         Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
             org.apache.servicecomb.core.Const.CSE_CONTEXT));
-    Assertions.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
+    Assertions.assertEquals(TARGET_MICROSERVICE_NAME,
+        headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
     Assertions.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
     Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
     operationConfig.setClientRequestHeaderFilterEnabled(true);
@@ -286,11 +288,11 @@ public class TestRestClientInvocation {
     when(invocation.getContext()).thenReturn(contextMap);
     restClientInvocation.setCseContext();
 
-    String context =  headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT);
-    HttpServletRequestEx requestEx = new MockUp<HttpServletRequestEx>(){
+    String context = headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT);
+    HttpServletRequestEx requestEx = new MockUp<HttpServletRequestEx>() {
       @Mock
-      public String getHeader(String name){
-        if (StringUtils.equals(name, org.apache.servicecomb.core.Const.CSE_CONTEXT)){
+      public String getHeader(String name) {
+        if (StringUtils.equals(name, org.apache.servicecomb.core.Const.CSE_CONTEXT)) {
           return context;
         } else {
           return null;
@@ -324,11 +326,11 @@ public class TestRestClientInvocation {
     };
 
     restClientInvocation.setCseContext();
-    String context =  headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT);
-    HttpServletRequestEx requestEx = new MockUp<HttpServletRequestEx>(){
+    String context = headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT);
+    HttpServletRequestEx requestEx = new MockUp<HttpServletRequestEx>() {
       @Mock
-      public String getHeader(String name){
-        if (StringUtils.equals(name, org.apache.servicecomb.core.Const.CSE_CONTEXT)){
+      public String getHeader(String name) {
+        if (StringUtils.equals(name, org.apache.servicecomb.core.Const.CSE_CONTEXT)) {
           return context;
         } else {
           return null;
@@ -419,7 +421,6 @@ public class TestRestClientInvocation {
     Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
     Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
     Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
   }
 
   @Test

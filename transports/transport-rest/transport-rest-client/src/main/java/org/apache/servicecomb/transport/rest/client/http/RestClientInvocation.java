@@ -103,11 +103,9 @@ public class RestClientInvocation {
     IpPort ipPort = (IpPort) invocation.getEndpoint().getAddress();
 
     Future<HttpClientRequest> requestFuture = createRequest(ipPort, path);
-
     invocation.getInvocationStageTrace().startGetConnection();
+    requestFuture.onComplete(r -> invocation.getInvocationStageTrace().finishGetConnection());
     requestFuture.compose(clientRequest -> {
-      invocation.getInvocationStageTrace().finishGetConnection();
-
       this.clientRequest = clientRequest;
 
       clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
@@ -269,10 +267,6 @@ public class RestClientInvocation {
     alreadyFailed = true;
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-
-    if (stageTrace.getFinishWriteToBuffer() == 0) {
-      stageTrace.finishWriteToBuffer(System.nanoTime());
-    }
 
     // even failed and did not received response, still set time for it
     // that will help to know the real timeout time
