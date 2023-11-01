@@ -22,8 +22,6 @@ import static org.apache.servicecomb.transport.rest.client.RestClientEncoder.gen
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
-import jakarta.servlet.http.Part;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
@@ -41,6 +39,7 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import jakarta.servlet.http.Part;
 
 public class RestClientSender {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientSender.class);
@@ -75,9 +74,11 @@ public class RestClientSender {
 
   protected void runInVertxContext() {
     sendInVertxContext()
-        .exceptionally(throwable -> {
-          future.completeExceptionally(throwable);
-          return null;
+        .whenComplete((v, e) -> {
+          if (e != null) {
+            future.completeExceptionally(e);
+          }
+          writeFinished();
         });
   }
 
@@ -87,17 +88,22 @@ public class RestClientSender {
     Multimap<String, Part> uploads = requestParameters.getUploads();
     if (uploads == null) {
       if (requestParameters.getBodyBuffer() != null) {
-        httpClientRequest.end(requestParameters.getBodyBuffer());
+        return CompletableFuture.completedFuture(null).thenCompose(
+            v -> httpClientRequest.end(requestParameters.getBodyBuffer()).toCompletionStage());
       } else {
-        httpClientRequest.end();
+        return CompletableFuture.completedFuture(null).thenCompose(
+            v -> httpClientRequest.end().toCompletionStage());
       }
-      return CompletableFuture.completedFuture(null);
     }
 
     if (requestParameters.getBodyBuffer() != null) {
       httpClientRequest.write(requestParameters.getBodyBuffer());
     }
     return sendFiles();
+  }
+
+  private void writeFinished() {
+    invocation.getInvocationStageTrace().finishWriteToBuffer(System.nanoTime());
   }
 
   protected CompletableFuture<Void> sendFiles() {
@@ -111,8 +117,7 @@ public class RestClientSender {
       sendFileFuture = sendFileFuture.thenCompose(v -> sendFile(entry.getValue(), name, boundary));
     }
 
-    return sendFileFuture
-        .thenAccept(v -> httpClientRequest.end(genBoundaryEndBuffer(boundary)));
+    return sendFileFuture.thenCompose(v -> httpClientRequest.end(genBoundaryEndBuffer(boundary)).toCompletionStage());
   }
 
   private CompletableFuture<Void> sendFile(Part part, String name, String boundary) {
@@ -167,8 +172,7 @@ public class RestClientSender {
 
   protected void processMetrics() {
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    stageTrace.finishWriteToBuffer(System.nanoTime());
-    // even failed and did not received response, still set time for it
+    // even failed and did not receive response, still set time for it
     // that will help to know the real timeout time
     stageTrace.finishReceiveResponse();
     stageTrace.startClientFiltersResponse();

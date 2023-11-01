@@ -18,6 +18,7 @@ package org.apache.servicecomb.transport.rest.client;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.CoreConst;
@@ -77,8 +78,11 @@ public class RestClientCodecFilter implements ConsumerFilter {
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     invocation.getInvocationStageTrace().startGetConnection();
     startClientFiltersRequest(invocation);
+    CompletionStage<HttpClientRequest> createRequest =
+        transportContextFactory.createHttpClientRequest(invocation).toCompletionStage()
+            .whenComplete((c, e) -> invocation.getInvocationStageTrace().finishGetConnection());
     return CompletableFuture.completedFuture(null)
-        .thenCompose(v -> transportContextFactory.createHttpClientRequest(invocation).toCompletionStage())
+        .thenCompose(v -> createRequest)
         .thenAccept(httpClientRequest -> prepareTransportContext(invocation, httpClientRequest))
         .thenAccept(v -> invocation.onStartSendRequest())
         .thenAccept(v -> encoder.encode(invocation))
@@ -92,8 +96,6 @@ public class RestClientCodecFilter implements ConsumerFilter {
   }
 
   protected void prepareTransportContext(Invocation invocation, HttpClientRequest httpClientRequest) {
-    invocation.getInvocationStageTrace().finishGetConnection();
-
     copyExtraHttpHeaders(invocation, httpClientRequest);
 
     RestClientTransportContext transportContext = transportContextFactory.create(invocation, httpClientRequest);
