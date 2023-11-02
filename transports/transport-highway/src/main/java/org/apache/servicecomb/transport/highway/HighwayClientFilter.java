@@ -23,18 +23,19 @@ import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class HighwayClientFilter implements ConsumerFilter {
+public class HighwayClientFilter extends AbstractFilter implements ConsumerFilter, EdgeFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientFilter.class);
 
   public static final String NAME = "highway-client";
@@ -50,7 +51,7 @@ public class HighwayClientFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 2000;
   }
 

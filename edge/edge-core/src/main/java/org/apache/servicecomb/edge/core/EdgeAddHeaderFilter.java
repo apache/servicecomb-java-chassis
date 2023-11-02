@@ -25,23 +25,19 @@ import java.util.function.BiConsumer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.AbstractFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.rest.client.RestClientTransportContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.Subscribe;
 
-public class EdgeAddHeaderFilter implements ConsumerFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(EdgeAddHeaderFilter.class);
-
+public class EdgeAddHeaderFilter extends AbstractFilter implements EdgeFilter {
   public static final String NAME = "edge-add-headers";
 
   private static final String PREFIX = "servicecomb.edge.filter.addHeader";
@@ -63,6 +59,7 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
   }
 
   @Subscribe
+  @SuppressWarnings("unused")
   public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
     for (String changed : event.getChanged()) {
       if (changed.startsWith(PREFIX)) {
@@ -92,27 +89,19 @@ public class EdgeAddHeaderFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1991;
   }
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     RestClientTransportContext transportContext = invocation.getTransportContext();
-    if (transportContext != null) {
-      return CompletableFuture.completedFuture(null)
-          .thenAccept(v -> addHeaders(invocation, transportContext.getHttpClientRequest()::putHeader))
-          .thenCompose(v -> nextNode.onFilter(invocation));
-    }
-    // normal consumer in edge process
-    return nextNode.onFilter(invocation);
+    return CompletableFuture.completedFuture(null)
+        .thenAccept(v -> addHeaders(invocation, transportContext.getHttpClientRequest()::putHeader))
+        .thenCompose(v -> nextNode.onFilter(invocation));
   }
 
   public void addHeaders(Invocation invocation, BiConsumer<String, String> headerAdder) {
-    if (!invocation.isEdge()) {
-      return;
-    }
-
     HttpServletRequestEx oldRequest = invocation.getRequestEx();
     publicHeaders.forEach(key -> {
       String value = oldRequest.getHeader(key);

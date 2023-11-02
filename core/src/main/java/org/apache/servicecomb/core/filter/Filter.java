@@ -19,15 +19,15 @@ package org.apache.servicecomb.core.filter;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.springframework.core.Ordered;
 
 /**
  * <pre>
  *  Filters are the basics of how an invocation is executed.
  *
  * thread rule:
- *   assume a producer filter chains is: f1, f2, schedule, f3, f4
+ *   assume a provider filter chains is: f1, f2, schedule, f3, f4
  *
  *   schedule is a builtIn filter, which will dispatch invocations to operation related threadPool
  *
@@ -47,14 +47,10 @@ import org.apache.servicecomb.swagger.invocation.Response;
  *        (<a href="https://vertx.io/docs/vertx-core/java/#golden_rule">reactive golden rule</a>)
  * </pre>
  */
-public interface Filter {
+public interface Filter extends Ordered {
   int PROVIDER_SCHEDULE_FILTER_ORDER = 0;
 
   int CONSUMER_LOAD_BALANCE_ORDER = 0;
-
-  default boolean enabledForInvocationType(InvocationType invocationType) {
-    return true;
-  }
 
   default boolean enabledForTransport(String transport) {
     return true;
@@ -64,7 +60,11 @@ public interface Filter {
     return true;
   }
 
-  default int getOrder(InvocationType invocationType, String application, String serviceName) {
+  default int getOrder(String application, String serviceName) {
+    return 0;
+  }
+
+  default int getOrder() {
     return 0;
   }
 

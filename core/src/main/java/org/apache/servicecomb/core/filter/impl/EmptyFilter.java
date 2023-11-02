@@ -19,12 +19,15 @@ package org.apache.servicecomb.core.filter.impl;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.AbstractFilter;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 // just for test
-public class EmptyFilter implements Filter {
+public class EmptyFilter extends AbstractFilter implements ProviderFilter, ConsumerFilter, EdgeFilter {
   @Override
   public String getName() {
     return "empty";
@@ -33,5 +36,10 @@ public class EmptyFilter implements Filter {
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
     return CompletableFuture.completedFuture(Response.ok(null));
+  }
+
+  @Override
+  public int getOrder() {
+    return 0;
   }
 }

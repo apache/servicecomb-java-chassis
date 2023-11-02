@@ -20,10 +20,11 @@ package org.apache.servicecomb.qps;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -31,7 +32,7 @@ import org.springframework.core.env.Environment;
 
 import com.google.common.annotations.VisibleForTesting;
 
-public class ConsumerFlowControlFilter implements ConsumerFilter {
+public class ConsumerFlowControlFilter extends AbstractFilter implements ConsumerFilter, EdgeFilter {
   private final QpsControllerManager qpsControllerMgr;
 
   public ConsumerFlowControlFilter(Environment environment) {
@@ -44,7 +45,7 @@ public class ConsumerFlowControlFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1990;
   }
 

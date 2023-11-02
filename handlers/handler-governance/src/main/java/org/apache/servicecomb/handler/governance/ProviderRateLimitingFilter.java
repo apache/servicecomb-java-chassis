@@ -22,13 +22,13 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.governance.handler.RateLimitingHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -41,7 +41,7 @@ import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
-public class ProviderRateLimitingFilter implements ProviderFilter {
+public class ProviderRateLimitingFilter extends AbstractFilter implements ProviderFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderRateLimitingFilter.class);
 
   private final RateLimitingHandler rateLimitingHandler;
@@ -52,7 +52,7 @@ public class ProviderRateLimitingFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1900;
   }
 

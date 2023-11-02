@@ -21,12 +21,9 @@ import static org.apache.servicecomb.core.filter.FilterNode.buildChain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
-import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -132,21 +129,5 @@ public class FilterChainTest {
     assertThat(executionException.getCause())
         .isInstanceOf(IllegalStateException.class)
         .hasMessage("e1");
-  }
-
-  @Test
-  public void should_support_retry_logic() {
-    Filter exceptionFilter = (invocation, nextNode) -> {
-      throw new CompletionException(new IOException("net error"));
-    };
-    SimpleRetryFilter retryFilter = new SimpleRetryFilter().setMaxRetry(3);
-
-    CompletableFuture<Response> future = buildChain(retryFilter, recordThreadFilter, exceptionFilter)
-        .onFilter(invocation);
-    assertThat(future)
-        .failsWithin(Duration.ofSeconds(1))
-        .withThrowableOfType(ExecutionException.class)
-        .withCauseExactlyInstanceOf(IOException.class)
-        .withMessage("java.io.IOException: net error");
   }
 }

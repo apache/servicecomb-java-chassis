@@ -21,16 +21,16 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 
-public class ProviderOperationFilter implements ProviderFilter {
+public class ProviderOperationFilter extends AbstractFilter implements ProviderFilter {
   public static final String NAME = "producer-operation";
 
   @Override
@@ -39,7 +39,7 @@ public class ProviderOperationFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     // almost time, should be the last filter.
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 2000;
   }

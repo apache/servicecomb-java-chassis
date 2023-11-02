@@ -79,7 +79,7 @@ public class ProducerInvocationFlowTest {
   private void mockFilterChain() {
     new Expectations() {
       {
-        microserviceMeta.getFilterChain();
+        microserviceMeta.getProviderFilterChain();
         result = filterNode;
       }
     };

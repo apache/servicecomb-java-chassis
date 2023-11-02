@@ -383,7 +383,7 @@ public class SCBEngine {
     String microserviceName = BootStrapProperties.readServiceName(environment);
     producerMicroserviceMeta = new MicroserviceMeta(this,
         BootStrapProperties.readApplication(environment), microserviceName, false);
-    producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(
+    producerMicroserviceMeta.setProviderFilterChain(filterChainsManager.findProducerChain(
         BootStrapProperties.readApplication(environment), microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this));
   }

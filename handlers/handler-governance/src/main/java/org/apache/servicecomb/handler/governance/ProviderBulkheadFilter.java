@@ -22,13 +22,13 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.governance.handler.BulkheadHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -41,7 +41,7 @@ import io.github.resilience4j.bulkhead.BulkheadFullException;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 
-public class ProviderBulkheadFilter implements ProviderFilter {
+public class ProviderBulkheadFilter extends AbstractFilter implements ProviderFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderBulkheadFilter.class);
 
   private final BulkheadHandler bulkheadHandler;
@@ -52,7 +52,7 @@ public class ProviderBulkheadFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1880;
   }
 

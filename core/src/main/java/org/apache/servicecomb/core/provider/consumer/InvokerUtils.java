@@ -314,7 +314,13 @@ public final class InvokerUtils {
       invocation.onStart(null, System.nanoTime());
       updateRetryStatus(invocation);
       invocation.onStartHandlersRequest();
-      return invocation.getMicroserviceMeta().getFilterChain()
+      if (invocation.isEdge()) {
+        return invocation.getMicroserviceMeta().getEdgeFilterChain()
+            .onFilter(invocation)
+            .exceptionally(throwable -> toConsumerResponse(invocation, throwable))
+            .whenComplete((response, throwable) -> finishInvocation(invocation, response));
+      }
+      return invocation.getMicroserviceMeta().getConsumerFilterChain()
           .onFilter(invocation)
           .exceptionally(throwable -> toConsumerResponse(invocation, throwable))
           .whenComplete((response, throwable) -> finishInvocation(invocation, response));

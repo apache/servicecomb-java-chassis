@@ -22,26 +22,30 @@ import static org.apache.servicecomb.foundation.common.utils.StringBuilderUtils.
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class FilterChainsManager {
-  private final InvocationFilterChains consumerChains = new InvocationFilterChains(InvocationType.CONSUMER);
+  private InvocationFilterChains consumerChains;
 
-  private final InvocationFilterChains producerChains = new InvocationFilterChains(InvocationType.PROVIDER);
+  private InvocationFilterChains providerChains;
+
+  private InvocationFilterChains edgeChains;
 
   @Autowired
-  public FilterChainsManager addFilters(List<Filter> filters) {
-    for (Filter filter : filters) {
-      if (filter.enabledForInvocationType(InvocationType.CONSUMER)) {
-        consumerChains.addFilter(filter);
-      }
+  public FilterChainsManager setEdgeFilters(List<EdgeFilter> filters) {
+    edgeChains = new InvocationFilterChains(filters);
+    return this;
+  }
 
-      if (filter.enabledForInvocationType(InvocationType.PROVIDER)) {
-        producerChains.addFilter(filter);
-      }
-    }
+  @Autowired
+  public FilterChainsManager setConsumerFilters(List<ConsumerFilter> filters) {
+    consumerChains = new InvocationFilterChains(filters);
+    return this;
+  }
 
+  @Autowired
+  public FilterChainsManager setProviderFilters(List<ProviderFilter> filters) {
+    providerChains = new InvocationFilterChains(filters);
     return this;
   }
 
@@ -54,24 +58,31 @@ public class FilterChainsManager {
   }
 
   public FilterNode findProducerChain(String application, String serviceName) {
-    return producerChains.findChain(application, serviceName);
+    return providerChains.findChain(application, serviceName);
+  }
+
+  public FilterNode findEdgeChain(String application, String serviceName) {
+    return edgeChains.findChain(application, serviceName);
   }
 
   public String collectResolvedChains() {
     StringBuilder sb = new StringBuilder();
 
     appendLine(sb, "consumer: ");
-    appendLine(sb, "  filters: %s", collectFilterNames(consumerChains, InvocationType.CONSUMER));
+    appendLine(sb, "  filters: %s", collectFilterNames(consumerChains));
 
     appendLine(sb, "producer: ");
-    appendLine(sb, "  filters: %s", collectFilterNames(producerChains, InvocationType.PROVIDER));
+    appendLine(sb, "  filters: %s", collectFilterNames(providerChains));
+
+    appendLine(sb, "edge: ");
+    appendLine(sb, "  filters: %s", collectFilterNames(edgeChains));
 
     return deleteLast(sb, 1).toString();
   }
 
-  private List<String> collectFilterNames(InvocationFilterChains chains, InvocationType invocationType) {
+  private List<String> collectFilterNames(InvocationFilterChains chains) {
     return chains.getFilters().stream()
-        .map(filter -> filter.getName() + "(" + filter.getOrder(invocationType, null, null) + ")")
+        .map(filter -> filter.getName() + "(" + filter.getOrder() + ")")
         .collect(Collectors.toList());
   }
 }

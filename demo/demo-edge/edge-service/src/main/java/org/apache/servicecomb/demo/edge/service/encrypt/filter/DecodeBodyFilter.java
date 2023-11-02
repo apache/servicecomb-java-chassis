@@ -21,13 +21,13 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.AbstractFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
 import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.demo.edge.service.encrypt.EncryptContext;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.stereotype.Component;
 
@@ -35,11 +35,11 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 @Component
-public class DecodeBodyFilter implements ConsumerFilter {
+public class DecodeBodyFilter extends AbstractFilter implements EdgeFilter {
   private JavaType bodyType = TypeFactory.defaultInstance().constructMapType(Map.class, String.class, String[].class);
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER - 1790;
   }
 

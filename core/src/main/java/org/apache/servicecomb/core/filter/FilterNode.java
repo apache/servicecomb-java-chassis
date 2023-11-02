@@ -62,7 +62,9 @@ public class FilterNode {
   }
 
   public CompletableFuture<Response> onFilter(Invocation invocation) {
-    if (!filter.enabledForTransport(invocation.getTransportName())) {
+    // When transport name is empty, maybe edge and transport filters need to be executed.
+    // And we can't set Endpoint before load balance in edge.
+    if (invocation.getTransportName() != null && !filter.enabledForTransport(invocation.getTransportName())) {
       return nextNode.onFilter(invocation);
     }
 

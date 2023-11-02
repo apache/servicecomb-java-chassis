@@ -21,14 +21,14 @@ import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-public class ScheduleFilter implements ProviderFilter {
+public class ScheduleFilter extends AbstractFilter implements ProviderFilter {
   public static final String NAME = "schedule";
 
   @Override
@@ -37,7 +37,7 @@ public class ScheduleFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER;
   }
 

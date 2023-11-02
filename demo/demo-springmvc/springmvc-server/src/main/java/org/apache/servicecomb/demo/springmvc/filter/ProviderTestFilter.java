@@ -20,17 +20,17 @@ package org.apache.servicecomb.demo.springmvc.filter;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProviderTestFilter implements ProviderFilter {
+public class ProviderTestFilter extends AbstractFilter implements ProviderFilter {
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 1800;
   }
 

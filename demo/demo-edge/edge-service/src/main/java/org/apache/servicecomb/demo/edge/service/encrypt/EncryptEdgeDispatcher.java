@@ -24,6 +24,7 @@ import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
+import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.edge.core.AbstractEdgeDispatcher;
 import org.apache.servicecomb.edge.core.EdgeInvocationCreator;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -122,7 +123,7 @@ public class EncryptEdgeDispatcher extends AbstractEdgeDispatcher {
         return result.whenComplete((invocation, throwable)
             -> {
           if (throwable == null) {
-            invocation.getHandlerContext().put("encryptContext", encryptContext);
+            invocation.getHandlerContext().put(EdgeConst.ENCRYPT_CONTEXT, encryptContext);
           }
         });
       }
