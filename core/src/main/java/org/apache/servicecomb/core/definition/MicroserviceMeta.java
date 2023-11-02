@@ -26,10 +26,6 @@ import org.apache.servicecomb.foundation.common.VendorExtensions;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
-/**
- * should named MicroserviceVersionMeta<br>
- * but for compatible reason, keep the old name
- */
 public class MicroserviceMeta {
   private final SCBEngine scbEngine;
 
@@ -45,9 +41,14 @@ public class MicroserviceMeta {
   // key is OperationMeta.getMicroserviceQualifiedName()
   private final Map<String, OperationMeta> operationMetas = new HashMap<>();
 
+  // Used to indicate configuration items type. EDGE & CONSUMER chain are all consumer.
   private final boolean consumer;
 
-  private FilterNode filterChain = FilterNode.EMPTY;
+  private FilterNode consumerFilterChain = FilterNode.EMPTY;
+
+  private FilterNode providerFilterChain = FilterNode.EMPTY;
+
+  private FilterNode edgeFilterChain = FilterNode.EMPTY;
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
@@ -132,11 +133,27 @@ public class MicroserviceMeta {
     return vendorExtensions.get(key);
   }
 
-  public FilterNode getFilterChain() {
-    return filterChain;
+  public FilterNode getConsumerFilterChain() {
+    return consumerFilterChain;
   }
 
-  public void setFilterChain(FilterNode filterChain) {
-    this.filterChain = filterChain;
+  public void setConsumerFilterChain(FilterNode consumerFilterChain) {
+    this.consumerFilterChain = consumerFilterChain;
+  }
+
+  public FilterNode getProviderFilterChain() {
+    return providerFilterChain;
+  }
+
+  public void setProviderFilterChain(FilterNode providerFilterChain) {
+    this.providerFilterChain = providerFilterChain;
+  }
+
+  public FilterNode getEdgeFilterChain() {
+    return edgeFilterChain;
+  }
+
+  public void setEdgeFilterChain(FilterNode edgeFilterChain) {
+    this.edgeFilterChain = edgeFilterChain;
   }
 }

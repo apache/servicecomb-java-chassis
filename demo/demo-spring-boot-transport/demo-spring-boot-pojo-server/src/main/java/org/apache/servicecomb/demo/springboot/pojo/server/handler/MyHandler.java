@@ -20,25 +20,25 @@ package org.apache.servicecomb.demo.springboot.pojo.server.handler;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.demo.springboot.pojo.server.schema.server.User;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MyHandler implements ProviderFilter {
+public class MyHandler extends AbstractFilter implements ProviderFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(MyHandler.class);
 
   public static final String SPLITPARAM_RESPONSE_USER_SUFFIX = "(modified by MyHandler)";
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 100;
   }
 

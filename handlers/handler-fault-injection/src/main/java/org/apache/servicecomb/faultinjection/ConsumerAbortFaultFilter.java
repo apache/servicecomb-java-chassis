@@ -19,17 +19,18 @@ package org.apache.servicecomb.faultinjection;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConsumerAbortFaultFilter implements ConsumerFilter {
+public class ConsumerAbortFaultFilter extends AbstractFilter implements ConsumerFilter, EdgeFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerAbortFaultFilter.class);
 
   private static final String SUCCESS_RESPONSE = "success";
@@ -37,7 +38,7 @@ public class ConsumerAbortFaultFilter implements ConsumerFilter {
   public static final String ABORTED_ERROR_MSG = "aborted by fault inject";
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1020;
   }
 

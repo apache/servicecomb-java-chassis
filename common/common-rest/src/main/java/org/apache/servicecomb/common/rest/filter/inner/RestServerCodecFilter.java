@@ -34,6 +34,8 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.filter.AbstractFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
@@ -41,8 +43,8 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.TransportContext;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +54,7 @@ import io.vertx.core.MultiMap;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.HttpHeaders;
 
-public class RestServerCodecFilter implements ProviderFilter {
+public class RestServerCodecFilter extends AbstractFilter implements ProviderFilter, EdgeFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServerCodecFilter.class);
 
   public static final String NAME = "rest-server-codec";
@@ -63,7 +65,7 @@ public class RestServerCodecFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     // almost time, should be the first filter.
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 2000;
   }
@@ -83,6 +85,10 @@ public class RestServerCodecFilter implements ProviderFilter {
   }
 
   protected CompletableFuture<Response> invokeNext(Invocation invocation, FilterNode nextNode) {
+    if (invocation.isEdge()) {
+      TransportContext transportContext = invocation.getTransportContext();
+      return nextNode.onFilter(invocation).whenComplete((r, e) -> invocation.setTransportContext(transportContext));
+    }
     return nextNode.onFilter(invocation);
   }
 

@@ -27,7 +27,9 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
@@ -35,7 +37,6 @@ import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -48,7 +49,7 @@ import com.google.common.annotations.VisibleForTesting;
 import io.github.resilience4j.core.metrics.Metrics.Outcome;
 import jakarta.ws.rs.core.Response.Status;
 
-public class LoadBalanceFilter implements ConsumerFilter {
+public class LoadBalanceFilter extends AbstractFilter implements ConsumerFilter, EdgeFilter {
   public static final String CONTEXT_KEY_LAST_SERVER = "x-context-last-server";
 
   // Enough times to make sure to choose a different server in high volume.
@@ -109,7 +110,7 @@ public class LoadBalanceFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER;
   }
 

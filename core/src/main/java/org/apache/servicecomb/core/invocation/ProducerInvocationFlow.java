@@ -62,7 +62,14 @@ public abstract class ProducerInvocationFlow {
     }
 
     invocation.onStart(requestEx, startTime);
-    invocation.getMicroserviceMeta().getFilterChain()
+    if (invocation.isEdge()) {
+      invocation.getMicroserviceMeta().getEdgeFilterChain()
+          .onFilter(invocation)
+          .whenComplete((response, Throwable) -> sendResponse(invocation, response))
+          .whenComplete((response, Throwable) -> finishInvocation(invocation, response, Throwable));
+      return;
+    }
+    invocation.getMicroserviceMeta().getProviderFilterChain()
         .onFilter(invocation)
         .whenComplete((response, Throwable) -> sendResponse(invocation, response))
         .whenComplete((response, Throwable) -> finishInvocation(invocation, response, Throwable));

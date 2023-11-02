@@ -20,17 +20,17 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.ws.rs.core.Response.Status;
 
-public class ProviderAuthFilter implements ProviderFilter {
+public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter {
   private ProviderTokenManager authenticationTokenManager;
 
   @Autowired
@@ -39,7 +39,7 @@ public class ProviderAuthFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1010;
   }
 

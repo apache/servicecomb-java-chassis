@@ -28,11 +28,6 @@ public class EdgeCoreConfiguration {
   }
 
   @Bean
-  public EdgeServerCodecFilter edgeServerCodecFilter() {
-    return new EdgeServerCodecFilter();
-  }
-
-  @Bean
   public EdgeAddHeaderFilter edgeAddHeaderFilter(Environment environment) {
     return new EdgeAddHeaderFilter(environment);
   }

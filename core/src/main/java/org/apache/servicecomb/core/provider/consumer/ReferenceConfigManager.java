@@ -131,7 +131,10 @@ public class ReferenceConfigManager {
       String application, String microserviceName) {
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = new ConsumerMicroserviceVersionsMeta(engine);
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(engine, application, microserviceName, true);
-    microserviceMeta.setFilterChain(engine.getFilterChainsManager().findConsumerChain(application, microserviceName));
+    microserviceMeta.setConsumerFilterChain(engine.getFilterChainsManager()
+        .findConsumerChain(application, microserviceName));
+    microserviceMeta.setEdgeFilterChain(engine.getFilterChainsManager()
+        .findEdgeChain(application, microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
     Set<String> schemaIds = this.openAPIRegistryManager.getSchemaIds(application, microserviceName);

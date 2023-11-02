@@ -25,20 +25,20 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.AbstractFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-public class RouterAddHeaderFilter implements Filter {
+public class RouterAddHeaderFilter extends AbstractFilter implements ProviderFilter, EdgeFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(RouterAddHeaderFilter.class);
 
@@ -80,14 +80,8 @@ public class RouterAddHeaderFilter implements Filter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return ProviderFilter.PROVIDER_SCHEDULE_FILTER_ORDER - 1970;
-  }
-
-  @Override
-  public boolean enabledForInvocationType(InvocationType invocationType) {
-    // enable for both edge and producer
-    return true;
   }
 
   @Override
@@ -97,10 +91,6 @@ public class RouterAddHeaderFilter implements Filter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    if (!invocation.isEdge() && !invocation.isProducer()) {
-      return nextNode.onFilter(invocation);
-    }
-
     if (!StringUtils.isEmpty(invocation.getContext(RouterServerListFilter.ROUTER_HEADER))) {
       return nextNode.onFilter(invocation);
     }

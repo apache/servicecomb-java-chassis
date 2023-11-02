@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.core.bootstrap;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.servicecomb.config.priority.ConfigObjectFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyFactory;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.core.filter.impl.EmptyFilter;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -37,11 +35,12 @@ import org.springframework.core.env.Environment;
  */
 public class SCBEngineForTest extends SCBEngine {
   public SCBEngineForTest(Environment environment) {
-    List<Filter> filters = Arrays.asList(
-        new EmptyFilter()
-    );
+    EmptyFilter emptyFilter = new EmptyFilter();
+    emptyFilter.setEnvironment(environment);
     setFilterChainsManager(new FilterChainsManager()
-        .addFilters(filters));
+        .setProviderFilters(List.of(emptyFilter))
+        .setConsumerFilters(List.of(emptyFilter))
+        .setEdgeFilters(List.of(emptyFilter)));
 
     PriorityPropertyFactory propertyFactory = new PriorityPropertyFactory(environment);
     ConfigObjectFactory configObjectFactory = new ConfigObjectFactory(propertyFactory);

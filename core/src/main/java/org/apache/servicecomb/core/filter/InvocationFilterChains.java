@@ -16,44 +16,35 @@
  */
 package org.apache.servicecomb.core.filter;
 
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public class InvocationFilterChains {
-  private final Map<String, Filter> filters = new HashMap<>();
+  private final List<? extends Filter> filters;
 
-  private final Map<String, FilterNode> microserviceChains = new HashMap<>();
+  private final Map<String, Map<String, FilterNode>> microserviceChains = new ConcurrentHashMapEx<>();
 
-  private final InvocationType invocationType;
-
-  public InvocationFilterChains(InvocationType invocationType) {
-    this.invocationType = invocationType;
+  public InvocationFilterChains(List<? extends Filter> filters) {
+    this.filters = filters;
   }
 
-  public Collection<Filter> getFilters() {
-    return filters.values();
-  }
-
-  public void addFilter(Filter filter) {
-    filters.put(filter.getName(), filter);
+  public List<? extends Filter> getFilters() {
+    return filters;
   }
 
   public FilterNode findChain(String application, String serviceName) {
-    FilterNode filterNode = microserviceChains.get(serviceName);
+    FilterNode filterNode = microserviceChains.computeIfAbsent(application, key -> new ConcurrentHashMapEx<>())
+        .get(serviceName);
     if (filterNode == null) {
-      List<Filter> serviceFilters = filters.entrySet().stream()
-          .filter(e -> e.getValue().enabledForMicroservice(application, serviceName))
-          .map(e -> e.getValue())
-          .collect(Collectors.toList());
-      serviceFilters.sort(Comparator.comparingInt(a -> a.getOrder(invocationType, application, serviceName)));
+      List<Filter> serviceFilters = filters.stream()
+          .filter(e -> e.enabledForMicroservice(application, serviceName))
+          .sorted(Comparator.comparingInt(a -> a.getOrder(application, serviceName))).collect(Collectors.toList());
       filterNode = FilterNode.buildChain(serviceFilters);
-      microserviceChains.put(serviceName, filterNode);
+      microserviceChains.get(application).put(serviceName, filterNode);
     }
     return filterNode;
   }

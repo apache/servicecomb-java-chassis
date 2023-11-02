@@ -16,11 +16,6 @@
  */
 package org.apache.servicecomb.core.filter;
 
-import org.apache.servicecomb.swagger.invocation.InvocationType;
-
 public interface ProviderFilter extends Filter {
-  @Override
-  default boolean enabledForInvocationType(InvocationType invocationType) {
-    return invocationType == InvocationType.PROVIDER;
-  }
+
 }

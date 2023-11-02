@@ -24,17 +24,17 @@ import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 
 import io.vertx.core.buffer.Buffer;
 
-public class HighwayServerCodecFilter implements ProviderFilter {
+public class HighwayServerCodecFilter extends AbstractFilter implements ProviderFilter {
   public static final String NAME = "highway-server-codec";
 
   @Override
@@ -43,7 +43,7 @@ public class HighwayServerCodecFilter implements ProviderFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     // almost time, should be the first filter.
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER - 2000;
   }

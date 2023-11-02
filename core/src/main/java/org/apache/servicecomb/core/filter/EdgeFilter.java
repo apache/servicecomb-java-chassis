@@ -14,35 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.transport.rest.client;
+package org.apache.servicecomb.core.filter;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+public interface EdgeFilter extends Filter {
 
-@Configuration
-public class TransportRestClientConfiguration {
-  @Bean
-  public RestClientSenderFilter restClientSenderFilter() {
-    return new RestClientSenderFilter();
-  }
-
-  @Bean
-  public RestClientCodecFilter restClientCodecFilter() {
-    return new RestClientCodecFilter();
-  }
-
-  @Bean
-  public RestClientDecoder restClientDecoder() {
-    return new RestClientDecoder();
-  }
-
-  @Bean
-  public RestClientTransportContextFactory restClientTransportContextFactory() {
-    return new RestClientTransportContextFactory();
-  }
-
-  @Bean
-  public RestClientEncoder restClientEncoder() {
-    return new RestClientEncoder();
-  }
 }

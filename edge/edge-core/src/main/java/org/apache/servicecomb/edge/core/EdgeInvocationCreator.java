@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
@@ -44,7 +45,10 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
   public EdgeInvocationCreator(RoutingContext routingContext,
       HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
       String microserviceName, String path) {
-    super(routingContext, null, null, requestEx, responseEx);
+    // Set endpoint before load balance because edge service will use RESTFUL transport filters.
+    super(routingContext, null,
+        SCBEngine.getInstance().getTransportManager().findTransport(CoreConst.RESTFUL).getEndpoint(),
+        requestEx, responseEx);
 
     this.microserviceName = microserviceName;
     this.path = path;

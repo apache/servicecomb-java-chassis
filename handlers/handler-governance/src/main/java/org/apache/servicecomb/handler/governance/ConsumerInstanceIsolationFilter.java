@@ -23,7 +23,9 @@ import java.util.concurrent.CompletionStage;
 import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.MatchType;
@@ -31,7 +33,6 @@ import org.apache.servicecomb.governance.handler.InstanceIsolationHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.governance.policy.CircuitBreakerPolicy;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -45,7 +46,7 @@ import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 import jakarta.ws.rs.core.Response.Status;
 
-public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
+public class ConsumerInstanceIsolationFilter extends AbstractFilter implements ConsumerFilter, EdgeFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerInstanceIsolationFilter.class);
 
   private final InstanceIsolationHandler instanceIsolationHandler;
@@ -63,7 +64,7 @@ public class ConsumerInstanceIsolationFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1050;
   }
 

@@ -21,12 +21,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hibernate.validator.HibernateValidator;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
@@ -35,8 +35,6 @@ import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -45,7 +43,7 @@ import jakarta.validation.ValidatorFactory;
 import jakarta.validation.executable.ExecutableValidator;
 import jakarta.validation.groups.Default;
 
-public class ParameterValidatorFilter implements ProviderFilter, InitializingBean {
+public class ParameterValidatorFilter extends AbstractFilter implements ProviderFilter, InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 
   public static final String NAME = "validator";
@@ -54,20 +52,13 @@ public class ParameterValidatorFilter implements ProviderFilter, InitializingBea
 
   protected ExecutableValidator validator;
 
-  private Environment environment;
-
-  @Autowired
-  public void setEnvironment(Environment environment) {
-    this.environment = environment;
-  }
-
   @Override
   public String getName() {
     return NAME;
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.PROVIDER_SCHEDULE_FILTER_ORDER + 1000;
   }
 

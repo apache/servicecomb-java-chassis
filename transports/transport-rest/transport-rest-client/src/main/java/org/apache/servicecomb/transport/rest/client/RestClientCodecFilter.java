@@ -23,16 +23,17 @@ import java.util.concurrent.CompletionStage;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import io.vertx.core.http.HttpClientRequest;
 
-public class RestClientCodecFilter implements ConsumerFilter {
+public class RestClientCodecFilter extends AbstractFilter implements ConsumerFilter, EdgeFilter {
   public static final String NAME = "rest-client-codec";
 
   protected RestClientTransportContextFactory transportContextFactory;
@@ -52,7 +53,7 @@ public class RestClientCodecFilter implements ConsumerFilter {
   }
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1990;
   }
 

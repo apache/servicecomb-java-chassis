@@ -19,10 +19,11 @@ package org.apache.servicecomb.faultinjection;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.ConsumerFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +31,11 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
-public class ConsumerDelayFaultFilter implements ConsumerFilter {
+public class ConsumerDelayFaultFilter extends AbstractFilter implements ConsumerFilter, EdgeFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerDelayFaultFilter.class);
 
   @Override
-  public int getOrder(InvocationType invocationType, String application, String serviceName) {
+  public int getOrder() {
     return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1030;
   }
 
