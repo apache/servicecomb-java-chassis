@@ -16,14 +16,13 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class TransportRestClientConfiguration {
   @Bean
-  public ConsumerFilter restClientSenderFilter() {
+  public RestClientSenderFilter restClientSenderFilter() {
     return new RestClientSenderFilter();
   }
 

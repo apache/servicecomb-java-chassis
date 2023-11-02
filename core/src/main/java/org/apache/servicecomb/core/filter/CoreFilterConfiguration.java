@@ -25,12 +25,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CoreFilterConfiguration {
   @Bean
-  public ProviderFilter producerOperationFilter() {
+  public ProviderOperationFilter producerOperationFilter() {
     return new ProviderOperationFilter();
   }
 
   @Bean
-  public ProviderFilter scheduleFilter() {
+  public ScheduleFilter scheduleFilter() {
     return new ScheduleFilter();
   }
 
@@ -40,7 +40,7 @@ public class CoreFilterConfiguration {
   }
 
   @Bean
-  public ProviderFilter parameterValidatorFilter() {
+  public ParameterValidatorFilter parameterValidatorFilter() {
     return new ParameterValidatorFilter();
   }
 }
