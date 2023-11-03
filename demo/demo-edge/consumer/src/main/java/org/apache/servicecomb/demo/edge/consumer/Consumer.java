@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
 import org.apache.servicecomb.demo.edge.model.DependTypeB;
@@ -42,6 +43,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -56,9 +58,9 @@ public class Consumer {
 
   String edgePrefix;
 
-//  List<ResultWithInstance> addV1Result = new ArrayList<>();
+  List<ResultWithInstance> addV1Result = new ArrayList<>();
 
-//  List<ResultWithInstance> decV1Result = new ArrayList<>();
+  List<ResultWithInstance> decV1Result = new ArrayList<>();
 
   List<ResultWithInstance> addV2Result = new ArrayList<>();
 
@@ -94,14 +96,14 @@ public class Consumer {
     testDownload();
     testDownloadBigFile();
     testErrorCode();
-    // TODO: we use router to test this feature.
-//    invoke("/v1/add", 2, 1, addV1Result);
-//    invoke("/v1/add", 3, 1, addV1Result);
-//    invoke("/v1/add", 4, 1, addV1Result);
-//    invoke("/v1/add", 5, 1, addV1Result);
-//
-//    invoke("/v1/dec", 2, 1, decV1Result);
-//    invoke("/v1/dec", 3, 1, decV1Result);
+
+    invoke("/v1/add", 2, 1, addV1Result);
+    invoke("/v1/add", 3, 1, addV1Result);
+    invoke("/v1/add", 4, 1, addV1Result);
+    invoke("/v1/add", 5, 1, addV1Result);
+
+    invoke("/v1/dec", 2, 1, decV1Result);
+    invoke("/v1/dec", 3, 1, decV1Result);
 
     invoke("/v2/add", 2, 1, addV2Result);
     invoke("/v2/add", 3, 1, addV2Result);
@@ -109,14 +111,13 @@ public class Consumer {
     invoke("/v2/dec", 2, 1, decV2Result);
     invoke("/v2/dec", 3, 1, decV2Result);
 
-    // TODO: we use router to test this feature.
-//    printResults("v1/add", addV1Result);
-//    printResults("v1/dec", decV1Result);
+    printResults("v1/add", addV1Result);
+    printResults("v1/dec", decV1Result);
     printResults("v2/add", addV2Result);
     printResults("v2/dec", decV2Result);
 
-//    checkResult("v1/add", addV1Result, "1.0.0", "1.1.0");
-//    checkResult("v1/dec", decV1Result, "1.1.0");
+    checkResult("v1/add", addV1Result, "1.0.0", "1.1.0");
+    checkResult("v1/dec", decV1Result, "1.1.0");
     checkResult("v2/add", addV2Result, "2.0.0");
     checkResult("v2/dec", decV2Result, "2.0.0");
   }
@@ -282,21 +283,20 @@ public class Consumer {
   }
 
   protected void invokeBusiness(String urlPrefix, ChannelRequestBase request) {
-    // since 3.0.0, do not support this feature.
-    // after 3.0.0, the client will load schema once after startup and will never change, and there
-    // isn't version rule concept.
+    List<String> result = new ArrayList<>(6);
+    for (int i = 0; i < 6; i++) {
+      String url = urlPrefix + "/channel/news/subscribe";
 
-    // TODO: we use router to test this feature.
-//    for (int i = 0; i < 3; i++) {
-//      String url = urlPrefix + "/channel/news/subscribe";
-//
-//      HttpHeaders headers = new HttpHeaders();
-//      headers.setContentType(MediaType.APPLICATION_JSON);
-//
-//      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
-//
-//      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
-//      Assert.isTrue(response.getBody().getRsp().equals("result from 1.1.0"), response.getBody().getRsp());
-//    }
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
+
+      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
+
+      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
+      result.add(response.getBody().getRsp());
+    }
+    Assert.isTrue(result.contains("result from 2.0.0"), "invokeBusiness not balance");
+    Assert.isTrue(result.contains("result from 1.1.0"), "invokeBusiness not balance");
+    Assert.isTrue(result.contains("result from 1.0.0"), "invokeBusiness not balance");
   }
 }

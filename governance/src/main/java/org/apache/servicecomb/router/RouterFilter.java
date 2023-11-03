@@ -17,9 +17,9 @@
 package org.apache.servicecomb.router;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.apache.servicecomb.router.match.RouterRuleMatcher;
@@ -42,7 +42,7 @@ public class RouterFilter {
   }
 
   public <T> List<T> getFilteredListOfServers(List<T> list,
-      String targetServiceName, Map<String, String> headers, RouterDistributor<T> distributor) {
+      String targetServiceName, GovernanceRequestExtractor extractor, RouterDistributor<T> distributor) {
     if (CollectionUtils.isEmpty(list)) {
       return list;
     }
@@ -55,7 +55,7 @@ public class RouterFilter {
       return list;
     }
     // 2.match rule
-    PolicyRuleItem invokeRule = routerRuleMatcher.match(targetServiceName, headers);
+    PolicyRuleItem invokeRule = routerRuleMatcher.match(targetServiceName, extractor);
 
     if (invokeRule == null) {
       LOGGER.debug("route management match rule failed");

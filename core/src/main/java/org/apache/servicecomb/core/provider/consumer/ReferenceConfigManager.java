@@ -74,16 +74,20 @@ public class ReferenceConfigManager {
       executor.execute(() -> {
         synchronized (referenceConfigsLocks.computeIfAbsent(parser.getAppId(), key -> new ConcurrentHashMapEx<>())
             .computeIfAbsent(parser.getMicroserviceName(), key -> new Object())) {
-          MicroserviceReferenceConfig temp = referenceConfigs.get(parser.getAppId())
-              .get(parser.getMicroserviceName());
-          if (temp != null) {
+          try {
+            MicroserviceReferenceConfig temp = referenceConfigs.get(parser.getAppId())
+                .get(parser.getMicroserviceName());
+            if (temp != null) {
+              result.complete(temp);
+              return;
+            }
+            temp = buildMicroserviceReferenceConfig(scbEngine, parser.getAppId(),
+                parser.getMicroserviceName());
+            referenceConfigs.get(parser.getAppId()).put(parser.getMicroserviceName(), temp);
             result.complete(temp);
-            return;
+          } catch (Exception e) {
+            result.completeExceptionally(e);
           }
-          temp = buildMicroserviceReferenceConfig(scbEngine, parser.getAppId(),
-              parser.getMicroserviceName());
-          referenceConfigs.get(parser.getAppId()).put(parser.getMicroserviceName(), temp);
-          result.complete(temp);
         }
       });
       return result;

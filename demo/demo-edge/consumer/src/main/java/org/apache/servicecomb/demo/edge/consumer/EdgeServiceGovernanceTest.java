@@ -31,6 +31,7 @@ import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestOperations;
 
@@ -52,7 +53,8 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
     // edge service do not support retry
 //    testEdgeServiceRetry();
 
-    testEdgeServiceInstanceIsolation();
+    testEdgeServiceInstanceIsolation(); // may isolate instance for 5 seconds.
+    Thread.sleep(6000); // ensure isolation is open for new requests
     testEdgeServiceInstanceBulkhead();
   }
 
@@ -98,6 +100,7 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
     String url = edgePrefix + "/business/v2/testEdgeServiceInstanceIsolation";
 
     CountDownLatch latch = new CountDownLatch(100);
+    AtomicBoolean expectedFailed404 = new AtomicBoolean(false);
     AtomicBoolean expectedFailed502 = new AtomicBoolean(false);
     AtomicBoolean expectedFailed503 = new AtomicBoolean(false);
     AtomicBoolean notExpectedFailed = new AtomicBoolean(false);
@@ -113,15 +116,24 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
                 notExpectedFailed.set(true);
               }
             } catch (Exception e) {
-              if (!(e instanceof HttpServerErrorException)) {
-                notExpectedFailed.set(true);
-              } else {
+              if (e instanceof HttpClientErrorException) {
+                // isolate 2.0.0 and other instance will give 404
+                if (((HttpClientErrorException) e).getStatusCode().value() == 404) {
+                  expectedFailed404.set(true);
+                } else {
+                  notExpectedFailed.set(true);
+                }
+              } else if (e instanceof HttpServerErrorException) {
+                // instance isolated and return 503
                 if (((HttpServerErrorException) e).getStatusCode().value() == 503) {
                   expectedFailed503.set(true);
                 }
+                // provider throw 502 exception to trigger instance isolation
                 if (((HttpServerErrorException) e).getStatusCode().value() == 502) {
                   expectedFailed502.set(true);
                 }
+              } else {
+                notExpectedFailed.set(true);
               }
             }
             latch.countDown();
@@ -132,6 +144,7 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
     }
 
     latch.await(20, TimeUnit.SECONDS);
+    TestMgr.check(true, expectedFailed404.get());
     TestMgr.check(true, expectedFailed502.get());
     TestMgr.check(true, expectedFailed503.get());
     TestMgr.check(false, notExpectedFailed.get());

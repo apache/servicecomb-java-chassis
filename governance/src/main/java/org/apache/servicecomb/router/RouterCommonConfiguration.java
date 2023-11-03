@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.router;
 
+import org.apache.servicecomb.governance.marker.RequestProcessor;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.match.RouterRuleMatcher;
 import org.springframework.context.annotation.Bean;
@@ -30,8 +31,8 @@ public class RouterCommonConfiguration {
   }
 
   @Bean
-  public RouterRuleMatcher routerRuleMatcher(RouterRuleCache routerRuleCache) {
-    return new RouterRuleMatcher(routerRuleCache);
+  public RouterRuleMatcher routerRuleMatcher(RouterRuleCache routerRuleCache, RequestProcessor requestProcessor) {
+    return new RouterRuleMatcher(routerRuleCache, requestProcessor);
   }
 
   @Bean
