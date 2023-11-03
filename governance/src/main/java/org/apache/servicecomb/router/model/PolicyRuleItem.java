@@ -18,6 +18,7 @@ package org.apache.servicecomb.router.model;
 
 import java.util.List;
 
+import org.apache.servicecomb.governance.marker.Matcher;
 import org.apache.servicecomb.router.exception.RouterIllegalParamException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,6 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   private Matcher match;
 
-  // any match
   private List<RouteItem> route;
 
   private Integer total;

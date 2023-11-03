@@ -57,14 +57,10 @@ servicecomb:
               prefixSegmentCount: 1
               path: "/url/business/v1/.*"
               microserviceName: business
-              # not supported since 3.0.0, use router
-              # versionRule: 1.0.0-2.0.0
             businessV2:
               prefixSegmentCount: 1
               path: "/url/business/v2/.*"
               microserviceName: business
-              # not supported since 3.0.0, use router
-              # versionRule: 2.0.0-3.0.0
         http:
           enabled: true
           mappings:
@@ -72,22 +68,16 @@ servicecomb:
               prefixSegmentCount: 1
               path: "/http/business/v2/.*"
               microserviceName: business
-              # not supported since 3.0.0, use router
-              # versionRule: 2.0.0
             businessV1:
               prefixSegmentCount: 1
               path: "/http/business/v1/add.*"
               microserviceName: business
-              # not supported since 3.0.0, use router
-              # versionRule: 1.0.0-1.2.0
             businessV1_1:
               prefixSegmentCount: 1
               path: "/http/business/v1/dec.*"
               microserviceName: business
-              # not supported since 3.0.0, use router
-              # versionRule: 1.1.0
 
-# 服务治理配置
+  # 服务治理配置
   matchGroup:
     testEdgeServiceRetry: |
       matches:
@@ -101,11 +91,11 @@ servicecomb:
       matches:
         - apiPath:
             exact: "/business/v2/testEdgeServiceInstanceBulkhead"
-# retry not supported now
-#  retry:
-#    testEdgeServiceRetry: |
-#      maxAttempts: 2
-#      retryOnSame: 0
+  # retry not supported now
+  #  retry:
+  #    testEdgeServiceRetry: |
+  #      maxAttempts: 2
+  #      retryOnSame: 0
   instanceIsolation:
     testEdgeServiceInstanceIsolation: |
       minimumNumberOfCalls: 10
@@ -114,9 +104,35 @@ servicecomb:
       failureRateThreshold: 50
       slowCallRateThreshold: 100
       slowCallDurationThreshold: 3000
-      waitDurationInOpenState: 10000 
+      waitDurationInOpenState: 5000 
       permittedNumberOfCallsInHalfOpenState: 10
   instanceBulkhead:
     testEdgeServiceInstanceBulkhead: |
       maxConcurrentCalls: 1
       maxWaitDuration: 1
+
+  # enable router for edge service
+  router:
+    type: router
+  routeRule:
+    business: |
+      - precedence: 2
+        match:
+          apiPath:
+            prefix: "/business/v2"
+        route:
+          - weight: 100
+            tags:
+              version: 2.0.0
+      - precedence: 1
+        match:
+          apiPath:
+            prefix: "/business/v1/dec"
+        route:
+          - weight: 50
+            tags:
+              version: 1.1.0
+          - weight: 50
+            tags:
+              version: 2.0.0
+

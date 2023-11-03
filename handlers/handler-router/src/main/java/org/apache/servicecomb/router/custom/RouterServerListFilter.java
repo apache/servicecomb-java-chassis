@@ -16,34 +16,22 @@
  */
 package org.apache.servicecomb.router.custom;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.governance.MatchType;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 public class RouterServerListFilter implements ServerListFilterExt {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(RouterServerListFilter.class);
 
   private static final String ENABLE = "servicecomb.router.type";
 
   private static final String TYPE_ROUTER = "router";
-
-  public static final String ROUTER_HEADER = "X-RouterContext";
 
   @SuppressWarnings("unchecked")
   private final RouterDistributor<ServiceCombServer> routerDistributor = BeanUtils
@@ -61,42 +49,7 @@ public class RouterServerListFilter implements ServerListFilterExt {
   public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> list,
       Invocation invocation) {
     String targetServiceName = invocation.getMicroserviceName();
-    Map<String, String> headers = addHeaders(invocation);
-    headers = filterHeaders(headers);
-    return routerFilter
-        .getFilteredListOfServers(list, targetServiceName, headers,
-            routerDistributor);
-  }
-
-  private Map<String, String> filterHeaders(Map<String, String> headers) {
-    List<RouterHeaderFilterExt> filters = SPIServiceUtils
-        .getOrLoadSortedService(RouterHeaderFilterExt.class);
-    for (RouterHeaderFilterExt filterExt : filters) {
-      if (filterExt.enabled()) {
-        headers = filterExt.doFilter(headers);
-      }
-    }
-    return headers;
-  }
-
-  private Map<String, String> addHeaders(Invocation invocation) {
-    Map<String, String> headers = new HashMap<>();
-    if (invocation.getContext(ROUTER_HEADER) != null) {
-      Map<String, String> canaryContext = null;
-      try {
-        canaryContext = JsonUtils.OBJ_MAPPER
-            .readValue(invocation.getContext(ROUTER_HEADER),
-                new TypeReference<Map<String, String>>() {
-                });
-      } catch (JsonProcessingException e) {
-        LOGGER.error("canary context serialization failed");
-      }
-      if (canaryContext != null) {
-        headers.putAll(canaryContext);
-      }
-    }
-    invocation.getInvocationArguments().forEach((k, v) -> headers.put(k, v == null ? null : v.toString()));
-    headers.putAll(invocation.getContext());
-    return headers;
+    return routerFilter.getFilteredListOfServers(list, targetServiceName,
+        MatchType.createGovHttpRequest(invocation), routerDistributor);
   }
 }

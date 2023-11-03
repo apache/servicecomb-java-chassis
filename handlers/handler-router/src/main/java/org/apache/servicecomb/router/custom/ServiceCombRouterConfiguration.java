@@ -32,9 +32,4 @@ public class ServiceCombRouterConfiguration {
   public ServiceCombRouterDistributor serviceCombRouterDistributor() {
     return new ServiceCombRouterDistributor();
   }
-
-  @Bean
-  public RouterAddHeaderFilter routerAddHeaderFilter() {
-    return new RouterAddHeaderFilter();
-  }
 }

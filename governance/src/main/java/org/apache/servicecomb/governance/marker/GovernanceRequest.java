@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.governance.marker;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.util.LinkedCaseInsensitiveMap;
@@ -26,7 +27,7 @@ public class GovernanceRequest implements GovernanceRequestExtractor {
    * For provider: headers indicates the request headers to me.
    * For consumer: headers indicates the request headers to the target.
    */
-  private Map<String, String> headers;
+  private Map<String, String> headers = Collections.emptyMap();
 
   /**
    * api path with this request, maybe null. For REST, e.g. /foo/bar; For RPC, e.g. MySchema.sayHello

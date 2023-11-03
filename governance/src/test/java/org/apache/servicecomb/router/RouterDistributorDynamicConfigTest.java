@@ -18,7 +18,6 @@
 package org.apache.servicecomb.router;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +26,8 @@ import java.util.Set;
 
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Before;
@@ -51,10 +52,9 @@ public class RouterDistributorDynamicConfigTest {
       + "        match:        #匹配策略\n"
       + "          headers:          #header匹配\n"
       + "            appId:\n"
-      + "              regex: 01\n"
-      + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+      + "              exact: \"01\"\n"
       + "            userId:\n"
-      + "              exact: 01\n"
+      + "              exact: \"01\"\n"
       + "        route: #路由规则\n"
       + "          - weight: 50\n"
       + "            tags:\n"
@@ -63,10 +63,9 @@ public class RouterDistributorDynamicConfigTest {
       + "        match:\n"
       + "          headers:          #header匹配\n"
       + "            appId:\n"
-      + "              regex: 01\n"
-      + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+      + "              exact: \"01\"\n"
       + "            userId:\n"
-      + "              exact: 02\n"
+      + "              exact: \"02\"\n"
       + "        route:\n"
       + "          - weight: 100\n"
       + "            tags:\n"
@@ -75,10 +74,9 @@ public class RouterDistributorDynamicConfigTest {
       + "        match:\n"
       + "          headers:          #header匹配\n"
       + "            appId:\n"
-      + "              regex: 01\n"
-      + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+      + "              exact: \"01\"\n"
       + "            userId:\n"
-      + "              exact: 03\n"
+      + "              exact: \"03\"\n"
       + "        route:\n"
       + "          - weight: 100\n"
       + "            tags:\n"
@@ -143,7 +141,7 @@ public class RouterDistributorDynamicConfigTest {
   @Test
   public void testHeaderIsEmpty() {
     List<ServiceIns> list = getMockList();
-    List<ServiceIns> serverList = mainFilter(list, Collections.emptyMap());
+    List<ServiceIns> serverList = mainFilter(list, new GovernanceRequest());
     Assertions.assertEquals(2, serverList.size());
   }
 
@@ -152,9 +150,11 @@ public class RouterDistributorDynamicConfigTest {
     Map<String, String> headerMap = new HashMap<>();
     headerMap.put("userId", "02");
     headerMap.put("appId", "01");
+    GovernanceRequest governanceRequest = new GovernanceRequest();
+    governanceRequest.setHeaders(headerMap);
     List<ServiceIns> list = getMockList();
     list.remove(1);
-    List<ServiceIns> serverList = mainFilter(list, headerMap);
+    List<ServiceIns> serverList = mainFilter(list, governanceRequest);
     Assertions.assertEquals(1, serverList.size());
     Assertions.assertEquals("01", serverList.get(0).getId());
   }
@@ -164,7 +164,9 @@ public class RouterDistributorDynamicConfigTest {
     Map<String, String> headers = new HashMap<>();
     headers.put("userId", "01");
     headers.put("appId", "01");
-    List<ServiceIns> serverList = mainFilter(getMockList(), headers);
+    GovernanceRequest governanceRequest = new GovernanceRequest();
+    governanceRequest.setHeaders(headers);
+    List<ServiceIns> serverList = mainFilter(getMockList(), governanceRequest);
     Assertions.assertEquals(1, serverList.size());
     Assertions.assertEquals("02", serverList.get(0).getId());
   }
@@ -174,7 +176,9 @@ public class RouterDistributorDynamicConfigTest {
     Map<String, String> headers = new HashMap<>();
     headers.put("userId", "02");
     headers.put("appId", "01");
-    List<ServiceIns> serverList = mainFilter(getMockList(), headers);
+    GovernanceRequest governanceRequest = new GovernanceRequest();
+    governanceRequest.setHeaders(headers);
+    List<ServiceIns> serverList = mainFilter(getMockList(), governanceRequest);
     Assertions.assertEquals(1, serverList.size());
     Assertions.assertEquals("01", serverList.get(0).getId());
   }
@@ -184,6 +188,8 @@ public class RouterDistributorDynamicConfigTest {
     Map<String, String> headers = new HashMap<>();
     headers.put("userId", "03");
     headers.put("appId", "01");
+    GovernanceRequest governanceRequest = new GovernanceRequest();
+    governanceRequest.setHeaders(headers);
 
     List<ServiceIns> serverList = new ArrayList<>();
     ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
@@ -194,7 +200,7 @@ public class RouterDistributorDynamicConfigTest {
     serverList.add(ins1);
     serverList.add(ins2);
 
-    List<ServiceIns> resultServerList = mainFilter(serverList, headers);
+    List<ServiceIns> resultServerList = mainFilter(serverList, governanceRequest);
     Assertions.assertEquals(1, resultServerList.size());
     Assertions.assertEquals("02", resultServerList.get(0).getId());
   }
@@ -210,9 +216,10 @@ public class RouterDistributorDynamicConfigTest {
     return serverList;
   }
 
-  private List<ServiceIns> mainFilter(List<ServiceIns> serverList, Map<String, String> headers) {
+  private List<ServiceIns> mainFilter(List<ServiceIns> serverList,
+      GovernanceRequestExtractor governanceRequestExtractor) {
     return routerFilter
-        .getFilteredListOfServers(serverList, TARGET_SERVICE_NAME, headers,
+        .getFilteredListOfServers(serverList, TARGET_SERVICE_NAME, governanceRequestExtractor,
             testDistributor);
   }
 }

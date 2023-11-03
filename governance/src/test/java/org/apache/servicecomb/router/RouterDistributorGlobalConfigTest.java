@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.servicecomb.governance.event.GovernanceConfigurationChangedEvent;
 import org.apache.servicecomb.governance.event.GovernanceEventManager;
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Before;
@@ -52,10 +54,9 @@ public class RouterDistributorGlobalConfigTest {
       + "        match:\n"
       + "          headers:          #header匹配\n"
       + "            appId:\n"
-      + "              regex: 01\n"
-      + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+      + "              exact: \"01\"\n"
       + "            userId:\n"
-      + "              exact: 02\n"
+      + "              exact: \"02\"\n"
       + "        route:\n"
       + "          - weight: 100\n"
       + "            tags:\n"
@@ -64,10 +65,9 @@ public class RouterDistributorGlobalConfigTest {
       + "        match:\n"
       + "          headers:          #header匹配\n"
       + "            appId:\n"
-      + "              regex: 01\n"
-      + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+      + "              exact: \"01\"\n"
       + "            userId:\n"
-      + "              exact: 03\n"
+      + "              exact: \"03\"\n"
       + "        route:\n"
       + "          - weight: 100\n"
       + "            tags:\n"
@@ -129,6 +129,8 @@ public class RouterDistributorGlobalConfigTest {
     Map<String, String> headers = new HashMap<>();
     headers.put("userId", "03");
     headers.put("appId", "01");
+    GovernanceRequest governanceRequest = new GovernanceRequest();
+    governanceRequest.setHeaders(headers);
 
     List<ServiceIns> serverList = new ArrayList<>();
     ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
@@ -139,7 +141,7 @@ public class RouterDistributorGlobalConfigTest {
     serverList.add(ins1);
     serverList.add(ins2);
 
-    List<ServiceIns> resultServerList = mainFilter(serverList, headers);
+    List<ServiceIns> resultServerList = mainFilter(serverList, governanceRequest);
     Assertions.assertEquals(1, resultServerList.size());
     Assertions.assertEquals("01", resultServerList.get(0).getId());
   }
@@ -151,10 +153,9 @@ public class RouterDistributorGlobalConfigTest {
         + "        match:\n"
         + "          headers:          #header匹配\n"
         + "            appId:\n"
-        + "              regex: 01\n"
-        + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+        + "              exact: \"01\"\n"
         + "            userId:\n"
-        + "              exact: 03\n"
+        + "              exact: \"03\"\n"
         + "        route:\n"
         + "          - weight: 100\n"
         + "            tags:\n"
@@ -163,10 +164,9 @@ public class RouterDistributorGlobalConfigTest {
         + "        match:\n"
         + "          headers:          #header匹配\n"
         + "            appId:\n"
-        + "              regex: 01\n"
-        + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
+        + "              exact: \"01\"\n"
         + "            userId:\n"
-        + "              exact: 02\n"
+        + "              exact: \"02\"\n"
         + "        route:\n"
         + "          - weight: 100\n"
         + "            tags:\n"
@@ -177,6 +177,8 @@ public class RouterDistributorGlobalConfigTest {
     Map<String, String> headers = new HashMap<>();
     headers.put("userId", "03");
     headers.put("appId", "01");
+    GovernanceRequest governanceRequest = new GovernanceRequest();
+    governanceRequest.setHeaders(headers);
 
     List<ServiceIns> serverList = new ArrayList<>();
     ServiceIns ins1 = new ServiceIns("01", TARGET_SERVICE_NAME);
@@ -187,14 +189,15 @@ public class RouterDistributorGlobalConfigTest {
     serverList.add(ins1);
     serverList.add(ins2);
 
-    List<ServiceIns> resultServerList = mainFilter(serverList, headers);
+    List<ServiceIns> resultServerList = mainFilter(serverList, governanceRequest);
     Assertions.assertEquals(1, resultServerList.size());
     Assertions.assertEquals("02", resultServerList.get(0).getId());
   }
 
-  private List<ServiceIns> mainFilter(List<ServiceIns> serverList, Map<String, String> headers) {
+  private List<ServiceIns> mainFilter(List<ServiceIns> serverList,
+      GovernanceRequestExtractor governanceRequestExtractor) {
     return routerFilter
-        .getFilteredListOfServers(serverList, TARGET_SERVICE_NAME, headers,
+        .getFilteredListOfServers(serverList, TARGET_SERVICE_NAME, governanceRequestExtractor,
             testDistributor);
   }
 

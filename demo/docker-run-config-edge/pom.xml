@@ -86,8 +86,6 @@
                   </dependsOn>
                 </run>
               </image>
-              <!-- TODO: use router to implement version-rule problems since 3.0.0 removed this -->
-              <!--
               <image>
                 <name>business-1-0-0:${project.version}</name>
                 <alias>business-1-0-0</alias>
@@ -148,7 +146,6 @@
                   </dependsOn>
                 </run>
               </image>
-              -->
               <image>
                 <name>business-2-0-0:${project.version}</name>
                 <alias>business-2-0-0</alias>

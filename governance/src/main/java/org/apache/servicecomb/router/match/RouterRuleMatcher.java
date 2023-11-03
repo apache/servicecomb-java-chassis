@@ -16,22 +16,25 @@
  */
 package org.apache.servicecomb.router.match;
 
-import java.util.Map;
-
+import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
+import org.apache.servicecomb.governance.marker.RequestProcessor;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 
 public class RouterRuleMatcher {
   private final RouterRuleCache routerRuleCache;
 
-  public RouterRuleMatcher(RouterRuleCache routerRuleCache) {
+  private final RequestProcessor requestProcessor;
+
+  public RouterRuleMatcher(RouterRuleCache routerRuleCache, RequestProcessor requestProcessor) {
     this.routerRuleCache = routerRuleCache;
+    this.requestProcessor = requestProcessor;
   }
 
-  public PolicyRuleItem match(String serviceName, Map<String, String> invokeHeader) {
+  public PolicyRuleItem match(String serviceName, GovernanceRequestExtractor request) {
     for (PolicyRuleItem rule : routerRuleCache.getServiceInfoCacheMap().get(serviceName)
         .getAllrule()) {
-      if (rule.getMatch() == null || rule.getMatch().match(invokeHeader)) {
+      if (rule.getMatch() == null || requestProcessor.match(request, rule.getMatch())) {
         return rule;
       }
     }

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.router;
 
+import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -52,8 +53,11 @@ public class RouterDistributorFileConfigTest {
   public void testDistribute() {
     List<ServiceIns> list = initServiceList();
     HashMap<String, String> header = new HashMap<>();
+    GovernanceRequest governanceRequest = new GovernanceRequest();
+    governanceRequest.setHeaders(header);
+
     List<ServiceIns> listOfServers = routerFilter
-        .getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
+        .getFilteredListOfServers(list, TARGET_SERVICE_NAME, governanceRequest, routerDistributor);
     Assertions.assertNotNull(listOfServers);
     for (ServiceIns server : listOfServers) {
       Assertions.assertEquals(TARGET_SERVICE_NAME, server.getServerName());
@@ -63,7 +67,7 @@ public class RouterDistributorFileConfigTest {
 
     for (int i = 0; i < 10; i++) {
       List<ServiceIns> serverList = routerFilter
-          .getFilteredListOfServers(list, TARGET_SERVICE_NAME, header, routerDistributor);
+          .getFilteredListOfServers(list, TARGET_SERVICE_NAME, governanceRequest, routerDistributor);
       for (ServiceIns serviceIns : serverList) {
         if ("01".equals(serviceIns.getId())) {
           serverNum1++;
