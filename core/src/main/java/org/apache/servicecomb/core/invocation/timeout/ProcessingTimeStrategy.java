@@ -91,7 +91,7 @@ public class ProcessingTimeStrategy implements InvocationTimeoutStrategy {
       return;
     }
 
-    invocation.addLocalContext(CHAIN_START_TIME, invocation.getInvocationStageTrace().getStart());
+    invocation.addLocalContext(CHAIN_START_TIME, invocation.getInvocationStageTrace().getStartInMillis());
   }
 
   private void initChainProcessing(Invocation invocation) {

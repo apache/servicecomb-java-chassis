@@ -32,13 +32,10 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationBusinessFinishEvent;
-import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
 import org.apache.servicecomb.core.event.InvocationEncodeResponseStartEvent;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
-import org.apache.servicecomb.core.event.InvocationHandlersStartEvent;
 import org.apache.servicecomb.core.event.InvocationRunInExecutorFinishEvent;
-import org.apache.servicecomb.core.event.InvocationRunInExecutorStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartSendRequestEvent;
 import org.apache.servicecomb.core.event.InvocationTimeoutCheckEvent;
@@ -332,55 +329,41 @@ public class Invocation extends SwaggerInvocation {
     addContext(traceIdGenerator.getTraceIdKeyName(), traceIdGenerator.generate());
   }
 
-  public void onStart(long start) {
-    invocationStageTrace.start(start);
+  public void onStart() {
     initTraceId();
     EventManager.post(new InvocationStartEvent(this));
   }
 
-  public void onStart(HttpServletRequestEx requestEx, long start) {
+  public void onStart(HttpServletRequestEx requestEx) {
     this.requestEx = requestEx;
 
-    onStart(start);
-  }
-
-  public void onExecuteStart() {
-    invocationStageTrace.startExecution();
-    EventManager.post(new InvocationRunInExecutorStartEvent(this));
+    onStart();
   }
 
   public void onExecuteFinish() {
     EventManager.post(new InvocationRunInExecutorFinishEvent(this));
   }
 
-  public void onStartHandlersRequest() {
-    invocationStageTrace.startHandlersRequest();
-    EventManager.post(new InvocationHandlersStartEvent(this));
-  }
-
   public void onStartSendRequest() {
-    invocationStageTrace.startSend();
     EventManager.post(new InvocationStartSendRequestEvent(this));
   }
 
-  @Override
   public void onBusinessMethodStart() {
-    invocationStageTrace.startBusinessMethod();
+    invocationStageTrace.startBusinessExecute();
     EventManager.post(new InvocationBusinessMethodStartEvent(this));
   }
 
-  @Override
-  public void onBusinessMethodFinish() {
-    EventManager.post(new InvocationBusinessMethodFinishEvent(this));
-  }
-
   public void onEncodeResponseStart(Response response) {
+    invocationStageTrace.startProviderEncodeResponse();
     EventManager.post(new InvocationEncodeResponseStartEvent(this, response));
   }
 
-  @Override
+  public void onEncodeResponseFinish() {
+    invocationStageTrace.finishProviderEncodeResponse();
+  }
+
   public void onBusinessFinish() {
-    invocationStageTrace.finishBusiness();
+    invocationStageTrace.finishBusinessExecute();
     EventManager.post(new InvocationBusinessFinishEvent(this));
   }
 
@@ -390,9 +373,9 @@ public class Invocation extends SwaggerInvocation {
       return;
     }
 
+    finished = true;
     invocationStageTrace.finish();
     EventManager.post(new InvocationFinishEvent(this, response));
-    finished = true;
   }
 
   // for retry, reset invocation and try it again

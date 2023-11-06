@@ -60,8 +60,9 @@ public abstract class ProducerInvocationFlow {
     if (invocation == null) {
       return;
     }
-
-    invocation.onStart(requestEx, startTime);
+    invocation.getInvocationStageTrace().startCreateInvocation(this.startTime);
+    invocation.getInvocationStageTrace().finishCreateInvocation();
+    invocation.onStart(requestEx);
     if (invocation.isEdge()) {
       invocation.getMicroserviceMeta().getEdgeFilterChain()
           .onFilter(invocation)

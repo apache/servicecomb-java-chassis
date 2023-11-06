@@ -20,13 +20,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.dashboard.client.model.InterfaceInfo;
 import org.apache.servicecomb.dashboard.client.model.MonitorData;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
-import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishModelFactory;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
@@ -129,7 +129,7 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
       for (OperationPerfGroup perfGroup : statusMap.values()) {
         for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
           OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
-          PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+          PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
           String name = NAME_PROVIDER + operationPerf.getOperation();
           InterfaceInfo interfaceInfo = combinedResults.computeIfAbsent(name,
               k -> {
@@ -165,7 +165,7 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
       for (OperationPerfGroup perfGroup : statusMap.values()) {
         for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
           OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
-          PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+          PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
           String name = NAME_CONSUMER + operationPerf.getOperation();
           InterfaceInfo interfaceInfo = combinedResults.computeIfAbsent(name,
               k -> {
@@ -201,7 +201,7 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
       for (OperationPerfGroup perfGroup : statusMap.values()) {
         for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
           OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
-          PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+          PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
           String name = NAME_CONSUMER + operationPerf.getOperation();
           InterfaceInfo interfaceInfo = combinedResults.computeIfAbsent(name,
               k -> {

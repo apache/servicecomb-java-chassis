@@ -37,12 +37,6 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   // prepare time
   private final SimpleTimer prepareTimer;
 
-  // handler request
-  private final SimpleTimer handlersRequestTimer;
-
-  // handler response
-  private final SimpleTimer handlersResponseTimer;
-
   // latency distribution
   private final LatencyDistributionMeter latencyDistributionMeter;
 
@@ -52,10 +46,8 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
     this.id = id;
     this.metricsBootstrapConfig = metricsBootstrapConfig;
     latencyDistributionMeter = createLatencyDistribution(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
-    totalTimer = createStageTimer(MeterInvocationConst.STAGE_TOTAL);
-    prepareTimer = createStageTimer(MeterInvocationConst.STAGE_PREPARE);
-    handlersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
-    handlersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
+    totalTimer = createStageTimer(InvocationStageTrace.STAGE_TOTAL);
+    prepareTimer = createStageTimer(InvocationStageTrace.STAGE_PREPARE);
   }
 
   protected LatencyDistributionMeter createLatencyDistribution(String tagValue) {
@@ -78,11 +70,9 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
 
   public void onInvocationFinish(InvocationFinishEvent event) {
     InvocationStageTrace stageTrace = event.getInvocation().getInvocationStageTrace();
-    latencyDistributionMeter.record((long) stageTrace.calcTotalTime());
-    totalTimer.record((long) stageTrace.calcTotalTime());
-    handlersRequestTimer.record((long) stageTrace.calcHandlersRequestTime());
-    handlersResponseTimer.record((long) stageTrace.calcHandlersResponseTime());
-    prepareTimer.record((long) stageTrace.calcInvocationPrepareTime());
+    latencyDistributionMeter.record(stageTrace.calcTotal());
+    totalTimer.record(stageTrace.calcTotal());
+    prepareTimer.record(stageTrace.calcPrepare());
   }
 
   @Override
@@ -96,8 +86,6 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     latencyDistributionMeter.calcMeasurements(measurements, msNow, secondInterval);
     totalTimer.calcMeasurements(measurements, msNow, secondInterval);
-    handlersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
-    handlersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
     prepareTimer.calcMeasurements(measurements, msNow, secondInterval);
   }
 

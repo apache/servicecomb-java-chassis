@@ -22,6 +22,7 @@ import java.util.Map;
 import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.CoreConst;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
@@ -41,7 +42,7 @@ public class TestPublishUtils {
 
   @Test
   public void createPerfInfo() {
-    MeasurementNode stageNode = Utils.createStageNode(MeterInvocationConst.STAGE_TOTAL, 10, 10, 100);
+    MeasurementNode stageNode = Utils.createStageNode(InvocationStageTrace.STAGE_TOTAL, 10, 10, 100);
 
     PerfInfo perf = PublishUtils.createPerfInfo(stageNode);
 
@@ -54,7 +55,7 @@ public class TestPublishUtils {
   public void createOperationPerf() {
     OperationPerf opPerf = Utils.createOperationPerf(op);
 
-    PerfInfo perfInfo = opPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+    PerfInfo perfInfo = opPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
     Integer[] latencyDistribution = opPerf.getLatencyDistribution();
     Assertions.assertEquals(10, perfInfo.getTps(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
@@ -75,7 +76,7 @@ public class TestPublishUtils {
     Map<String, OperationPerfGroup> statusMap = groups.getGroups().get(CoreConst.RESTFUL);
     OperationPerfGroup group = statusMap.get(Status.OK.name());
 
-    PerfInfo perfInfo = group.getSummary().findStage(MeterInvocationConst.STAGE_TOTAL);
+    PerfInfo perfInfo = group.getSummary().findStage(InvocationStageTrace.STAGE_TOTAL);
     Integer[] latencyDistribution = group.getSummary().getLatencyDistribution();
     Assertions.assertEquals(10, perfInfo.getTps(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);

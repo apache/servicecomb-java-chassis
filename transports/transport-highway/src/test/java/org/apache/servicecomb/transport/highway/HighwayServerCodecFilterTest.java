@@ -32,6 +32,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
@@ -69,10 +70,18 @@ public class HighwayServerCodecFilterTest {
 
   MultiMap headers = MultiMap.caseInsensitiveMultiMap();
 
-  FilterNode nextNode = new FilterNode((invocation, next) -> {
-    Response response = Response.ok("ok");
-    response.setHeaders(headers);
-    return CompletableFuture.completedFuture(response);
+  FilterNode nextNode = new FilterNode(new AbstractFilter() {
+    @Override
+    public String getName() {
+      return "test";
+    }
+
+    @Override
+    public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+      Response response = Response.ok("ok");
+      response.setHeaders(headers);
+      return CompletableFuture.completedFuture(response);
+    }
   });
 
   static SCBEngine engine;

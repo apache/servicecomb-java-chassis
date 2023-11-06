@@ -81,7 +81,6 @@ public class ProviderOperationFilter extends AbstractFilter implements ProviderF
   }
 
   protected void processMetrics(Invocation invocation) {
-    invocation.onBusinessMethodFinish();
     invocation.onBusinessFinish();
   }
 }

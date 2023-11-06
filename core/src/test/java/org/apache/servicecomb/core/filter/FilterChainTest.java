@@ -55,19 +55,35 @@ public class FilterChainTest {
 
   List<String> msg = new Vector<>();
 
-  Filter recordThreadFilter = (invocation, nextNode) -> {
-    msg.add(Thread.currentThread().getName());
-    if (nextNode == null) {
-      return CompletableFuture.completedFuture(Response.ok(null));
+  Filter recordThreadFilter = new AbstractFilter() {
+    @Override
+    public String getName() {
+      return "f2";
     }
 
-    return nextNode.onFilter(invocation);
+    @Override
+    public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+      msg.add(Thread.currentThread().getName());
+      if (nextNode == null) {
+        return CompletableFuture.completedFuture(Response.ok(null));
+      }
+
+      return nextNode.onFilter(invocation);
+    }
   };
 
   Filter scheduler = new ScheduleFilter();
 
-  Filter exceptionFilter = (invocation, nextNode) -> {
-    throw new IllegalStateException("e1");
+  Filter exceptionFilter = new AbstractFilter() {
+    @Override
+    public String getName() {
+      return "f1";
+    }
+
+    @Override
+    public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+      throw new IllegalStateException("e1");
+    }
   };
 
   @BeforeClass

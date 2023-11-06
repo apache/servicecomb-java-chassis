@@ -38,6 +38,7 @@ import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
@@ -87,10 +88,18 @@ public class RestServerCodecFilterTest {
 
   final MultiMap headers = MultiMap.caseInsensitiveMultiMap();
 
-  final FilterNode nextNode = new FilterNode((invocation, next) -> {
-    Response response = Response.ok("ok");
-    response.setHeaders(headers);
-    return CompletableFuture.completedFuture(response);
+  final FilterNode nextNode = new FilterNode(new AbstractFilter() {
+    @Override
+    public String getName() {
+      return "f2";
+    }
+
+    @Override
+    public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+      Response response = Response.ok("ok");
+      response.setHeaders(headers);
+      return CompletableFuture.completedFuture(response);
+    }
   });
 
   static SCBEngine engine;

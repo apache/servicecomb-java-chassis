@@ -26,6 +26,8 @@ public abstract class AbstractFilter implements Filter, EnvironmentAware {
 
   protected Environment environment;
 
+  private String nameWithOrder;
+
   @Override
   public void setEnvironment(Environment environment) {
     this.environment = environment;
@@ -49,5 +51,13 @@ public abstract class AbstractFilter implements Filter, EnvironmentAware {
       return custom;
     }
     return true;
+  }
+
+  @Override
+  public String getNameWithOrder() {
+    if (nameWithOrder == null) {
+      nameWithOrder = getName() + "(" + getOrder() + ")";
+    }
+    return nameWithOrder;
   }
 }

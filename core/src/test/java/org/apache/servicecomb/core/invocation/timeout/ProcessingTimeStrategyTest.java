@@ -32,17 +32,6 @@ class ProcessingTimeStrategyTest {
   ProcessingTimeStrategy strategy = new ProcessingTimeStrategy();
 
   @Test
-  void should_init_when_start_as_first_chain_node() {
-    Invocation invocation = new Invocation();
-    invocation.getInvocationStageTrace().start(10);
-
-    strategy.start(invocation);
-
-    assertThat(invocation.<Long>getLocalContext(CHAIN_START_TIME)).isEqualTo(10L);
-    assertThat(invocation.<Long>getLocalContext(CHAIN_PROCESSING)).isEqualTo(0L);
-  }
-
-  @Test
   void should_do_nothing_when_not_first_node_of_a_process() {
     Invocation invocation = new Invocation();
     invocation.setLocalContext(ImmutableMap.of(

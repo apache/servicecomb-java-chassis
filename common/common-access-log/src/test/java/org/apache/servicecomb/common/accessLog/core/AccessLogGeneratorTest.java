@@ -81,10 +81,8 @@ public class AccessLogGeneratorTest {
     InvocationStageTrace stageTrace = Mockito.mock(InvocationStageTrace.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     long startMillisecond = 1416863450581L;
-    when(stageTrace.getStartSend()).thenReturn(0L);
-    when(stageTrace.getStart()).thenReturn(0L);
-    when(stageTrace.getFinish()).thenReturn(0L);
-    when(stageTrace.getStartTimeMillis()).thenReturn(startMillisecond);
+    when(stageTrace.getStartInMillis()).thenReturn(startMillisecond);
+    when(stageTrace.calcTotal()).thenReturn(0L);
     when(invocation.getOperationMeta()).thenReturn(operationMeta);
     when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
 

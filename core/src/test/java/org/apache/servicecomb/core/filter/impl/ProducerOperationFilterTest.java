@@ -83,9 +83,6 @@ public class ProducerOperationFilterTest {
         invocation.onBusinessMethodStart();
         times = 1;
 
-        invocation.onBusinessMethodFinish();
-        times = 1;
-
         invocation.onBusinessFinish();
         times = 1;
       }
@@ -139,11 +136,11 @@ public class ProducerOperationFilterTest {
     CompletableFuture<Response> future = filter.onFilter(invocation, FilterNode.EMPTY);
 
     assertThat(future)
-            .failsWithin(Duration.ofSeconds(1))
-            .withThrowableOfType(ExecutionException.class)
-            .withCauseExactlyInstanceOf(RuntimeExceptionWithoutStackTrace.class)
-            .withMessage("org.apache.servicecomb.foundation.test.scaffolding.exception" +
-                    ".RuntimeExceptionWithoutStackTrace: syncException");
+        .failsWithin(Duration.ofSeconds(1))
+        .withThrowableOfType(ExecutionException.class)
+        .withCauseExactlyInstanceOf(RuntimeExceptionWithoutStackTrace.class)
+        .withMessage("org.apache.servicecomb.foundation.test.scaffolding.exception" +
+            ".RuntimeExceptionWithoutStackTrace: syncException");
   }
 
   @Test
@@ -171,11 +168,11 @@ public class ProducerOperationFilterTest {
     CompletableFuture<Response> future = filter.onFilter(invocation, FilterNode.EMPTY);
 
     assertThat(future)
-            .failsWithin(Duration.ofSeconds(1))
-            .withThrowableOfType(ExecutionException.class)
-            .withCauseExactlyInstanceOf(RuntimeExceptionWithoutStackTrace.class)
-            .withMessage("org.apache.servicecomb.foundation.test.scaffolding" +
-                    ".exception.RuntimeExceptionWithoutStackTrace: asyncException");
+        .failsWithin(Duration.ofSeconds(1))
+        .withThrowableOfType(ExecutionException.class)
+        .withCauseExactlyInstanceOf(RuntimeExceptionWithoutStackTrace.class)
+        .withMessage("org.apache.servicecomb.foundation.test.scaffolding" +
+            ".exception.RuntimeExceptionWithoutStackTrace: asyncException");
   }
 
   @Test
@@ -190,10 +187,10 @@ public class ProducerOperationFilterTest {
     CompletableFuture<Response> future = filter.onFilter(invocation, FilterNode.EMPTY);
 
     assertThat(future)
-            .failsWithin(Duration.ofSeconds(1))
-            .withThrowableOfType(ExecutionException.class)
-            .withCauseExactlyInstanceOf(IllegalArgumentException.class)
-            .withMessage("java.lang.IllegalArgumentException: wrong number of arguments");
+        .failsWithin(Duration.ofSeconds(1))
+        .withThrowableOfType(ExecutionException.class)
+        .withCauseExactlyInstanceOf(IllegalArgumentException.class)
+        .withMessage("java.lang.IllegalArgumentException: wrong number of arguments");
 
     InvocationException throwable = Exceptions
         .convert(invocation, catchThrowable(future::get), INTERNAL_SERVER_ERROR);

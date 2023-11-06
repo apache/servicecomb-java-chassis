@@ -128,6 +128,7 @@ public final class InvokerUtils {
 
   public static Invocation createInvocation(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
+    long startCreateInvocation = System.nanoTime();
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .getOrCreateReferenceConfig(microserviceName);
     if (microserviceReferenceConfig == null) {
@@ -142,8 +143,11 @@ public final class InvokerUtils {
     ReferenceConfig referenceConfig = microserviceReferenceConfig.createReferenceConfig(transport, operationMeta);
     InvocationRuntimeType invocationRuntimeType = operationMeta.buildBaseConsumerRuntimeType();
     invocationRuntimeType.setSuccessResponseType(responseType);
-    return InvocationFactory
+    Invocation result = InvocationFactory
         .forConsumer(referenceConfig, operationMeta, invocationRuntimeType, swaggerArguments);
+    result.getInvocationStageTrace().startCreateInvocation(startCreateInvocation);
+    result.getInvocationStageTrace().finishCreateInvocation();
+    return result;
   }
 
   /**
@@ -311,9 +315,8 @@ public final class InvokerUtils {
 
   private static Supplier<CompletionStage<Response>> invokeImpl(Invocation invocation) {
     return () -> {
-      invocation.onStart(null, System.nanoTime());
+      invocation.onStart(null);
       updateRetryStatus(invocation);
-      invocation.onStartHandlersRequest();
       if (invocation.isEdge()) {
         return invocation.getMicroserviceMeta().getEdgeFilterChain()
             .onFilter(invocation)
@@ -328,7 +331,6 @@ public final class InvokerUtils {
   }
 
   private static void finishInvocation(Invocation invocation, Response ar) {
-    invocation.getInvocationStageTrace().finishHandlersResponse();
     invocation.onFinish(ar);
 
     if (ar.isFailed()) {

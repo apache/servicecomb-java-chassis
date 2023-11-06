@@ -16,6 +16,20 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_CONSUMER_CONNECTION;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_CONSUMER_DECODE_RESPONSE;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_CONSUMER_ENCODE_REQUEST;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_CONSUMER_SEND;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_CONSUMER_WAIT;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_PREPARE;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_PROVIDER_BUSINESS;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_PROVIDER_QUEUE;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_PROVIDER_SEND;
+import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_TOTAL;
+
+import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.common.rest.RestConst;
@@ -26,6 +40,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace.Stage;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -35,7 +50,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
 
 public class SlowInvocationLogger {
-  private static final Logger LOGGER = LoggerFactory.getLogger(SlowInvocationLogger.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger("scb-slow");
 
   public SlowInvocationLogger(SCBEngine scbEngine) {
     scbEngine.getEventBus().register(this);
@@ -47,12 +62,12 @@ public class SlowInvocationLogger {
     Invocation invocation = event.getInvocation();
     OperationConfig operationConfig = invocation.getOperationMeta().getConfig();
     if (!operationConfig.isSlowInvocationEnabled() ||
-        invocation.getInvocationStageTrace().calcTotalTime() < operationConfig.getNanoSlowInvocation()) {
+        invocation.getInvocationStageTrace().calcTotal() < operationConfig.getNanoSlowInvocation()) {
       return;
     }
 
     if (!invocation.isConsumer()) {
-      logSlowProducer(invocation, event.getResponse(), operationConfig);
+      logSlowProvider(invocation, event.getResponse(), operationConfig);
       return;
     }
 
@@ -64,142 +79,115 @@ public class SlowInvocationLogger {
     logSlowConsumer(invocation, event.getResponse(), operationConfig);
   }
 
-  private String collectClientAddress(Invocation invocation) {
+  private static String collectClientAddress(Invocation invocation) {
     HttpServletRequestEx requestEx = invocation.getRequestEx();
     return requestEx == null ? "unknown" : requestEx.getRemoteAddr() + ":" + requestEx.getRemotePort();
   }
 
-  private String collectTargetAddress(Invocation invocation) {
+  private static String collectTargetAddress(Invocation invocation) {
     Endpoint endpoint = invocation.getEndpoint();
     return endpoint == null ? "unknown" : endpoint.getEndpoint();
   }
 
-  private String formatTime(double doubleNano) {
-    long micros = TimeUnit.NANOSECONDS.toMicros((long) doubleNano);
+  private static String formatTime(long doubleNano) {
+    long micros = TimeUnit.NANOSECONDS.toMicros(doubleNano);
     return micros / 1000 + "." + micros % 1000;
   }
 
-  private void logSlowProducer(Invocation invocation, Response response, OperationConfig operationConfig) {
+  private static void logSlowProvider(Invocation invocation, Response response, OperationConfig operationConfig) {
     RestOperationMeta restOperationMeta = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    invocation.getTraceIdLogger().warn(LOGGER, ""
-            + "slow({} ms) invocation, {}:\n"
-            + "  http method: {}\n"
-            + "  url        : {}\n"
-            + "  client     : {}\n"
-            + "  status code: {}\n"
-            + "  total      : {} ms\n"
-            + "    prepare                : {} ms\n"
-            + "    threadPoolQueue        : {} ms\n"
-            + "    server filters request : {} ms\n"
-            + "    handlers request       : {} ms\n"
-            + "    business execute       : {} ms\n"
-            + "    handlers response      : {} ms\n"
-            + "    server filters response: {} ms\n"
-            + "    send response          : {} ms",
-        operationConfig.getMsSlowInvocation(),
-        invocation.getInvocationQualifiedName(),
-        restOperationMeta.getHttpMethod(),
-        restOperationMeta.getAbsolutePath(),
-        collectClientAddress(invocation),
-        response.getStatusCode(),
-        formatTime(stageTrace.calcTotalTime()),
-        formatTime(stageTrace.calcInvocationPrepareTime()),
-        formatTime(stageTrace.calcThreadPoolQueueTime()),
-        formatTime(stageTrace.calcServerFiltersRequestTime()),
-        formatTime(stageTrace.calcHandlersRequestTime()),
-        formatTime(stageTrace.calcBusinessTime()),
-        formatTime(stageTrace.calcHandlersResponseTime()),
-        formatTime(stageTrace.calcServerFiltersResponseTime()),
-        formatTime(stageTrace.calcSendResponseTime())
-    );
+    StringBuilder sb = new StringBuilder();
+    sb.append("Slow Provider invocation [").append(invocation.getInvocationQualifiedName())
+        .append("](").append(operationConfig.getMsSlowInvocation()).append(" ms")
+        .append(")[").append(invocation.getTraceId()).append("]\n")
+        .append(formatPair("  ", "http method", restOperationMeta.getHttpMethod()))
+        .append(formatPair("  ", "url", restOperationMeta.getAbsolutePath()))
+        .append(formatPair("  ", "endpoint", collectClientAddress(invocation)))
+        .append(formatPair("  ", "status code", response.getStatusCode()))
+
+        .append(formatPair("    ", STAGE_TOTAL, stageTrace.calcTotal()))
+        .append(formatPair("    ", STAGE_PREPARE, stageTrace.calcPrepare()))
+        .append(formatPair("    ", STAGE_PROVIDER_DECODE_REQUEST, stageTrace.calcProviderDecodeRequest()))
+        .append(formatPair("    ", STAGE_PROVIDER_QUEUE, stageTrace.calcQueue()))
+        .append(formatPair("    ", STAGE_PROVIDER_BUSINESS, stageTrace.calcBusinessExecute()))
+        .append(formatPair("    ", STAGE_PROVIDER_ENCODE_RESPONSE, stageTrace.calcProviderEncodeResponse()))
+        .append(formatPair("    ", STAGE_PROVIDER_SEND, stageTrace.calcProviderSendResponse()));
+
+    for (Entry<String, Stage> stage : stageTrace.getStages().entrySet()) {
+      sb.append(formatPair("    ", "Filter-" + stage.getKey(),
+          InvocationStageTrace.calc(stage.getValue().getEndTime(),
+              stage.getValue().getBeginTime())));
+    }
+
+    LOGGER.warn(sb.toString());
   }
 
-  private void logSlowConsumer(Invocation invocation, Response response, OperationConfig operationConfig) {
-    RestOperationMeta restOperationMeta = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
-    InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    invocation.getTraceIdLogger().warn(LOGGER, ""
-            + "slow({} ms) invocation, {}:\n"
-            + "  http method: {}\n"
-            + "  url        : {}\n"
-            + "  server     : {}\n"
-            + "  status code: {}\n"
-            + "  total      : {} ms\n"
-            + "    prepare                : {} ms\n"
-            + "    handlers request       : {} ms\n"
-            + "    client filters request : {} ms\n"
-            + "    send request           : {} ms\n"
-            + "    get connection         : {} ms\n"
-            + "    write to buf           : {} ms\n"
-            + "    wait response          : {} ms\n"
-            + "    wake consumer          : {} ms\n"
-            + "    client filters response: {} ms\n"
-            + "    handlers response      : {} ms",
-        operationConfig.getMsSlowInvocation(),
-        invocation.getInvocationQualifiedName(),
-        restOperationMeta.getHttpMethod(),
-        restOperationMeta.getAbsolutePath(),
-        collectTargetAddress(invocation),
-        response.getStatusCode(),
-        formatTime(stageTrace.calcTotalTime()),
-        formatTime(stageTrace.calcInvocationPrepareTime()),
-        formatTime(stageTrace.calcHandlersRequestTime()),
-        formatTime(stageTrace.calcClientFiltersRequestTime()),
-        formatTime(stageTrace.calcSendRequestTime()),
-        formatTime(stageTrace.calcGetConnectionTime()),
-        formatTime(stageTrace.calcWriteToBufferTime()),
-        formatTime(stageTrace.calcReceiveResponseTime()),
-        formatTime(stageTrace.calcWakeConsumer()),
-        formatTime(stageTrace.calcClientFiltersResponseTime()),
-        formatTime(stageTrace.calcHandlersResponseTime())
-    );
+  protected static String formatPair(String padding, String name, String value) {
+    return String.format("%-20s: %20s\n", padding + name, value);
   }
 
-  private void logSlowEdge(Invocation invocation, Response response, OperationConfig operationConfig) {
+  protected static String formatPair(String padding, String name, long time) {
+    return String.format("%-20s: %8sms\n", padding + name, formatTime(time));
+  }
+
+  private static void logSlowConsumer(Invocation invocation, Response response, OperationConfig operationConfig) {
     RestOperationMeta restOperationMeta = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    invocation.getTraceIdLogger().warn(LOGGER, ""
-            + "slow({} ms) invocation, {}:\n"
-            + "  http method: {}\n"
-            + "  url        : {}\n"
-            + "  server     : {}\n"
-            + "  status code: {}\n"
-            + "  total      : {} ms\n"
-            + "    prepare                : {} ms\n"
-            + "    threadPoolQueue        : {} ms\n"
-            + "    server filters request : {} ms\n"
-            + "    handlers request       : {} ms\n"
-            + "    client filters request : {} ms\n"
-            + "    send request           : {} ms\n"
-            + "    get connection         : {} ms\n"
-            + "    write to buf           : {} ms\n"
-            + "    wait response          : {} ms\n"
-            + "    wake consumer          : {} ms\n"
-            + "    client filters response: {} ms\n"
-            + "    handlers response      : {} ms\n"
-            + "    server filters response: {} ms\n"
-            + "    send response          : {} ms",
-        operationConfig.getMsSlowInvocation(),
-        invocation.getInvocationQualifiedName(),
-        restOperationMeta.getHttpMethod(),
-        restOperationMeta.getAbsolutePath(),
-        collectTargetAddress(invocation),
-        response.getStatusCode(),
-        formatTime(stageTrace.calcTotalTime()),
-        formatTime(stageTrace.calcInvocationPrepareTime()),
-        formatTime(stageTrace.calcThreadPoolQueueTime()),
-        formatTime(stageTrace.calcServerFiltersRequestTime()),
-        formatTime(stageTrace.calcHandlersRequestTime()),
-        formatTime(stageTrace.calcClientFiltersRequestTime()),
-        formatTime(stageTrace.calcSendRequestTime()),
-        formatTime(stageTrace.calcGetConnectionTime()),
-        formatTime(stageTrace.calcWriteToBufferTime()),
-        formatTime(stageTrace.calcReceiveResponseTime()),
-        formatTime(stageTrace.calcWakeConsumer()),
-        formatTime(stageTrace.calcClientFiltersResponseTime()),
-        formatTime(stageTrace.calcHandlersResponseTime()),
-        formatTime(stageTrace.calcServerFiltersResponseTime()),
-        formatTime(stageTrace.calcSendResponseTime())
-    );
+    StringBuilder sb = new StringBuilder();
+    sb.append("Slow Consumer invocation [").append(invocation.getInvocationQualifiedName())
+        .append("](").append(operationConfig.getMsSlowInvocation()).append(" ms")
+        .append(")[").append(invocation.getTraceId()).append("]\n")
+        .append(formatPair("  ", "http method", restOperationMeta.getHttpMethod()))
+        .append(formatPair("  ", "url", restOperationMeta.getAbsolutePath()))
+        .append(formatPair("  ", "endpoint", collectTargetAddress(invocation)))
+        .append(formatPair("  ", "status code", response.getStatusCode()))
+        .append(formatPair("    ", STAGE_TOTAL, stageTrace.calcTotal()))
+        .append(formatPair("    ", STAGE_PREPARE, stageTrace.calcPrepare()))
+        .append(formatPair("    ", STAGE_CONSUMER_CONNECTION, stageTrace.calcConnection()))
+        .append(formatPair("    ", STAGE_CONSUMER_ENCODE_REQUEST, stageTrace.calcConsumerEncodeRequest()))
+        .append(formatPair("    ", STAGE_CONSUMER_SEND, stageTrace.calcConsumerSendRequest()))
+        .append(formatPair("    ", STAGE_CONSUMER_WAIT, stageTrace.calcWait()))
+        .append(formatPair("    ", STAGE_CONSUMER_DECODE_RESPONSE, stageTrace.calcConsumerDecodeResponse()));
+
+    for (Entry<String, Stage> stage : stageTrace.getStages().entrySet()) {
+      sb.append(formatPair("    ", "Filter-" + stage.getKey(),
+          InvocationStageTrace.calc(stage.getValue().getEndTime(),
+              stage.getValue().getBeginTime())));
+    }
+
+    LOGGER.warn(sb.toString());
+  }
+
+  private static void logSlowEdge(Invocation invocation, Response response, OperationConfig operationConfig) {
+    RestOperationMeta restOperationMeta = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
+    InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
+    StringBuilder sb = new StringBuilder();
+    sb.append("Slow Edge invocation [").append(invocation.getInvocationQualifiedName())
+        .append("](").append(operationConfig.getMsSlowInvocation()).append(" ms")
+        .append(")[").append(invocation.getTraceId()).append("]\n")
+        .append(formatPair("  ", "http method", restOperationMeta.getHttpMethod()))
+        .append(formatPair("  ", "url", restOperationMeta.getAbsolutePath()))
+        .append(formatPair("  ", "endpoint", collectTargetAddress(invocation)))
+        .append(formatPair("  ", "status code", response.getStatusCode()))
+        .append(formatPair("    ", STAGE_TOTAL, stageTrace.calcTotal()))
+        .append(formatPair("    ", STAGE_PREPARE, stageTrace.calcPrepare()))
+        .append(formatPair("    ", STAGE_PROVIDER_DECODE_REQUEST, stageTrace.calcProviderDecodeRequest()))
+        .append(formatPair("    ", STAGE_CONSUMER_CONNECTION, stageTrace.calcConnection()))
+        .append(formatPair("    ", STAGE_CONSUMER_ENCODE_REQUEST, stageTrace.calcConsumerEncodeRequest()))
+        .append(formatPair("    ", STAGE_CONSUMER_SEND, stageTrace.calcConsumerSendRequest()))
+        .append(formatPair("    ", STAGE_CONSUMER_WAIT, stageTrace.calcWait()))
+        .append(formatPair("    ", STAGE_CONSUMER_DECODE_RESPONSE, stageTrace.calcConsumerDecodeResponse()))
+        .append(formatPair("    ", STAGE_PROVIDER_ENCODE_RESPONSE, stageTrace.calcProviderEncodeResponse()))
+        .append(formatPair("    ", STAGE_PROVIDER_SEND, stageTrace.calcProviderSendResponse()))
+    ;
+
+    for (Entry<String, Stage> stage : stageTrace.getStages().entrySet()) {
+      sb.append(formatPair("    ", "Filter-" + stage.getKey(),
+          InvocationStageTrace.calc(stage.getValue().getEndTime(),
+              stage.getValue().getBeginTime())));
+    }
+
+    LOGGER.warn(sb.toString());
   }
 }

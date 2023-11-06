@@ -58,7 +58,7 @@ public class ConfigurableDatetimeAccessItem implements AccessLogItem<RoutingCont
    * @param config the format of configuration is "PATTERN|TIMEZONE|LOCALE" or "PATTERN". It depends on whether the config contains the separator "|"
    */
   public ConfigurableDatetimeAccessItem(String config) {
-    String[] configArr = null;
+    String[] configArr;
     if (config.contains("|")) {
       configArr = splitConfig(config);
     } else {
@@ -91,10 +91,9 @@ public class ConfigurableDatetimeAccessItem implements AccessLogItem<RoutingCont
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    long milliDuration = (finishEvent.getInvocation().getInvocationStageTrace().getStartSend() -
-        finishEvent.getInvocation().getInvocationStageTrace().getStart()) / 1000_000;
+    long milliDuration = finishEvent.getInvocation().getInvocationStageTrace().calcTotal() / 1000_000;
     doAppendFormattedItem(
-        finishEvent.getInvocation().getInvocationStageTrace().getStartTimeMillis() + milliDuration, builder);
+        finishEvent.getInvocation().getInvocationStageTrace().getStartInMillis() + milliDuration, builder);
   }
 
   private void doAppendFormattedItem(long milliStartTime, StringBuilder builder) {

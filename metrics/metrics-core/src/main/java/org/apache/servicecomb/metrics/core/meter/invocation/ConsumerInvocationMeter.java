@@ -27,29 +27,23 @@ import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
 public class ConsumerInvocationMeter extends AbstractInvocationMeter {
-  private final SimpleTimer clientFiltersRequestTimer;
+  private final SimpleTimer consumerEncodeRequestTimer;
 
-  private final SimpleTimer consumerSendRequestTimer;
+  private final SimpleTimer consumerDecodeResponseTimer;
 
   private final SimpleTimer consumerGetConnectionTimer;
 
-  private final SimpleTimer consumerWriteToBufTimer;
+  private final SimpleTimer consumerSendRequestTimer;
 
   private final SimpleTimer consumerWaitResponseTimer;
 
-  private final SimpleTimer consumerWakeConsumerTimer;
-
-  private final SimpleTimer clientFiltersResponseTimer;
-
   public ConsumerInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
     super(id, metricsBootstrapConfig);
-    clientFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
-    consumerSendRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
-    consumerGetConnectionTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
-    consumerWriteToBufTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
-    consumerWakeConsumerTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
-    clientFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
-    consumerWaitResponseTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
+    consumerSendRequestTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_SEND);
+    consumerGetConnectionTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_CONNECTION);
+    consumerEncodeRequestTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_ENCODE_REQUEST);
+    consumerDecodeResponseTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_DECODE_RESPONSE);
+    consumerWaitResponseTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_WAIT);
   }
 
   @Override
@@ -57,25 +51,21 @@ public class ConsumerInvocationMeter extends AbstractInvocationMeter {
     super.onInvocationFinish(event);
 
     InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
-    clientFiltersRequestTimer.record((long) invocationStageTrace.calcClientFiltersRequestTime());
-    consumerSendRequestTimer.record((long) invocationStageTrace.calcSendRequestTime());
-    consumerGetConnectionTimer.record((long) invocationStageTrace.calcGetConnectionTime());
-    consumerWriteToBufTimer.record((long) invocationStageTrace.calcWriteToBufferTime());
-    consumerWaitResponseTimer.record((long) invocationStageTrace.calcReceiveResponseTime());
-    consumerWakeConsumerTimer.record((long) invocationStageTrace.calcWakeConsumer());
-    clientFiltersResponseTimer.record((long) invocationStageTrace.calcClientFiltersResponseTime());
+    consumerEncodeRequestTimer.record(invocationStageTrace.calcConsumerEncodeRequest());
+    consumerSendRequestTimer.record(invocationStageTrace.calcConsumerSendRequest());
+    consumerGetConnectionTimer.record(invocationStageTrace.calcConnection());
+    consumerWaitResponseTimer.record(invocationStageTrace.calcWait());
+    consumerDecodeResponseTimer.record(invocationStageTrace.calcConsumerDecodeResponse());
   }
 
   @Override
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     super.calcMeasurements(measurements, msNow, secondInterval);
 
-    clientFiltersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
     consumerSendRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
     consumerGetConnectionTimer.calcMeasurements(measurements, msNow, secondInterval);
-    consumerWriteToBufTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerEncodeRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
     consumerWaitResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
-    consumerWakeConsumerTimer.calcMeasurements(measurements, msNow, secondInterval);
-    clientFiltersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerDecodeResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
   }
 }

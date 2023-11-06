@@ -22,7 +22,6 @@ import java.util.Map;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationBaseEvent;
-import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
@@ -39,6 +38,7 @@ import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -47,8 +47,6 @@ import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-
-import org.junit.jupiter.api.Assertions;
 
 public class TestInvocation {
   Invocation invocation;
@@ -88,8 +86,6 @@ public class TestInvocation {
 
   @Test
   public void onStart() {
-    mockNonaTime();
-
     Holder<Invocation> result = new Holder<>();
     Object subscriber = new Object() {
       @Subscribe
@@ -100,22 +96,10 @@ public class TestInvocation {
     EventManager.register(subscriber);
 
     Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
-    invocation.onStart(nanoTime);
+    invocation.onStart();
 
     Assertions.assertSame(invocation, result.value);
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
-
     EventManager.unregister(subscriber);
-  }
-
-  @Test
-  public void onStartExecute() {
-    mockNonaTime();
-
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
-    invocation.onExecuteStart();
-
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test
@@ -136,7 +120,6 @@ public class TestInvocation {
     Response response = Response.succResp(null);
     invocation.onFinish(response);
 
-    Assertions.assertEquals(nanoTime, result.value.getNanoCurrent());
     Assertions.assertSame(invocation, result.value.getInvocation());
     Assertions.assertSame(response, result.value.getResponse());
     Assertions.assertTrue(invocation.isFinished());
@@ -175,7 +158,7 @@ public class TestInvocation {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
 
-    invocation.onStart(0);
+    invocation.onStart();
 
     Assertions.assertEquals("abc", invocation.getTraceId());
     Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
@@ -192,7 +175,7 @@ public class TestInvocation {
     };
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
 
-    invocation.onStart(0);
+    invocation.onStart();
 
     Assertions.assertEquals("abc", invocation.getTraceId());
     Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
@@ -208,7 +191,7 @@ public class TestInvocation {
     };
     Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
 
-    invocation.onStart(requestEx, 0);
+    invocation.onStart(requestEx);
 
     Assertions.assertEquals("abc", invocation.getTraceId());
     Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
@@ -225,7 +208,7 @@ public class TestInvocation {
     };
     Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
 
-    invocation.onStart(requestEx, 0);
+    invocation.onStart(requestEx);
 
     Assertions.assertEquals("abc", invocation.getTraceId());
     Assertions.assertEquals("abc", invocation.getTraceId(CoreConst.TRACE_ID_NAME));
@@ -259,7 +242,7 @@ public class TestInvocation {
   InvocationBaseEvent invocationBaseEvent;
 
   @Test
-  public void onBusinessMethodStart() {
+  public void test_business_execute_time_correct() {
     Object listener = new Object() {
       @Subscribe
       public void onBusinessMethodStart(InvocationBusinessMethodStartEvent event) {
@@ -273,32 +256,9 @@ public class TestInvocation {
     EventManager.getEventBus().unregister(listener);
 
     Assertions.assertSame(invocation, invocationBaseEvent.getInvocation());
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
-  }
-
-  @Test
-  public void onBusinessMethodFinish() {
-    Object listener = new Object() {
-      @Subscribe
-      public void onBusinessMethodStart(InvocationBusinessMethodFinishEvent event) {
-        invocationBaseEvent = event;
-      }
-    };
-    EventManager.getEventBus().register(listener);
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
-    invocation.onBusinessMethodFinish();
-    EventManager.getEventBus().unregister(listener);
-
-    Assertions.assertSame(invocation, invocationBaseEvent.getInvocation());
-  }
-
-  @Test
-  public void onBusinessFinish() {
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
-    mockNonaTime();
+    nanoTime++;
     invocation.onBusinessFinish();
-
-    Assertions.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
+    Assertions.assertEquals(1, invocation.getInvocationStageTrace().calcBusinessExecute());
   }
 
   @Test
@@ -307,12 +267,12 @@ public class TestInvocation {
 
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
-    invocation.onStart(0);
+    invocation.onStart();
     Assertions.assertEquals("abc-0", invocation.getTraceIdLogger().getName());
 
     invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
-    invocation.onStart(0);
+    invocation.onStart();
     Assertions.assertEquals("abc-1", invocation.getTraceIdLogger().getName());
   }
 }

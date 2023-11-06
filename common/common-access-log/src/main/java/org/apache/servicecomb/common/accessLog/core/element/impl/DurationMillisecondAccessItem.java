@@ -31,7 +31,6 @@ public class DurationMillisecondAccessItem implements AccessLogItem<RoutingConte
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    builder.append((finishEvent.getInvocation().getInvocationStageTrace().getFinish() -
-        finishEvent.getInvocation().getInvocationStageTrace().getStartSend()) / 1000_000);
+    builder.append(finishEvent.getInvocation().getInvocationStageTrace().calcTotal() / 1000_000);
   }
 }

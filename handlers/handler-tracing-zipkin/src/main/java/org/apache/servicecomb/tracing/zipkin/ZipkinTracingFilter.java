@@ -23,8 +23,10 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.AbstractFilter;
+import org.apache.servicecomb.core.filter.ConsumerFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
+import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,7 +34,7 @@ import brave.Span;
 import brave.Tracer.SpanInScope;
 import brave.http.HttpTracing;
 
-public class ZipkinTracingFilter implements Filter {
+public class ZipkinTracingFilter extends AbstractFilter implements ConsumerFilter, ProviderFilter {
   public static final String NAME = "zipkin";
 
   private ZipkinConsumerDelegate consumer;

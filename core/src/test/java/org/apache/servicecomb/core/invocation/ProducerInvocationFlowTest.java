@@ -20,9 +20,12 @@ package org.apache.servicecomb.core.invocation;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.exception.Exceptions;
+import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -94,7 +97,7 @@ public class ProducerInvocationFlowTest {
 
     new Verifications() {
       {
-        invocation.onStart((HttpServletRequestEx) any, anyLong);
+        invocation.onStart((HttpServletRequestEx) any);
         times = 1;
       }
     };
@@ -126,8 +129,16 @@ public class ProducerInvocationFlowTest {
   }
 
   private void mockInvocationFailed() {
-    filterNode = new FilterNode((_invocation, _node) -> {
-      throw new RuntimeExceptionWithoutStackTrace();
+    filterNode = new FilterNode(new AbstractFilter() {
+      @Override
+      public String getName() {
+        return "test";
+      }
+
+      @Override
+      public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+        throw new RuntimeExceptionWithoutStackTrace();
+      }
     });
     mockFilterChain();
   }

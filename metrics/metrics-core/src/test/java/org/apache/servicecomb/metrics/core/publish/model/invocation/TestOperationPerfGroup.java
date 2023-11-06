@@ -16,12 +16,12 @@
  */
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.core.CoreConst;
-import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class TestOperationPerfGroup {
   String op = "op";
@@ -46,12 +46,12 @@ public class TestOperationPerfGroup {
 
     OperationPerf summary = group.getSummary();
 
-    PerfInfo perfInfo = summary.findStage(MeterInvocationConst.STAGE_TOTAL);
+    PerfInfo perfInfo = summary.findStage(InvocationStageTrace.STAGE_TOTAL);
     Assertions.assertEquals(20, perfInfo.getTps(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
 
-    perfInfo = summary.findStage(MeterInvocationConst.STAGE_EXECUTION);
+    perfInfo = summary.findStage(InvocationStageTrace.STAGE_PROVIDER_BUSINESS);
     Assertions.assertEquals(20, perfInfo.getTps(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);

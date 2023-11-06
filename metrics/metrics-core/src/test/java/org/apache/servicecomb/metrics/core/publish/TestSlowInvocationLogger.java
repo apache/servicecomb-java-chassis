@@ -25,7 +25,6 @@ import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.core.tracing.TraceIdLogger;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -92,7 +91,7 @@ public class TestSlowInvocationLogger {
         result = true;
         operationConfig.getNanoSlowInvocation();
         result = 2;
-        stageTrace.calcTotalTime();
+        stageTrace.calcTotal();
         result = 1;
       }
     };
@@ -111,37 +110,32 @@ public class TestSlowInvocationLogger {
         result = "rest://1.1.1.1:1234";
         invocation.isConsumer();
         result = true;
-        invocation.getTraceIdLogger();
-        result = new TraceIdLogger(invocation);
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = restOperationMeta;
         operationConfig.isSlowInvocationEnabled();
         result = true;
         operationConfig.getNanoSlowInvocation();
         result = 1;
-        stageTrace.calcTotalTime();
+        stageTrace.calcTotal();
         result = 1;
       }
     };
     logger.onInvocationFinish(event);
 
-    Assertions.assertEquals(""
-            + "slow(0 ms) invocation, null:\n"
-            + "  http method: null\n"
-            + "  url        : null\n"
-            + "  server     : rest://1.1.1.1:1234\n"
-            + "  status code: 0\n"
-            + "  total      : 0.0 ms\n"
-            + "    prepare                : 0.0 ms\n"
-            + "    handlers request       : 0.0 ms\n"
-            + "    client filters request : 0.0 ms\n"
-            + "    send request           : 0.0 ms\n"
-            + "    get connection         : 0.0 ms\n"
-            + "    write to buf           : 0.0 ms\n"
-            + "    wait response          : 0.0 ms\n"
-            + "    wake consumer          : 0.0 ms\n"
-            + "    client filters response: 0.0 ms\n"
-            + "    handlers response      : 0.0 ms",
+    Assertions.assertEquals("""
+            Slow Consumer invocation [null](0 ms)[null]
+              http method       :                 null
+              url               :                 null
+              endpoint          :  rest://1.1.1.1:1234
+              status code       :      0.0ms
+                total           :      0.0ms
+                prepare         :      0.0ms
+                connection      :      0.0ms
+                consumer-encode :      0.0ms
+                consumer-send   :      0.0ms
+                wait            :      0.0ms
+                consumer-decode :      0.0ms
+            """,
         logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 
@@ -155,8 +149,6 @@ public class TestSlowInvocationLogger {
         result = "rest://1.1.1.1:1234";
         invocation.isConsumer();
         result = true;
-        invocation.getTraceIdLogger();
-        result = new TraceIdLogger(invocation);
         invocation.isEdge();
         result = true;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
@@ -165,33 +157,29 @@ public class TestSlowInvocationLogger {
         result = true;
         operationConfig.getNanoSlowInvocation();
         result = 1;
-        stageTrace.calcTotalTime();
+        stageTrace.calcTotal();
         result = 1;
       }
     };
     logger.onInvocationFinish(event);
 
-    Assertions.assertEquals(""
-            + "slow(0 ms) invocation, null:\n"
-            + "  http method: null\n"
-            + "  url        : null\n"
-            + "  server     : rest://1.1.1.1:1234\n"
-            + "  status code: 0\n"
-            + "  total      : 0.0 ms\n"
-            + "    prepare                : 0.0 ms\n"
-            + "    threadPoolQueue        : 0.0 ms\n"
-            + "    server filters request : 0.0 ms\n"
-            + "    handlers request       : 0.0 ms\n"
-            + "    client filters request : 0.0 ms\n"
-            + "    send request           : 0.0 ms\n"
-            + "    get connection         : 0.0 ms\n"
-            + "    write to buf           : 0.0 ms\n"
-            + "    wait response          : 0.0 ms\n"
-            + "    wake consumer          : 0.0 ms\n"
-            + "    client filters response: 0.0 ms\n"
-            + "    handlers response      : 0.0 ms\n"
-            + "    server filters response: 0.0 ms\n"
-            + "    send response          : 0.0 ms",
+    Assertions.assertEquals("""
+            Slow Edge invocation [null](0 ms)[null]
+              http method       :                 null
+              url               :                 null
+              endpoint          :  rest://1.1.1.1:1234
+              status code       :      0.0ms
+                total           :      0.0ms
+                prepare         :      0.0ms
+                provider-decode :      0.0ms
+                connection      :      0.0ms
+                consumer-encode :      0.0ms
+                consumer-send   :      0.0ms
+                wait            :      0.0ms
+                consumer-decode :      0.0ms
+                provider-encode :      0.0ms
+                provider-send   :      0.0ms
+            """,
         logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 
@@ -201,8 +189,6 @@ public class TestSlowInvocationLogger {
       {
         invocation.getRequestEx();
         result = requestEx;
-        invocation.getTraceIdLogger();
-        result = new TraceIdLogger(invocation);
         requestEx.getRemoteAddr();
         result = "1.1.1.1";
         requestEx.getRemotePort();
@@ -215,27 +201,26 @@ public class TestSlowInvocationLogger {
         result = true;
         operationConfig.getNanoSlowInvocation();
         result = 1;
-        stageTrace.calcTotalTime();
+        stageTrace.calcTotal();
         result = 1;
       }
     };
     logger.onInvocationFinish(event);
 
-    Assertions.assertEquals(""
-            + "slow(0 ms) invocation, null:\n"
-            + "  http method: null\n"
-            + "  url        : null\n"
-            + "  client     : 1.1.1.1:1234\n"
-            + "  status code: 0\n"
-            + "  total      : 0.0 ms\n"
-            + "    prepare                : 0.0 ms\n"
-            + "    threadPoolQueue        : 0.0 ms\n"
-            + "    server filters request : 0.0 ms\n"
-            + "    handlers request       : 0.0 ms\n"
-            + "    business execute       : 0.0 ms\n"
-            + "    handlers response      : 0.0 ms\n"
-            + "    server filters response: 0.0 ms\n"
-            + "    send response          : 0.0 ms",
+    Assertions.assertEquals("""
+            Slow Provider invocation [null](0 ms)[null]
+              http method       :                 null
+              url               :                 null
+              endpoint          :         1.1.1.1:1234
+              status code       :      0.0ms
+                total           :      0.0ms
+                prepare         :      0.0ms
+                provider-decode :      0.0ms
+                queue           :      0.0ms
+                execute         :      0.0ms
+                provider-encode :      0.0ms
+                provider-send   :      0.0ms
+            """,
         logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 }

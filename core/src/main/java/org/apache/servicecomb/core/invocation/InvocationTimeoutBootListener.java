@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.servicecomb.core.event.InvocationBusinessFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
-import org.apache.servicecomb.core.event.InvocationHandlersStartEvent;
 import org.apache.servicecomb.core.event.InvocationRunInExecutorStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartSendRequestEvent;
@@ -78,12 +77,6 @@ public class InvocationTimeoutBootListener {
   @EnableExceptionPropagation
   public void onInvocationRunInExecutorStartEvent(InvocationRunInExecutorStartEvent event) {
     strategy.startRunInExecutor(event.getInvocation());
-  }
-
-  @Subscribe
-  @EnableExceptionPropagation
-  public void onInvocationHandlersStartEvent(InvocationHandlersStartEvent event) {
-    strategy.startHandlers(event.getInvocation());
   }
 
   @Subscribe
