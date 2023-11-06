@@ -104,6 +104,9 @@ public class InvocationStageTrace {
   // invocation start time in millis, for passing strategy use only
   private long startInMillis;
 
+  // invocation start time in nanos, for passing strategy use only
+  private long start;
+
   private long finish;
 
   private long startCreateInvocation;
@@ -184,6 +187,7 @@ public class InvocationStageTrace {
   public void startCreateInvocation(long nano) {
     this.startCreateInvocation = nano;
     this.startInMillis = millisTime();
+    this.start = nanoTime();
   }
 
   public void finishCreateInvocation() {
@@ -320,6 +324,10 @@ public class InvocationStageTrace {
 
   public long getStartInMillis() {
     return this.startInMillis;
+  }
+
+  public long getStart() {
+    return this.start;
   }
 
   public static long calc(long finish, long start) {
