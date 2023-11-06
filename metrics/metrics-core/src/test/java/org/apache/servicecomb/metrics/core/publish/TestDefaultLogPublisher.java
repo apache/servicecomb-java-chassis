@@ -243,7 +243,6 @@ public class TestDefaultLogPublisher {
           .filter(e -> "scb-metrics".equals(e.getLoggerName())).toList();
       LogEvent event = events.get(0);
       Assertions.assertEquals("""
-                            
               os:
                 cpu:
                   all usage: 100.00%    all idle: 0.00%    process: 100.00%
@@ -288,8 +287,8 @@ public class TestDefaultLogPublisher {
                       prepare     : 3000.000/30000.000 provider-decode       : 3000.000/30000.000 connection : 3000.000/30000.000 consumer-encode : 3000.000/30000.000
                       consumer-send : 3000.000/30000.000 wait     : 3000.000/30000.000 consumer-decode  : 3000.000/30000.000 provider-encode    : 3000.000/30000.000
                       provider-send    : 3000.000/30000.000
-              """,
-          event.getMessage().getFormattedMessage());
+              """.trim(),
+          event.getMessage().getFormattedMessage().trim());
     } catch (Exception e) {
       e.printStackTrace();
       Assertions.fail("unexpected error happen. " + e.getMessage());
