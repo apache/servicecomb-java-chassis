@@ -20,18 +20,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestPlaceholderResolver {
   static Map<String, Object> parameters = new HashMap<>();
 
   static PlaceholderResolver resolver = new PlaceholderResolver();
 
-  @BeforeClass
-  public static void setup() {
+  @BeforeAll
+  public static void setupClass() {
     parameters.put("key", "value");
     parameters.put("varOfVar", Arrays.asList("${key}"));
 
@@ -40,6 +44,14 @@ public class TestPlaceholderResolver {
     parameters.put("low-list", Arrays.asList("low-1", "low-2"));
     parameters.put("middle-list", Arrays.asList("middle-1", "middle-2"));
     parameters.put("high-list", Arrays.asList("high-1", "high-2"));
+  }
+
+  protected Environment environment;
+
+  @BeforeEach
+  public void setup() {
+    environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
@@ -106,7 +118,8 @@ public class TestPlaceholderResolver {
 
   @Test
   public void mixed() {
-    MatcherAssert.assertThat(resolver.replace("prefix.${${priority}-list}.${key}.${high-list}.suffix ${xxx}", parameters),
+    MatcherAssert.assertThat(
+        resolver.replace("prefix.${${priority}-list}.${key}.${high-list}.suffix ${xxx}", parameters),
         Matchers.contains(
             "prefix.low-1.value.high-1.suffix ${xxx}",
             "prefix.low-2.value.high-1.suffix ${xxx}",
