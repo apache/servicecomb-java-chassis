@@ -30,10 +30,6 @@ import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledOnJre;
-import org.junit.jupiter.api.condition.EnabledOnOs;
-import org.junit.jupiter.api.condition.JRE;
-import org.junit.jupiter.api.condition.OS;
 import org.mockito.Mockito;
 
 public class DatetimeConfigurableItemTest {
@@ -58,61 +54,19 @@ public class DatetimeConfigurableItemTest {
 
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
-    when(invocationStageTrace.getStartSend()).thenReturn(0L);
-    when(invocationStageTrace.getStart()).thenReturn(0L);
-    when(invocationStageTrace.getStartTimeMillis()).thenReturn(START_MILLISECOND);
+    when(invocationStageTrace.getStartInMillis()).thenReturn(START_MILLISECOND);
+    when(invocationStageTrace.calcTotal()).thenReturn(0L);
 
     accessLogEvent = new ServerAccessLogEvent();
     accessLogEvent.setMilliStartTime(START_MILLISECOND);
     strBuilder = new StringBuilder();
   }
 
-  @Test
-  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
-  @EnabledOnJre(JRE.JAVA_8)
-  public void serverFormattedElement() {
-    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
-    element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assertions.assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
-  }
-
-  @Test
-  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
-  @EnabledOnJre(JRE.JAVA_8)
-  public void clientFormattedElement() {
-    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
-    element.appendClientFormattedItem(finishEvent, strBuilder);
-    Assertions.assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
-  }
-
-  @Test
-  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
-  @EnabledOnJre(JRE.JAVA_8)
-  public void serverFormattedElementOnNoPattern() {
-    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "|GMT+08|zh-CN");
-
-    element.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assertions.assertEquals("星期二, 25 十一月 2014 05:10:50 GMT+08:00", strBuilder.toString());
-  }
-
-  @Test
-  @EnabledOnOs({OS.LINUX, OS.WINDOWS})
-  @EnabledOnJre(JRE.JAVA_8)
-  public void clientFormattedElementOnNoPattern() {
-    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "|GMT+08|zh-CN");
-
-    element.appendClientFormattedItem(finishEvent, strBuilder);
-    Assertions.assertEquals("星期二, 25 十一月 2014 05:10:50 GMT+08:00", strBuilder.toString());
-  }
 
   @Test
   public void getFormattedElementOnNoTimezone() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "yyyy/MM/dd zzz||zh-CN");
+        "yyyy/MM/dd zzz||zh-CN");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd zzz", Locale.forLanguageTag("zh-CN"));
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -123,7 +77,7 @@ public class DatetimeConfigurableItemTest {
   @Test
   public void clientFormattedElementOnNoTimezone() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "yyyy/MM/dd zzz||zh-CN");
+        "yyyy/MM/dd zzz||zh-CN");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd zzz", Locale.forLanguageTag("zh-CN"));
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -134,7 +88,7 @@ public class DatetimeConfigurableItemTest {
   @Test
   public void serverFormattedElementOnNoLocale() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
+        "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
     Assertions.assertEquals("Tue, 25 Nov 2014 05:10:50 GMT+08:00", strBuilder.toString());
@@ -143,7 +97,7 @@ public class DatetimeConfigurableItemTest {
   @Test
   public void clientFormattedElementOnNoLocale() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
+        "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("Tue, 25 Nov 2014 05:10:50 GMT+08:00", strBuilder.toString());
@@ -152,9 +106,9 @@ public class DatetimeConfigurableItemTest {
   @Test
   public void serverFormattedElementOnNoConfig() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "||");
+        "||");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
-            Locale.US);
+        Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
@@ -164,9 +118,9 @@ public class DatetimeConfigurableItemTest {
   @Test
   public void clientFormattedElementOnNoConfig() {
     ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
-            "||");
+        "||");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
-            Locale.US);
+        Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     element.appendClientFormattedItem(finishEvent, strBuilder);

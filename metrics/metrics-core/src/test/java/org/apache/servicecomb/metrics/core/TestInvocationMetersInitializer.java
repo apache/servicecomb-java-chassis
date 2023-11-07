@@ -31,6 +31,7 @@ import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTr
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -82,27 +83,19 @@ public class TestInvocationMetersInitializer {
         result = CoreConst.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
-        invocation.getInvocationStageTrace().calcTotalTime();
+        invocation.getInvocationStageTrace().calcTotal();
         result = 9;
-        invocation.getInvocationStageTrace().calcClientFiltersRequestTime();
+        invocation.getInvocationStageTrace().calcPrepare();
         result = 9;
-        invocation.getInvocationStageTrace().calcSendRequestTime();
+        invocation.getInvocationStageTrace().calcConnection();
         result = 9;
-        invocation.getInvocationStageTrace().calcGetConnectionTime();
+        invocation.getInvocationStageTrace().calcConsumerEncodeRequest();
         result = 4;
-        invocation.getInvocationStageTrace().calcWriteToBufferTime();
+        invocation.getInvocationStageTrace().calcConsumerSendRequest();
         result = 5;
-        invocation.getInvocationStageTrace().calcWakeConsumer();
+        invocation.getInvocationStageTrace().calcWait();
         result = 9;
-        invocation.getInvocationStageTrace().calcReceiveResponseTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcClientFiltersResponseTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcInvocationPrepareTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcHandlersRequestTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcHandlersResponseTime();
+        invocation.getInvocationStageTrace().calcConsumerDecodeResponse();
         result = 9;
 
         event.getInvocation();
@@ -118,6 +111,7 @@ public class TestInvocationMetersInitializer {
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
     List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME).getMeasurements();
+    Assert.assertEquals(21, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -125,65 +119,41 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 2,
         "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, 3,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=handlers_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 4,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=handlers_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 5,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=handlers_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 6,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=handlers_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 7,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=handlers_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 8,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=handlers_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 9,
         "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=prepare:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 10,
+    AssertUtil.assertMeasure(measurements, 4,
         "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=prepare:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 11,
+    AssertUtil.assertMeasure(measurements, 5,
         "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=prepare:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+    AssertUtil.assertMeasure(measurements, 6,
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+    AssertUtil.assertMeasure(measurements, 7,
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.0E-8");
+    AssertUtil.assertMeasure(measurements, 8,
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-send:statistic=max:status=0:transport=rest:type=stage,0,5.0E-9");
+    AssertUtil.assertMeasure(measurements, 9,
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=connection:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+    AssertUtil.assertMeasure(measurements, 10,
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=connection:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+    AssertUtil.assertMeasure(measurements, 11,
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=connection:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, 12,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=client_filters_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, 13,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=client_filters_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,8.0E-9");
     AssertUtil.assertMeasure(measurements, 14,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=client_filters_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-encode:statistic=max:status=0:transport=rest:type=stage,0,4.0E-9");
     AssertUtil.assertMeasure(measurements, 15,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_send_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=wait:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, 16,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_send_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=wait:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, 17,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_send_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=wait:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, 18,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_get_connection:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, 19,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_get_connection:statistic=totalTime:status=0:transport=rest:type=stage,0,8.0E-9");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, 20,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_get_connection:statistic=max:status=0:transport=rest:type=stage,0,4.0E-9");
-    AssertUtil.assertMeasure(measurements, 21,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_write_to_buf:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 22,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_write_to_buf:statistic=totalTime:status=0:transport=rest:type=stage,0,1.0E-8");
-    AssertUtil.assertMeasure(measurements, 23,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_write_to_buf:statistic=max:status=0:transport=rest:type=stage,0,5.0E-9");
-    AssertUtil.assertMeasure(measurements, 24,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_wait_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 25,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_wait_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 26,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_wait_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 27,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_wake_consumer:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 28,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_wake_consumer:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 29,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer_wake_consumer:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 30,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=client_filters_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 31,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=client_filters_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 32,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=client_filters_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-decode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
   }
 
   @Test
@@ -198,35 +168,25 @@ public class TestInvocationMetersInitializer {
         result = CoreConst.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
-        invocation.getInvocationStageTrace().calcTotalTime();
+        invocation.getInvocationStageTrace().calcTotal();
         result = 9;
-        invocation.getInvocationStageTrace().calcThreadPoolQueueTime();
+        invocation.getInvocationStageTrace().calcPrepare();
         result = 9;
-        invocation.getInvocationStageTrace().calcClientFiltersRequestTime();
+        invocation.getInvocationStageTrace().calcProviderDecodeRequest();
         result = 9;
-        invocation.getInvocationStageTrace().calcSendRequestTime();
+        invocation.getInvocationStageTrace().calcConnection();
         result = 9;
-        invocation.getInvocationStageTrace().calcGetConnectionTime();
+        invocation.getInvocationStageTrace().calcConsumerEncodeRequest();
         result = 4;
-        invocation.getInvocationStageTrace().calcWriteToBufferTime();
+        invocation.getInvocationStageTrace().calcConsumerSendRequest();
         result = 5;
-        invocation.getInvocationStageTrace().calcWakeConsumer();
+        invocation.getInvocationStageTrace().calcConsumerDecodeResponse();
+        result = 8;
+        invocation.getInvocationStageTrace().calcWait();
         result = 9;
-        invocation.getInvocationStageTrace().calcReceiveResponseTime();
+        invocation.getInvocationStageTrace().calcProviderEncodeResponse();
         result = 9;
-        invocation.getInvocationStageTrace().calcClientFiltersResponseTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcInvocationPrepareTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcHandlersRequestTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcHandlersResponseTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcSendResponseTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcServerFiltersRequestTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcServerFiltersResponseTime();
+        invocation.getInvocationStageTrace().calcProviderSendResponse();
         result = 9;
         event.getInvocation();
         result = invocation;
@@ -241,6 +201,7 @@ public class TestInvocationMetersInitializer {
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
     List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME).getMeasurements();
+    Assert.assertEquals(30, measurements.size());
     int i = 0;
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0");
@@ -249,89 +210,59 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=handlers_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=handlers_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=handlers_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=handlers_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=handlers_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=handlers_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=prepare:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=prepare:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=prepare:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=client_filters_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=client_filters_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.0E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=client_filters_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-send:statistic=max:status=0:transport=rest:type=stage,0,5.0E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_send_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=connection:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_send_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=connection:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_send_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=connection:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_get_connection:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_get_connection:statistic=totalTime:status=0:transport=rest:type=stage,0,8.0E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,8.0E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_get_connection:statistic=max:status=0:transport=rest:type=stage,0,4.0E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-encode:statistic=max:status=0:transport=rest:type=stage,0,4.0E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_write_to_buf:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=wait:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_write_to_buf:statistic=totalTime:status=0:transport=rest:type=stage,0,1.0E-8");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=wait:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_write_to_buf:statistic=max:status=0:transport=rest:type=stage,0,5.0E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=wait:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_wait_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_wait_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.6E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_wait_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-decode:statistic=max:status=0:transport=rest:type=stage,0,8.0E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_wake_consumer:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_wake_consumer:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer_wake_consumer:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-decode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=client_filters_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=client_filters_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=client_filters_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-encode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=queue:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=queue:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=queue:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=server_filters_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=server_filters_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=server_filters_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=server_filters_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=server_filters_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=server_filters_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=producer_send_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=producer_send_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=producer_send_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-send:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
   }
 
   @Test
@@ -346,23 +277,19 @@ public class TestInvocationMetersInitializer {
         result = CoreConst.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
-        invocation.getInvocationStageTrace().calcTotalTime();
+        invocation.getInvocationStageTrace().calcTotal();
         result = 9;
-        invocation.getInvocationStageTrace().calcInvocationPrepareTime();
+        invocation.getInvocationStageTrace().calcPrepare();
         result = 9;
-        invocation.getInvocationStageTrace().calcHandlersRequestTime();
+        invocation.getInvocationStageTrace().calcProviderDecodeRequest();
         result = 9;
-        invocation.getInvocationStageTrace().calcHandlersResponseTime();
+        invocation.getInvocationStageTrace().calcQueue();
         result = 9;
-        invocation.getInvocationStageTrace().calcThreadPoolQueueTime();
+        invocation.getInvocationStageTrace().calcBusinessExecute();
         result = 9;
-        invocation.getInvocationStageTrace().calcBusinessTime();
+        invocation.getInvocationStageTrace().calcProviderEncodeResponse();
         result = 9;
-        invocation.getInvocationStageTrace().calcServerFiltersRequestTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcServerFiltersResponseTime();
-        result = 9;
-        invocation.getInvocationStageTrace().calcSendResponseTime();
+        invocation.getInvocationStageTrace().calcProviderSendResponse();
         result = 9;
         event.getInvocation();
         result = invocation;
@@ -377,6 +304,7 @@ public class TestInvocationMetersInitializer {
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
     List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME).getMeasurements();
+    Assert.assertEquals(21, measurements.size());
     int i = 0;
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0");
@@ -384,18 +312,6 @@ public class TestInvocationMetersInitializer {
         "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=total:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=handlers_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=handlers_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=handlers_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=handlers_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=handlers_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=handlers_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=prepare:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
@@ -409,28 +325,28 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, i++,
         "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=queue:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execution:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execute:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execution:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execute:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execution:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execute:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=server_filters_request:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=server_filters_request:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=server_filters_request:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-decode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=server_filters_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=server_filters_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=server_filters_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-encode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=producer_send_response:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
     AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=producer_send_response:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=producer_send_response:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+    AssertUtil.assertMeasure(measurements, i++,
+        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-send:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
   }
 }

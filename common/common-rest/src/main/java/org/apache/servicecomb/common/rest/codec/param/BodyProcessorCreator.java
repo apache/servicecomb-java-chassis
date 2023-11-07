@@ -62,8 +62,8 @@ import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
-@SuppressWarnings("rawtypes")
 public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestBody> {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
 
   public static final String REQUEST_BODY_NAME = "X_REQUEST";
@@ -74,11 +74,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
   private static final JavaType OBJECT_TYPE = SimpleType.constructUnsafe(Object.class);
 
-  // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
-  private static final boolean decodeAsObject = LegacyPropertyFactory
-      .getBooleanProperty("servicecomb.rest.parameter.decodeAsObject", false);
-
   private static final Object LOCK = new Object();
+
+  // This configuration is used for temporary use only.
+  // Do not use it if you are sure how it works. And may be deleted in the future.
+  public static final String PARAM_DECODE_AS_OBJECT = "servicecomb.rest.parameter.decodeAsObject";
 
   public static class BodyProcessor implements ParamValueProcessor {
     // Producer target type. For consumer, is null.
@@ -201,7 +201,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         ObjectReader reader = serialViewClass != null
             ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
             : RestObjectMapperFactory.getRestObjectMapper().reader();
-        if (decodeAsObject) {
+        if (decodeAsObject()) {
           return reader.forType(OBJECT_TYPE).readValue(inputStream);
         }
         return reader.forType(targetType == null ? OBJECT_TYPE : targetType)
@@ -214,6 +214,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         }
         throw e;
       }
+    }
+
+    private boolean decodeAsObject() {
+      return LegacyPropertyFactory
+          .getBooleanProperty(PARAM_DECODE_AS_OBJECT, false);
     }
 
     private String validContentType(String type) {

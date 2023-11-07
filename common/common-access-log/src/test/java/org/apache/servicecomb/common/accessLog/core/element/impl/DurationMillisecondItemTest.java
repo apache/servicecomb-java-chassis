@@ -50,8 +50,7 @@ public class DurationMillisecondItemTest {
 
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
-    when(invocationStageTrace.getStartSend()).thenReturn(0L);
-    when(invocationStageTrace.getFinish()).thenReturn(1000_000L);
+    when(invocationStageTrace.calcTotal()).thenReturn(1000_000L);
 
     accessLogEvent = new ServerAccessLogEvent();
     accessLogEvent.setMilliStartTime(1L);

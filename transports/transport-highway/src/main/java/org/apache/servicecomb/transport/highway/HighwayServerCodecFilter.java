@@ -65,10 +65,12 @@ public class HighwayServerCodecFilter extends AbstractFilter implements Provider
   protected CompletableFuture<Invocation> decodeRequest(Invocation invocation) {
     HighwayTransportContext transportContext = invocation.getTransportContext();
     try {
+      invocation.getInvocationStageTrace().startProviderDecodeRequest();
       HighwayCodec.decodeRequest(invocation,
           transportContext.getHeader(),
           transportContext.getOperationProtobuf(),
           transportContext.getBodyBuffer());
+      invocation.getInvocationStageTrace().finishProviderDecodeRequest();
       return CompletableFuture.completedFuture(invocation);
     } catch (Exception e) {
       return AsyncUtils.completeExceptionally(e);
@@ -94,6 +96,7 @@ public class HighwayServerCodecFilter extends AbstractFilter implements Provider
           msgId, header, bodySchema, response.getResult());
       transportContext.setResponseBuffer(respBuffer);
 
+      invocation.onEncodeResponseFinish();
       return CompletableFuture.completedFuture(response);
     } catch (Exception e) {
       // keep highway performance and simple, this encoding/decoding error not need handle by client

@@ -28,20 +28,17 @@ import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
 public class EdgeInvocationMeter extends ConsumerInvocationMeter {
-  private final SimpleTimer executorQueueTimer;
+  private final SimpleTimer providerDecodeRequestTimer;
 
-  private final SimpleTimer serverFiltersRequestTimer;
-
-  private final SimpleTimer serverFiltersResponseTimer;
+  private final SimpleTimer providerEncodeResponseTimer;
 
   private final SimpleTimer sendResponseTimer;
 
   public EdgeInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
     super(id, metricsBootstrapConfig);
-    executorQueueTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
-    serverFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
-    serverFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
-    sendResponseTimer = createStageTimer(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
+    providerDecodeRequestTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST);
+    providerEncodeResponseTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE);
+    sendResponseTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_SEND);
   }
 
   @Override
@@ -49,19 +46,17 @@ public class EdgeInvocationMeter extends ConsumerInvocationMeter {
     super.onInvocationFinish(event);
     InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
 
-    executorQueueTimer.record((long) invocationStageTrace.calcThreadPoolQueueTime());
-    serverFiltersRequestTimer.record((long) invocationStageTrace.calcServerFiltersRequestTime());
-    serverFiltersResponseTimer.record((long) invocationStageTrace.calcServerFiltersResponseTime());
-    sendResponseTimer.record((long) invocationStageTrace.calcSendResponseTime());
+    providerDecodeRequestTimer.record(invocationStageTrace.calcProviderDecodeRequest());
+    providerEncodeResponseTimer.record(invocationStageTrace.calcProviderEncodeResponse());
+    sendResponseTimer.record(invocationStageTrace.calcProviderSendResponse());
   }
 
   @Override
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     super.calcMeasurements(measurements, msNow, secondInterval);
 
-    executorQueueTimer.calcMeasurements(measurements, msNow, secondInterval);
-    serverFiltersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
-    serverFiltersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    providerDecodeRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
+    providerEncodeResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
     sendResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
   }
 }

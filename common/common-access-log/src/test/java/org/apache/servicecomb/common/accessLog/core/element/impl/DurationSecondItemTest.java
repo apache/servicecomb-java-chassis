@@ -50,7 +50,7 @@ public class DurationSecondItemTest {
 
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
-    when(invocationStageTrace.getStartSend()).thenReturn(1000_000L);
+    when(invocationStageTrace.calcTotal()).thenReturn(1L);
 
     accessLogEvent = new ServerAccessLogEvent();
     accessLogEvent.setMilliStartTime(1L);
@@ -66,7 +66,7 @@ public class DurationSecondItemTest {
 
   @Test
   public void clientFormattedElementOn999ms() {
-    when(invocationStageTrace.getFinish()).thenReturn(1000_000_000L);
+    when(invocationStageTrace.calcTotal()).thenReturn(0L);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("0", strBuilder.toString());
   }
@@ -80,7 +80,7 @@ public class DurationSecondItemTest {
 
   @Test
   public void clientFormattedElementOn1000ms() {
-    when(invocationStageTrace.getFinish()).thenReturn(1001_000_000L);
+    when(invocationStageTrace.calcTotal()).thenReturn(1000_000_000L);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("1", strBuilder.toString());
   }
@@ -94,7 +94,7 @@ public class DurationSecondItemTest {
 
   @Test
   public void clientFormattedElementOn1001ms() {
-    when(invocationStageTrace.getFinish()).thenReturn(1002_000_000L);
+    when(invocationStageTrace.calcTotal()).thenReturn(1000_000_000L);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("1", strBuilder.toString());
   }

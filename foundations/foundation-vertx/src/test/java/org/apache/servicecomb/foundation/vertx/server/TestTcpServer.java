@@ -17,25 +17,28 @@
 
 package org.apache.servicecomb.foundation.vertx.server;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import java.net.InetSocketAddress;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.foundation.vertx.metrics.DefaultTcpServerMetrics;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
-import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.NetSocket;
+import io.vertx.core.net.SocketAddress;
 import io.vertx.core.net.impl.NetSocketImpl;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestTcpServer {
   static class TcpServerForTest extends TcpServer {
@@ -54,37 +57,23 @@ public class TestTcpServer {
     }
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  @Test
-  public void testTcpServerNonSSL(@Mocked Vertx vertx, @Mocked AsyncResultCallback<InetSocketAddress> callback,
-      @Mocked NetServer netServer) {
-    new Expectations() {
-      {
-        vertx.createNetServer();
-        result = netServer;
-        netServer.connectHandler((Handler) any);
-        netServer.listen(anyInt, anyString, (Handler) any);
-      }
-    };
-    URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663");
-    TcpServer server = new TcpServerForTest(endpointObject);
-    // assert done in Expectations
-    server.init(vertx, "", callback);
+  protected Environment environment;
+
+  @BeforeEach
+  public void setup() {
+    environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Test
-  public void testTcpServerSSL(@Mocked Vertx vertx, @Mocked AsyncResultCallback<InetSocketAddress> callback,
-      @Mocked NetServer netServer) {
-    new Expectations() {
-      {
-        vertx.createNetServer((NetServerOptions) any);
-        result = netServer;
-        netServer.connectHandler((Handler) any);
-        netServer.listen(anyInt, anyString, (Handler) any);
-      }
-    };
-    URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663?sslEnabled=true");
+  public void testTcpServerNonSSL() {
+    Vertx vertx = Mockito.mock(Vertx.class);
+    AsyncResultCallback<InetSocketAddress> callback = Mockito.mock(AsyncResultCallback.class);
+    NetServer netServer = Mockito.mock(NetServer.class);
+    Mockito.when(vertx.createNetServer()).thenReturn(netServer);
+
+    URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663");
     TcpServer server = new TcpServerForTest(endpointObject);
     // assert done in Expectations
     server.init(vertx, "", callback);
@@ -96,33 +85,30 @@ public class TestTcpServer {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   @Test
-  public void testConnectionLimit(@Mocked Vertx vertx, @Mocked AsyncResultCallback<InetSocketAddress> callback,
-      @Mocked NetServer netServer, @Mocked NetSocketImpl netSocket) {
+  public void testConnectionLimit() {
+    Vertx vertx = Mockito.mock(Vertx.class);
+    AsyncResultCallback<InetSocketAddress> callback = Mockito.mock(AsyncResultCallback.class);
+    NetServer netServer = Mockito.mock(NetServer.class);
+    NetSocketImpl netSocket = Mockito.mock(NetSocketImpl.class);
+    Mockito.when(vertx.createNetServer(any())).thenReturn(netServer);
+
     DefaultServerEndpointMetric endpointMetric = new DefaultServerEndpointMetric(null);
     DefaultTcpServerMetrics tcpServerMetrics = new DefaultTcpServerMetrics(endpointMetric);
 
-    new MockUp<NetServer>(netServer) {
-      @Mock
-      NetServer connectHandler(Handler<NetSocket> handler) {
-        connectHandler = handler;
-        return netServer;
-      }
-    };
-    new MockUp<NetSocketImpl>(netSocket) {
-      @Mock
-      void close() {
-        netSocketClosed = true;
-      }
-    };
-    new Expectations() {
-      {
-        vertx.createNetServer((NetServerOptions) any);
-        result = netServer;
-        netServer.listen(anyInt, anyString, (Handler) any);
-        netSocket.metrics();
-        result = tcpServerMetrics;
-      }
-    };
+    Mockito.doAnswer((Answer<NetServer>) invocationOnMock -> {
+      connectHandler = invocationOnMock.getArgument(0);
+      return netServer;
+    }).when(netServer).connectHandler(any());
+
+    Mockito.doAnswer((Answer<Void>) invocationOnMock -> {
+      netSocketClosed = true;
+      return null;
+    }).when(netSocket).close();
+    Mockito.when(netSocket.metrics()).thenReturn(tcpServerMetrics);
+    SocketAddress socketAddress = Mockito.mock(SocketAddress.class);
+    Mockito.when(netSocket.remoteAddress()).thenReturn(socketAddress);
+    Mockito.when(socketAddress.toString()).thenReturn("127.0.0.1:6663");
+
     URIEndpointObject endpointObject = new URIEndpointObject("highway://127.0.0.1:6663?sslEnabled=true");
     TcpServer server = new TcpServerForTest(endpointObject) {
       @Override

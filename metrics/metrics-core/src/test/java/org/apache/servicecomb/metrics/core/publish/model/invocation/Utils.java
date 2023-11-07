@@ -19,8 +19,7 @@ package org.apache.servicecomb.metrics.core.publish.model.invocation;
 import java.util.HashMap;
 import java.util.List;
 
-import jakarta.ws.rs.core.Response.Status;
-
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishUtils;
@@ -31,13 +30,15 @@ import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.Statistic;
 
+import jakarta.ws.rs.core.Response.Status;
+
 public class Utils {
   static Registry registry = new DefaultRegistry();
 
-  public static MeasurementNode totalStageNode = Utils.createStageNode(MeterInvocationConst.STAGE_TOTAL, 10, 10, 100);
+  public static MeasurementNode totalStageNode = Utils.createStageNode(InvocationStageTrace.STAGE_TOTAL, 10, 10, 100);
 
   public static MeasurementNode executeStageNode =
-      Utils.createStageNode(MeterInvocationConst.STAGE_EXECUTION, 10, 10, 100);
+      Utils.createStageNode(InvocationStageTrace.STAGE_PROVIDER_BUSINESS, 10, 10, 100);
 
   public static MeasurementNode createStageNode(String stage,
       double count,

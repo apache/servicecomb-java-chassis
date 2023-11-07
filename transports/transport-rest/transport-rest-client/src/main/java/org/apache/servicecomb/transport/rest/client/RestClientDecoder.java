@@ -38,6 +38,7 @@ public class RestClientDecoder {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientDecoder.class);
 
   public Response decode(Invocation invocation, Response response) {
+    invocation.getInvocationStageTrace().startConsumerDecodeResponse();
     if (response.getResult() instanceof Buffer) {
       Object result = extractBody(invocation, response);
       response.entity(result);
@@ -47,6 +48,7 @@ public class RestClientDecoder {
       }
     }
 
+    invocation.getInvocationStageTrace().finishConsumerDecodeResponse();
     return response;
   }
 

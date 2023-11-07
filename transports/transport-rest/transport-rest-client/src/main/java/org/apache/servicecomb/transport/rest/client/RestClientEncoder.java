@@ -58,8 +58,10 @@ public class RestClientEncoder {
 
   public void encode(Invocation invocation) {
     try {
+      invocation.getInvocationStageTrace().startConsumerEncodeRequest();
       EncoderSession encoderSession = new EncoderSession(invocation);
       encoderSession.doEncode();
+      invocation.getInvocationStageTrace().finishConsumerEncodeRequest();
     } catch (Exception e) {
       throw new InvocationException(BAD_REQUEST, FAILED_TO_ENCODE_REST_CLIENT_REQUEST, e.getMessage(), e);
     }
@@ -96,8 +98,8 @@ public class RestClientEncoder {
     }
 
     protected void swaggerArgumentsToRequest() throws Exception {
-      RestCodec
-          .argsToRest(invocation.getSwaggerArguments(), transportContext.getRestOperationMeta(), requestParameters);
+      RestCodec.argsToRest(invocation.getSwaggerArguments(),
+          transportContext.getRestOperationMeta(), requestParameters);
     }
 
     protected void writeCookies(Map<String, String> cookieMap) {

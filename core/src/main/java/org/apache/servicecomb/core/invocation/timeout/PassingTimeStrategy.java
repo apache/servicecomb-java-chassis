@@ -78,7 +78,7 @@ public class PassingTimeStrategy implements InvocationTimeoutStrategy {
       return;
     }
 
-    long startTimeMillis = invocation.getInvocationStageTrace().getStartTimeMillis();
+    long startTimeMillis = invocation.getInvocationStageTrace().getStartInMillis();
     String contextChainStartTime = invocation.getContext(CHAIN_START_TIME);
     if (StringUtils.isEmpty(contextChainStartTime)) {
       invocation.addContext(CHAIN_START_TIME, String.valueOf(startTimeMillis));

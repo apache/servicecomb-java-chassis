@@ -16,362 +16,336 @@
  */
 package org.apache.servicecomb.core.invocation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.core.Invocation;
 
 /**
  * <pre>
- * important:
- *   all time point is about invocation stage, not java method
- *   all time is nanoTime
- *   not all stage relate to a event, currently, we only have 4 event:
- *     start/finish/startBusiness/finishBusiness
- *
  * for consumer:
- *         (prepare)                      (handlerReq)                                       (clientFilterReq)
- *   start --------&gt; startHandlersRequest -----------&gt; startClientFiltersRequest --------------------------------------
- *                                                        &lt;----------------(sendRequest)-----------------&gt;            |
- *                        (receiveResponse)              (writeToBuffer)                   (getConnection)            |
- *    ---finishReceiveResponse &lt;----- finishWriteToBuffer &lt;----------- finishGetConnection &lt;-------------- startSend &lt;-
- *   | (wakeConsumer)            (clientFiltersResponse)               (handlersResponse)
- *   |-----&gt; startClientFiltersResponse -------&gt; finishClientFiltersResponse -------&gt; finishHandlersResponse --&gt; finish
  *
- * for producer:
- *       (prepare)       (threadPoolQueue)                                (serverFiltersRequest)
- *   start ----&gt; startSchedule -----&gt; startExecution -&gt; startServerFiltersRequest -------&gt; startHandlersRequest -------
- *                          (handlersResponse)          &lt;-------------(business)-------------&gt;      (handlersRequest) |
- *   -----finishHandlersResponse &lt;------ finishBusiness &lt;------- finishBusinessMethod &lt;------ startBusinessMethod------
- *   | (serverFiltersResponse)     (sendResponse)
- *   |---&gt; finishServerFiltersResponse ------&gt; finish
+ *  1. total: start create invocation -> all filters finished
+ *  2. prepare: start create invocation -> finish create invocation
+ *  3. filters-(filter-name): start call on filter -> on complete
+ *  4. connection: start get connection -> finish get connection
+ *  5. consumer-encode: start encode request -> finish encode request
+ *  6. consumer-decode: start decode response -> finish decode response
+ *  7. consumer-send: start send request -> finish send request
+ *  8. wait: finish send request -> start decode response
+ *
+ * for provider:
+ *  1. total: start create invocation -> all filters finished
+ *  2. prepare: start create invocation -> finish create invocation
+ *  3. filters-(filter-name): start call on filter -> on complete
+ *  4. queue: add in queue -> execute in thread
+ *  5. provider-decode: start decode request -> finish decode request
+ *  6. provider-encode: start encode response -> finish encode response
+ *  7. provider-send: start send response -> finish send response
+ *  8. execute: start business execute -> finish business execute
  *
  * for edge:
- *      (prepare)         (threadPoolQueue)                               (serverFiltersRequest)
- *   start ----&gt; startSchedule -----&gt; startExecution -&gt; startServerFiltersRequest ----&gt; startHandlersRequest ----------
- *                           &lt;----------(sendRequest)----------&gt;                                                      |
- *                       (writeToBuffer)              (getConnection)  (clientFilterReq)            (handlersRequest) |
- *   --- finishWriteToBuffer &lt;------ finishGetConnection &lt;------ startSend &lt;------ startClientFiltersRequest &lt;---------
- *   | (receiveResponse)     (wakeConsumer)                 (clientFiltersResponse)
- *   ---&gt; finishReceiveResponse ------&gt; startClientFiltersResponse ------&gt; finishClientFiltersResponse ----------------
- *                                   (sendResponse)                  (serverFiltersResponse)       (handlersResponse) |
- *                              finish &lt;------ finishServerFiltersResponse &lt;------ finishHandlersResponse &lt;------------
+ *
+ *  *  1. total: start create invocation -> all filters finished
+ *  *  2. prepare: start create invocation -> finish create invocation
+ *  *  3. filters-(filter-name): start call on filter -> on complete
+ *  *  4. connection: start get connection -> finish get connection
+ *  *  5. provider-decode: start decode request -> finish decode request
+ *  *  6. provider-encode: start encode response -> finish encode response
+ *  *  7. consumer-encode: start encode request -> finish encode request
+ *  *  8. consumer-decode: start decode response -> finish decode response
+ *  *  9. consumer-send: start send request -> finish send request
+ *  *  10. provider-send: start send response -> finish send response
+ *  *  11. wait: finish send request -> start decode response
  *
  * </pre>
  */
 public class InvocationStageTrace {
-  public static final String PREPARE = "prepare";
+  public static class Stage {
+    private long beginTime;
 
-  public static final String HANDLERS_REQUEST = "handlers request";
+    private long endTime;
 
-  public static final String HANDLERS_RESPONSE = "handlers response";
+    public long getBeginTime() {
+      return beginTime;
+    }
 
-  public static final String CLIENT_FILTERS_REQUEST = "client filters request";
+    public long getEndTime() {
+      return endTime;
+    }
+  }
 
-  public static final String CONSUMER_SEND_REQUEST = "send request";
+  public static final String STAGE_TOTAL = "total";
 
-  public static final String CONSUMER_GET_CONNECTION = "get connection";
+  public static final String STAGE_PREPARE = "prepare";
 
-  public static final String CONSUMER_WRITE_TO_BUF = "write to buf";
+  public static final String STAGE_PROVIDER_QUEUE = "queue";
 
-  public static final String CONSUMER_WAIT_RESPONSE = "wait response";
+  public static final String STAGE_PROVIDER_DECODE_REQUEST = "provider-decode";
 
-  public static final String CONSUMER_WAKE_CONSUMER = "wake consumer";
+  public static final String STAGE_PROVIDER_ENCODE_RESPONSE = "provider-encode";
 
-  public static final String CLIENT_FILTERS_RESPONSE = "client filters response";
+  public static final String STAGE_PROVIDER_SEND = "provider-send";
 
-  public static final String THREAD_POOL_QUEUE = "threadPoolQueue";
+  public static final String STAGE_PROVIDER_BUSINESS = "execute";
 
-  public static final String SERVER_FILTERS_REQUEST = "server filters request";
+  public static final String STAGE_CONSUMER_CONNECTION = "connection";
 
-  public static final String SERVER_FILTERS_RESPONSE = "server filters response";
+  public static final String STAGE_CONSUMER_ENCODE_REQUEST = "consumer-encode";
 
-  public static final String PRODUCER_SEND_RESPONSE = "send response";
+  public static final String STAGE_CONSUMER_DECODE_RESPONSE = "consumer-decode";
+
+  public static final String STAGE_CONSUMER_SEND = "consumer-send";
+
+  public static final String STAGE_CONSUMER_WAIT = "wait";
 
   private final Invocation invocation;
 
-  // current time for start invocation
-  private long startTimeMillis;
+  // invocation start time in millis, for passing strategy use only
+  private long startInMillis;
 
+  // invocation start time in nanos, for passing strategy use only
   private long start;
-
-  private long startHandlersRequest;
-
-  private long startClientFiltersRequest;
-
-  // only for consumer
-  private long startSend;
-
-  // only for consumer
-  private long startGetConnection;
-
-  // only for consumer
-  private long finishGetConnection;
-
-  // only for consumer
-  private long finishWriteToBuffer;
-
-  // only for consumer
-  private long finishReceiveResponse;
-
-  private long startClientFiltersResponse;
-
-  private long finishClientFiltersResponse;
-
-  private long finishHandlersResponse;
 
   private long finish;
 
-  // only for producer: put producer task to thread pool
-  private long startSchedule;
+  private long startCreateInvocation;
 
-  private long startServerFiltersRequest;
+  private long finishCreateInvocation;
 
-  private long finishServerFiltersResponse;
+  private long startProviderQueue;
 
-  // only for producer: start execute in work thread
-  //           for reactive mode, work thread is eventloop
-  private long startExecution;
+  private long finishProviderQueue;
 
-  // only for producer
-  private long startBusinessMethod;
+  private long startConsumerConnection;
 
-  // only for producer
-  private long finishBusiness;
+  private long finishConsumerConnection;
+
+  private long startProviderDecodeRequest;
+
+  private long finishProviderDecodeRequest;
+
+  private long startProviderEncodeResponse;
+
+  private long finishProviderEncodeResponse;
+
+  private long startConsumerEncodeRequest;
+
+  private long finishConsumerEncodeRequest;
+
+  private long startConsumerDecodeResponse;
+
+  private long finishConsumerDecodeResponse;
+
+  private long startProviderSendResponse;
+
+  private long finishProviderSendResponse;
+
+  private long startConsumerSendRequest;
+
+  private long finishConsumerSendRequest;
+
+  private long startBusinessExecute;
+
+  private long finishBusinessExecute;
+
+  private long startWaitResponse;
+
+  private long finishWaitResponse;
+
+  // invocation stage can not be used in concurrent access
+  private final Map<String, Stage> stages = new HashMap<>();
 
   public InvocationStageTrace(Invocation invocation) {
     this.invocation = invocation;
   }
 
-  public void start(long start) {
-    // remember the current time to start invocation
-    this.startTimeMillis = System.currentTimeMillis();
-    this.start = start;
+  public String recordStageBegin(String stageName) {
+    String realStageName = stageName;
+    if (stages.get(stageName) != null) {
+      realStageName = realStageName + "@";
+    }
+    Stage stage = new Stage();
+    stage.beginTime = System.nanoTime();
+    stages.put(realStageName, stage);
+    return realStageName;
   }
 
-  public long getStart() {
-    return start;
+  public void recordStageEnd(String realStageName) {
+    Stage stage = stages.get(realStageName);
+    stage.endTime = nanoTime();
   }
 
-  public long getStartTimeMillis() {
-    return startTimeMillis;
-  }
-
-  public InvocationStageTrace setStartTimeMillis(long startTimeMillis) {
-    this.startTimeMillis = startTimeMillis;
-    return this;
-  }
-
-  public long getStartHandlersRequest() {
-    return startHandlersRequest;
-  }
-
-  public void startHandlersRequest() {
-    this.startHandlersRequest = System.nanoTime();
-  }
-
-  public long getStartClientFiltersRequest() {
-    return startClientFiltersRequest;
-  }
-
-  public void startClientFiltersRequest() {
-    this.startClientFiltersRequest = System.nanoTime();
-  }
-
-  public long getStartSchedule() {
-    return startSchedule;
-  }
-
-  public void startSchedule() {
-    this.startSchedule = System.nanoTime();
-  }
-
-  public long getStartExecution() {
-    return startExecution;
-  }
-
-  public void startExecution() {
-    this.startExecution = System.nanoTime();
-  }
-
-  public long getStartSend() {
-    return startSend;
-  }
-
-  public void startSend() {
-    this.startSend = System.nanoTime();
-  }
-
-  public long getFinishGetConnection() {
-    return finishGetConnection;
-  }
-
-  public void startGetConnection() {
-    this.startGetConnection = System.nanoTime();
-  }
-
-  public void finishGetConnection() {
-    this.finishGetConnection = System.nanoTime();
-  }
-
-  public long getFinishWriteToBuffer() {
-    return finishWriteToBuffer;
-  }
-
-  public void finishWriteToBuffer(long finishWriteToBuffer) {
-    this.finishWriteToBuffer = finishWriteToBuffer;
-  }
-
-  public long getFinishReceiveResponse() {
-    return finishReceiveResponse;
-  }
-
-  public void finishReceiveResponse() {
-    this.finishReceiveResponse = System.nanoTime();
-  }
-
-  public long getStartClientFiltersResponse() {
-    return startClientFiltersResponse;
-  }
-
-  public void startClientFiltersResponse() {
-    this.startClientFiltersResponse = System.nanoTime();
-  }
-
-  public long getFinishClientFiltersResponse() {
-    return finishClientFiltersResponse;
-  }
-
-  public void finishClientFiltersResponse() {
-    this.finishClientFiltersResponse = System.nanoTime();
-  }
-
-  public long getFinishHandlersResponse() {
-    return finishHandlersResponse;
-  }
-
-  public void finishHandlersResponse() {
-    this.finishHandlersResponse = System.nanoTime();
-  }
-
-  public long getStartServerFiltersRequest() {
-    return startServerFiltersRequest;
-  }
-
-  public void startServerFiltersRequest() {
-    this.startServerFiltersRequest = System.nanoTime();
-  }
-
-  public long getFinishServerFiltersResponse() {
-    return finishServerFiltersResponse;
-  }
-
-  public void finishServerFiltersResponse() {
-    this.finishServerFiltersResponse = System.nanoTime();
-  }
-
-  public long getStartBusinessMethod() {
-    return startBusinessMethod;
-  }
-
-  public void startBusinessMethod() {
-    this.startBusinessMethod = System.nanoTime();
-  }
-
-  public long getFinishBusiness() {
-    return finishBusiness;
-  }
-
-  public void finishBusiness() {
-    this.finishBusiness = System.nanoTime();
-  }
-
-  public long getFinish() {
-    return finish;
+  public Map<String, Stage> getStages() {
+    return stages;
   }
 
   public void finish() {
-    this.finish = System.nanoTime();
+    this.finish = nanoTime();
   }
 
-  private double calc(long finish, long start) {
+  public void startCreateInvocation(long nano) {
+    this.startCreateInvocation = nano;
+    this.startInMillis = millisTime();
+    this.start = nanoTime();
+  }
+
+  public void finishCreateInvocation() {
+    this.finishCreateInvocation = nanoTime();
+  }
+
+  public long calcPrepare() {
+    return calc(finishCreateInvocation, startCreateInvocation);
+  }
+
+  public void startProviderQueue() {
+    this.startProviderQueue = nanoTime();
+  }
+
+  public void finishProviderQueue() {
+    this.finishProviderQueue = nanoTime();
+  }
+
+  public long calcQueue() {
+    return calc(finishProviderQueue, startProviderQueue);
+  }
+
+  public void startProviderDecodeRequest() {
+    this.startProviderDecodeRequest = nanoTime();
+  }
+
+  public void finishProviderDecodeRequest() {
+    this.finishProviderDecodeRequest = nanoTime();
+  }
+
+  public long calcProviderDecodeRequest() {
+    return calc(finishProviderDecodeRequest, startProviderDecodeRequest);
+  }
+
+  public void startProviderEncodeResponse() {
+    this.startProviderEncodeResponse = nanoTime();
+  }
+
+  public void finishProviderEncodeResponse() {
+    this.finishProviderEncodeResponse = nanoTime();
+  }
+
+  public long calcProviderEncodeResponse() {
+    return calc(finishProviderEncodeResponse, startProviderEncodeResponse);
+  }
+
+  public void startConsumerEncodeRequest() {
+    this.startConsumerEncodeRequest = nanoTime();
+  }
+
+  public void finishConsumerEncodeRequest() {
+    this.finishConsumerEncodeRequest = nanoTime();
+  }
+
+  public long calcConsumerEncodeRequest() {
+    return calc(finishConsumerEncodeRequest, startConsumerEncodeRequest);
+  }
+
+  public void startConsumerDecodeResponse() {
+    this.startConsumerDecodeResponse = nanoTime();
+  }
+
+  public void finishConsumerDecodeResponse() {
+    this.finishConsumerDecodeResponse = nanoTime();
+  }
+
+  public long calcConsumerDecodeResponse() {
+    return calc(finishConsumerDecodeResponse, startConsumerDecodeResponse);
+  }
+
+  public void startProviderSendResponse() {
+    this.startProviderSendResponse = nanoTime();
+  }
+
+  public void finishProviderSendResponse() {
+    this.finishProviderSendResponse = nanoTime();
+  }
+
+  public long calcProviderSendResponse() {
+    return calc(finishProviderSendResponse, startProviderSendResponse);
+  }
+
+  public void startBusinessExecute() {
+    this.startBusinessExecute = nanoTime();
+  }
+
+  public void finishBusinessExecute() {
+    this.finishBusinessExecute = nanoTime();
+  }
+
+  public long calcBusinessExecute() {
+    return calc(finishBusinessExecute, startBusinessExecute);
+  }
+
+  public void startConsumerConnection() {
+    this.startConsumerConnection = nanoTime();
+  }
+
+  public void finishConsumerConnection() {
+    this.finishConsumerConnection = nanoTime();
+  }
+
+  public long calcConnection() {
+    return calc(finishConsumerConnection, startConsumerConnection);
+  }
+
+  public void startConsumerSendRequest() {
+    this.startConsumerSendRequest = nanoTime();
+  }
+
+  public void finishConsumerSendRequest() {
+    this.finishConsumerSendRequest = nanoTime();
+  }
+
+  public long calcConsumerSendRequest() {
+    return calc(finishConsumerSendRequest, startConsumerSendRequest);
+  }
+
+  public void startWaitResponse() {
+    this.startWaitResponse = nanoTime();
+  }
+
+  public void finishWaitResponse() {
+    this.finishWaitResponse = nanoTime();
+  }
+
+  public long calcWait() {
+    return calc(finishWaitResponse, startWaitResponse);
+  }
+
+  public long calcTotal() {
+    return calc(finish, this.startCreateInvocation);
+  }
+
+  public long getStartInMillis() {
+    return this.startInMillis;
+  }
+
+  public long getStart() {
+    return this.start;
+  }
+
+  public static long calc(long finish, long start) {
     if (finish == 0 || start == 0) {
-      return Double.NaN;
+      return 0;
     }
 
     return finish - start;
   }
 
-  public double calcTotalTime() {
-    return calc(finish, start);
+  /*
+   * Holder for testing purpose
+   */
+  protected long nanoTime() {
+    return System.nanoTime();
   }
 
-  public double calcInvocationPrepareTime() {
-    if (invocation.isConsumer() && !invocation.isEdge()) {
-      return calc(startHandlersRequest, start);
-    }
-
-    return calc(startSchedule, start);
-  }
-
-  public double calcHandlersRequestTime() {
-    if (invocation.isConsumer()) {
-      return calc(startClientFiltersRequest, startHandlersRequest);
-    }
-
-    return calc(startBusinessMethod, startHandlersRequest);
-  }
-
-  public double calcClientFiltersRequestTime() {
-    return calc(startSend, startClientFiltersRequest);
-  }
-
-  public double calcServerFiltersRequestTime() {
-    return calc(startHandlersRequest, startServerFiltersRequest);
-  }
-
-  public double calcSendRequestTime() {
-    return calc(finishWriteToBuffer, startSend);
-  }
-
-  public double calcGetConnectionTime() {
-    return calc(finishGetConnection, startGetConnection);
-  }
-
-  public double calcWriteToBufferTime() {
-    return calc(finishWriteToBuffer, finishGetConnection);
-  }
-
-  public double calcReceiveResponseTime() {
-    return calc(finishReceiveResponse, finishWriteToBuffer);
-  }
-
-  public double calcWakeConsumer() {
-    return calc(startClientFiltersResponse, finishReceiveResponse);
-  }
-
-  public double calcClientFiltersResponseTime() {
-    return calc(finishClientFiltersResponse, startClientFiltersResponse);
-  }
-
-  public double calcServerFiltersResponseTime() {
-    return calc(finishServerFiltersResponse, finishHandlersResponse);
-  }
-
-  public double calcHandlersResponseTime() {
-    if (invocation.isConsumer()) {
-      return calc(finishHandlersResponse, finishClientFiltersResponse);
-    }
-
-    return calc(finishHandlersResponse, finishBusiness);
-  }
-
-  public double calcThreadPoolQueueTime() {
-    return calc(startExecution, startSchedule);
-  }
-
-  public double calcBusinessTime() {
-    return calc(finishBusiness, startBusinessMethod);
-  }
-
-  public double calcSendResponseTime() {
-    return calc(finish, finishServerFiltersResponse);
+  protected long millisTime() {
+    return System.currentTimeMillis();
   }
 }

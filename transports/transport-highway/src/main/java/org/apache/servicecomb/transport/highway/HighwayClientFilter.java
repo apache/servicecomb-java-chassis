@@ -64,33 +64,30 @@ public class HighwayClientFilter extends AbstractFilter implements ConsumerFilte
     OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
     return send(invocation, operationProtobuf)
         .thenApply(tcpData -> convertToResponse(invocation, operationProtobuf, tcpData))
-        .thenApply(this::convertFailedResponseToException)
-        .whenComplete((response, throwable) -> invocation.getInvocationStageTrace().finishClientFiltersResponse());
+        .thenApply(this::convertFailedResponseToException);
   }
 
   protected CompletableFuture<TcpData> send(Invocation invocation, OperationProtobuf operationProtobuf) {
-    invocation.getInvocationStageTrace().startGetConnection();
+    invocation.getInvocationStageTrace().startConsumerConnection();
     HighwayClient highwayClient = ((HighwayTransport) invocation.getTransport()).getHighwayClient();
     HighwayClientPackage clientPackage = highwayClient.createClientPackage(invocation, operationProtobuf);
     HighwayClientConnection clientConnection = highwayClient.findClientPool(invocation);
-    invocation.getInvocationStageTrace().startClientFiltersRequest();
+    invocation.getInvocationStageTrace().finishConsumerConnection();
     invocation.onStartSendRequest();
+    invocation.getInvocationStageTrace().startConsumerSendRequest();
     CompletableFuture<TcpData> sendFuture = clientConnection
-        .send(clientPackage)
-        .whenComplete((tcpData, throwable) -> afterSend(invocation, clientPackage));
+        .send(clientPackage).whenComplete((r, e) -> invocation.getInvocationStageTrace().finishWaitResponse());
+    invocation.getInvocationStageTrace().finishConsumerSendRequest();
+    invocation.getInvocationStageTrace().startWaitResponse();
     return invocation.optimizeSyncConsumerThread(sendFuture);
-  }
-
-  protected void afterSend(Invocation invocation, HighwayClientPackage clientPackage) {
-    invocation.getInvocationStageTrace().finishWriteToBuffer(clientPackage.getFinishWriteToBuffer());
-    invocation.getInvocationStageTrace().finishReceiveResponse();
-
-    invocation.getInvocationStageTrace().startClientFiltersResponse();
   }
 
   protected Response convertToResponse(Invocation invocation, OperationProtobuf operationProtobuf, TcpData tcpData) {
     try {
-      return HighwayCodec.decodeResponse(invocation, operationProtobuf, tcpData);
+      invocation.getInvocationStageTrace().startConsumerDecodeResponse();
+      Response result = HighwayCodec.decodeResponse(invocation, operationProtobuf, tcpData);
+      invocation.getInvocationStageTrace().finishConsumerDecodeResponse();
+      return result;
     } catch (Exception e) {
       throw AsyncUtils.rethrow(e);
     }

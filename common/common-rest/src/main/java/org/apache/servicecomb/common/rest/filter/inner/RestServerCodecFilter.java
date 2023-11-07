@@ -93,12 +93,14 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
   }
 
   protected void decodeRequest(Invocation invocation) {
+    invocation.getInvocationStageTrace().startProviderDecodeRequest();
     HttpServletRequestEx requestEx = invocation.getRequestEx();
 
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     Map<String, Object> swaggerArguments = RestCodec.restToArgs(requestEx, restOperationMeta);
     invocation.setSwaggerArguments(swaggerArguments);
+    invocation.getInvocationStageTrace().finishProviderDecodeRequest();
   }
 
   protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
@@ -113,7 +115,8 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
     HttpServletResponseEx responseEx = transportContext.getResponseEx();
     boolean download = isDownloadFileResponseType(invocation, response);
 
-    return encodeResponse(response, download, produceProcessor, responseEx);
+    return encodeResponse(response, download, produceProcessor, responseEx)
+        .whenComplete((r, e) -> invocation.onEncodeResponseFinish());
   }
 
   public static CompletableFuture<Response> encodeResponse(Response response, boolean download,

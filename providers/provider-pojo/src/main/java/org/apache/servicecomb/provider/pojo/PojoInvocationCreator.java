@@ -24,6 +24,7 @@ import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta
 
 public class PojoInvocationCreator {
   public PojoInvocation create(Method method, PojoConsumerMetaRefresher metaRefresher, Object[] args) {
+    long startCreateInvocation = System.nanoTime();
     PojoConsumerMeta pojoConsumerMeta = metaRefresher.getLatestMeta();
     PojoConsumerOperationMeta consumerOperationMeta = pojoConsumerMeta.ensureFindOperationMeta(method);
 
@@ -31,7 +32,8 @@ public class PojoInvocationCreator {
     invocation.setSuccessResponseType(consumerOperationMeta.getResponsesType());
     invocation.setInvocationArguments(consumerOperationMeta.getSwaggerConsumerOperation().toInvocationArguments(args));
     invocation.setSync(consumerOperationMeta.isSync());
-
+    invocation.getInvocationStageTrace().startCreateInvocation(startCreateInvocation);
+    invocation.getInvocationStageTrace().finishCreateInvocation();
     return invocation;
   }
 

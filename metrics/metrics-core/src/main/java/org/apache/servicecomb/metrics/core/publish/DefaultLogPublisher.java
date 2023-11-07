@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
@@ -33,7 +34,6 @@ import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTr
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
-import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
@@ -55,7 +55,7 @@ import com.netflix.spectator.api.Meter;
 import io.vertx.core.Vertx;
 
 public class DefaultLogPublisher implements MetricsInitializer {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLogPublisher.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger("scb-metrics");
 
   public static final String ENABLED = "servicecomb.metrics.publisher.defaultLog.enabled";
 
@@ -68,19 +68,17 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   //details
   private static final String PRODUCER_DETAILS_FORMAT = ""
-      + "        prepare: %-18s queue       : %-18s filtersReq : %-18s handlersReq: %s\n"
-      + "        execute: %-18s handlersResp: %-18s filtersResp: %-18s sendResp   : %s\n";
+      + "        prepare: %-18s decode-request       : %-18s queue : %-18s business-execute: %s\n"
+      + "        encode-response: %-18s send: %-18s\n";
 
   private static final String CONSUMER_DETAILS_FORMAT = ""
-      + "        prepare     : %-18s handlersReq : %-18s cFiltersReq: %-18s sendReq     : %s\n"
-      + "        getConnect  : %-18s writeBuf    : %-18s waitResp   : %-18s wakeConsumer: %s\n"
-      + "        cFiltersResp: %-18s handlersResp: %s\n";
+      + "        prepare     : %-18s connection : %-18s encode-request: %-18s send     : %s\n"
+      + "        wait  : %-18s decode-response    : %-18s\n";
 
   private static final String EDGE_DETAILS_FORMAT = ""
-      + "        prepare     : %-18s queue       : %-18s sFiltersReq : %-18s handlersReq : %s\n"
-      + "        cFiltersReq : %-18s sendReq     : %-18s getConnect  : %-18s writeBuf    : %s\n"
-      + "        waitResp    : %-18s wakeConsumer: %-18s cFiltersResp: %-18s handlersResp: %s\n"
-      + "        sFiltersResp: %-18s sendResp    : %s\n";
+      + "        prepare     : %-18s provider-decode       : %-18s connection : %-18s consumer-encode : %s\n"
+      + "        consumer-send : %-18s wait     : %-18s consumer-decode  : %-18s provider-encode    : %s\n"
+      + "        provider-send    : %-18s\n";
 
   private LatencyDistributionConfig latencyDistributionConfig;
 
@@ -316,7 +314,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     boolean firstLine = true;
     for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
       OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
-      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
       if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
@@ -336,7 +334,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
       }
     }
     OperationPerf summaryOperation = perfGroup.getSummary();
-    PerfInfo stageSummaryTotal = summaryOperation.findStage(MeterInvocationConst.STAGE_TOTAL);
+    PerfInfo stageSummaryTotal = summaryOperation.findStage(InvocationStageTrace.STAGE_TOTAL);
     //print summary
     sb.append(String.format(SIMPLE_FORMAT, stageSummaryTotal.getTps(),
         getDetailsFromPerf(stageSummaryTotal),
@@ -357,32 +355,28 @@ public class DefaultLogPublisher implements MetricsInitializer {
         .append(".")
         .append(perfGroup.getStatus())
         .append(":\n");
-    PerfInfo prepare, queue, filtersReq, handlersReq, execute, handlersResp, filtersResp, sendResp;
+    PerfInfo prepare, queue, providerDecode, providerEncode, execute, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
       if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
-      prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
-      queue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
-      filtersReq = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
-      handlersReq = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
-      execute = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTION);
-      handlersResp = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
-      filtersResp = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
-      sendResp = operationPerf.findStage(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
+      prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
+      queue = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_QUEUE);
+      providerDecode = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST);
+      providerEncode = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE);
+      execute = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_BUSINESS);
+      sendResp = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_SEND);
 
       sb.append("      ")
           .append(operationPerf.getOperation())
           .append(":\n")
           .append(String.format(PRODUCER_DETAILS_FORMAT,
               getDetailsFromPerf(prepare),
+              getDetailsFromPerf(providerDecode),
               getDetailsFromPerf(queue),
-              getDetailsFromPerf(filtersReq),
-              getDetailsFromPerf(handlersReq),
               getDetailsFromPerf(execute),
-              getDetailsFromPerf(handlersResp),
-              getDetailsFromPerf(filtersResp),
+              getDetailsFromPerf(providerEncode),
               getDetailsFromPerf(sendResp)
           ));
     }
@@ -399,38 +393,30 @@ public class DefaultLogPublisher implements MetricsInitializer {
         .append(perfGroup.getStatus())
         .append(":\n");
 
-    PerfInfo prepare, handlersReq, clientFiltersReq, sendReq, getConnect, writeBuf,
-        waitResp, wakeConsumer, clientFiltersResp, handlersResp;
+    PerfInfo prepare, encodeRequest, decodeResponse, sendReq, getConnect,
+        waitResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
       if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
-      prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
-      handlersReq = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
-      clientFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
-      sendReq = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
-      getConnect = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
-      writeBuf = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
-      waitResp = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
-      wakeConsumer = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
-      clientFiltersResp = operationPerf.findStage(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
-      handlersResp = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
+      prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
+      encodeRequest = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_ENCODE_REQUEST);
+      decodeResponse = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_DECODE_RESPONSE);
+      sendReq = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_SEND);
+      getConnect = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_CONNECTION);
+      waitResp = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_WAIT);
 
       sb.append("      ")
           .append(operationPerf.getOperation())
           .append(":\n")
           .append(String.format(CONSUMER_DETAILS_FORMAT,
               getDetailsFromPerf(prepare),
-              getDetailsFromPerf(handlersReq),
-              getDetailsFromPerf(clientFiltersReq),
-              getDetailsFromPerf(sendReq),
               getDetailsFromPerf(getConnect),
-              getDetailsFromPerf(writeBuf),
+              getDetailsFromPerf(encodeRequest),
+              getDetailsFromPerf(sendReq),
               getDetailsFromPerf(waitResp),
-              getDetailsFromPerf(wakeConsumer),
-              getDetailsFromPerf(clientFiltersResp),
-              getDetailsFromPerf(handlersResp)
+              getDetailsFromPerf(decodeResponse)
           ));
     }
 
@@ -446,45 +432,36 @@ public class DefaultLogPublisher implements MetricsInitializer {
         .append(perfGroup.getStatus())
         .append(":\n");
 
-    PerfInfo prepare, queue, serverFiltersReq, handlersReq, clientFiltersReq, sendReq, getConnect, writeBuf,
-        waitResp, wakeConsumer, clientFiltersResp, handlersResp, serverFiltersResp, sendResp;
+    PerfInfo prepare, connection, decodeProviderRequest, encodeProviderResponse,
+        encodeConsumerRequest, decodeConsumerResponse, sendReq, getConnect,
+        waitResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
       if (Double.compare(0D, stageTotal.getTps()) == 0) {
         continue;
       }
-      prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
-      queue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
-      serverFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
-      handlersReq = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
-      clientFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
-      sendReq = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
-      getConnect = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
-      writeBuf = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
-      waitResp = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
-      wakeConsumer = operationPerf.findStage(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
-      clientFiltersResp = operationPerf.findStage(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
-      handlersResp = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
-      serverFiltersResp = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
-      sendResp = operationPerf.findStage(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
+      prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
+      connection = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_CONNECTION);
+      decodeProviderRequest = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST);
+      encodeProviderResponse = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE);
+      encodeConsumerRequest = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_ENCODE_REQUEST);
+      sendReq = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_SEND);
+      decodeConsumerResponse = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_DECODE_RESPONSE);
+      waitResp = operationPerf.findStage(InvocationStageTrace.STAGE_CONSUMER_WAIT);
+      sendResp = operationPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_SEND);
 
       sb.append("      ")
           .append(operationPerf.getOperation())
           .append(":\n")
           .append(String.format(EDGE_DETAILS_FORMAT,
               getDetailsFromPerf(prepare),
-              getDetailsFromPerf(queue),
-              getDetailsFromPerf(serverFiltersReq),
-              getDetailsFromPerf(handlersReq),
-              getDetailsFromPerf(clientFiltersReq),
+              getDetailsFromPerf(decodeProviderRequest),
+              getDetailsFromPerf(connection),
+              getDetailsFromPerf(encodeConsumerRequest),
               getDetailsFromPerf(sendReq),
-              getDetailsFromPerf(getConnect),
-              getDetailsFromPerf(writeBuf),
               getDetailsFromPerf(waitResp),
-              getDetailsFromPerf(wakeConsumer),
-              getDetailsFromPerf(clientFiltersResp),
-              getDetailsFromPerf(handlersResp),
-              getDetailsFromPerf(serverFiltersResp),
+              getDetailsFromPerf(decodeConsumerResponse),
+              getDetailsFromPerf(encodeProviderResponse),
               getDetailsFromPerf(sendResp)
           ));
     }

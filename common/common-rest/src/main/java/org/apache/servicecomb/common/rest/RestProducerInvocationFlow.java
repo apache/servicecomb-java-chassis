@@ -53,34 +53,41 @@ public class RestProducerInvocationFlow extends ProducerInvocationFlow {
           requestEx.getRequestURI(), e);
     }
 
-    flushResponse("UNKNOWN_OPERATION");
+    flushResponse(null);
     return null;
   }
 
   @Override
   protected void sendResponse(Invocation invocation, Response response) {
+    invocation.getInvocationStageTrace().startProviderSendResponse();
     if (isDownloadFileResponseType(invocation, response)) {
       responseEx.sendPart(PartUtils.getSinglePart(null, response.getResult()))
-          .whenComplete((r, e) -> flushResponse(invocation.getMicroserviceQualifiedName()));
+          .whenComplete((r, e) -> flushResponse(invocation));
       return;
     }
 
-    flushResponse(invocation.getMicroserviceQualifiedName());
+    flushResponse(invocation);
   }
 
-  private void flushResponse(String operationName) {
+  private void flushResponse(Invocation invocation) {
     try {
       responseEx.flushBuffer();
     } catch (Throwable flushException) {
       LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
-          operationName, requestEx.getRequestURI(), flushException);
+          invocation == null ? "NA" :
+              invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(), flushException);
     }
 
     try {
       requestEx.getAsyncContext().complete();
     } catch (Throwable completeException) {
       LOGGER.error("Failed to complete async rest response, operation:{}, request uri:{}",
-          operationName, requestEx.getRequestURI(), completeException);
+          invocation == null ? "NA" :
+              invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(), completeException);
+    }
+
+    if (invocation != null) {
+      invocation.getInvocationStageTrace().finishProviderSendResponse();
     }
   }
 }

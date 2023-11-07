@@ -20,13 +20,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
-import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class ScheduleFilter extends AbstractFilter implements ProviderFilter {
   public static final String NAME = "schedule";
@@ -43,24 +44,17 @@ public class ScheduleFilter extends AbstractFilter implements ProviderFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode next) {
-    invocation.getInvocationStageTrace().startSchedule();
+    invocation.getInvocationStageTrace().startProviderQueue();
     Executor executor = invocation.getOperationMeta().getExecutor();
     return CompletableFuture.completedFuture(null)
         .thenComposeAsync(response -> runInExecutor(invocation, next), executor);
   }
 
   protected CompletableFuture<Response> runInExecutor(Invocation invocation, FilterNode next) {
-    invocation.onExecuteStart();
-
+    invocation.getInvocationStageTrace().finishProviderQueue();
     try {
-      InvocationStageTrace trace = invocation.getInvocationStageTrace();
-      trace.startServerFiltersRequest();
-      invocation.onStartHandlersRequest();
-
       checkInQueueTimeout(invocation);
-
-      return next.onFilter(invocation)
-          .whenComplete((response, throwable) -> whenComplete(invocation));
+      return next.onFilter(invocation);
     } finally {
       invocation.onExecuteFinish();
     }
@@ -70,13 +64,8 @@ public class ScheduleFilter extends AbstractFilter implements ProviderFilter {
     long nanoTimeout = invocation.getOperationMeta().getConfig()
         .getNanoRequestWaitInPoolTimeout(invocation.getTransport().getName());
 
-    if (System.nanoTime() - invocation.getInvocationStageTrace().getStart() > nanoTimeout) {
-      throw Exceptions.genericProducer("Request in the queue timed out.");
+    if (invocation.getInvocationStageTrace().calcQueue() > nanoTimeout) {
+      throw new InvocationException(Status.REQUEST_TIMEOUT, "Request in the queue timed out.");
     }
-  }
-
-  private void whenComplete(Invocation invocation) {
-    invocation.getInvocationStageTrace().finishHandlersResponse();
-    invocation.getInvocationStageTrace().finishServerFiltersResponse();
   }
 }

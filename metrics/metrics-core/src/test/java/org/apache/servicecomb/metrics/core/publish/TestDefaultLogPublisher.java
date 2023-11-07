@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.servicecomb.core.CoreConst;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
@@ -34,7 +35,6 @@ import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTr
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
@@ -164,22 +164,18 @@ public class TestDefaultLogPublisher {
       OperationPerf operationPerf = new OperationPerf();
       operationPerf.setOperation("op");
       operationPerf.setLatencyDistribution(new Integer[] {12, 120, 1200});
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_TOTAL, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTOR_QUEUE, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTION, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_PREPARE, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_HANDLERS_REQUEST, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_HANDLERS_RESPONSE, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST, perfTotal);
-      operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_TOTAL, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_PROVIDER_QUEUE, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_CONSUMER_ENCODE_REQUEST, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_CONSUMER_DECODE_RESPONSE, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_PROVIDER_BUSINESS, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_PREPARE, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_CONSUMER_WAIT, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_CONSUMER_SEND, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_PROVIDER_SEND, perfTotal);
+      operationPerf.getStages().put(InvocationStageTrace.STAGE_CONSUMER_CONNECTION, perfTotal);
 
       OperationPerfGroup operationPerfGroup = new OperationPerfGroup(CoreConst.RESTFUL, Status.OK.name());
       operationPerfGroup.addOperationPerf(operationPerf);
@@ -244,56 +240,55 @@ public class TestDefaultLogPublisher {
       };
       publisher.onPolledEvent(new PolledEvent(Collections.emptyList(), Collections.emptyList()));
       List<LogEvent> events = collector.getEvents().stream()
-          .filter(e -> DefaultLogPublisher.class.getName().equals(e.getLoggerName())).toList();
+          .filter(e -> "scb-metrics".equals(e.getLoggerName())).toList();
       LogEvent event = events.get(0);
-      Assertions.assertEquals("\n"
-              + "os:\n"
-              + "  cpu:\n"
-              + "    all usage: 100.00%    all idle: 0.00%    process: 100.00%\n"
-              + "  net:\n"
-              + "    send(Bps)    recv(Bps)    send(pps)    recv(pps)    interface\n"
-              + "    1            1            1            1            eth0\n"
-              + "vertx:\n"
-              + "  instances:\n"
-              + "    name       eventLoopContext-created\n"
-              + "    v          0\n"
-              + "threadPool:\n"
-              + "  coreSize maxThreads poolSize currentBusy rejected queueSize taskCount taskFinished name\n"
-              + "  0        0          0        0           NaN      0         0.0       0.0          test\n"
-              + "consumer:\n"
-              + " simple:\n"
-              + "  status      tps      latency            [0,1) [1,100) [100,) operation\n"
-              + "  rest.OK     100000.0 3000.000/30000.000 12    120     1200   op\n"
-              + "              100000.0 3000.000/30000.000 12    120     1200   (summary)\n"
-              + " details:\n"
-              + "    rest.OK:\n"
-              + "      op:\n"
-              + "        prepare     : 3000.000/30000.000 handlersReq : 3000.000/30000.000 cFiltersReq: 3000.000/30000.000 sendReq     : 3000.000/30000.000\n"
-              + "        getConnect  : 3000.000/30000.000 writeBuf    : 3000.000/30000.000 waitResp   : 3000.000/30000.000 wakeConsumer: 3000.000/30000.000\n"
-              + "        cFiltersResp: 3000.000/30000.000 handlersResp: 3000.000/30000.000\n"
-              + "producer:\n"
-              + " simple:\n"
-              + "  status      tps      latency            [0,1) [1,100) [100,) operation\n"
-              + "  rest.OK     100000.0 3000.000/30000.000 12    120     1200   op\n"
-              + "              100000.0 3000.000/30000.000 12    120     1200   (summary)\n"
-              + " details:\n"
-              + "    rest.OK:\n"
-              + "      op:\n"
-              + "        prepare: 3000.000/30000.000 queue       : 3000.000/30000.000 filtersReq : 3000.000/30000.000 handlersReq: 3000.000/30000.000\n"
-              + "        execute: 3000.000/30000.000 handlersResp: 3000.000/30000.000 filtersResp: 3000.000/30000.000 sendResp   : 3000.000/30000.000\n"
-              + "edge:\n"
-              + " simple:\n"
-              + "  status      tps      latency            [0,1) [1,100) [100,) operation\n"
-              + "  rest.OK     100000.0 3000.000/30000.000 12    120     1200   op\n"
-              + "              100000.0 3000.000/30000.000 12    120     1200   (summary)\n"
-              + " details:\n"
-              + "    rest.OK:\n"
-              + "      op:\n"
-              + "        prepare     : 3000.000/30000.000 queue       : 3000.000/30000.000 sFiltersReq : 3000.000/30000.000 handlersReq : 3000.000/30000.000\n"
-              + "        cFiltersReq : 3000.000/30000.000 sendReq     : 3000.000/30000.000 getConnect  : 3000.000/30000.000 writeBuf    : 3000.000/30000.000\n"
-              + "        waitResp    : 3000.000/30000.000 wakeConsumer: 3000.000/30000.000 cFiltersResp: 3000.000/30000.000 handlersResp: 3000.000/30000.000\n"
-              + "        sFiltersResp: 3000.000/30000.000 sendResp    : 3000.000/30000.000\n",
-          event.getMessage().getFormattedMessage());
+      Assertions.assertEquals("""
+              os:
+                cpu:
+                  all usage: 100.00%    all idle: 0.00%    process: 100.00%
+                net:
+                  send(Bps)    recv(Bps)    send(pps)    recv(pps)    interface
+                  1            1            1            1            eth0
+              vertx:
+                instances:
+                  name       eventLoopContext-created
+                  v          0
+              threadPool:
+                coreSize maxThreads poolSize currentBusy rejected queueSize taskCount taskFinished name
+                0        0          0        0           NaN      0         0.0       0.0          test
+              consumer:
+               simple:
+                status      tps      latency            [0,1) [1,100) [100,) operation
+                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                            100000.0 3000.000/30000.000 12    120     1200   (summary)
+               details:
+                  rest.OK:
+                    op:
+                      prepare     : 3000.000/30000.000 connection : 3000.000/30000.000 encode-request: 3000.000/30000.000 send     : 3000.000/30000.000
+                      wait  : 3000.000/30000.000 decode-response    : 3000.000/30000.000
+              producer:
+               simple:
+                status      tps      latency            [0,1) [1,100) [100,) operation
+                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                            100000.0 3000.000/30000.000 12    120     1200   (summary)
+               details:
+                  rest.OK:
+                    op:
+                      prepare: 3000.000/30000.000 decode-request       : 3000.000/30000.000 queue : 3000.000/30000.000 business-execute: 3000.000/30000.000
+                      encode-response: 3000.000/30000.000 send: 3000.000/30000.000
+              edge:
+               simple:
+                status      tps      latency            [0,1) [1,100) [100,) operation
+                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                            100000.0 3000.000/30000.000 12    120     1200   (summary)
+               details:
+                  rest.OK:
+                    op:
+                      prepare     : 3000.000/30000.000 provider-decode       : 3000.000/30000.000 connection : 3000.000/30000.000 consumer-encode : 3000.000/30000.000
+                      consumer-send : 3000.000/30000.000 wait     : 3000.000/30000.000 consumer-decode  : 3000.000/30000.000 provider-encode    : 3000.000/30000.000
+                      provider-send    : 3000.000/30000.000
+              """.trim(),
+          event.getMessage().getFormattedMessage().trim());
     } catch (Exception e) {
       e.printStackTrace();
       Assertions.fail("unexpected error happen. " + e.getMessage());

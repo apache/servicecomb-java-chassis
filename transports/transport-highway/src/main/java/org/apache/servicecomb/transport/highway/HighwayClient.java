@@ -17,12 +17,9 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import java.util.concurrent.TimeoutException;
-
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -31,22 +28,13 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
-import jakarta.ws.rs.core.Response.Status;
 
 public class HighwayClient {
-  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClient.class);
-
   private static final String SSL_KEY = "highway.consumer";
 
   private ClientPoolManager<HighwayClientConnectionPool> clientMgr;
@@ -86,65 +74,13 @@ public class HighwayClient {
     return tcpClientConfig;
   }
 
-  public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    invocation.getInvocationStageTrace().startGetConnection();
-    HighwayClientConnection tcpClient = findClientPool(invocation);
-
-    invocation.getInvocationStageTrace().startClientFiltersRequest();
-    OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
-    HighwayClientPackage clientPackage = createClientPackage(invocation, operationProtobuf);
-
-    invocation.onStartSendRequest();
-    tcpClient.send(clientPackage, ar -> {
-      invocation.getInvocationStageTrace().finishWriteToBuffer(clientPackage.getFinishWriteToBuffer());
-      invocation.getInvocationStageTrace().finishReceiveResponse();
-      // 此时是在网络线程中，转换线程
-      invocation.getResponseExecutor().execute(() -> {
-        invocation.getInvocationStageTrace().startClientFiltersResponse();
-        if (ar.failed()) {
-          // 只会是本地异常
-          invocation.getInvocationStageTrace().finishClientFiltersResponse();
-          if (ar.cause() instanceof TimeoutException) {
-            // give an accurate cause for timeout exception
-            //   The timeout period of 30000ms has been exceeded while executing GET /xxx for server 1.1.1.1:8080
-            // should not copy the message to invocationException to avoid leak server ip address
-            LOGGER.info("Request timeout, Details: {}.", ar.cause().getMessage());
-
-            asyncResp.consumerFail(new InvocationException(Status.REQUEST_TIMEOUT,
-                new CommonExceptionData("Request Timeout.")));
-            return;
-          }
-          asyncResp.consumerFail(ar.cause());
-          return;
-        }
-
-        // 处理应答
-        try {
-          Response response =
-              HighwayCodec.decodeResponse(invocation,
-                  operationProtobuf,
-                  ar.result());
-          invocation.getInvocationStageTrace().finishClientFiltersResponse();
-          asyncResp.complete(response);
-        } catch (Throwable e) {
-          invocation.getInvocationStageTrace().finishClientFiltersResponse();
-          asyncResp.consumerFail(e);
-        }
-      });
-    });
-  }
-
   public HighwayClientPackage createClientPackage(Invocation invocation, OperationProtobuf operationProtobuf) {
     long msRequestTimeout = invocation.getOperationMeta().getConfig().getMsRequestTimeout();
     return new HighwayClientPackage(invocation, operationProtobuf, msRequestTimeout);
   }
 
   public HighwayClientConnection findClientPool(Invocation invocation) {
-    HighwayClientConnection tcpClient = clientMgr.findClientPool(invocation.isSync())
+    return clientMgr.findClientPool(invocation.isSync())
         .findOrCreateClient(invocation.getEndpoint().getEndpoint());
-
-    invocation.getInvocationStageTrace().finishGetConnection();
-
-    return tcpClient;
   }
 }

@@ -31,20 +31,20 @@ public class ProducerInvocationMeter extends AbstractInvocationMeter {
 
   private final SimpleTimer executionTimer;
 
-  private final SimpleTimer serverFiltersRequestTimer;
+  private final SimpleTimer providerDecodeRequestTimer;
 
-  private final SimpleTimer serverFiltersResponseTimer;
+  private final SimpleTimer providerEncodeResponseTimer;
 
   private final SimpleTimer sendResponseTimer;
 
   public ProducerInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
     super(id, metricsBootstrapConfig);
 
-    executorQueueTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
-    executionTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTION);
-    serverFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
-    serverFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
-    sendResponseTimer = createStageTimer(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
+    executorQueueTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_QUEUE);
+    executionTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_BUSINESS);
+    providerDecodeRequestTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST);
+    providerEncodeResponseTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE);
+    sendResponseTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_SEND);
   }
 
   @Override
@@ -52,11 +52,11 @@ public class ProducerInvocationMeter extends AbstractInvocationMeter {
     super.onInvocationFinish(event);
 
     InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
-    executorQueueTimer.record((long) invocationStageTrace.calcThreadPoolQueueTime());
-    executionTimer.record((long) invocationStageTrace.calcBusinessTime());
-    serverFiltersRequestTimer.record((long) invocationStageTrace.calcServerFiltersRequestTime());
-    serverFiltersResponseTimer.record((long) invocationStageTrace.calcServerFiltersResponseTime());
-    sendResponseTimer.record((long) invocationStageTrace.calcSendResponseTime());
+    executorQueueTimer.record(invocationStageTrace.calcQueue());
+    executionTimer.record(invocationStageTrace.calcBusinessExecute());
+    providerDecodeRequestTimer.record(invocationStageTrace.calcProviderDecodeRequest());
+    providerEncodeResponseTimer.record(invocationStageTrace.calcProviderEncodeResponse());
+    sendResponseTimer.record(invocationStageTrace.calcProviderSendResponse());
   }
 
   @Override
@@ -65,8 +65,8 @@ public class ProducerInvocationMeter extends AbstractInvocationMeter {
 
     executorQueueTimer.calcMeasurements(measurements, msNow, secondInterval);
     executionTimer.calcMeasurements(measurements, msNow, secondInterval);
-    serverFiltersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
-    serverFiltersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    providerDecodeRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
+    providerEncodeResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
     sendResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
   }
 }

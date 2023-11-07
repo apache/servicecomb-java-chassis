@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.vertx.executor.VertxContextExecutor;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
@@ -62,6 +61,7 @@ public class RestClientSender {
   }
 
   public CompletableFuture<Response> send() {
+    invocation.getInvocationStageTrace().startConsumerSendRequest();
     httpClientRequest.response().compose(response -> processResponse(response).compose(buffer -> {
       future.complete(createResponse(response, buffer));
       return Future.succeededFuture();
@@ -78,7 +78,8 @@ public class RestClientSender {
           if (e != null) {
             future.completeExceptionally(e);
           }
-          writeFinished();
+          invocation.getInvocationStageTrace().finishConsumerSendRequest();
+          invocation.getInvocationStageTrace().startWaitResponse();
         });
   }
 
@@ -100,10 +101,6 @@ public class RestClientSender {
       httpClientRequest.write(requestParameters.getBodyBuffer());
     }
     return sendFiles();
-  }
-
-  private void writeFinished() {
-    invocation.getInvocationStageTrace().finishWriteToBuffer(System.nanoTime());
   }
 
   protected CompletableFuture<Void> sendFiles() {
@@ -159,7 +156,7 @@ public class RestClientSender {
   }
 
   protected void afterSend(Response response, Throwable throwable) {
-    processMetrics();
+    invocation.getInvocationStageTrace().finishWaitResponse();
 
     if (throwable != null) {
       LOGGER.error("rest client send or receive failed, operation={}, method={}, endpoint={}, uri={}.",
@@ -168,13 +165,5 @@ public class RestClientSender {
           invocation.getEndpoint().getEndpoint(),
           httpClientRequest.getURI());
     }
-  }
-
-  protected void processMetrics() {
-    InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    // even failed and did not receive response, still set time for it
-    // that will help to know the real timeout time
-    stageTrace.finishReceiveResponse();
-    stageTrace.startClientFiltersResponse();
   }
 }

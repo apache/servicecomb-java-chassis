@@ -77,23 +77,17 @@ public class RestClientCodecFilter extends AbstractFilter implements ConsumerFil
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    invocation.getInvocationStageTrace().startGetConnection();
-    startClientFiltersRequest(invocation);
+    invocation.getInvocationStageTrace().startConsumerConnection();
     CompletionStage<HttpClientRequest> createRequest =
         transportContextFactory.createHttpClientRequest(invocation).toCompletionStage()
-            .whenComplete((c, e) -> invocation.getInvocationStageTrace().finishGetConnection());
+            .whenComplete((c, e) -> invocation.getInvocationStageTrace().finishConsumerConnection());
     return CompletableFuture.completedFuture(null)
         .thenCompose(v -> createRequest)
         .thenAccept(httpClientRequest -> prepareTransportContext(invocation, httpClientRequest))
         .thenAccept(v -> invocation.onStartSendRequest())
         .thenAccept(v -> encoder.encode(invocation))
         .thenCompose(v -> nextNode.onFilter(invocation))
-        .thenApply(response -> decoder.decode(invocation, response))
-        .whenComplete((response, throwable) -> finishClientFiltersResponse(invocation));
-  }
-
-  protected void startClientFiltersRequest(Invocation invocation) {
-    invocation.getInvocationStageTrace().startClientFiltersRequest();
+        .thenApply(response -> decoder.decode(invocation, response));
   }
 
   protected void prepareTransportContext(Invocation invocation, HttpClientRequest httpClientRequest) {
@@ -118,9 +112,5 @@ public class RestClientCodecFilter extends AbstractFilter implements ConsumerFil
         httpClientRequest.putHeader(key, value);
       }
     });
-  }
-
-  protected void finishClientFiltersResponse(Invocation invocation) {
-    invocation.getInvocationStageTrace().finishClientFiltersResponse();
   }
 }

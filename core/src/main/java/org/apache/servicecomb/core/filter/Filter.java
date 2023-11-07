@@ -72,6 +72,8 @@ public interface Filter extends Ordered {
     throw new IllegalStateException("must provide unique filter name.");
   }
 
+  String getNameWithOrder();
+
   /**
    *
    * @param invocation invocation

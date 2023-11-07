@@ -37,10 +37,6 @@ public interface InvocationTimeoutStrategy {
     checkTimeout(invocation);
   }
 
-  default void startHandlers(Invocation invocation) {
-    checkTimeout(invocation);
-  }
-
   default void startBusinessMethod(Invocation invocation) {
     checkTimeout(invocation);
   }
