@@ -24,5 +24,6 @@ public enum ValueType {
   string,
   text,
   json,
-  properties
+  properties,
+  xml
 }
