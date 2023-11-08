@@ -68,10 +68,10 @@ public class KieConfigManager extends AbstractTask {
   public void firstPull() {
     try {
       Map<String, Object> data = new HashMap<>();
-      String address = kieAddressManager.chooseFirstPullAddress();
+      String address = kieAddressManager.address();
       this.configurationsRequests.forEach(r -> {
         r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
-        ConfigurationsResponse response = configKieClient.queryConfigurations(r,address);
+        ConfigurationsResponse response = configKieClient.queryConfigurations(r, address);
         if (response.isChanged()) {
           r.setRevision(response.getRevision());
           r.setLastRawData(response.getConfigurations());

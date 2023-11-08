@@ -44,16 +44,16 @@ public class ConfigCenterManager extends AbstractTask {
 
   private final ConfigCenterConfiguration configCenterConfiguration;
 
-  private final ConfigCenterAddressManager kieAddressManager;
+  private final ConfigCenterAddressManager configCenterAddressManager;
 
   public ConfigCenterManager(ConfigCenterClient configCenterClient, EventBus eventBus, ConfigConverter configConverter,
-      ConfigCenterConfiguration configCenterConfiguration, ConfigCenterAddressManager kieAddressManager) {
+      ConfigCenterConfiguration configCenterConfiguration, ConfigCenterAddressManager configCenterAddressManager) {
     super("config-center-configuration-task");
     this.configCenterClient = configCenterClient;
     this.eventBus = eventBus;
     this.configConverter = configConverter;
     this.configCenterConfiguration = configCenterConfiguration;
-    this.kieAddressManager = kieAddressManager;
+    this.configCenterAddressManager = configCenterAddressManager;
   }
 
   public void setQueryConfigurationsRequest(QueryConfigurationsRequest queryConfigurationsRequest) {
@@ -75,7 +75,7 @@ public class ConfigCenterManager extends AbstractTask {
     public void execute() {
       try {
         QueryConfigurationsResponse response = configCenterClient.queryConfigurations(queryConfigurationsRequest,
-            kieAddressManager.address());
+            configCenterAddressManager.address());
         if (response.isChanged()) {
           queryConfigurationsRequest.setRevision(response.getRevision());
           Map<String, Object> lastData = configConverter.updateData(response.getConfigurations());

@@ -151,10 +151,21 @@ public class AbstractAddressManager {
   }
 
   public String address() {
+    String address = "";
     if (!addressAutoRefreshed) {
-      return getDefaultAddress();
+      address = getDefaultAddress();
     } else {
-      return getAvailableZoneAddress();
+      address = getAvailableZoneAddress();
+    }
+    if (telnetTest(address)) {
+      return address;
+    } else {
+      if (addressRetry.getAndIncrement() >= 3) {
+        LOGGER.warn("choose address has retry three times, no availible address, return current address {}", address);
+        return address;
+      }
+      LOGGER.warn("current config address connect failed, address {}", address);
+      return address();
     }
   }
 
@@ -350,18 +361,5 @@ public class AbstractAddressManager {
 
     addressIsolated.put(address, false);
     addressIsolationStatus.put(address, false);
-  }
-
-  public String chooseFirstPullAddress() {
-    String address = address();
-    if (telnetTest(address)) {
-      return address;
-    } else {
-      if (addressRetry.getAndIncrement() >= 3) {
-        LOGGER.warn("choose address has retry three times, no availible address, return current address {}", address);
-        return address;
-      }
-      return chooseFirstPullAddress();
-    }
   }
 }

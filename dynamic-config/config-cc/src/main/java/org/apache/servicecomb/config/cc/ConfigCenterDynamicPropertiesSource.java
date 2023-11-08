@@ -68,33 +68,34 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     ConfigCenterConfig configCenterConfig = new ConfigCenterConfig(environment);
     configConverter = new ConfigConverter(configCenterConfig.getFileSources());
 
-    ConfigCenterAddressManager kieAddressManager = configKieAddressManager(configCenterConfig);
+    ConfigCenterAddressManager configCenterAddressManager = configCenterAddressManager(configCenterConfig);
 
-    HttpTransport httpTransport = createHttpTransport(kieAddressManager,
+    HttpTransport httpTransport = createHttpTransport(configCenterAddressManager,
         HttpTransportFactory.defaultRequestConfig().build(),
         environment, configCenterConfig);
-    ConfigCenterClient configCenterClient = new ConfigCenterClient(kieAddressManager, httpTransport);
+    ConfigCenterClient configCenterClient = new ConfigCenterClient(configCenterAddressManager, httpTransport);
     EventManager.register(this);
 
     ConfigCenterConfiguration configCenterConfiguration =
         createConfigCenterConfiguration(configCenterConfig);
 
     QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterConfig, configCenterClient,
-        environment, kieAddressManager);
+        environment, configCenterAddressManager);
 
     ConfigCenterManager configCenterManager = new ConfigCenterManager(configCenterClient, EventManager.getEventBus(),
-        configConverter, configCenterConfiguration, kieAddressManager);
+        configConverter, configCenterConfiguration, configCenterAddressManager);
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
     data.putAll(configConverter.getCurrentData());
   }
 
   private QueryConfigurationsRequest firstPull(ConfigCenterConfig configCenterConfig,
-      ConfigCenterClient configCenterClient, Environment environment, ConfigCenterAddressManager kieAddressManager) {
+      ConfigCenterClient configCenterClient, Environment environment,
+      ConfigCenterAddressManager configCenterAddressManager) {
     QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest(environment);
     try {
       QueryConfigurationsResponse response = configCenterClient
-          .queryConfigurations(queryConfigurationsRequest, kieAddressManager.chooseFirstPullAddress());
+          .queryConfigurations(queryConfigurationsRequest, configCenterAddressManager.address());
       if (response.isChanged()) {
         configConverter.updateData(response.getConfigurations());
         queryConfigurationsRequest.setRevision(response.getRevision());
@@ -173,7 +174,7 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     };
   }
 
-  private ConfigCenterAddressManager configKieAddressManager(ConfigCenterConfig configCenterConfig) {
+  private ConfigCenterAddressManager configCenterAddressManager(ConfigCenterConfig configCenterConfig) {
     return new ConfigCenterAddressManager(configCenterConfig.getDomainName(),
         configCenterConfig.getServerUri(),
         EventManager.getEventBus());
