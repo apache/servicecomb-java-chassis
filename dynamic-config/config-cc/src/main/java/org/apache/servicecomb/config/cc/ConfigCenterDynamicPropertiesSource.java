@@ -135,7 +135,7 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     return new ConfigCenterConfiguration().setRefreshIntervalInMillis(configCenterConfig.getRefreshInterval());
   }
 
-  private HttpTransport createHttpTransport(ConfigCenterAddressManager kieAddressManager,
+  private HttpTransport createHttpTransport(ConfigCenterAddressManager configCenterAddressManager,
       RequestConfig requestConfig,
       Environment environment, ConfigCenterConfig configCenterConfig) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
@@ -155,14 +155,14 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
       return HttpTransportFactory
           .createHttpTransport(
               TransportUtils
-                  .createSSLProperties(kieAddressManager.sslEnabled(), environment, ConfigCenterConfig.SSL_TAG),
+                  .createSSLProperties(configCenterAddressManager.sslEnabled(), environment, ConfigCenterConfig.SSL_TAG),
               getRequestAuthHeaderProvider(authHeaderProviders), httpClientBuilder);
     }
 
     return HttpTransportFactory
         .createHttpTransport(
             TransportUtils
-                .createSSLProperties(kieAddressManager.sslEnabled(), environment, ConfigCenterConfig.SSL_TAG),
+                .createSSLProperties(configCenterAddressManager.sslEnabled(), environment, ConfigCenterConfig.SSL_TAG),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 
