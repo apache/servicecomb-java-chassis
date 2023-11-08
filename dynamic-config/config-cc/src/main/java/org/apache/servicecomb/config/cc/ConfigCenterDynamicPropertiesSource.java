@@ -80,21 +80,21 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
         createConfigCenterConfiguration(configCenterConfig);
 
     QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterConfig, configCenterClient,
-        environment);
+        environment, kieAddressManager);
 
     ConfigCenterManager configCenterManager = new ConfigCenterManager(configCenterClient, EventManager.getEventBus(),
-        configConverter, configCenterConfiguration);
+        configConverter, configCenterConfiguration, kieAddressManager);
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
     data.putAll(configConverter.getCurrentData());
   }
 
   private QueryConfigurationsRequest firstPull(ConfigCenterConfig configCenterConfig,
-      ConfigCenterClient configCenterClient, Environment environment) {
+      ConfigCenterClient configCenterClient, Environment environment, ConfigCenterAddressManager kieAddressManager) {
     QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest(environment);
     try {
       QueryConfigurationsResponse response = configCenterClient
-          .queryConfigurations(queryConfigurationsRequest);
+          .queryConfigurations(queryConfigurationsRequest, kieAddressManager.chooseFirstPullAddress());
       if (response.isChanged()) {
         configConverter.updateData(response.getConfigurations());
         queryConfigurationsRequest.setRevision(response.getRevision());

@@ -26,6 +26,7 @@ import org.apache.servicecomb.config.common.ConfigConverter;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequest;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequestFactory;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;
+import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
 import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
@@ -50,9 +51,10 @@ public class KieConfigManager extends AbstractTask {
 
   private final KieConfiguration kieConfiguration;
 
+  private final KieAddressManager kieAddressManager;
+
   public KieConfigManager(KieConfigOperation configKieClient, EventBus eventBus,
-      KieConfiguration kieConfiguration,
-      ConfigConverter configConverter) {
+      KieConfiguration kieConfiguration, ConfigConverter configConverter, KieAddressManager kieAddressManager) {
     super("config-center-configuration-task");
     this.configurationsRequests = ConfigurationsRequestFactory.buildConfigurationRequests(kieConfiguration);
     this.configurationsRequests.sort(ConfigurationsRequest::compareTo);
@@ -60,6 +62,7 @@ public class KieConfigManager extends AbstractTask {
     this.eventBus = eventBus;
     this.configConverter = configConverter;
     this.kieConfiguration = kieConfiguration;
+    this.kieAddressManager = kieAddressManager;
   }
 
   public void firstPull() {
@@ -67,7 +70,8 @@ public class KieConfigManager extends AbstractTask {
       Map<String, Object> data = new HashMap<>();
       this.configurationsRequests.forEach(r -> {
         r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
-        ConfigurationsResponse response = configKieClient.queryConfigurations(r);
+        ConfigurationsResponse response = configKieClient.queryConfigurations(r,
+            kieAddressManager.chooseFirstPullAddress());
         if (response.isChanged()) {
           r.setRevision(response.getRevision());
           r.setLastRawData(response.getConfigurations());
@@ -120,7 +124,8 @@ public class KieConfigManager extends AbstractTask {
     @Override
     public void execute() {
       try {
-        ConfigurationsResponse response = configKieClient.queryConfigurations(configurationsRequest);
+        ConfigurationsResponse response = configKieClient.queryConfigurations(configurationsRequest,
+            kieAddressManager.address());
         if (response.isChanged()) {
           configurationsRequest.setRevision(response.getRevision());
           configurationsRequest.setLastRawData(response.getConfigurations());

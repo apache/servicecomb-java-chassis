@@ -82,7 +82,8 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
     KieConfiguration kieConfiguration = createKieConfiguration(kieConfig, environment);
     KieClient kieClient = new KieClient(kieAddressManager, httpTransport, kieConfiguration);
     EventManager.register(this);
-    kieConfigManager = new KieConfigManager(kieClient, EventManager.getEventBus(), kieConfiguration, configConverter);
+    kieConfigManager = new KieConfigManager(kieClient, EventManager.getEventBus(), kieConfiguration, configConverter,
+        kieAddressManager);
     kieConfigManager.firstPull();
     kieConfigManager.startConfigKieManager();
     data.putAll(configConverter.getCurrentData());
