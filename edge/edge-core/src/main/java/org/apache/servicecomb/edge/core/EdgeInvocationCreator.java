@@ -75,11 +75,6 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
   }
 
   @Override
-  protected void initInvocationContext(Invocation invocation) {
-    // do not read InvocationContext from HTTP header, for security reason
-  }
-
-  @Override
   protected Invocation createInstance() {
     ReferenceConfig referenceConfig = microserviceReferenceConfig
         .createReferenceConfig(restOperationMeta.getOperationMeta());

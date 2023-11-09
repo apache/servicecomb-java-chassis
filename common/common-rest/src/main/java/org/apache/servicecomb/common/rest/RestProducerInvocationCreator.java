@@ -86,6 +86,10 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   }
 
   protected void initInvocationContext(Invocation invocation) {
+    if (!LegacyPropertyFactory.getBooleanProperty(RestConst.DECODE_INVOCATION_CONTEXT, true)) {
+      return;
+    }
+
     String strCseContext = requestEx.getHeader(CoreConst.CSE_CONTEXT);
     if (StringUtils.isEmpty(strCseContext)) {
       return;

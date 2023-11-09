@@ -83,4 +83,6 @@ public final class RestConst {
   public static final String HEADER_CONTEXT_MAPPER = "servicecomb.context.headerContextMapper";
 
   public static final String QUERY_CONTEXT_MAPPER = "servicecomb.context.queryContextMapper";
+
+  public static final String DECODE_INVOCATION_CONTEXT = "servicecomb.context.decodeInvocationContext";
 }
