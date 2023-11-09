@@ -308,7 +308,7 @@
           </excludes>
           <forkedProcessExitTimeoutInSeconds>5</forkedProcessExitTimeoutInSeconds>
           <forkCount>2</forkCount>
-          <reuseForks>false</reuseForks>
+          <reuseForks>true</reuseForks>
           <runOrder>alphabetical</runOrder>
         </configuration>
       </plugin>
