@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nonnull;
 import javax.ws.rs.core.HttpHeaders;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -44,6 +43,9 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.Json;
 
@@ -90,6 +92,11 @@ public abstract class RestProducerInvocationCreator implements InvocationCreator
   }
 
   protected void initInvocationContext(Invocation invocation) {
+    if (!DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(RestConst.DECODE_INVOCATION_CONTEXT, true).get()) {
+      return;
+    }
+
     String strCseContext = requestEx.getHeader(Const.CSE_CONTEXT);
     if (StringUtils.isEmpty(strCseContext)) {
       return;
