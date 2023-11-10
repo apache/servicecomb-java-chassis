@@ -158,13 +158,12 @@ public class AbstractAddressManager {
       address = getAvailableZoneAddress();
     }
     if (telnetTest(address)) {
+      addressRetry.set(0);
       return address;
     } else {
       if (addressRetry.getAndIncrement() >= 3) {
-        LOGGER.warn("choose address has retry three times, no availible address, return current address {}", address);
         return address;
       }
-      LOGGER.warn("current config address connect failed, address {}", address);
       return address();
     }
   }
