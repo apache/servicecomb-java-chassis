@@ -66,24 +66,26 @@ public class KieConfigManager extends AbstractTask {
   }
 
   public void firstPull() {
-    try {
-      Map<String, Object> data = new HashMap<>();
+    Map<String, Object> data = new HashMap<>();
+    for (int i = 0; i < 3; i++) {
       String address = kieAddressManager.address();
-      this.configurationsRequests.forEach(r -> {
-        r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
-        ConfigurationsResponse response = configKieClient.queryConfigurations(r, address);
-        if (response.isChanged()) {
-          r.setRevision(response.getRevision());
-          r.setLastRawData(response.getConfigurations());
-          data.putAll(response.getConfigurations());
+      try {
+        this.configurationsRequests.forEach(r -> {
+          r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
+          ConfigurationsResponse response = configKieClient.queryConfigurations(r, address);
+          if (response.isChanged()) {
+            r.setRevision(response.getRevision());
+            r.setLastRawData(response.getConfigurations());
+            data.putAll(response.getConfigurations());
+          }
+        });
+        this.configConverter.updateData(data);
+      } catch (Exception e) {
+        if (this.kieConfiguration.isFirstPullRequired()) {
+          throw e;
+        } else {
+          LOGGER.warn("first pull failed, config address {} and ignore {}", address, e.getMessage());
         }
-      });
-      this.configConverter.updateData(data);
-    } catch (RuntimeException e) {
-      if (this.kieConfiguration.isFirstPullRequired()) {
-        throw e;
-      } else {
-        LOGGER.warn("first pull failed, and ignore {}", e.getMessage());
       }
     }
   }

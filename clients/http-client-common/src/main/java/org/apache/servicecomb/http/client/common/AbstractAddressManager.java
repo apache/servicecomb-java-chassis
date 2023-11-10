@@ -32,7 +32,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -90,8 +89,6 @@ public class AbstractAddressManager {
   private final Object lock = new Object();
 
   private Random random = new Random();
-
-  private AtomicInteger addressRetry = new AtomicInteger(0);
 
   private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
       new ThreadFactoryBuilder()
@@ -151,20 +148,10 @@ public class AbstractAddressManager {
   }
 
   public String address() {
-    String address = "";
     if (!addressAutoRefreshed) {
-      address = getDefaultAddress();
+      return getDefaultAddress();
     } else {
-      address = getAvailableZoneAddress();
-    }
-    if (telnetTest(address)) {
-      addressRetry.set(0);
-      return address;
-    } else {
-      if (addressRetry.getAndIncrement() >= 3) {
-        return address;
-      }
-      return address();
+      return getAvailableZoneAddress();
     }
   }
 
