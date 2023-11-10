@@ -47,7 +47,7 @@ public class RestClientTransportContext implements VertxTransportContext {
     this.vertxContext = vertxContext;
     this.httpClientRequest = httpClientRequest;
     this.boundaryFactory = boundaryFactory;
-    this.requestParameters = new RestClientRequestParametersImpl(httpClientRequest.headers());
+    this.requestParameters = new RestClientRequestParametersImpl(httpClientRequest);
   }
 
   public RestOperationMeta getRestOperationMeta() {

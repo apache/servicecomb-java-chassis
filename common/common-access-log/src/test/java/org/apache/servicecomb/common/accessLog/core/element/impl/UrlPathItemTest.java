@@ -24,12 +24,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,7 +62,7 @@ public class UrlPathItemTest {
 
   private OpenAPI swagger;
 
-  private RestClientRequestImpl restClientRequest;
+  private RestClientRequestParameters restClientRequest;
 
   private HttpClientRequest clientRequest;
 
@@ -76,7 +76,7 @@ public class UrlPathItemTest {
     operationMeta = Mockito.mock(OperationMeta.class);
     schemaMeta = Mockito.mock(SchemaMeta.class);
     swagger = Mockito.mock(OpenAPI.class);
-    restClientRequest = Mockito.mock(RestClientRequestImpl.class);
+    restClientRequest = Mockito.mock(RestClientRequestParameters.class);
     clientRequest = Mockito.mock(HttpClientRequest.class);
 
     accessLogEvent.setRoutingContext(routingContext);
@@ -105,7 +105,7 @@ public class UrlPathItemTest {
     when(invocation.getSchemaMeta()).thenReturn(null);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getHandlerContext()).thenReturn(handlerContext);
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.path()).thenReturn(uri);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals(uri, strBuilder.toString());
@@ -133,7 +133,7 @@ public class UrlPathItemTest {
     handlerContext.put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getHandlerContext()).thenReturn(handlerContext);
-    when(restClientRequest.getRequest()).thenReturn(null);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("-", strBuilder.toString());
   }
@@ -152,7 +152,7 @@ public class UrlPathItemTest {
     handlerContext.put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getHandlerContext()).thenReturn(handlerContext);
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.path()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("-", strBuilder.toString());

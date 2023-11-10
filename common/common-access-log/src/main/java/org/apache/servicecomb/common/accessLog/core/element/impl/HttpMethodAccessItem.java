@@ -21,7 +21,7 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
@@ -53,13 +53,13 @@ public class HttpMethodAccessItem implements AccessLogItem<RoutingContext> {
       builder.append(operationMeta.getHttpMethod());
       return;
     }
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
+    RestClientRequest restRequestImpl = (RestClientRequest) finishEvent.getInvocation().getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-        || null == restRequestImpl.getRequest().getMethod()) {
+    if (null == restRequestImpl || null == restRequestImpl.getHttpClientRequest()
+        || null == restRequestImpl.getHttpClientRequest().getMethod()) {
       builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(restRequestImpl.getRequest().getMethod().toString());
+    builder.append(restRequestImpl.getHttpClientRequest().getMethod().toString());
   }
 }

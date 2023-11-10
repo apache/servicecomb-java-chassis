@@ -65,10 +65,13 @@ public class RestClientTransportContextFactory {
       throws Throwable {
     RestOperationMeta restOperationMeta = RestMetaUtils.getRestOperationMeta(invocation.getOperationMeta());
     HttpClientWithContext httpClientWithContext = findHttpClientPool(invocation);
-    return new RestClientTransportContext(restOperationMeta,
+    RestClientTransportContext context = new RestClientTransportContext(restOperationMeta,
         httpClientWithContext.context(),
         httpClientRequest,
         boundaryFactory);
+    invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT,
+        context.getRequestParameters());
+    return context;
   }
 
   protected HttpClientWithContext findHttpClientPool(Invocation invocation) {

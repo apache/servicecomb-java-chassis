@@ -20,9 +20,9 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
@@ -42,13 +42,14 @@ public class QueryStringAccessItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
+    RestClientRequestParameters restRequestImpl = (RestClientRequestParameters) finishEvent.getInvocation()
+        .getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-        || StringUtils.isEmpty(restRequestImpl.getRequest().query())) {
+    if (null == restRequestImpl || null == restRequestImpl.getHttpClientRequest()
+        || StringUtils.isEmpty(restRequestImpl.getHttpClientRequest().query())) {
       builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(restRequestImpl.getRequest().query());
+    builder.append(restRequestImpl.getHttpClientRequest().query());
   }
 }

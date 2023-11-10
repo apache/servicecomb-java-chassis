@@ -21,18 +21,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClientRequest;
 import jakarta.servlet.http.Part;
 
 public class RestClientRequestParametersImpl implements RestClientRequestParameters {
-  private static final Logger LOGGER = LoggerFactory.getLogger(RestClientRequestParametersImpl.class);
+  protected final HttpClientRequest httpClientRequest;
 
   protected final MultiMap headers;
 
@@ -44,8 +43,9 @@ public class RestClientRequestParametersImpl implements RestClientRequestParamet
 
   protected Buffer bodyBuffer;
 
-  public RestClientRequestParametersImpl(MultiMap headers) {
-    this.headers = headers;
+  public RestClientRequestParametersImpl(HttpClientRequest httpClientRequest) {
+    this.httpClientRequest = httpClientRequest;
+    this.headers = this.httpClientRequest.headers();
   }
 
   @Override
@@ -129,5 +129,10 @@ public class RestClientRequestParametersImpl implements RestClientRequestParamet
     }
 
     uploads.put(name, PartUtils.getSinglePart(name, partOrList));
+  }
+
+  @Override
+  public HttpClientRequest getHttpClientRequest() {
+    return this.httpClientRequest;
   }
 }
