@@ -52,10 +52,9 @@ public class EdgeServiceGovernanceTest implements CategorizedTestCase {
     prepareEdge("url");
     // edge service do not support retry
 //    testEdgeServiceRetry();
-
+    testEdgeServiceInstanceBulkhead();
     testEdgeServiceInstanceIsolation(); // may isolate instance for 5 seconds.
     Thread.sleep(6000); // ensure isolation is open for new requests
-    testEdgeServiceInstanceBulkhead();
   }
 
   private void testEdgeServiceInstanceBulkhead() throws Exception {
