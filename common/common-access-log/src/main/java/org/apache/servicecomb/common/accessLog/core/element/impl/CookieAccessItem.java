@@ -22,9 +22,9 @@ import java.util.Set;
 
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 
 import io.vertx.core.http.Cookie;
 import io.vertx.ext.web.RoutingContext;
@@ -57,8 +57,8 @@ public class CookieAccessItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
-      .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
+    RestClientRequestParameters restRequestImpl = (RestClientRequestParameters) finishEvent.getInvocation().getHandlerContext()
+        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
     if (null == restRequestImpl || null == restRequestImpl.getCookieMap()) {
       builder.append(RESULT_NOT_FOUND);
       return;

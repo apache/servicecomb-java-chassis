@@ -20,9 +20,9 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 
 import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
@@ -48,15 +48,16 @@ public class RequestHeaderAccessItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) clientLogEvent.getInvocation().getHandlerContext()
+    RestClientRequestParameters restRequestImpl = (RestClientRequestParameters) clientLogEvent.getInvocation()
+        .getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-        || null == restRequestImpl.getRequest().headers()
-        || StringUtils.isEmpty(restRequestImpl.getRequest().headers().get(varName))) {
+    if (null == restRequestImpl || null == restRequestImpl.getHttpClientRequest()
+        || null == restRequestImpl.getHttpClientRequest().headers()
+        || StringUtils.isEmpty(restRequestImpl.getHttpClientRequest().headers().get(varName))) {
       builder.append(RESULT_NOT_FOUND);
       return;
     }
-    builder.append(restRequestImpl.getRequest().headers().get(varName));
+    builder.append(restRequestImpl.getHttpClientRequest().headers().get(varName));
   }
 
   public String getVarName() {

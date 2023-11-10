@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.rest.codec;
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClientRequest;
 
 /**
  * vertx的HttpClientRequest没有getHeader的能力
@@ -41,4 +42,6 @@ public interface RestClientRequest {
   Buffer getBodyBuffer() throws Exception;
 
   void attach(String name, Object partOrList);
+
+  HttpClientRequest getHttpClientRequest();
 }

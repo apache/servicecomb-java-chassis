@@ -18,12 +18,10 @@
 package org.apache.servicecomb.common.rest.codec;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -47,14 +45,6 @@ public class TestRestCodec {
 
   private static RestOperationMeta restOperation;
 
-  private static final Map<String, String> header = new HashMap<>();
-
-  private static RestClientRequest clientRequest = new RestClientRequestImpl(null, null, null) {
-    public void putHeader(String name, String value) {
-      header.put(name, value);
-    }
-  };
-
   private static List<RestParam> paramList = null;
 
   static Environment environment = Mockito.mock(Environment.class);
@@ -75,7 +65,7 @@ public class TestRestCodec {
 
     Parameter hp = new HeaderParameter();
     hp.setName("header");
-    hp.setSchema(new Schema());
+    hp.setSchema(new Schema<>());
     RestParam restParam = new RestParam(null, hp, int.class);
 
     restOperation = Mockito.mock(RestOperationMeta.class);
@@ -89,21 +79,7 @@ public class TestRestCodec {
   @AfterAll
   public static void afterClass() {
     restOperation = null;
-    clientRequest = null;
     paramList.clear();
-  }
-
-  @Test
-  public void testArgsToRest() {
-    try {
-      Map<String, Object> args = new HashMap<>();
-      args.put("header", "abc");
-      RestCodec.argsToRest(args, restOperation, clientRequest);
-      Assertions.assertEquals("abc", header.get("header"));
-    } catch (Exception e) {
-      e.printStackTrace();
-      Assertions.fail();
-    }
   }
 
   @Test

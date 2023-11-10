@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +53,7 @@ public class RequestHeaderItemTest {
 
   private Invocation invocation;
 
-  private RestClientRequestImpl restClientRequest;
+  private RestClientRequestParameters restClientRequest;
 
   private HttpServerRequest serverRequest;
 
@@ -67,7 +67,7 @@ public class RequestHeaderItemTest {
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
     invocation = Mockito.mock(Invocation.class);
     serverRequest = Mockito.mock(HttpServerRequest.class);
-    restClientRequest = Mockito.mock(RestClientRequestImpl.class);
+    restClientRequest = Mockito.mock(RestClientRequestParameters.class);
     clientRequest = Mockito.mock(HttpClientRequest.class);
     headers = Mockito.mock(MultiMap.class);
 
@@ -97,7 +97,7 @@ public class RequestHeaderItemTest {
     handlerContext.put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getHandlerContext()).thenReturn(handlerContext);
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.headers()).thenReturn(headers);
     when(headers.get(VAR_NAME)).thenReturn(testValue);
 
@@ -120,7 +120,7 @@ public class RequestHeaderItemTest {
     handlerContext.put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getHandlerContext()).thenReturn(handlerContext);
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.headers()).thenReturn(null);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);

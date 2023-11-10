@@ -21,7 +21,7 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
@@ -41,16 +41,16 @@ public class LocalHostAccessItem implements AccessLogItem<RoutingContext> {
    */
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
+    RestClientRequest restRequestImpl = (RestClientRequest) finishEvent.getInvocation().getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-        || null == restRequestImpl.getRequest().connection()
-        || null == restRequestImpl.getRequest().connection().localAddress()
-        || StringUtils.isEmpty(restRequestImpl.getRequest().connection().localAddress().host())) {
+    if (null == restRequestImpl || null == restRequestImpl.getHttpClientRequest()
+        || null == restRequestImpl.getHttpClientRequest().connection()
+        || null == restRequestImpl.getHttpClientRequest().connection().localAddress()
+        || StringUtils.isEmpty(restRequestImpl.getHttpClientRequest().connection().localAddress().host())) {
       builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(restRequestImpl.getRequest().connection().localAddress().host());
+    builder.append(restRequestImpl.getHttpClientRequest().connection().localAddress().host());
   }
 
   public static String getLocalAddress(RoutingContext context) {

@@ -23,18 +23,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-import io.vertx.core.http.HttpServerRequest;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.http.Cookie;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.impl.CookieImpl;
 import io.vertx.ext.web.RoutingContext;
 
@@ -58,7 +58,7 @@ public class CookieItemTest {
 
   private Invocation invocation;
 
-  private RestClientRequestImpl restClientRequest;
+  private RestClientRequestParameters restClientRequest;
 
   @BeforeEach
   public void initStrBuilder() {
@@ -66,7 +66,7 @@ public class CookieItemTest {
     httpServerRequest = Mockito.mock(HttpServerRequest.class);
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
     invocation = Mockito.mock(Invocation.class);
-    restClientRequest = Mockito.mock(RestClientRequestImpl.class);
+    restClientRequest = Mockito.mock(RestClientRequestParameters.class);
 
     accessLogEvent = new ServerAccessLogEvent();
     strBuilder = new StringBuilder();

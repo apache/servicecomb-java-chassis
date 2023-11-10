@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ public class LocalPortItemTest {
 
   private Invocation invocation;
 
-  private RestClientRequestImpl restClientRequest;
+  private RestClientRequestParameters restClientRequest;
 
   private HttpClientRequest clientRequest;
 
@@ -69,7 +69,7 @@ public class LocalPortItemTest {
     serverRequest = Mockito.mock(HttpServerRequest.class);
     socketAddress = Mockito.mock(SocketAddress.class);
     invocation = Mockito.mock(Invocation.class);
-    restClientRequest = Mockito.mock(RestClientRequestImpl.class);
+    restClientRequest = Mockito.mock(RestClientRequestParameters.class);
     clientRequest = Mockito.mock(HttpClientRequest.class);
     connection = Mockito.mock(HttpConnection.class);
     Map<String, Object> handlerMap = new HashMap<>();
@@ -92,7 +92,7 @@ public class LocalPortItemTest {
 
   @Test
   public void clientFormattedElement() {
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.port()).thenReturn(8080);
@@ -109,7 +109,7 @@ public class LocalPortItemTest {
 
   @Test
   public void clientFormattedElementOnRequestIsNull() {
-    when(restClientRequest.getRequest()).thenReturn(null);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("-", strBuilder.toString());
   }
@@ -124,7 +124,7 @@ public class LocalPortItemTest {
 
   @Test
   public void clientFormattedElementOnLocalAddressIsNull() {
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);

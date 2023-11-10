@@ -23,12 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class FirstLineOfRequestItemTest {
 
   private Invocation invocation;
 
-  private RestClientRequestImpl restClientRequest;
+  private RestClientRequestParameters restClientRequest;
 
   private HttpClientRequest clientRequest;
 
@@ -67,7 +67,7 @@ public class FirstLineOfRequestItemTest {
     mockContext = Mockito.mock(RoutingContext.class);
     finishEvent = Mockito.mock(InvocationFinishEvent.class);
     invocation = Mockito.mock(Invocation.class);
-    restClientRequest = Mockito.mock(RestClientRequestImpl.class);
+    restClientRequest = Mockito.mock(RestClientRequestParameters.class);
     clientRequest = Mockito.mock(HttpClientRequest.class);
     endpoint = Mockito.mock(Endpoint.class);
     urlEndpoint = Mockito.mock(URIEndpointObject.class);
@@ -75,7 +75,7 @@ public class FirstLineOfRequestItemTest {
     handlerMap.put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getHandlerContext()).thenReturn(handlerMap);
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(endpoint.getAddress()).thenReturn(urlEndpoint);
     accessLogEvent = new ServerAccessLogEvent();

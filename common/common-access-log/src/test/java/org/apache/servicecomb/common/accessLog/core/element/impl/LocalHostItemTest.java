@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,7 +55,7 @@ public class LocalHostItemTest {
 
   private Invocation invocation;
 
-  private RestClientRequestImpl restClientRequest;
+  private RestClientRequestParameters restClientRequest;
 
   private HttpClientRequest clientRequest;
 
@@ -69,7 +69,7 @@ public class LocalHostItemTest {
     serverRequest = Mockito.mock(HttpServerRequest.class);
     socketAddress = Mockito.mock(SocketAddress.class);
     invocation = Mockito.mock(Invocation.class);
-    restClientRequest = Mockito.mock(RestClientRequestImpl.class);
+    restClientRequest = Mockito.mock(RestClientRequestParameters.class);
     clientRequest = Mockito.mock(HttpClientRequest.class);
     connection = Mockito.mock(HttpConnection.class);
     Map<String, Object> handlerMap = new HashMap<>();
@@ -83,7 +83,7 @@ public class LocalHostItemTest {
   @Test
   public void clientFormattedItem() {
     String localAddress = "192.168.0.1";
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn(localAddress);
@@ -119,7 +119,7 @@ public class LocalHostItemTest {
 
   @Test
   public void clientLocalAddressOnRequestIsNull() {
-    when(restClientRequest.getRequest()).thenReturn(null);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("-", strBuilder.toString());
   }
@@ -134,7 +134,7 @@ public class LocalHostItemTest {
 
   @Test
   public void clientLocalAddressOnLocalAddressIsNull() {
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(null);
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
@@ -153,7 +153,7 @@ public class LocalHostItemTest {
 
   @Test
   public void clientLocalAddressOnHostIsNull() {
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn(null);
@@ -174,7 +174,7 @@ public class LocalHostItemTest {
 
   @Test
   public void clientLocalAddressIsEmpty() {
-    when(restClientRequest.getRequest()).thenReturn(clientRequest);
+    when(restClientRequest.getHttpClientRequest()).thenReturn(clientRequest);
     when(clientRequest.connection()).thenReturn(connection);
     when(connection.localAddress()).thenReturn(socketAddress);
     when(socketAddress.host()).thenReturn("");
