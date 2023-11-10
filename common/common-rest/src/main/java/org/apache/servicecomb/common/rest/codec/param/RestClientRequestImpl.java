@@ -32,7 +32,6 @@ import java.util.UUID;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
@@ -44,6 +43,7 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
@@ -63,7 +63,7 @@ public class RestClientRequestImpl implements RestClientRequest {
   protected AsyncResponse asyncResp;
 
   @VisibleForTesting
-  final Multimap<String, Part> uploads = ArrayListMultimap.create();
+  protected Multimap<String, Part> uploads;
 
   protected HttpClientRequest request;
 
@@ -101,8 +101,11 @@ public class RestClientRequestImpl implements RestClientRequest {
   @Override
   @SuppressWarnings("unchecked")
   public void attach(String name, Object partOrList) {
+    if (uploads == null) {
+      uploads = ArrayListMultimap.create();
+    }
+
     if (null == partOrList) {
-      LOGGER.debug("null file is ignored, file name = [{}]", name);
       return;
     }
 
@@ -126,7 +129,7 @@ public class RestClientRequestImpl implements RestClientRequest {
   public Future<Void> end() {
     writeCookies();
 
-    if (!uploads.isEmpty()) {
+    if (uploads != null) {
       return doEndWithUpload();
     }
 
