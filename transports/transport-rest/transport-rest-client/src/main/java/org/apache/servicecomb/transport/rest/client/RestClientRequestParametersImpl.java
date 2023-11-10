@@ -108,13 +108,12 @@ public class RestClientRequestParametersImpl implements RestClientRequestParamet
   @SuppressWarnings("unchecked")
   @Override
   public void attach(String name, Object partOrList) {
-    if (partOrList == null) {
-      LOGGER.debug("null file is ignored, file name = [{}]", name);
-      return;
-    }
-
     if (uploads == null) {
       uploads = ArrayListMultimap.create();
+    }
+
+    if (partOrList == null) {
+      return;
     }
 
     if (partOrList.getClass().isArray()) {
