@@ -162,7 +162,6 @@ public class AbstractAddressManager {
       return address;
     } else {
       if (addressRetry.getAndIncrement() >= 3) {
-        LOGGER.warn("choose address has retry three times, no availible address, return current address {}", address);
         return address;
       }
       return address();
