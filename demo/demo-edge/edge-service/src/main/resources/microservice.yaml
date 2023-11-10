@@ -104,7 +104,7 @@ servicecomb:
       failureRateThreshold: 50
       slowCallRateThreshold: 100
       slowCallDurationThreshold: 3000
-      waitDurationInOpenState: 5000 
+      waitDurationInOpenState: 3000 
       permittedNumberOfCallsInHalfOpenState: 10
   instanceBulkhead:
     testEdgeServiceInstanceBulkhead: |
