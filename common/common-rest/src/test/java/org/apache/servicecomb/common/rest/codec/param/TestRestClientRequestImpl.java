@@ -161,6 +161,7 @@ public class TestRestClientRequestImpl {
     try (MockedStatic<UUID> mockedStatic = Mockito.mockStatic(UUID.class)) {
       mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
       RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
+      restClientRequest.attach("file", null);
       restClientRequest.doEndWithUpload();
 
       Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundarynull-null-null-null-null",
@@ -181,6 +182,7 @@ public class TestRestClientRequestImpl {
     try (MockedStatic<UUID> mockedStatic = Mockito.mockStatic(UUID.class)) {
       mockedStatic.when(UUID::randomUUID).thenReturn(uuid);
       RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, context, null);
+      restClientRequest.attach("file", null);
       restClientRequest.doEndWithUpload();
 
       Assertions.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
