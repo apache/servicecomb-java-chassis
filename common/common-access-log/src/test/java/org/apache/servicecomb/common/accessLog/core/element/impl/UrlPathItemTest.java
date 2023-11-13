@@ -19,7 +19,6 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.servers.Server;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
@@ -85,14 +83,11 @@ public class UrlPathItemTest {
 
   @Test
   public void clientFormattedElement() {
-    String uri = "/base/test";
+    String uri = "/test";
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getOperationMeta()).thenReturn(operationMeta);
     when(invocation.getSchemaMeta()).thenReturn(schemaMeta);
     when(schemaMeta.getSwagger()).thenReturn(swagger);
-    Server server = Mockito.mock(Server.class);
-    when(server.getUrl()).thenReturn("/base");
-    when(swagger.getServers()).thenReturn(Arrays.asList(server));
     when(operationMeta.getOperationPath()).thenReturn("/test");
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
