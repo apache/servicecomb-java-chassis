@@ -31,7 +31,7 @@ import com.google.common.eventbus.Subscribe;
 
 public class ServerDefaultInitializer implements AccessLogInitializer {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger("accesslog");
+  private static final Logger LOGGER = LoggerFactory.getLogger("scb-access");
 
   private AccessLogGenerator accessLogGenerator;
 
