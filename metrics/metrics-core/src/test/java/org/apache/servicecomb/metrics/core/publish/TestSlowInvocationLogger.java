@@ -127,7 +127,7 @@ public class TestSlowInvocationLogger {
               http method       :                 null
               url               :                 null
               endpoint          :  rest://1.1.1.1:1234
-              status code       :      0.0ms
+              status code       :                    0
                 total           :      0.0ms
                 prepare         :      0.0ms
                 connection      :      0.0ms
@@ -168,7 +168,7 @@ public class TestSlowInvocationLogger {
               http method       :                 null
               url               :                 null
               endpoint          :  rest://1.1.1.1:1234
-              status code       :      0.0ms
+              status code       :                    0
                 total           :      0.0ms
                 prepare         :      0.0ms
                 provider-decode :      0.0ms
@@ -212,7 +212,7 @@ public class TestSlowInvocationLogger {
               http method       :                 null
               url               :                 null
               endpoint          :         1.1.1.1:1234
-              status code       :      0.0ms
+              status code       :                    0
                 total           :      0.0ms
                 prepare         :      0.0ms
                 provider-decode :      0.0ms

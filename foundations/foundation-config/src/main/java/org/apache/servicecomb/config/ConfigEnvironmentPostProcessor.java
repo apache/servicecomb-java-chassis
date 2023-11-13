@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.config.file.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ public class ConfigEnvironmentPostProcessor implements EnvironmentPostProcessor 
 
   @Override
   public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+    LegacyPropertyFactory.setEnvironment(environment);
     addMicroserviceDefinitions(environment);
     startupBootStrapService(environment);
     addDynamicConfigurationToSpring(environment);

@@ -25,7 +25,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.transport.rest.client.RestClientRequestParameters;
 
 import io.vertx.core.http.HttpServerRequest;
@@ -50,7 +49,7 @@ public class UrlPathAccessItem implements AccessLogItem<RoutingContext> {
     OperationMeta operationMeta = finishEvent.getInvocation().getOperationMeta();
     SchemaMeta schemaMeta = finishEvent.getInvocation().getSchemaMeta();
     if (operationMeta != null && schemaMeta != null && schemaMeta.getSwagger() != null) {
-      builder.append(SwaggerUtils.getBasePath(schemaMeta.getSwagger())).append(operationMeta.getOperationPath());
+      builder.append(operationMeta.getOperationPath());
       return;
     }
     RestClientRequestParameters restRequestImpl = (RestClientRequestParameters) finishEvent.getInvocation()
