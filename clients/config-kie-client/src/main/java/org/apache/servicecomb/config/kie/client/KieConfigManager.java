@@ -67,7 +67,19 @@ public class KieConfigManager extends AbstractTask {
 
   public void firstPull() {
     Map<String, Object> data = new HashMap<>();
-    for (int i = 0; i < 3; i++) {
+    try {
+      firstQueryConfigurations(data);
+    } catch (Exception e) {
+      if (this.kieConfiguration.isFirstPullRequired()) {
+        throw e;
+      } else {
+        LOGGER.warn("first pull failed!");
+      }
+    }
+  }
+
+  private void firstQueryConfigurations(Map<String, Object> data) {
+    for (int i = 0; i < 3;) {
       String address = kieAddressManager.address();
       try {
         this.configurationsRequests.forEach(r -> {
@@ -80,13 +92,14 @@ public class KieConfigManager extends AbstractTask {
           }
         });
         this.configConverter.updateData(data);
+        break;
       } catch (Exception e) {
-        if (this.kieConfiguration.isFirstPullRequired()) {
+        if (i == 2) {
           throw e;
-        } else {
-          LOGGER.warn("first pull failed, config address {} and ignore {}", address, e.getMessage());
         }
+        LOGGER.warn("firstQueryConfigurations failed, config address {} and ignore {}", address, e.getMessage());
       }
+      i++;
     }
   }
 
