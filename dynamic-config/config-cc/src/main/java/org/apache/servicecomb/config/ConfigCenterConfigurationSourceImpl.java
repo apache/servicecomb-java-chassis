@@ -88,29 +88,30 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   public void init(Configuration localConfiguration) {
     configConverter = new ConfigConverter(ConfigCenterConfig.INSTANCE.getFileSources());
 
-    ConfigCenterAddressManager kieAddressManager = configKieAddressManager();
+    ConfigCenterAddressManager configCenterAddressManager = configCenterAddressManager();
 
-    HttpTransport httpTransport = createHttpTransport(kieAddressManager,
+    HttpTransport httpTransport = createHttpTransport(configCenterAddressManager,
         HttpTransportFactory.defaultRequestConfig().build(),
         localConfiguration);
-    ConfigCenterClient configCenterClient = new ConfigCenterClient(kieAddressManager, httpTransport);
+    ConfigCenterClient configCenterClient = new ConfigCenterClient(configCenterAddressManager, httpTransport);
     EventManager.register(this);
 
     ConfigCenterConfiguration configCenterConfiguration = createConfigCenterConfiguration();
 
-    QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterClient);
+    QueryConfigurationsRequest queryConfigurationsRequest = firstPull(configCenterClient, configCenterAddressManager);
 
     configCenterManager = new ConfigCenterManager(configCenterClient, EventManager.getEventBus(),
-        configConverter, configCenterConfiguration);
+        configConverter, configCenterConfiguration, configCenterAddressManager);
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
   }
 
-  private QueryConfigurationsRequest firstPull(ConfigCenterClient configCenterClient) {
+  private QueryConfigurationsRequest firstPull(ConfigCenterClient configCenterClient,
+      ConfigCenterAddressManager configCenterAddressManager) {
     QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest();
     try {
       QueryConfigurationsResponse response = configCenterClient
-          .queryConfigurations(queryConfigurationsRequest);
+          .queryConfigurations(queryConfigurationsRequest, configCenterAddressManager.address());
       if (response.isChanged()) {
         configConverter.updateData(response.getConfigurations());
         updateConfiguration(WatchedUpdateResult.createIncremental(configConverter.getCurrentData(), null, null));
@@ -146,8 +147,8 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     return new ConfigCenterConfiguration().setRefreshIntervalInMillis(ConfigCenterConfig.INSTANCE.getRefreshInterval());
   }
 
-  private HttpTransport createHttpTransport(ConfigCenterAddressManager kieAddressManager, RequestConfig requestConfig,
-      Configuration localConfiguration) {
+  private HttpTransport createHttpTransport(ConfigCenterAddressManager configCenterAddressManager,
+      RequestConfig requestConfig, Configuration localConfiguration) {
     List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
 
     if (ConfigCenterConfig.INSTANCE.isProxyEnable()) {
@@ -165,14 +166,16 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
       return HttpTransportFactory
           .createHttpTransport(
               TransportUtils
-                  .createSSLProperties(kieAddressManager.sslEnabled(), localConfiguration, ConfigCenterConfig.SSL_TAG),
+                  .createSSLProperties(configCenterAddressManager.sslEnabled(), localConfiguration,
+                      ConfigCenterConfig.SSL_TAG),
               getRequestAuthHeaderProvider(authHeaderProviders), httpClientBuilder);
     }
 
     return HttpTransportFactory
         .createHttpTransport(
             TransportUtils
-                .createSSLProperties(kieAddressManager.sslEnabled(), localConfiguration, ConfigCenterConfig.SSL_TAG),
+                .createSSLProperties(configCenterAddressManager.sslEnabled(), localConfiguration,
+                    ConfigCenterConfig.SSL_TAG),
             getRequestAuthHeaderProvider(authHeaderProviders), requestConfig);
   }
 
@@ -184,7 +187,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     };
   }
 
-  private ConfigCenterAddressManager configKieAddressManager() {
+  private ConfigCenterAddressManager configCenterAddressManager() {
     return new ConfigCenterAddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
         Deployment
             .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL(),

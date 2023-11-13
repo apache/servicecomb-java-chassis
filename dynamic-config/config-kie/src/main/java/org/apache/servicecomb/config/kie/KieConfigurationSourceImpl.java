@@ -96,7 +96,8 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
     KieConfiguration kieConfiguration = createKieConfiguration();
     KieClient kieClient = new KieClient(kieAddressManager, httpTransport, kieConfiguration);
     EventManager.register(this);
-    kieConfigManager = new KieConfigManager(kieClient, EventManager.getEventBus(), kieConfiguration, configConverter);
+    kieConfigManager = new KieConfigManager(kieClient, EventManager.getEventBus(), kieConfiguration, configConverter,
+        kieAddressManager);
     kieConfigManager.firstPull();
     kieConfigManager.startConfigKieManager();
     updateConfiguration(WatchedUpdateResult.createIncremental(configConverter.getCurrentData(), null, null));

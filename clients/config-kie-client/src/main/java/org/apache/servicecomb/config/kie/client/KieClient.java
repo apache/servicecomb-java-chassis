@@ -67,8 +67,7 @@ public class KieClient implements KieConfigOperation {
   }
 
   @Override
-  public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request) {
-    String address = addressManager.address();
+  public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request, String address) {
     String url = buildUrl(request, address);
     try {
       if (kieConfiguration.isEnableLongPolling()) {

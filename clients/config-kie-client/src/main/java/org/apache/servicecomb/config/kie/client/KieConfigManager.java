@@ -27,6 +27,7 @@ import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequest;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsRequestFactory;
 import org.apache.servicecomb.config.kie.client.model.ConfigurationsResponse;
+import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
 import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
@@ -51,9 +52,11 @@ public class KieConfigManager extends AbstractTask {
 
   private final KieConfiguration kieConfiguration;
 
+  private final KieAddressManager kieAddressManager;
+
+
   public KieConfigManager(KieConfigOperation configKieClient, EventBus eventBus,
-      KieConfiguration kieConfiguration,
-      ConfigConverter configConverter) {
+      KieConfiguration kieConfiguration, ConfigConverter configConverter, KieAddressManager kieAddressManager) {
     super("config-center-configuration-task");
     this.configurationsRequests = ConfigurationsRequestFactory.buildConfigurationRequests(kieConfiguration);
     this.configurationsRequests.sort(ConfigurationsRequest::compareTo);
@@ -61,30 +64,46 @@ public class KieConfigManager extends AbstractTask {
     this.eventBus = eventBus;
     this.configConverter = configConverter;
     this.kieConfiguration = kieConfiguration;
+    this.kieAddressManager = kieAddressManager;
   }
 
   public void firstPull() {
+    Map<String, Object> data = new HashMap<>();
     try {
-      Map<String, Object> data = new HashMap<>();
-      this.configurationsRequests.forEach(r -> {
-        r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
-        ConfigurationsResponse response = configKieClient.queryConfigurations(r);
-        if (response.isChanged()) {
-          r.setRevision(response.getRevision());
-          r.setLastRawData(response.getConfigurations());
-          data.putAll(response.getConfigurations());
-        }
-      });
-      this.configConverter.updateData(data);
-    } catch (RuntimeException e) {
+      firstQueryConfigurations(data);
+    } catch (Exception e) {
       if (this.kieConfiguration.isFirstPullRequired()) {
         throw e;
       } else {
-        LOGGER.warn("first pull failed, and ignore {}", e.getMessage());
+        LOGGER.warn("first pull failed!");
       }
     }
   }
 
+  private void firstQueryConfigurations(Map<String, Object> data) {
+    for (int i = 0; i < 3;) {
+      String address = kieAddressManager.address();
+      try {
+        this.configurationsRequests.forEach(r -> {
+          r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
+          ConfigurationsResponse response = configKieClient.queryConfigurations(r, address);
+          if (response.isChanged()) {
+            r.setRevision(response.getRevision());
+            r.setLastRawData(response.getConfigurations());
+            data.putAll(response.getConfigurations());
+          }
+        });
+        this.configConverter.updateData(data);
+        break;
+      } catch (Exception e) {
+        if (i == 2) {
+          throw e;
+        }
+        LOGGER.warn("firstQueryConfigurations failed, config address {} and ignore {}", address, e.getMessage());
+      }
+      i++;
+    }
+  }
   private void onDataChanged() {
     Map<String, Object> latestData = new HashMap<>();
     this.configurationsRequests.forEach(r -> latestData.putAll(r.getLastRawData()));
@@ -121,7 +140,8 @@ public class KieConfigManager extends AbstractTask {
     @Override
     public void execute() {
       try {
-        ConfigurationsResponse response = configKieClient.queryConfigurations(configurationsRequest);
+        ConfigurationsResponse response = configKieClient.queryConfigurations(configurationsRequest,
+            kieAddressManager.address());
         if (response.isChanged()) {
           configurationsRequest.setRevision(response.getRevision());
           configurationsRequest.setLastRawData(response.getConfigurations());
