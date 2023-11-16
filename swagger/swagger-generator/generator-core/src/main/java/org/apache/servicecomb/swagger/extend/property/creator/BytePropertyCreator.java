@@ -31,7 +31,7 @@ public class BytePropertyCreator implements PropertyCreator {
   private final Class<?>[] classes = {Byte.class, byte.class};
 
   @Override
-  public Schema createProperty() {
+  public Schema<?> createProperty() {
     return new IntegerSchema();
   }
 

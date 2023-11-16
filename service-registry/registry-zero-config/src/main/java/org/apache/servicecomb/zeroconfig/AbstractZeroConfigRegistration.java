@@ -28,7 +28,7 @@ public abstract class AbstractZeroConfigRegistration<R extends RegistrationInsta
   protected Config config;
 
   @Autowired
-  public AbstractZeroConfigRegistration setConfig(Config config) {
+  public AbstractZeroConfigRegistration<R> setConfig(Config config) {
     this.config = config;
     return this;
   }

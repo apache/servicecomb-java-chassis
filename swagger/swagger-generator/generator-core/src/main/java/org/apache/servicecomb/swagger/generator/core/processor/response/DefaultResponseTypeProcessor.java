@@ -21,8 +21,6 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import jakarta.servlet.http.Part;
-
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
@@ -30,6 +28,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.v3.core.util.ReflectionUtils;
 import io.swagger.v3.oas.models.media.Schema;
+import jakarta.servlet.http.Part;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
   protected boolean extractActualType;
@@ -73,7 +72,7 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
   }
 
   @Override
-  public Schema process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+  public Schema<?> process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       Type genericResponseType) {
     Type responseType = extractResponseType(swaggerGenerator, operationGenerator, genericResponseType);
     if (responseType == null || ReflectionUtils.isVoid(responseType)) {

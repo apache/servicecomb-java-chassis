@@ -410,7 +410,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
   }
 
-  protected Schema createResponseModel() {
+  protected Schema<?> createResponseModel() {
     Type responseType =
         TypeToken.of(clazz)
             .resolveType(method.getGenericReturnType())

@@ -27,7 +27,7 @@ public class MultipartFilePropertyCreator implements PropertyCreator {
   private final Class<?>[] classes = {MultipartFile.class};
 
   @Override
-  public Schema createProperty() {
+  public Schema<?> createProperty() {
     return new FileSchema();
   }
 

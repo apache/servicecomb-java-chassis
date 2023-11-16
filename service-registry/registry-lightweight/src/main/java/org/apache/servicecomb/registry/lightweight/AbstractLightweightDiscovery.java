@@ -25,17 +25,12 @@ import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 
-@SuppressWarnings("UnstableApiUsage")
 public abstract class AbstractLightweightDiscovery<D extends DiscoveryInstance> implements Discovery<D> {
-  public static final String ZERO_CONFIG_NAME = "zero-config-discovery";
-
   public static final String ZERO_DISCOVERY_ENABLED = "servicecomb.registry.zero-config.%s.%s.enabled";
 
   protected EventBus eventBus;
 
   protected Store store;
-
-  protected String revision;
 
   private Environment environment;
 
@@ -45,13 +40,13 @@ public abstract class AbstractLightweightDiscovery<D extends DiscoveryInstance> 
   }
 
   @Autowired
-  public AbstractLightweightDiscovery setEventBus(EventBus eventBus) {
+  public AbstractLightweightDiscovery<D> setEventBus(EventBus eventBus) {
     this.eventBus = eventBus;
     return this;
   }
 
   @Autowired
-  public AbstractLightweightDiscovery setStore(Store store) {
+  public AbstractLightweightDiscovery<D> setStore(Store store) {
     this.store = store;
     return this;
   }

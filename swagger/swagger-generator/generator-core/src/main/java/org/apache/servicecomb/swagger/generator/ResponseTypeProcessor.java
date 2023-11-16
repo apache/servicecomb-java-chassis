@@ -24,10 +24,6 @@ public interface ResponseTypeProcessor {
   Type getProcessType();
 
   /**
-   *
-   * @param swaggerGenerator
-   * @param operationGenerator
-   * @param genericResponseType
    * @return if genericResponseType is CompletableFuture&lt;String&gt;, then return String
    */
   Type extractResponseType(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
@@ -37,5 +33,5 @@ public interface ResponseTypeProcessor {
     return extractResponseType(null, null, genericResponseType);
   }
 
-  Schema process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Type genericResponseType);
+  Schema<?> process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Type genericResponseType);
 }

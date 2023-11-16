@@ -16,6 +16,12 @@
  */
 package org.apache.servicecomb.foundation.test.scaffolding.log;
 
+import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.core.Appender;
@@ -23,18 +29,14 @@ import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Property;
 import org.apache.logging.log4j.core.layout.PatternLayout;
-
-import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class LogCollector implements Closeable {
   List<LogEvent> events = new ArrayList<>();
 
-  Appender appender = new AbstractAppender("LogCollector", null, PatternLayout.createDefaultLayout()) {
+  Appender appender = new AbstractAppender("LogCollector", null, PatternLayout.createDefaultLayout(), true,
+      Property.EMPTY_ARRAY) {
     @Override
     public void append(LogEvent event) {
       events.add(event);

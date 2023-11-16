@@ -20,15 +20,12 @@ package org.apache.servicecomb.config;
 import static org.apache.servicecomb.foundation.test.scaffolding.AssertUtils.assertPrettyJson;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 
@@ -37,14 +34,12 @@ public class BootStrapPropertiesTest {
     Map<String, Object> properties = YAMLUtil.yaml2Properties(yaml);
     ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
     MutablePropertySources mutablePropertySources = new MutablePropertySources();
-    EnumerablePropertySource propertySource = new MapPropertySource("yaml", properties);
+    MapPropertySource propertySource = new MapPropertySource("yaml", properties);
     mutablePropertySources.addLast(propertySource);
     Mockito.when(environment.getPropertySources()).thenReturn(mutablePropertySources);
 
-    List<String> keys = new ArrayList<>();
     for (Entry<String, Object> entry : properties.entrySet()) {
       Mockito.when(environment.getProperty(entry.getKey())).thenReturn(entry.getValue().toString());
-      keys.add(entry.getKey());
     }
 
     return BootStrapProperties.readServiceInstanceProperties(environment);
@@ -59,62 +54,62 @@ public class BootStrapPropertiesTest {
 
   @Test
   void should_read_boolean_to_string() {
-    Map<String, String> properties = readInstanceProperties(""
-        + "servicecomb:\n"
-        + "  instance:\n"
-        + "    properties:\n"
-        + "      k: true");
+    Map<String, String> properties = readInstanceProperties("""
+        servicecomb:
+          instance:
+            properties:
+              k: true""");
 
-    assertPrettyJson(properties).isEqualTo(""
-        + "{\n"
-        + "  \"k\" : \"true\"\n"
-        + "}");
+    assertPrettyJson(properties).isEqualTo("""
+        {
+          "k" : "true"
+        }""");
   }
 
   @Test
   void should_read_number_to_string() {
-    Map<String, String> properties = readInstanceProperties(""
-        + "servicecomb:\n"
-        + "  instance:\n"
-        + "    properties:\n"
-        + "      k: 1");
+    Map<String, String> properties = readInstanceProperties("""
+        servicecomb:
+          instance:
+            properties:
+              k: 1""");
 
-    assertPrettyJson(properties).isEqualTo(""
-        + "{\n"
-        + "  \"k\" : \"1\"\n"
-        + "}");
+    assertPrettyJson(properties).isEqualTo("""
+        {
+          "k" : "1"
+        }""");
   }
 
   @Test
   void should_read_by_old_prefix_when_new_prefix_not_exists() {
-    Map<String, String> properties = readInstanceProperties(""
-        + "instance_description:\n"
-        + "  properties:\n"
-        + "    k: v\n"
-        + "    k1: v1");
+    Map<String, String> properties = readInstanceProperties("""
+        instance_description:
+          properties:
+            k: v
+            k1: v1""");
 
-    assertPrettyJson(properties).isEqualTo(""
-        + "{\n"
-        + "  \"k1\" : \"v1\",\n"
-        + "  \"k\" : \"v\"\n"
-        + "}");
+    assertPrettyJson(properties).isEqualTo("""
+        {
+          "k1" : "v1",
+          "k" : "v"
+        }""");
   }
 
   @Test
   void should_ignore_old_prefix_when_new_prefix_exists() {
-    Map<String, String> properties = readInstanceProperties(""
-        + "instance_description:\n"
-        + "  properties:\n"
-        + "    k: v\n"
-        + "    k1: v1\n"
-        + "servicecomb:\n"
-        + "  instance:\n"
-        + "    properties:\n"
-        + "      k: new");
+    Map<String, String> properties = readInstanceProperties("""
+        instance_description:
+          properties:
+            k: v
+            k1: v1
+        servicecomb:
+          instance:
+            properties:
+              k: new""");
 
-    assertPrettyJson(properties).isEqualTo(""
-        + "{\n"
-        + "  \"k\" : \"new\"\n"
-        + "}");
+    assertPrettyJson(properties).isEqualTo("""
+        {
+          "k" : "new"
+        }""");
   }
 }

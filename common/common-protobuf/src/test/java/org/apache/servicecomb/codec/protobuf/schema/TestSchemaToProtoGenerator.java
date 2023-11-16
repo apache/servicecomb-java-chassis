@@ -51,8 +51,7 @@ public class TestSchemaToProtoGenerator {
         message input {
           string value = 1;
         }
-
-        """, new ProtoToStringGenerator(proto).protoToString());
+        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 
   @Test
@@ -83,8 +82,7 @@ public class TestSchemaToProtoGenerator {
         message input {
           User value = 1;
         }
-
-        """, new ProtoToStringGenerator(proto).protoToString());
+        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 
   static class Model {
@@ -247,7 +245,7 @@ public class TestSchemaToProtoGenerator {
        message request {
          UserInfo value = 1;
        }
-        """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
+       """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 
   @Test
@@ -288,7 +286,7 @@ public class TestSchemaToProtoGenerator {
        message request {
          repeated DeptInfo value = 1;
        }
-         """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
+       """.trim(), new ProtoToStringGenerator(proto).protoToString().trim());
   }
 
   @Test

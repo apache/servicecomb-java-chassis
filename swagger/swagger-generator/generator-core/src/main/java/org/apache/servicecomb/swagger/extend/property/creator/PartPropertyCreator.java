@@ -17,16 +17,15 @@
 
 package org.apache.servicecomb.swagger.extend.property.creator;
 
-import jakarta.servlet.http.Part;
-
 import io.swagger.v3.oas.models.media.FileSchema;
 import io.swagger.v3.oas.models.media.Schema;
+import jakarta.servlet.http.Part;
 
 public class PartPropertyCreator implements PropertyCreator {
   private final Class<?>[] classes = {Part.class};
 
   @Override
-  public Schema createProperty() {
+  public Schema<?> createProperty() {
     return new FileSchema();
   }
 

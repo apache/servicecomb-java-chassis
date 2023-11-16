@@ -35,11 +35,11 @@ public class TestArrayType {
     SwaggerOperations swaggerOperations = SwaggerOperations.generate(ArrayType.class);
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBytes");
     RequestBody bodyParameter = swaggerOperation.getOperation().getRequestBody();
-    Schema model = bodyParameter.getContent().get(MediaType.APPLICATION_JSON).getSchema();
+    Schema<?> model = bodyParameter.getContent().get(MediaType.APPLICATION_JSON).getSchema();
 
     Assertions.assertEquals(Components.COMPONENTS_SCHEMAS_REF + "testBytesBody", model.get$ref());
     OpenAPI openAPI = swaggerOperation.getSwagger();
-    Schema schema = openAPI.getComponents().getSchemas().get("testBytesBody");
+    Schema<?> schema = openAPI.getComponents().getSchemas().get("testBytesBody");
     Assertions.assertEquals(1, schema.getProperties().size());
 
     ByteArraySchema arrayProperty = (ByteArraySchema) schema.getProperties().get("value");

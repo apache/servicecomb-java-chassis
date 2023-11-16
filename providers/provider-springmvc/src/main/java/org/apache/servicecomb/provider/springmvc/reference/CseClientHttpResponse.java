@@ -94,6 +94,8 @@ public class CseClientHttpResponse implements ClientHttpResponse {
   }
 
   @Override
+  @Deprecated(since = "6.0")
+  @SuppressWarnings("deprecations")
   public int getRawStatusCode() throws IOException {
     return response.getStatusCode();
   }
