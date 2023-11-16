@@ -29,7 +29,11 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class TestRetrySchemaFromEdge implements CategorizedTestCase {
   interface RetrySchemaInf {
+    boolean edgeSuccessWhenRetry();
+
     boolean successWhenRetry();
+
+    CompletableFuture<Boolean> edgeSuccessWhenRetryAsync();
 
     CompletableFuture<Boolean> successWhenRetryAsync();
   }
@@ -55,6 +59,7 @@ public class TestRetrySchemaFromEdge implements CategorizedTestCase {
     testRetryGovernanceFromEdgeDefaultDispatcher();
     testRetryGovernanceRestTemplate();
     testRetryGovernanceRpc();
+    testEdgeRetryGovernanceRpc();
   }
 
   private void testRetryGovernanceRpc() throws Exception {
@@ -63,6 +68,14 @@ public class TestRetrySchemaFromEdge implements CategorizedTestCase {
 
     TestMgr.check(retrySchemaInf.successWhenRetryAsync().get(), true);
     TestMgr.check(retrySchemaInf.successWhenRetryAsync().get(), true);
+  }
+
+  private void testEdgeRetryGovernanceRpc() throws Exception {
+    TestMgr.check(retrySchemaInf.edgeSuccessWhenRetry(), true);
+    TestMgr.check(retrySchemaInf.edgeSuccessWhenRetry(), true);
+
+    TestMgr.check(retrySchemaInf.edgeSuccessWhenRetryAsync().get(), true);
+    TestMgr.check(retrySchemaInf.edgeSuccessWhenRetryAsync().get(), true);
   }
 
   private void testRetryGovernanceRestTemplate() {

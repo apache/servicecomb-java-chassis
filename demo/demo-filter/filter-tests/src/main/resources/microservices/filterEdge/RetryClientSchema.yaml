@@ -22,6 +22,26 @@ info:
 servers:
 - url: /retry
 paths:
+  /governance/edgeSuccessWhenRetry:
+    get:
+      operationId: edgeSuccessWhenRetry
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /governance/edgeSuccessWhenRetryAsync:
+    get:
+      operationId: edgeSuccessWhenRetryAsync
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: boolean
   /governance/successWhenRetry:
     get:
       operationId: successWhenRetry
@@ -42,5 +62,4 @@ paths:
             application/json:
               schema:
                 type: boolean
-components:
-  schemas: {}
+components: {}

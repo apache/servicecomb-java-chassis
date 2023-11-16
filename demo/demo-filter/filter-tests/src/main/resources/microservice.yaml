@@ -28,13 +28,3 @@ servicecomb:
   invocation:
     exception:
       print-stack-trace: true
-  # test governance retry
-  matchGroup:
-    retry-governance: |
-      matches:
-        - apiPath:
-            prefix: "/retry/governance/"
-  retry:
-    retry-governance: |
-      maxAttempts: 2
-      retryOnResponseStatus: [500]

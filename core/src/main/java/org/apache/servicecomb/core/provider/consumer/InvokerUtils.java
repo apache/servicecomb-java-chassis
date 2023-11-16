@@ -18,22 +18,14 @@
 package org.apache.servicecomb.core.provider.consumer;
 
 import static org.apache.servicecomb.core.exception.Exceptions.toConsumerResponse;
-import static org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory.CONSUMER_INNER_STATUS_CODE;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -41,62 +33,18 @@ import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.governance.GovernanceConfiguration;
-import org.apache.servicecomb.core.governance.MatchType;
-import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.governance.handler.RetryHandler;
-import org.apache.servicecomb.governance.handler.ext.FailurePredictor;
-import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
-
-import io.github.resilience4j.decorators.Decorators;
-import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
-import io.github.resilience4j.retry.Retry;
-import io.github.resilience4j.retry.RetryConfig;
-import io.github.resilience4j.retry.RetryRegistry;
 import io.vertx.core.Context;
 import jakarta.ws.rs.core.Response.Status;
 
 public final class InvokerUtils {
-  private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
-
-  private static final Object LOCK = new Object();
-
-  private static volatile ScheduledExecutorService reactiveRetryPool;
-
-  private static ScheduledExecutorService getOrCreateRetryPool() {
-    if (reactiveRetryPool == null) {
-      synchronized (LOCK) {
-        if (reactiveRetryPool == null) {
-          reactiveRetryPool = Executors.newScheduledThreadPool(2, new ThreadFactory() {
-            private final AtomicInteger count = new AtomicInteger(0);
-
-            @Override
-            public Thread newThread(Runnable r) {
-              Thread thread = new Thread(r, "reactive-retry-pool-thread-" + count.getAndIncrement());
-              // avoid block shutdown
-              thread.setDaemon(true);
-              return thread;
-            }
-          });
-        }
-      }
-    }
-    return reactiveRetryPool;
-  }
-
   @SuppressWarnings({"unchecked"})
   public static <T> T syncInvoke(String microserviceName, String transport,
       String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
@@ -191,43 +139,6 @@ public final class InvokerUtils {
     return toSync(invoke(invocation), invocation.getWaitTime());
   }
 
-  private static void updateRetryStatus(Invocation invocation) {
-    if (invocation.isFinished()) {
-      invocation.reset();
-      if (invocation.getLocalContext(RetryContext.RETRY_LOAD_BALANCE) != null
-          && (boolean) invocation.getLocalContext(RetryContext.RETRY_LOAD_BALANCE)) {
-        // clear last server to avoid using user defined endpoint
-        invocation.setEndpoint(null);
-      }
-      RetryContext retryContext = invocation.getLocalContext(RetryContext.RETRY_CONTEXT);
-      retryContext.incrementRetry();
-      return;
-    }
-
-    invocation.addLocalContext(RetryContext.RETRY_CONTEXT,
-        new RetryContext(GovernanceConfiguration.getRetrySameServer(invocation.getMicroserviceName())));
-  }
-
-  private static boolean isCompatibleRetryEnabled(Invocation invocation) {
-    // maxAttempts must be greater than or equal to 1
-    return GovernanceConfiguration.isRetryEnabled(invocation.getMicroserviceName())
-        && GovernanceConfiguration.getRetryNextServer(invocation.getMicroserviceName())
-        + GovernanceConfiguration.getRetrySameServer(invocation.getMicroserviceName()) > 0;
-  }
-
-  private static Retry getOrCreateCompatibleRetry(Invocation invocation) {
-    RetryConfig retryConfig = RetryConfig.custom()
-        // max attempts include the first call
-        .maxAttempts(GovernanceConfiguration.getRetryNextServer(invocation.getMicroserviceName())
-            + GovernanceConfiguration.getRetrySameServer(invocation.getMicroserviceName()) + 1)
-        .retryOnResult(InvokerUtils::canRetryForStatusCode)
-        .retryOnException(InvokerUtils::canRetryForException)
-        .waitDuration(Duration.ofMillis(1))
-        .build();
-    RetryRegistry retryRegistry = RetryRegistry.of(retryConfig);
-    return retryRegistry.retry(invocation.getMicroserviceName());
-  }
-
   /**
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    */
@@ -239,22 +150,6 @@ public final class InvokerUtils {
         asyncResp.consumerFail(e);
       }
     });
-  }
-
-  private static void decorateReactiveRetry(Invocation invocation, DecorateCompletionStage<Response> dcs,
-      GovernanceRequestExtractor request) {
-    // governance implementations.
-    RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
-    Retry retry = retryHandler.getActuator(request);
-    if (retry != null) {
-      dcs.withRetry(retry, getOrCreateRetryPool());
-    }
-
-    if (isCompatibleRetryEnabled(invocation)) {
-      // compatible implementation for retry in load balance module in old versions.
-      retry = getOrCreateCompatibleRetry(invocation);
-      dcs.withRetry(retry, getOrCreateRetryPool());
-    }
   }
 
   public static boolean isSyncMethod(Method method) {
@@ -287,89 +182,10 @@ public final class InvokerUtils {
    * NOTE: this method should never throw exception directly
    */
   public static CompletableFuture<Response> invoke(Invocation invocation) {
-    Supplier<CompletionStage<Response>> next = invokeImpl(invocation);
-    DecorateCompletionStage<Response> dcs = Decorators.ofCompletionStage(next);
-    GovernanceRequestExtractor request = MatchType.createGovHttpRequest(invocation);
-
-    decorateReactiveRetry(invocation, dcs, request);
-
-    CompletableFuture<Response> result = new CompletableFuture<>();
-    dcs.get().whenComplete((r, e) -> {
-      ContextUtils.setInvocationContext(invocation.getParentContext());
-
-      if (e == null) {
-        result.complete(r);
-        return;
-      }
-
-      String message = String.format("invoke failed, operation %s, trace id %s",
-          invocation.getMicroserviceQualifiedName(),
-          invocation.getTraceId());
-      LOGGER.error(message, e);
-      Response response = Response.createConsumerFail(e, message);
-      invocation.onFinish(response);
-      result.complete(response);
-    });
-    return result;
-  }
-
-  private static Supplier<CompletionStage<Response>> invokeImpl(Invocation invocation) {
-    return () -> {
-      invocation.onStart(null);
-      updateRetryStatus(invocation);
-      if (invocation.isEdge()) {
-        return invocation.getMicroserviceMeta().getEdgeFilterChain()
-            .onFilter(invocation)
-            .exceptionally(throwable -> toConsumerResponse(invocation, throwable))
-            .whenComplete((response, throwable) -> finishInvocation(invocation, response));
-      }
-      return invocation.getMicroserviceMeta().getConsumerFilterChain()
-          .onFilter(invocation)
-          .exceptionally(throwable -> toConsumerResponse(invocation, throwable))
-          .whenComplete((response, throwable) -> finishInvocation(invocation, response));
-    };
-  }
-
-  private static void finishInvocation(Invocation invocation, Response ar) {
-    invocation.onFinish(ar);
-
-    if (ar.isFailed()) {
-      // re-throw exception to make sure retry based on exception
-      // for InvocationException, users can configure status code for retry
-      // for 490, details error are wrapped, need re-throw
-
-      if (!(ar.getResult() instanceof InvocationException)) {
-        throw AsyncUtils.rethrow(ar.getResult());
-      }
-
-      if (((InvocationException) ar.getResult()).getStatusCode() == CONSUMER_INNER_STATUS_CODE) {
-        throw AsyncUtils.rethrow(ar.getResult());
-      }
-    }
-  }
-
-  @VisibleForTesting
-  static boolean canRetryForException(Throwable e) {
-    if (e instanceof InvocationException && ((InvocationException) e).getStatusCode() == Status.SERVICE_UNAVAILABLE
-        .getStatusCode()) {
-      return true;
-    }
-    return FailurePredictor.canRetryForException(FailurePredictor.STRICT_RETRIABLE, e);
-  }
-
-  @VisibleForTesting
-  static boolean canRetryForStatusCode(Object response) {
-    // retry on status code 503
-    if (!(response instanceof Response resp)) {
-      return false;
-    }
-    if (!resp.isFailed()) {
-      return false;
-    }
-    if (resp.getResult() instanceof InvocationException) {
-      InvocationException e = resp.getResult();
-      return e.getStatusCode() == 503;
-    }
-    return false;
+    invocation.onStart(null);
+    return invocation.getMicroserviceMeta().getConsumerFilterChain()
+        .onFilter(invocation)
+        .exceptionally(throwable -> toConsumerResponse(invocation, throwable))
+        .whenComplete((response, throwable) -> invocation.onFinish(response));
   }
 }

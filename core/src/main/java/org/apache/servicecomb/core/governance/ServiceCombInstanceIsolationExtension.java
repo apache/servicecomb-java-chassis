@@ -17,10 +17,12 @@
 
 package org.apache.servicecomb.core.governance;
 
+import java.util.List;
+
 import org.apache.servicecomb.governance.handler.ext.AbstractInstanceIsolationExtension;
 
 public class ServiceCombInstanceIsolationExtension extends AbstractInstanceIsolationExtension {
-  private ServiceCombRetryExtension retryExtension = new ServiceCombRetryExtension();
+  private final ServiceCombRetryExtension retryExtension = new ServiceCombRetryExtension();
 
   @Override
   protected String extractStatusCode(Object result) {
@@ -28,7 +30,7 @@ public class ServiceCombInstanceIsolationExtension extends AbstractInstanceIsola
   }
 
   @Override
-  public boolean isFailedResult(Throwable e) {
-    return retryExtension.isFailedResult(e);
+  public boolean isFailedResult(List<String> statusList, Throwable e) {
+    return retryExtension.isFailedResult(statusList, e);
   }
 }

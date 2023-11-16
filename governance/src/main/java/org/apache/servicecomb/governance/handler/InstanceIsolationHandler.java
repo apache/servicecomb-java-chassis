@@ -103,7 +103,7 @@ public class InstanceIsolationHandler extends AbstractGovernanceHandler<CircuitB
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
         .slidingWindowSize(Integer.parseInt(policy.getSlidingWindowSize()))
-        .recordException(isolationExtension::isFailedResult)
+        .recordException(e -> isolationExtension.isFailedResult(policy.getRecordFailureStatus(), e))
         .recordResult(r -> isolationExtension.isFailedResult(policy.getRecordFailureStatus(), r))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);

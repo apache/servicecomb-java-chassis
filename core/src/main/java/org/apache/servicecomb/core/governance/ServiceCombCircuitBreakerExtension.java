@@ -17,11 +17,10 @@
 
 package org.apache.servicecomb.core.governance;
 
-import jakarta.ws.rs.core.Response.Status;
+import java.util.List;
 
 import org.apache.servicecomb.governance.handler.ext.AbstractCircuitBreakerExtension;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class ServiceCombCircuitBreakerExtension extends AbstractCircuitBreakerExtension {
@@ -41,15 +40,11 @@ public class ServiceCombCircuitBreakerExtension extends AbstractCircuitBreakerEx
   }
 
   @Override
-  public boolean isFailedResult(Throwable e) {
+  public boolean isFailedResult(List<String> statusList, Throwable e) {
     if (e instanceof InvocationException) {
       InvocationException invocationException = (InvocationException) e;
-      if (invocationException.getStatusCode() == Status.SERVICE_UNAVAILABLE.getStatusCode() ||
-          invocationException.getStatusCode() == Status.BAD_GATEWAY.getStatusCode() ||
-          invocationException.getStatusCode() == ExceptionFactory.PRODUCER_INNER_STATUS_CODE) {
-        return true;
-      }
+      return statusList.contains(String.valueOf(invocationException.getStatusCode()));
     }
-    return super.isFailedResult(e);
+    return super.isFailedResult(statusList, e);
   }
 }

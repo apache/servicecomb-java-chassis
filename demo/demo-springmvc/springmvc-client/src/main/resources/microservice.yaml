@@ -54,9 +54,6 @@ servicecomb:
     userDefinedEndpoint.enabled: true
     strategy:
       name: WeightedResponse
-    retryEnabled: true
-    retryOnSame: 1
-    retryOnNext: 1
     filter.status.enabled: false
   fallbackpolicy:
     Consumer:
@@ -113,10 +110,17 @@ servicecomb:
       matches:
         - apiPath:
             prefix: "/retry/governance/"
+    retry-success: |
+      matches:
+        - apiPath:
+            prefix: "/codeFirstSpringmvc/retrySuccess"
   retry:
     retry-governance: |
       maxAttempts: 2
       retryOnResponseStatus: [500]
+    retry-success: |
+      maxAttempts: 2
+      retryOnResponseStatus: [503]
 
 #########SSL options
 # open jdk 8 now TLSv1.3 not available

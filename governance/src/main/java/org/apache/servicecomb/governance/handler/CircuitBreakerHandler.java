@@ -72,7 +72,7 @@ public class CircuitBreakerHandler extends AbstractGovernanceHandler<CircuitBrea
         .minimumNumberOfCalls(policy.getMinimumNumberOfCalls())
         .slidingWindowType(policy.getSlidingWindowTypeEnum())
         .slidingWindowSize(Integer.parseInt(policy.getSlidingWindowSize()))
-        .recordException(circuitBreakerExtension::isFailedResult)
+        .recordException(e -> circuitBreakerExtension.isFailedResult(policy.getRecordFailureStatus(), e))
         .recordResult(r -> circuitBreakerExtension.isFailedResult(policy.getRecordFailureStatus(), r))
         .build();
     CircuitBreakerRegistry circuitBreakerRegistry = CircuitBreakerRegistry.of(circuitBreakerConfig);
