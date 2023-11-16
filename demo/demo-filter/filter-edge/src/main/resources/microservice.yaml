@@ -49,3 +49,17 @@ servicecomb:
               prefixSegmentCount: 0
               path: "/retry/.*"
               microserviceName: filterClient
+            filterClient2:
+              prefixSegmentCount: 0
+              path: "/govern/.*"
+              microserviceName: filterClient
+  matchGroup:
+    edgeFlowControl: |
+      matches:
+        - apiPath:
+            exact: "/govern/edgeFlowControl"
+  rateLimiting:
+    edgeFlowControl: |
+      timeoutDuration: 0
+      limitRefreshPeriod: 1000
+      rate: 1

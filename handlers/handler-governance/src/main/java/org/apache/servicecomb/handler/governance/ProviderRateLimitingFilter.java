@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.AbstractFilter;
+import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
@@ -41,7 +42,7 @@ import io.github.resilience4j.decorators.Decorators.DecorateCompletionStage;
 import io.github.resilience4j.ratelimiter.RateLimiter;
 import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 
-public class ProviderRateLimitingFilter extends AbstractFilter implements ProviderFilter {
+public class ProviderRateLimitingFilter extends AbstractFilter implements ProviderFilter, EdgeFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProviderRateLimitingFilter.class);
 
   private final RateLimitingHandler rateLimitingHandler;
@@ -58,7 +59,7 @@ public class ProviderRateLimitingFilter extends AbstractFilter implements Provid
 
   @Override
   public String getName() {
-    return "provider-rate-limiting";
+    return "rate-limiting";
   }
 
   @Override

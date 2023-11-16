@@ -34,6 +34,7 @@ servicecomb:
     disableDataTypeCheck: true
 
   flowcontrol:
+    enabled: true
     Provider:
       qps:
         limit:

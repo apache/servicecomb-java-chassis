@@ -23,7 +23,7 @@ import org.springframework.core.env.Environment;
 
 @Configuration
 @ConditionalOnProperty(value = FlowControlQpsConfiguration.FLOW_CONTROL_ENABLED,
-    havingValue = "true", matchIfMissing = true)
+    havingValue = "true")
 public class FlowControlQpsConfiguration {
   public static final String FLOW_CONTROL_PREFIX = "servicecomb.flowcontrol";
 
