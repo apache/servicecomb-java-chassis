@@ -32,6 +32,17 @@ servicecomb:
   highway:
     address: 0.0.0.0:7070
 
+  matchGroup:
+    providerFlowControl: |
+      matches:
+        - apiPath:
+            exact: "/govern/providerFlowControl"
+  rateLimiting:
+    providerFlowControl: |
+      timeoutDuration: 0
+      limitRefreshPeriod: 1000
+      rate: 1
+
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true

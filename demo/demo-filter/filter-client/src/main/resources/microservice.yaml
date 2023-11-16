@@ -40,7 +40,9 @@ servicecomb:
       matches:
         - apiPath:
             prefix: "/retry/governance/"
+
   retry:
     retry-governance: |
       maxAttempts: 2
       retryOnResponseStatus: [500]
+

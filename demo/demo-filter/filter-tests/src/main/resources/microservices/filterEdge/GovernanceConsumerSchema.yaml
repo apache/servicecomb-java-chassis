@@ -14,36 +14,32 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
-
-servicecomb:
-  service:
-    application: pojotest
-    name: pojoClient
-    version: 0.0.1
-  registry:
-    sc:
-      address: http://127.0.0.1:30100
-  rest.client.enabled: false # using only http2
-  swagger:
-    disableDataTypeCheck: true
-
-  isolation:
-    Consumer:
-      enabled: false
-  loadbalance:
-    strategy:
-      name: Random
-  metrics:
-    window_time: 12000
-    publisher.defaultLog.enabled: false # when in testing , can turn on
-  flowcontrol:
-    enabled: true
-    Consumer:
-      qps:
-        limit:
-          pojo:
-            FlowControlClientSchema:
-              foo: 3
-              bar: 3000
-  provider:
-    name: pojo
+---
+openapi: 3.0.1
+info:
+  title: swagger definition for org.apache.servicecomb.demo.filter.client.GovernanceConsumerSchema
+  version: 1.0.0
+servers:
+- url: /govern
+paths:
+  /edgeFlowControl:
+    get:
+      operationId: edgeFlowControl
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /providerFlowControl:
+    get:
+      operationId: providerFlowControl
+      responses:
+        "200":
+          description: response of 200
+          content:
+            application/json:
+              schema:
+                type: boolean
+components: {}
