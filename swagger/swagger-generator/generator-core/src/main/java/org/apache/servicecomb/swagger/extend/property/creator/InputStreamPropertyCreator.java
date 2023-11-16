@@ -27,7 +27,7 @@ public class InputStreamPropertyCreator implements PropertyCreator {
   private final Class<?>[] classes = {InputStream.class};
 
   @Override
-  public Schema createProperty() {
+  public Schema<?> createProperty() {
     return new ByteArraySchema();
   }
 

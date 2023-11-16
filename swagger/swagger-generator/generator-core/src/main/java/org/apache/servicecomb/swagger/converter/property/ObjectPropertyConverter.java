@@ -30,7 +30,7 @@ public class ObjectPropertyConverter extends AbstractConverter {
 
   @Override
   protected Map<String, Object> findVendorExtensions(Object def) {
-    return ((Schema) def).getExtensions();
+    return ((Schema<?>) def).getExtensions();
   }
 
   @Override

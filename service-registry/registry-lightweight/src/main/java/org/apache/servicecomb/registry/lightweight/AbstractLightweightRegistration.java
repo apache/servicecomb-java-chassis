@@ -42,19 +42,19 @@ public abstract class AbstractLightweightRegistration<R extends RegistrationInst
   protected Self self;
 
   @Autowired
-  public AbstractLightweightRegistration setEventBus(EventBus eventBus) {
+  public AbstractLightweightRegistration<R> setEventBus(EventBus eventBus) {
     this.eventBus = eventBus;
     return this;
   }
 
   @Autowired
-  public AbstractLightweightRegistration setStoreService(StoreService storeService) {
+  public AbstractLightweightRegistration<R> setStoreService(StoreService storeService) {
     this.storeService = storeService;
     return this;
   }
 
   @Autowired
-  public AbstractLightweightRegistration setSelf(Self self) {
+  public AbstractLightweightRegistration<R> setSelf(Self self) {
     this.self = self;
     return this;
   }

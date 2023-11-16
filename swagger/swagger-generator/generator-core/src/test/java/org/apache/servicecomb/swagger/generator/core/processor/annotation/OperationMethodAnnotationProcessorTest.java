@@ -174,7 +174,7 @@ public class OperationMethodAnnotationProcessorTest {
   @Test
   public void testBodyParam() {
     SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBodyParam");
-    io.swagger.v3.oas.models.media.Schema schema = swaggerOperation.getSwagger()
+    io.swagger.v3.oas.models.media.Schema<?> schema = swaggerOperation.getSwagger()
         .getPaths().get("/testBodyParam").getPost().getRequestBody().getContent()
         .get(MediaType.APPLICATION_JSON).getSchema();
     Assertions.assertEquals(Components.COMPONENTS_SCHEMAS_REF + "TestBodyBean", schema.get$ref());

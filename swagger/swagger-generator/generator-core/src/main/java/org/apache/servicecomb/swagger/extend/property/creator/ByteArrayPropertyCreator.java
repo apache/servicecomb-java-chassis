@@ -30,7 +30,7 @@ public class ByteArrayPropertyCreator implements PropertyCreator {
   private final Class<?>[] classes = {Byte[].class, byte[].class};
 
   @Override
-  public Schema createProperty() {
+  public Schema<?> createProperty() {
     return new ByteArraySchema();
   }
 

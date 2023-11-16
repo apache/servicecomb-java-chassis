@@ -98,7 +98,7 @@ public class ModelResolverExt extends ModelResolver {
 
 
   @Override
-  public Schema resolve(AnnotatedType propType, ModelConverterContext context, Iterator<ModelConverter> next) {
+  public Schema<?> resolve(AnnotatedType propType, ModelConverterContext context, Iterator<ModelConverter> next) {
     PropertyCreator creator = propertyCreatorMap.get(propType.getType());
     if (creator != null) {
       return creator.createProperty();
