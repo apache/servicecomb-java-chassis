@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.governance;
 
+import java.util.List;
+
 import org.apache.servicecomb.governance.handler.Disposable;
 import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
@@ -71,7 +73,7 @@ public class RetryHandlerTest {
     AbstractRetryExtension retryExtension = Mockito.mock(AbstractRetryExtension.class);
     RetryProperties retryProperties = Mockito.mock(RetryProperties.class);
     GovernanceRequest governanceRequest = Mockito.mock(GovernanceRequest.class);
-    Mockito.when(retryExtension.isFailedResult(Mockito.any(), Mockito.any())).thenReturn(true);
+    Mockito.when(retryExtension.isFailedResult(Mockito.any(), (Object) Mockito.any())).thenReturn(true);
 
     RetryPolicy retryPolicy = new RetryPolicy();
     retryPolicy.setName("test");
