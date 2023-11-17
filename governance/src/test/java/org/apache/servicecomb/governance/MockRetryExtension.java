@@ -34,7 +34,7 @@ public class MockRetryExtension extends AbstractRetryExtension {
   }
 
   @Override
-  public boolean isFailedResult(Throwable e) {
+  public boolean isFailedResult(List<String> statusList, Throwable e) {
     return false;
   }
 }

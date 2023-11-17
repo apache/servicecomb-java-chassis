@@ -29,8 +29,8 @@ import javax.net.ssl.SSLHandshakeException;
 
 import com.google.common.collect.ImmutableMap;
 
-import io.vertx.core.VertxException;
 import io.netty.handler.ssl.SslHandshakeTimeoutException;
+import io.vertx.core.VertxException;
 
 public interface FailurePredictor {
   Map<Class<? extends Throwable>, List<String>> STRICT_RETRIABLE =
@@ -49,7 +49,7 @@ public interface FailurePredictor {
 
   boolean isFailedResult(List<String> statusList, Object result);
 
-  default boolean isFailedResult(Throwable e) {
+  default boolean isFailedResult(List<String> statusList, Throwable e) {
     return canRetryForException(STRICT_RETRIABLE, e);
   }
 

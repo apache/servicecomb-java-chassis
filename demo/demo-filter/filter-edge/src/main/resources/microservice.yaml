@@ -58,8 +58,16 @@ servicecomb:
       matches:
         - apiPath:
             exact: "/govern/edgeFlowControl"
+    retry-governance: |
+      matches:
+        - apiPath:
+            prefix: "/retry/governance/"
   rateLimiting:
     edgeFlowControl: |
       timeoutDuration: 0
       limitRefreshPeriod: 1000
       rate: 1
+  retry:
+    retry-governance: |
+      maxAttempts: 2
+      retryOnResponseStatus: [500]

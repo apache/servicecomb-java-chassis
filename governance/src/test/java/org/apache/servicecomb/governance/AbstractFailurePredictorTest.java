@@ -35,8 +35,8 @@ public class AbstractFailurePredictorTest {
     }
 
     @Override
-    public boolean isFailedResult(Throwable e) {
-      return super.isFailedResult(e);
+    public boolean isFailedResult(List<String> statusList, Throwable e) {
+      return super.isFailedResult(statusList, e);
     }
   }
 

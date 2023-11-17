@@ -35,7 +35,7 @@ public class RetryHandlerTest {
     AbstractRetryExtension retryExtension = Mockito.mock(AbstractRetryExtension.class);
     RetryProperties retryProperties = Mockito.mock(RetryProperties.class);
     GovernanceRequest governanceRequest = Mockito.mock(GovernanceRequest.class);
-    Mockito.when(retryExtension.isFailedResult(Mockito.any())).thenReturn(true);
+    Mockito.when(retryExtension.isFailedResult(Mockito.any(), Mockito.any())).thenReturn(true);
 
     RetryPolicy retryPolicy = new RetryPolicy();
     retryPolicy.setName("test");
@@ -53,7 +53,7 @@ public class RetryHandlerTest {
     AbstractRetryExtension retryExtension = Mockito.mock(AbstractRetryExtension.class);
     RetryProperties retryProperties = Mockito.mock(RetryProperties.class);
     GovernanceRequest governanceRequest = Mockito.mock(GovernanceRequest.class);
-    Mockito.when(retryExtension.isFailedResult(Mockito.any())).thenReturn(true);
+    Mockito.when(retryExtension.isFailedResult(Mockito.any(), Mockito.any())).thenReturn(true);
 
     RetryPolicy retryPolicy = new RetryPolicy();
     retryPolicy.setName("test");
@@ -71,7 +71,7 @@ public class RetryHandlerTest {
     AbstractRetryExtension retryExtension = Mockito.mock(AbstractRetryExtension.class);
     RetryProperties retryProperties = Mockito.mock(RetryProperties.class);
     GovernanceRequest governanceRequest = Mockito.mock(GovernanceRequest.class);
-    Mockito.when(retryExtension.isFailedResult(Mockito.any(), Mockito.any())).thenReturn(true);
+    Mockito.when(retryExtension.isFailedResult(Mockito.any(), (Object) Mockito.any())).thenReturn(true);
 
     RetryPolicy retryPolicy = new RetryPolicy();
     retryPolicy.setName("test");
