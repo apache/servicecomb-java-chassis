@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.governance;
 
+import java.util.List;
+
 import org.apache.servicecomb.governance.handler.Disposable;
 import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.apache.servicecomb.governance.handler.ext.AbstractRetryExtension;
