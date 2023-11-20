@@ -30,6 +30,13 @@ public class GovernanceRequest implements GovernanceRequestExtractor {
   private Map<String, String> headers = Collections.emptyMap();
 
   /**
+   * Queries with this request, maybe null.
+   * For provider: Queries indicates the request params to me.
+   * For consumer: Queries indicates the request params to the target.
+   */
+  private Map<String, String> queries = Collections.emptyMap();
+
+  /**
    * api path with this request, maybe null. For REST, e.g. /foo/bar; For RPC, e.g. MySchema.sayHello
    * For provider: uri indicates the request uri to me.
    * For consumer: uri indicates the request uri to the target.
@@ -71,14 +78,29 @@ public class GovernanceRequest implements GovernanceRequestExtractor {
     return headers.get(key);
   }
 
+  @Override
+  public String query(String key) {
+    return queries.get(key);
+  }
+
   public Map<String, String> getHeaders() {
     return headers;
+  }
+
+  public Map<String, String> getQueries() {
+    return queries;
   }
 
   public void setHeaders(Map<String, String> headers) {
     Map<String, String> temp = new LinkedCaseInsensitiveMap<>();
     temp.putAll(headers);
     this.headers = temp;
+  }
+
+  public void setQueries(Map<String, String> queries) {
+    Map<String, String> temp = new LinkedCaseInsensitiveMap<>();
+    temp.putAll(queries);
+    this.queries = temp;
   }
 
   @Override

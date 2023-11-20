@@ -16,10 +16,12 @@
  */
 package org.apache.servicecomb.core.filter;
 
+import org.apache.servicecomb.core.filter.impl.ContextMapperFilter;
 import org.apache.servicecomb.core.filter.impl.ParameterValidatorFilter;
 import org.apache.servicecomb.core.filter.impl.ProviderOperationFilter;
 import org.apache.servicecomb.core.filter.impl.RetryFilter;
 import org.apache.servicecomb.core.filter.impl.ScheduleFilter;
+import org.apache.servicecomb.governance.handler.MapperHandler;
 import org.apache.servicecomb.governance.handler.RetryHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,6 +41,11 @@ public class CoreFilterConfiguration {
   @Bean
   public RetryFilter retryFilter(RetryHandler retryHandler) {
     return new RetryFilter(retryHandler);
+  }
+
+  @Bean
+  public ContextMapperFilter contextMapperFilter(MapperHandler mapperHandler) {
+    return new ContextMapperFilter(mapperHandler);
   }
 
   @Bean

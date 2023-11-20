@@ -20,6 +20,7 @@ package org.apache.servicecomb.core.governance;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 
@@ -71,6 +72,15 @@ public final class MatchType {
       }
 
       return null;
+    }
+
+    @Override
+    public String query(String key) {
+      HttpServletRequestEx requestEx = invocation.getRequestEx();
+      if (requestEx == null) {
+        return null;
+      }
+      return requestEx.getParameter(key);
     }
 
     @Override

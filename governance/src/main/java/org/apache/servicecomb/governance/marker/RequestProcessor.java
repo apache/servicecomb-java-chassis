@@ -64,6 +64,9 @@ public class RequestProcessor implements ApplicationContextAware {
     if (!headersMatch(request, matcher)) {
       return false;
     }
+    if (!queriesMatch(request, matcher)) {
+      return false;
+    }
     if (!serviceNameMatch(request, matcher)) {
       return false;
     }
@@ -84,6 +87,19 @@ public class RequestProcessor implements ApplicationContextAware {
     for (Entry<String, RawOperator> entry : matcher.getHeaders().entrySet()) {
       if (request.header(entry.getKey()) == null ||
           !operatorMatch(request.header(entry.getKey()), entry.getValue())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private boolean queriesMatch(GovernanceRequestExtractor request, Matcher matcher) {
+    if (matcher.getQueries() == null) {
+      return true;
+    }
+    for (Entry<String, RawOperator> entry : matcher.getQueries().entrySet()) {
+      if (request.query(entry.getKey()) == null ||
+          !operatorMatch(request.query(entry.getKey()), entry.getValue())) {
         return false;
       }
     }

@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.governance;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.governance.handler.MapperHandler;
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.processor.mapping.Mapper;
@@ -48,6 +51,17 @@ public class MapperTest {
     Assertions.assertEquals(2, mapper.target().size());
     Assertions.assertEquals("127.0.0.1", mapper.target().get("host"));
     Assertions.assertEquals("8080", mapper.target().get("port"));
+  }
+
+  @Test
+  public void test_mapper_query_work() {
+    GovernanceRequest request = new GovernanceRequest();
+    Map<String, String> queries = new HashMap<>();
+    queries.put("name", "bob");
+    request.setQueries(queries);
+    Mapper mapper = mapperHandler.getActuator(request);
+    Assertions.assertEquals(1, mapper.target().size());
+    Assertions.assertEquals("$Q{name}", mapper.target().get("user-id"));
   }
 
   @Test
