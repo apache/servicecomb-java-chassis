@@ -93,6 +93,11 @@ servicecomb:
       matches:
         - apiPath:
             prefix: "/mapper"
+    demo-mapper-query: |
+      matches:
+        - queries:
+            name: 
+              exact: "bob"
   rateLimiting:
     demo-rateLimiting: |
       rate: 1
@@ -203,6 +208,9 @@ servicecomb:
       target:
         host: 127.0.0.1
         port: 8080
+    demo-mapper-query: |
+      target:
+        user-id: $Q{name}
   mapper2:
     demo-mapper: |
       target:

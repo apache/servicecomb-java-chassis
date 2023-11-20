@@ -23,6 +23,8 @@ public interface GovernanceRequestExtractor {
 
   String header(String key);
 
+  String query(String key);
+
   String instanceId();
 
   String serviceName();

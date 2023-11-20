@@ -26,6 +26,8 @@ public class Matcher {
 
   private Map<String, RawOperator> headers;
 
+  private Map<String, RawOperator> queries;
+
   private RawOperator apiPath;
 
   private List<String> method;
@@ -46,9 +48,16 @@ public class Matcher {
     return headers;
   }
 
-  public void setHeaders(
-      Map<String, RawOperator> headers) {
+  public void setHeaders(Map<String, RawOperator> headers) {
     this.headers = headers;
+  }
+
+  public Map<String, RawOperator> getQueries() {
+    return queries;
+  }
+
+  public void setQueries(Map<String, RawOperator> queries) {
+    this.queries = queries;
   }
 
   public RawOperator getApiPath() {
