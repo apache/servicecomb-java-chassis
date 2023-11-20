@@ -58,14 +58,13 @@ public class ConfigCenterClient implements ConfigCenterOperation {
   }
 
   @Override
-  public QueryConfigurationsResponse queryConfigurations(QueryConfigurationsRequest request) {
+  public QueryConfigurationsResponse queryConfigurations(QueryConfigurationsRequest request, String address) {
     String dimensionsInfo = buildDimensionsInfo(request, true);
     QueryConfigurationsResponse queryConfigurationsResponse = new QueryConfigurationsResponse();
 
     Map<String, Object> configurations = new HashMap<>();
 
     String uri = null;
-    String address = addressManager.address();
     try {
       uri = address + "/configuration/items?dimensionsInfo="
           + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
