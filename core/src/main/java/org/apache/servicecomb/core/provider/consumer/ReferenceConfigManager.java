@@ -17,7 +17,7 @@
 package org.apache.servicecomb.core.provider.consumer;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.SCBEngine;
@@ -141,17 +141,16 @@ public class ReferenceConfigManager {
         .findEdgeChain(application, microserviceName));
     microserviceMeta.setMicroserviceVersionsMeta(microserviceVersionsMeta);
 
-    Set<String> schemaIds = this.openAPIRegistryManager.getSchemaIds(application, microserviceName);
-    Map<String, OpenAPI> schemas = this.openAPIRegistryManager.loadOpenAPI(application, microserviceName, schemaIds);
-    for (String schemaId : schemaIds) {
-      OpenAPI swagger = schemas.get(schemaId);
+    Map<String, OpenAPI> schemas = this.openAPIRegistryManager.loadOpenAPI(application, microserviceName);
+    for (Entry<String, OpenAPI> entry : schemas.entrySet()) {
+      OpenAPI swagger = entry.getValue();
       if (swagger != null) {
-        microserviceMeta.registerSchemaMeta(schemaId, swagger);
+        microserviceMeta.registerSchemaMeta(entry.getKey(), entry.getValue());
         continue;
       }
       throw new InvocationException(Status.INTERNAL_SERVER_ERROR,
           String.format("Swagger %s/%s/%s can not be empty or load swagger failed.",
-              application, microserviceName, schemaId));
+              application, microserviceName, entry.getKey()));
     }
 
     EventManager.getEventBus().post(new CreateMicroserviceMetaEvent(microserviceMeta));

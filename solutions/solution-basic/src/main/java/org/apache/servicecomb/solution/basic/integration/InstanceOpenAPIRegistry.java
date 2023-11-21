@@ -21,7 +21,6 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.Endpoint;
@@ -77,57 +76,13 @@ public class InstanceOpenAPIRegistry implements OpenAPIRegistry {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public Set<String> getSchemaIds(String application, String serviceName) {
-    List<? extends DiscoveryInstance> discoveryInstances =
-        discoveryManager.findServiceInstances(application, serviceName);
-    if (discoveryInstances.isEmpty()) {
-      throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "no instances");
-    }
-    discoveryInstances.sort((a, b) -> VersionCompareUtil.compareVersion(b.getVersion(), a.getVersion()));
-
-    String version = null;
-    for (DiscoveryInstance instance : discoveryInstances) {
-      if (version != null && !version.equals(instance.getVersion())) {
-        break;
-      }
-      version = instance.getVersion();
-      for (String endpoint : instance.getEndpoints()) {
-        URI uri = URI.create(endpoint);
-        String transportName = uri.getScheme();
-        Transport transport = transportManager.findTransport(transportName);
-        if (transport == null) {
-          continue;
-        }
-        // Use myself service name instead of the target. Because can avoid create
-        // MicroserviceReferenceConfig for the target.
-        Invocation invocation = InvokerUtils.createInvocation(BootStrapProperties.readServiceName(environment),
-            transportName,
-            ManagementEndpoint.NAME, "schemaIds",
-            new HashMap<>(), new TypeReference<Set<String>>() {
-            }.getType());
-        invocation.setEndpoint(new Endpoint(transport, endpoint, discoveryInstances.get(0)));
-        try {
-          return (Set<String>) InvokerUtils.syncInvoke(invocation);
-        } catch (InvocationException e) {
-          LOGGER.warn("Get schema ids {}/{}/{} from endpoint {} failed. {}",
-              instance.getApplication(),
-              instance.getServiceName(),
-              instance.getInstanceId(), endpoint, e.getMessage());
-        }
-      }
-    }
-    throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Get schema ids fail from all latest version.");
-  }
-
-  @Override
   public void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api) {
     // do nothing
   }
 
   @Override
   @SuppressWarnings("unchecked")
-  public Map<String, OpenAPI> loadOpenAPI(String application, String serviceName, Set<String> schemaIds) {
+  public Map<String, OpenAPI> loadOpenAPI(String application, String serviceName) {
     List<? extends DiscoveryInstance> discoveryInstances =
         discoveryManager.findServiceInstances(application, serviceName);
     if (discoveryInstances.isEmpty()) {
@@ -150,12 +105,10 @@ public class InstanceOpenAPIRegistry implements OpenAPIRegistry {
         }
         // Use myself service name instead of the target. Because can avoid create
         // MicroserviceReferenceConfig for the target.
-        Map<String, Object> args = new HashMap<>();
-        args.put("schemaIds", schemaIds);
         Invocation invocation = InvokerUtils.createInvocation(BootStrapProperties.readServiceName(environment),
             transportName,
             ManagementEndpoint.NAME, "schemaContents",
-            args, new TypeReference<Map<String, String>>() {
+            new HashMap<>(), new TypeReference<Map<String, String>>() {
             }.getType());
         invocation.setEndpoint(new Endpoint(transport, endpoint, discoveryInstances.get(0)));
         try {

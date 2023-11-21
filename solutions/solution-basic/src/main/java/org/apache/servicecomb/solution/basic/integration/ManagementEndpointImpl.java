@@ -18,21 +18,16 @@ package org.apache.servicecomb.solution.basic.integration;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.util.CollectionUtils;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import jakarta.ws.rs.core.Response.Status;
 
 @RestSchema(schemaId = ManagementEndpoint.NAME, schemaInterface = ManagementEndpoint.class)
 public class ManagementEndpointImpl implements ManagementEndpoint {
@@ -67,33 +62,10 @@ public class ManagementEndpointImpl implements ManagementEndpoint {
   }
 
   @Override
-  public Set<String> schemaIds() {
-    return localOpenAPIRegistry.getSchemaIds(BootStrapProperties.readApplication(environment),
-        BootStrapProperties.readServiceName(environment));
-  }
-
-  @Override
-  public Map<String, String> schemaContents(Set<String> schemaIds) {
-    if (CollectionUtils.isEmpty(schemaIds)) {
-      throw new InvocationException(Status.BAD_REQUEST, "invalid schemaIds parameter.");
-    }
-    checkValid(schemaIds);
-
-    Map<String, OpenAPI> apis = localOpenAPIRegistry.loadOpenAPI(BootStrapProperties.readApplication(environment),
-        BootStrapProperties.readServiceName(environment), schemaIds);
-    if (apis.size() != schemaIds.size()) {
-      throw new InvocationException(Status.BAD_REQUEST, "Not exists schemaIds parameter.");
-    }
+  public Map<String, String> schemaContents() {
+    Map<String, OpenAPI> apis = localOpenAPIRegistry.loadOpenAPI();
     Map<String, String> result = new HashMap<>(apis.size());
     apis.forEach((k, v) -> result.put(k, SwaggerUtils.swaggerToString(v)));
     return result;
-  }
-
-  private void checkValid(Set<String> schemaIds) {
-    for (String schemaId : schemaIds) {
-      if (schemaId.contains("/") || schemaId.contains("\\") || schemaId.contains("..")) {
-        throw new InvocationException(Status.BAD_REQUEST, "invalid schemaIds parameter.");
-      }
-    }
   }
 }

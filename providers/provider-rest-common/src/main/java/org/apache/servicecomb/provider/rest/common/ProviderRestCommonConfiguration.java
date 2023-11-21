@@ -25,9 +25,4 @@ public class ProviderRestCommonConfiguration {
   public RestProducers restProducers() {
     return new RestProducers();
   }
-
-  @Bean
-  public RestConsumerProvider restConsumerProvider() {
-    return new RestConsumerProvider();
-  }
 }

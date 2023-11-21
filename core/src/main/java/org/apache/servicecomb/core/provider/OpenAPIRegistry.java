@@ -17,7 +17,6 @@
 package org.apache.servicecomb.core.provider;
 
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.servicecomb.core.provider.OpenAPIRegistryManager.OpenAPIChangeListener;
 import org.springframework.core.Ordered;
@@ -32,11 +31,9 @@ public interface OpenAPIRegistry extends Ordered {
 
   boolean enabled();
 
-  Set<String> getSchemaIds(String application, String serviceName);
-
   void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api);
 
-  Map<String, OpenAPI> loadOpenAPI(String application, String serviceName, Set<String> schemaIds);
+  Map<String, OpenAPI> loadOpenAPI(String application, String serviceName);
 
   void setOpenAPIChangeListener(OpenAPIChangeListener listener);
 }

@@ -16,9 +16,7 @@
  */
 package org.apache.servicecomb.demo.springmvc.client;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
@@ -149,10 +147,7 @@ public class TestManagementEndpoint implements CategorizedTestCase {
   }
 
   private void testSchemeInterfaceSpringmvcContentCorrect() {
-    Set<String> schemaIds = new HashSet<>();
-    schemaIds.add("SchemeInterfaceSpringmvc");
-    Map<String, String> contents = managementEndpoint.schemaContents(schemaIds);
-    TestMgr.check(1, contents.size());
+    Map<String, String> contents = managementEndpoint.schemaContents();
     TestMgr.check(CONTENT_SCHEMA, contents.get("SchemeInterfaceSpringmvc"));
   }
 }

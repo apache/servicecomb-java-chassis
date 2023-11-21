@@ -17,7 +17,6 @@
 package org.apache.servicecomb.solution.basic.integration;
 
 import java.util.Map;
-import java.util.Set;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
@@ -43,15 +42,11 @@ public interface ManagementEndpoint {
   boolean health(@QueryParam("instanceId") String instanceId, @QueryParam("registryName") String registryName);
 
   /**
-   * Schema ids of this instance.
+   * Schemas of this instance.
    *
    * This api is for internal schema loading usage.
    */
-  @GET
-  @Path("/schema/ids")
-  Set<String> schemaIds();
-
   @POST
   @Path("/schema/contents")
-  Map<String, String> schemaContents(Set<String> schemaIds);
+  Map<String, String> schemaContents();
 }

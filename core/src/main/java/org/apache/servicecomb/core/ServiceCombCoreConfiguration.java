@@ -23,6 +23,7 @@ import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
 import org.apache.servicecomb.core.provider.OpenAPIRegistryManager;
 import org.apache.servicecomb.core.provider.RegistryOpenAPIRegistry;
+import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfigManager;
 import org.apache.servicecomb.core.provider.producer.ProducerBootListener;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -44,6 +45,12 @@ public class ServiceCombCoreConfiguration {
   @Bean
   public SCBEngine scbEngine() {
     return new SCBEngine();
+  }
+
+  @Bean
+  public ConsumerProviderManager consumerProviderManager(Environment environment,
+      OpenAPIRegistryManager openAPIRegistryManager) {
+    return new ConsumerProviderManager(environment, openAPIRegistryManager);
   }
 
   @Bean
