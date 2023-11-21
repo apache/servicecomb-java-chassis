@@ -80,8 +80,6 @@ public class SCBApplicationListener
 
       scbEngine.setPriorityPropertyManager(applicationContext.getBean(PriorityPropertyManager.class));
       scbEngine.setFilterChainsManager(applicationContext.getBean(FilterChainsManager.class));
-      scbEngine.getConsumerProviderManager().getConsumerProviderList()
-          .addAll(applicationContext.getBeansOfType(ConsumerProvider.class).values());
       scbEngine.getProducerProviderManager().getProducerProviderList()
           .addAll(applicationContext.getBeansOfType(ProducerProvider.class).values());
 

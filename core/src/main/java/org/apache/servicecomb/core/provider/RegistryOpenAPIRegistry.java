@@ -17,10 +17,8 @@
 package org.apache.servicecomb.core.provider;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.servicecomb.core.provider.OpenAPIRegistryManager.OpenAPIChangeListener;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -60,33 +58,12 @@ public class RegistryOpenAPIRegistry implements OpenAPIRegistry {
   }
 
   @Override
-  public Set<String> getSchemaIds(String application, String serviceName) {
-    List<? extends DiscoveryInstance> discoveryInstances =
-        discoveryManager.findServiceInstances(application, serviceName);
-    if (discoveryInstances.isEmpty()) {
-      throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "no instances");
-    }
-    discoveryInstances.sort((a, b) -> VersionCompareUtil.compareVersion(b.getVersion(), a.getVersion()));
-
-    Set<String> result = new HashSet<>();
-    String version = null;
-    for (DiscoveryInstance instance : discoveryInstances) {
-      if (version != null && !version.equals(instance.getVersion())) {
-        break;
-      }
-      version = instance.getVersion();
-      result.addAll(instance.getSchemas().keySet());
-    }
-    return result;
-  }
-
-  @Override
   public void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api) {
     // do noting
   }
 
   @Override
-  public Map<String, OpenAPI> loadOpenAPI(String application, String serviceName, Set<String> schemaIds) {
+  public Map<String, OpenAPI> loadOpenAPI(String application, String serviceName) {
     List<? extends DiscoveryInstance> discoveryInstances =
         discoveryManager.findServiceInstances(application, serviceName);
     if (discoveryInstances.isEmpty()) {

@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
@@ -75,16 +74,6 @@ public class OpenAPIRegistryManager {
     }
   }
 
-  public Set<String> getSchemaIds(String application, String serviceName) {
-    for (OpenAPIRegistry registry : this.openAPIRegistries) {
-      Set<String> content = registry.getSchemaIds(application, serviceName);
-      if (!CollectionUtils.isEmpty(content)) {
-        return content;
-      }
-    }
-    return Collections.emptySet();
-  }
-
   public void registerOpenAPI(String application, String serviceName, String schemaId, OpenAPI api) {
     for (OpenAPIRegistry registry : this.openAPIRegistries) {
       registry.registerOpenAPI(application, serviceName, schemaId, api);
@@ -115,10 +104,10 @@ public class OpenAPIRegistryManager {
     }
   }
 
-  public Map<String, OpenAPI> loadOpenAPI(String appId, String microserviceName, Set<String> schemaIds) {
+  public Map<String, OpenAPI> loadOpenAPI(String appId, String microserviceName) {
     for (OpenAPIRegistry registry : this.openAPIRegistries) {
-      Map<String, OpenAPI> result = registry.loadOpenAPI(appId, microserviceName, schemaIds);
-      if (!CollectionUtils.isEmpty(result) && result.size() == schemaIds.size()) {
+      Map<String, OpenAPI> result = registry.loadOpenAPI(appId, microserviceName);
+      if (!CollectionUtils.isEmpty(result)) {
         return result;
       }
     }

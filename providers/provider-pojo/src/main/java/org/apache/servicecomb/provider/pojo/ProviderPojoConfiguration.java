@@ -23,10 +23,6 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ProviderPojoConfiguration {
-  @Bean
-  public PojoConsumerProvider pojoConsumerProvider() {
-    return new PojoConsumerProvider();
-  }
 
   @Bean
   public RpcReferenceProcessor rpcReferenceProcessor() {

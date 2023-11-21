@@ -76,7 +76,7 @@ public class SCBEngine {
 
   private ProducerProviderManager producerProviderManager;
 
-  private ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
+  private ConsumerProviderManager consumerProviderManager;
 
   private MicroserviceMeta producerMicroserviceMeta;
 
@@ -175,6 +175,11 @@ public class SCBEngine {
   }
 
   @Autowired
+  public void setConsumerProviderManager(ConsumerProviderManager consumerProviderManager) {
+    this.consumerProviderManager = consumerProviderManager;
+  }
+
+  @Autowired
   public void setExecutorManager(ExecutorManager executorManager) {
     this.executorManager = executorManager;
   }
@@ -244,11 +249,6 @@ public class SCBEngine {
 
   public ConsumerProviderManager getConsumerProviderManager() {
     return consumerProviderManager;
-  }
-
-  public SCBEngine setConsumerProviderManager(ConsumerProviderManager consumerProviderManager) {
-    this.consumerProviderManager = consumerProviderManager;
-    return this;
   }
 
   public TransportManager getTransportManager() {
