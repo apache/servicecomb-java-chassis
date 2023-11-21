@@ -80,7 +80,7 @@ class ZipkinProviderDelegate implements ZipkinTracingDelegate {
   }
 
   @Override
-  public Span createSpan(Invocation invocation) {
+  public synchronized Span createSpan(Invocation invocation) {
     return handler.handleReceive(requestWrapper.invocation(invocation));
   }
 

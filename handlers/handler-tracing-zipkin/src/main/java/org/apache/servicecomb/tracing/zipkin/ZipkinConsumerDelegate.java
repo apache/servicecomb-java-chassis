@@ -50,7 +50,7 @@ class ZipkinConsumerDelegate implements ZipkinTracingDelegate {
   }
 
   @Override
-  public Span createSpan(Invocation invocation) {
+  public synchronized Span createSpan(Invocation invocation) {
     return handler.handleSend(requestWrapper.invocation(invocation));
   }
 
