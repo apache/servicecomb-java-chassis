@@ -25,7 +25,6 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 import io.swagger.v3.oas.models.OpenAPI;
 
@@ -35,8 +34,6 @@ public class ManagementEndpointImpl implements ManagementEndpoint {
 
   private LocalOpenAPIRegistry localOpenAPIRegistry;
 
-  private Environment environment;
-
   @Autowired
   public void setRegistrationManager(RegistrationManager registrationManager) {
     this.registrationManager = registrationManager;
@@ -45,11 +42,6 @@ public class ManagementEndpointImpl implements ManagementEndpoint {
   @Autowired
   public void setLocalOpenAPIRegistry(LocalOpenAPIRegistry localOpenAPIRegistry) {
     this.localOpenAPIRegistry = localOpenAPIRegistry;
-  }
-
-  @Autowired
-  public void setEnvironment(Environment environment) {
-    this.environment = environment;
   }
 
   @Override
