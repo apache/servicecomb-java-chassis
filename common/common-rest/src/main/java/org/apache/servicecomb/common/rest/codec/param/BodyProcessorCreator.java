@@ -249,7 +249,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
     }
 
     /**
-     * Deserialize body object into body buffer, according to the Content-Type.
+     * Serialize body object into body buffer, according to the Content-Type.
      */
     private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
       if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {

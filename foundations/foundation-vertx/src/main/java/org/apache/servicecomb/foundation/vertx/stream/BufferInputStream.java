@@ -20,10 +20,9 @@ package org.apache.servicecomb.foundation.vertx.stream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import io.netty.buffer.ByteBuf;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
-
-import io.netty.buffer.ByteBuf;
 
 public class BufferInputStream extends ServletInputStream {
   private final ByteBuf byteBuf;
@@ -83,12 +82,16 @@ public class BufferInputStream extends ServletInputStream {
   @Override
   public int read(byte[] b, int off, int len) {
     int avail = available();
-    if (len > avail) {
-      len = avail;
+    if (avail <= 0) {
+      return -1;
     }
 
     if (len == 0) {
-      return -1;
+      return 0;
+    }
+
+    if (len > avail) {
+      len = avail;
     }
 
     byteBuf.readBytes(b, off, len);
