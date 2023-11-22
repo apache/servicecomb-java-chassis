@@ -40,10 +40,17 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.executable.ExecutableValidator;
 import jakarta.validation.groups.Default;
 
 public class ParameterValidatorFilter extends AbstractFilter implements ProviderFilter, InitializingBean {
+  private static class Model {
+    public void method(@NotNull String text) {
+
+    }
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 
   public static final String NAME = "validator";
@@ -66,6 +73,18 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
   public void afterPropertiesSet() {
     validator = createValidatorFactory()
         .getValidator().forExecutables();
+    initValidate();
+  }
+
+  private void initValidate() {
+    try {
+      Model instance = new Model();
+      Method method = Model.class.getMethod("method", String.class);
+      Object[] args = new String[] {"validate"};
+      validator.validateParameters(instance, method, args, Default.class);
+    } catch (Throwable e) {
+      throw new IllegalStateException(e);
+    }
   }
 
   protected ValidatorFactory createValidatorFactory() {

@@ -29,7 +29,8 @@ import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_
 import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_PROVIDER_SEND;
 import static org.apache.servicecomb.core.invocation.InvocationStageTrace.STAGE_TOTAL;
 
-import java.util.Map.Entry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.common.rest.RestConst;
@@ -40,7 +41,6 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.core.invocation.InvocationStageTrace.Stage;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -114,11 +114,12 @@ public class SlowInvocationLogger {
         .append(formatPair("    ", STAGE_PROVIDER_ENCODE_RESPONSE, stageTrace.calcProviderEncodeResponse()))
         .append(formatPair("    ", STAGE_PROVIDER_SEND, stageTrace.calcProviderSendResponse()));
 
-    for (Entry<String, Stage> stage : stageTrace.getStages().entrySet()) {
-      sb.append(formatPair("    ", "Filter-" + stage.getKey(),
-          InvocationStageTrace.calc(stage.getValue().getEndTime(),
-              stage.getValue().getBeginTime())));
-    }
+    List<String> sorted = new ArrayList<>(stageTrace.getStages().keySet());
+    sorted.stream().sorted().forEach(key -> {
+      sb.append(formatPair("    ", key,
+          InvocationStageTrace.calc(stageTrace.getStages().get(key).getEndTime(),
+              stageTrace.getStages().get(key).getBeginTime())));
+    });
 
     LOGGER.warn(sb.toString());
   }
@@ -150,11 +151,12 @@ public class SlowInvocationLogger {
         .append(formatPair("    ", STAGE_CONSUMER_WAIT, stageTrace.calcWait()))
         .append(formatPair("    ", STAGE_CONSUMER_DECODE_RESPONSE, stageTrace.calcConsumerDecodeResponse()));
 
-    for (Entry<String, Stage> stage : stageTrace.getStages().entrySet()) {
-      sb.append(formatPair("    ", "Filter-" + stage.getKey(),
-          InvocationStageTrace.calc(stage.getValue().getEndTime(),
-              stage.getValue().getBeginTime())));
-    }
+    List<String> sorted = new ArrayList<>(stageTrace.getStages().keySet());
+    sorted.stream().sorted().forEach(key -> {
+      sb.append(formatPair("    ", key,
+          InvocationStageTrace.calc(stageTrace.getStages().get(key).getEndTime(),
+              stageTrace.getStages().get(key).getBeginTime())));
+    });
 
     LOGGER.warn(sb.toString());
   }
@@ -182,11 +184,12 @@ public class SlowInvocationLogger {
         .append(formatPair("    ", STAGE_PROVIDER_SEND, stageTrace.calcProviderSendResponse()))
     ;
 
-    for (Entry<String, Stage> stage : stageTrace.getStages().entrySet()) {
-      sb.append(formatPair("    ", "Filter-" + stage.getKey(),
-          InvocationStageTrace.calc(stage.getValue().getEndTime(),
-              stage.getValue().getBeginTime())));
-    }
+    List<String> sorted = new ArrayList<>(stageTrace.getStages().keySet());
+    sorted.stream().sorted().forEach(key -> {
+      sb.append(formatPair("    ", key,
+          InvocationStageTrace.calc(stageTrace.getStages().get(key).getEndTime(),
+              stageTrace.getStages().get(key).getBeginTime())));
+    });
 
     LOGGER.warn(sb.toString());
   }
