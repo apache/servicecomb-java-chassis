@@ -87,6 +87,7 @@ public class DiscoveryManager implements LifeCycle {
         }
       };
       thread.setPriority(Thread.MIN_PRIORITY);
+      thread.setDaemon(true);
       return thread;
     });
   }
@@ -104,7 +105,7 @@ public class DiscoveryManager implements LifeCycle {
             changed = true;
           }
           // check ping status
-          if (System.currentTimeMillis() - instance.getPingTime() > 180_000L) {
+          if (System.currentTimeMillis() - instance.getPingTime() > 60_000L) {
             boolean pingResult = ping.ping(instance);
             if (pingResult && instance.getPingStatus() != PingStatus.OK) {
               instance.setPingStatus(PingStatus.OK);

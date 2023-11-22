@@ -84,7 +84,8 @@ public class InstanceOpenAPIRegistry implements OpenAPIRegistry {
   @SuppressWarnings("unchecked")
   public Map<String, OpenAPI> loadOpenAPI(String application, String serviceName) {
     List<? extends DiscoveryInstance> discoveryInstances =
-        discoveryManager.findServiceInstances(application, serviceName);
+        discoveryManager.getOrCreateVersionedCache(application, serviceName).data();
+
     if (discoveryInstances.isEmpty()) {
       throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "no instances");
     }

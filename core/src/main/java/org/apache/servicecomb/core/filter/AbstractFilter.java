@@ -56,7 +56,7 @@ public abstract class AbstractFilter implements Filter, EnvironmentAware {
   @Override
   public String getNameWithOrder() {
     if (nameWithOrder == null) {
-      nameWithOrder = getName() + "(" + getOrder() + ")";
+      nameWithOrder = String.format("F(%1$06d)-%2$s", getOrder(), getName());
     }
     return nameWithOrder;
   }

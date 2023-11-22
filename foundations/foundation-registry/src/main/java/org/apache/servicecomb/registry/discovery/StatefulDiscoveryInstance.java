@@ -56,7 +56,7 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private PingStatus pingStatus = PingStatus.UNKNOWN;
 
-  private long pingTime = 0;
+  private long pingTime = System.currentTimeMillis();
 
   private HistoryStatus historyStatus = HistoryStatus.CURRENT;
 
