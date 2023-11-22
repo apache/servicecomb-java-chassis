@@ -38,16 +38,32 @@ import org.springframework.beans.factory.InitializingBean;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validation;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.executable.ExecutableValidator;
 import jakarta.validation.groups.Default;
 
 public class ParameterValidatorFilter extends AbstractFilter implements ProviderFilter, InitializingBean {
-  private static class Model {
-    public void method(@NotNull String text) {
+  private static class Service {
+    @SuppressWarnings("unused")
+    public void service(@Valid Model model) {
 
+    }
+  }
+
+  private static class Model {
+    @NotNull
+    String name;
+
+    @Min(10)
+    int age;
+
+    Model(String name, int age) {
+      this.name = name;
+      this.age = age;
     }
   }
 
@@ -77,10 +93,13 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
   }
 
   private void initValidate() {
+    // This method is intended to make first rpc call faster
+    // Because validation cache bean class, this way only make first rpc call a little faster.
     try {
-      Model instance = new Model();
-      Method method = Model.class.getMethod("method", String.class);
-      Object[] args = new String[] {"validate"};
+      Model model = new Model("foo", 23);
+      Service instance = new Service();
+      Method method = Service.class.getMethod("service", Model.class);
+      Object[] args = new Object[] {model};
       validator.validateParameters(instance, method, args, Default.class);
     } catch (Throwable e) {
       throw new IllegalStateException(e);
@@ -119,9 +138,7 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
 
   protected Set<ConstraintViolation<Object>> doValidate(Invocation invocation) {
     SwaggerProducerOperation producerOperation = invocation.getOperationMeta().getSwaggerProducerOperation();
-    Object instance = producerOperation.getProducerInstance();
-    Method method = producerOperation.getProducerMethod();
-    Object[] args = invocation.toProducerArguments();
-    return validator.validateParameters(instance, method, args, Default.class);
+    return validator.validateParameters(producerOperation.getProducerInstance(), producerOperation.getProducerMethod(),
+        invocation.toProducerArguments(), Default.class);
   }
 }

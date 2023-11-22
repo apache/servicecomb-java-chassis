@@ -62,14 +62,13 @@ public class FilterNode {
   }
 
   public CompletableFuture<Response> onFilter(Invocation invocation) {
-    String stage = invocation.getInvocationStageTrace().recordStageBegin(this.filter.getNameWithOrder());
-    // When transport name is empty, maybe edge and transport filters need to be executed.
-    // And we can't set Endpoint before load balance in edge.
+    // When transport name is empty, maybe edge transport filters need to be executed.
+    // Can't set Endpoint before load balance in edge.
     if (invocation.getTransportName() != null && !filter.enabledForTransport(invocation.getTransportName())) {
-      return nextNode.onFilter(invocation)
-          .whenComplete((r, e) -> invocation.getInvocationStageTrace().recordStageEnd(stage));
+      return nextNode.onFilter(invocation);
     }
 
+    String stage = invocation.getInvocationStageTrace().recordStageBegin(this.filter.getNameWithOrder());
     return AsyncUtils.tryCatchSupplierFuture(() -> filter.onFilter(invocation, nextNode)
             .whenComplete((r, e) -> invocation.getInvocationStageTrace().recordStageEnd(stage)))
         .thenApply(this::rethrowExceptionInResponse);

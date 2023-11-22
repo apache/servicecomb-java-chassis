@@ -162,7 +162,7 @@ public class InvocationStageTrace {
 
   public String recordStageBegin(String stageName) {
     String realStageName = stageName;
-    if (stages.get(stageName) != null) {
+    while (stages.get(realStageName) != null) {
       realStageName = realStageName + "@";
     }
     Stage stage = new Stage();
