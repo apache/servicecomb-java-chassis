@@ -25,10 +25,6 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-import com.netflix.spectator.api.SpectatorUtils;
-
-import io.micrometer.core.instrument.Meter.Id;
-import io.micrometer.core.instrument.Meter.Type;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 
@@ -68,20 +64,16 @@ public abstract class AbstractInvocationMeters {
     }
 
     return metersMap.computeIfAbsent(keyBuilder.toString(), k -> {
-      Id id = new Id(MeterInvocationConst.INVOCATION_NAME, Tags.empty()
+      AbstractInvocationMeter meter = createMeter(MeterInvocationConst.INVOCATION_NAME, Tags.empty()
           .and(MeterInvocationConst.TAG_ROLE, invocationName)
           .and(MeterInvocationConst.TAG_TRANSPORT, invocation.getRealTransportName())
           .and(MeterInvocationConst.TAG_OPERATION, invocation.getMicroserviceQualifiedName())
-          .and(MeterInvocationConst.TAG_STATUS, String.valueOf(response.getStatusCode())),
-          null, null, Type.OTHER);
-
-      AbstractInvocationMeter meter = createMeter(id);
-      SpectatorUtils.registerMeter(registry, meter);
+          .and(MeterInvocationConst.TAG_STATUS, String.valueOf(response.getStatusCode())));
       return meter;
     });
   }
 
-  protected abstract AbstractInvocationMeter createMeter(Id id);
+  protected abstract AbstractInvocationMeter createMeter(String name, Tags tags);
 
   public void onInvocationStart(InvocationStartEvent event) {
   }

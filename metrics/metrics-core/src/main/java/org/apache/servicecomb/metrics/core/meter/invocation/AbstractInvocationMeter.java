@@ -16,81 +16,65 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
-import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionMeter;
-import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
-import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
 
-
-public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
-
+public abstract class AbstractInvocationMeter {
   //total time
-  private final SimpleTimer totalTimer;
+  private final Timer totalTimer;
 
   // prepare time
-  private final SimpleTimer prepareTimer;
-
-  // latency distribution
-  private final LatencyDistributionMeter latencyDistributionMeter;
+  private final Timer prepareTimer;
 
   protected final MetricsBootstrapConfig metricsBootstrapConfig;
 
-  public AbstractInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
-    this.id = id;
+  public AbstractInvocationMeter(MeterRegistry meterRegistry, String name, Tags tags,
+      MetricsBootstrapConfig metricsBootstrapConfig) {
     this.metricsBootstrapConfig = metricsBootstrapConfig;
-    latencyDistributionMeter = createLatencyDistribution(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
-    totalTimer = createStageTimer(InvocationStageTrace.STAGE_TOTAL);
-    prepareTimer = createStageTimer(InvocationStageTrace.STAGE_PREPARE);
+
+    Timer.Builder totalBuilder = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_TOTAL));
+    if (!StringUtils.isEmpty(metricsBootstrapConfig.getLatencyDistribution())) {
+      totalBuilder.sla(toDuration(metricsBootstrapConfig.getLatencyDistribution()));
+    }
+    this.totalTimer = totalBuilder.register(meterRegistry);
+    this.prepareTimer = Timer.builder(name).tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE
+        , MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_PREPARE)).register(meterRegistry);
   }
 
-  protected LatencyDistributionMeter createLatencyDistribution(String tagValue) {
-    return new LatencyDistributionMeter(id.withTag(MeterInvocationConst.TAG_TYPE, tagValue),
-        metricsBootstrapConfig.getLatencyDistribution());
-  }
+  protected static Duration[] toDuration(String config) {
+    config = config.trim() + "," + Long.MAX_VALUE;
+    String[] array = config.split("\\s*,+\\s*");
+    Duration[] result = new Duration[array.length];
 
-  protected SimpleTimer createStageTimer(String stageValue) {
-    return createTimer(id.withTag(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE)
-        .withTag(MeterInvocationConst.TAG_STAGE, stageValue));
-  }
+    for (int idx = 0; idx < array.length - 1; idx++) {
+      long msMin = Long.parseLong(array[idx]);
+      long msMax = Long.parseLong(array[idx + 1]);
+      if (msMin >= msMax) {
+        String msg = String.format("invalid latency scope, min=%s, max=%s.", array[idx], array[idx + 1]);
+        throw new IllegalStateException(msg);
+      }
 
-  protected SimpleTimer createTimer(String tagKey, String tagValue) {
-    return createTimer(id.withTag(tagKey, tagValue));
-  }
+      result[idx] = Duration.ofMillis(msMin);
+    }
+    result[array.length - 1] = Duration.ofMillis(Long.MAX_VALUE);
 
-  protected SimpleTimer createTimer(Id timerId) {
-    return new SimpleTimer(timerId);
+    return result;
   }
 
   public void onInvocationFinish(InvocationFinishEvent event) {
     InvocationStageTrace stageTrace = event.getInvocation().getInvocationStageTrace();
-    latencyDistributionMeter.record(stageTrace.calcTotal());
-    totalTimer.record(stageTrace.calcTotal());
-    prepareTimer.record(stageTrace.calcPrepare());
-  }
-
-  @Override
-  public void calcMeasurements(long msNow, long secondInterval) {
-    List<Measurement> measurements = new ArrayList<>(3);
-    calcMeasurements(measurements, msNow, secondInterval);
-    allMeasurements = measurements;
-  }
-
-  @Override
-  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
-    latencyDistributionMeter.calcMeasurements(measurements, msNow, secondInterval);
-    totalTimer.calcMeasurements(measurements, msNow, secondInterval);
-    prepareTimer.calcMeasurements(measurements, msNow, secondInterval);
-  }
-
-  @Override
-  public boolean hasExpired() {
-    return super.hasExpired();
+    totalTimer.record(stageTrace.calcTotal(), TimeUnit.NANOSECONDS);
+    prepareTimer.record(stageTrace.calcPrepare(), TimeUnit.NANOSECONDS);
   }
 }
