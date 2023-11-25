@@ -16,7 +16,8 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
-import com.netflix.spectator.api.Id;
+
+import io.micrometer.core.instrument.Meter.Id;
 
 public abstract class AbstractCpuUsage {
 

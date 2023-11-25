@@ -18,16 +18,16 @@ package org.apache.servicecomb.metrics.core;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.metrics.core.meter.vertx.HttpClientEndpointsMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.ServerEndpointsMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.VertxEndpointsMeter;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.SpectatorUtils;
+
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 
 public class VertxMetersInitializer implements MetricsInitializer {
   public static final String VERTX_ENDPOINTS = "servicecomb.vertx.endpoints";
@@ -39,23 +39,19 @@ public class VertxMetersInitializer implements MetricsInitializer {
   public static final String ENDPOINTS_SERVER = "server";
 
   @Override
-  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    Registry registry = globalRegistry.getDefaultRegistry();
-
-    Id endpointsId = registry.createId(VERTX_ENDPOINTS);
+  public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    Id endpointsId = new Id(VERTX_ENDPOINTS, null, null, null, null);
     VertxEndpointsMeter clientMeter = new HttpClientEndpointsMeter(
-        endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_CLINET),
+        endpointsId.withTag(Tag.of(ENDPOINTS_TYPE, ENDPOINTS_CLINET)),
         SharedVertxFactory.getMetricsFactory(config.getEnvironment())
             .getVertxMetrics()
             .getClientEndpointMetricManager()
             .getClientEndpointMetricMap());
-    SpectatorUtils.registerMeter(registry, clientMeter);
 
     VertxEndpointsMeter serverMeter = new ServerEndpointsMeter(
-        endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_SERVER),
+        endpointsId.withTag(Tag.of(ENDPOINTS_TYPE, ENDPOINTS_SERVER)),
         SharedVertxFactory.getMetricsFactory(config.getEnvironment())
             .getVertxMetrics()
             .getServerEndpointMetricMap());
-    SpectatorUtils.registerMeter(registry, serverMeter);
   }
 }

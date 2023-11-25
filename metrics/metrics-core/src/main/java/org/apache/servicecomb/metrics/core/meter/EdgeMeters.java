@@ -21,14 +21,14 @@ import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.metrics.core.meter.invocation.AbstractInvocationMeters;
 import org.apache.servicecomb.metrics.core.meter.invocation.EdgeInvocationMeters;
 
-import com.netflix.spectator.api.Registry;
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class EdgeMeters {
   private final AbstractInvocationMeters invocationMeters;
 
 
-  public EdgeMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
-    this.invocationMeters = new EdgeInvocationMeters(registry, metricsBootstrapConfig);
+  public EdgeMeters(MeterRegistry meterRegistry, MetricsBootstrapConfig metricsBootstrapConfig) {
+    this.invocationMeters = new EdgeInvocationMeters(meterRegistry, metricsBootstrapConfig);
   }
 
   public AbstractInvocationMeters getInvocationMeters() {

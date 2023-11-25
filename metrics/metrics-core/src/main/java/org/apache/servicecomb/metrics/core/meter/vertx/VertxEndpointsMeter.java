@@ -24,17 +24,21 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class VertxEndpointsMeter extends AbstractPeriodMeter {
   private final Map<String, DefaultEndpointMetric> endpointMetricMap;
 
+  private final MeterRegistry meterRegistry;
+
   private final Map<String, EndpointMeter> endpointMeterMap = new ConcurrentHashMapEx<>();
 
   @SuppressWarnings("unchecked")
-  public <T extends DefaultEndpointMetric> VertxEndpointsMeter(Id id, Map<String, T> endpointMetricMap) {
+  public <T extends DefaultEndpointMetric> VertxEndpointsMeter(MeterRegistry meterRegistry, Id id,
+      Map<String, T> endpointMetricMap) {
     this.id = id;
+    this.meterRegistry = meterRegistry;
     this.endpointMetricMap = (Map<String, DefaultEndpointMetric>) endpointMetricMap;
   }
 

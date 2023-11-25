@@ -26,8 +26,8 @@ import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
 import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionMeter;
 import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
+
 
 public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
 

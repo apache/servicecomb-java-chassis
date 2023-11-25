@@ -16,19 +16,16 @@
  */
 package org.apache.servicecomb.foundation.metrics;
 
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-
 import com.google.common.eventbus.EventBus;
+
+import io.micrometer.core.instrument.MeterRegistry;
 
 public interface MetricsInitializer {
   default int getOrder() {
     return 0;
   }
 
-  /**
-   * if create new registry, must add to globalRegistry
-   */
-  void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config);
+  void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config);
 
   default void destroy() {
 

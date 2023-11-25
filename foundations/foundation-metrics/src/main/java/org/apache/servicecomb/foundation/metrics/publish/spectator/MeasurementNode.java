@@ -21,7 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
 
 public class MeasurementNode implements Comparable<MeasurementNode> {
   private final String name;
@@ -84,7 +84,7 @@ public class MeasurementNode implements Comparable<MeasurementNode> {
   public double summary() {
     double result = 0;
     for (Measurement measurement : measurements) {
-      result += measurement.value();
+      result += measurement.getValue();
     }
 
     return result;

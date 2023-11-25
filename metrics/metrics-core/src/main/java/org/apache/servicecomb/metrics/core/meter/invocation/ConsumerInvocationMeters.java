@@ -18,12 +18,12 @@ package org.apache.servicecomb.metrics.core.meter.invocation;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Registry;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class ConsumerInvocationMeters extends AbstractInvocationMeters {
-  public ConsumerInvocationMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
-    super(registry, metricsBootstrapConfig);
+  public ConsumerInvocationMeters(MeterRegistry meterRegistry, MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(meterRegistry, metricsBootstrapConfig);
   }
 
   @Override

@@ -21,10 +21,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Statistic;
-import com.netflix.spectator.impl.AtomicDouble;
+
+import io.micrometer.core.instrument.Measurement;
 
 /**
  * ServoTimer is too slow

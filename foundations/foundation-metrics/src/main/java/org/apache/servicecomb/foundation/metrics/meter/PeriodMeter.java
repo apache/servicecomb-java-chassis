@@ -18,8 +18,9 @@ package org.apache.servicecomb.foundation.metrics.meter;
 
 import java.util.List;
 
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+
 
 public interface PeriodMeter extends Meter {
   void calcMeasurements(long msNow, long secondInterval);

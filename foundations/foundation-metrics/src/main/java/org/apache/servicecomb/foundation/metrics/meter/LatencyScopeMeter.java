@@ -19,8 +19,10 @@ package org.apache.servicecomb.foundation.metrics.meter;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.LongAdder;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Tag;
 
 public class LatencyScopeMeter {
   private final Id scopeId;
@@ -36,8 +38,8 @@ public class LatencyScopeMeter {
   public LatencyScopeMeter(Id latencyDistributionId, LatencyScopeConfig config) {
     nanoMin = TimeUnit.MILLISECONDS.toNanos(config.getMsMin());
     nanoMax = TimeUnit.MILLISECONDS.toNanos(config.getMsMax());
-    scopeId = latencyDistributionId.withTag("scope",
-        String.format("[%d,%s)", config.getMsMin(), config.getMsMax() == Long.MAX_VALUE ? "" : config.getMsMax()));
+    scopeId = latencyDistributionId.withTag(Tag.of("scope",
+        String.format("[%d,%s)", config.getMsMin(), config.getMsMax() == Long.MAX_VALUE ? "" : config.getMsMax())));
   }
 
   public boolean update(long nanoLatency) {
@@ -54,6 +56,6 @@ public class LatencyScopeMeter {
     long deltaTimes = currentTimes - lastTimes;
     this.lastTimes = currentTimes;
 
-    return new Measurement(scopeId, msNow, deltaTimes);
+    return new Measurement(() -> deltaTimes, Statistic.VALUE);
   }
 }

@@ -16,99 +16,19 @@
  */
 package org.apache.servicecomb.foundation.metrics.registry;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
-import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 
-import com.netflix.spectator.api.Clock;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.SpectatorUtils;
+import io.micrometer.core.instrument.MeterRegistry;
+
 
 public class GlobalRegistry {
-  private final Clock clock;
+  private final MeterRegistry meterRegistry;
 
-  private final List<Registry> registries = new CopyOnWriteArrayList<>();
-
-  private Registry defaultRegistry;
-
-  public GlobalRegistry() {
-    this(Clock.SYSTEM);
-  }
-
-  public GlobalRegistry(Clock clock) {
-    this.clock = clock;
-  }
-
-  public Clock getClock() {
-    return clock;
-  }
-
-  public List<Registry> getRegistries() {
-    return registries;
-  }
-
-  public Registry getDefaultRegistry() {
-    return defaultRegistry;
-  }
-
-  public synchronized void add(Registry registry) {
-    if (registries.isEmpty()) {
-      defaultRegistry = registry;
-    }
-    registries.add(registry);
-  }
-
-  public synchronized void remove(Registry registry) {
-    registries.remove(registry);
-    if (registry != defaultRegistry) {
-      return;
-    }
-
-    if (registries.isEmpty()) {
-      defaultRegistry = null;
-      return;
-    }
-
-    defaultRegistry = registries.get(0);
-  }
-
-  public synchronized void removeAll() {
-    registries.clear();
-    defaultRegistry = null;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T extends Registry> T find(Class<T> cls) {
-    for (Registry registry : registries) {
-      if (cls.isAssignableFrom(registry.getClass())) {
-        return (T) registry;
-      }
-    }
-    return null;
+  public GlobalRegistry(MeterRegistry meterRegistry) {
+    this.meterRegistry = meterRegistry;
   }
 
   public PolledEvent poll(long secondInterval) {
-    long msNow = clock.wallTime();
-    List<Meter> meters = new ArrayList<>();
-    List<Measurement> measurements = new ArrayList<>();
-    for (Registry registry : registries) {
-      SpectatorUtils.removeExpiredMeters(registry);
-
-      for (Meter meter : registry) {
-        if (meter instanceof PeriodMeter) {
-          ((PeriodMeter) meter).calcMeasurements(msNow, secondInterval);
-        }
-
-        meters.add(meter);
-        meter.measure().forEach(measurements::add);
-      }
-    }
-
-    return new PolledEvent(meters, measurements);
+    return new PolledEvent(this.meterRegistry.getMeters());
   }
 }

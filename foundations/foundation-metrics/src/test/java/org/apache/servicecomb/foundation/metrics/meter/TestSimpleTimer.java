@@ -16,12 +16,15 @@
  */
 package org.apache.servicecomb.foundation.metrics.meter;
 
-import com.netflix.spectator.api.SpectatorUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Meter.Type;
+import io.micrometer.core.instrument.Tags;
+
 public class TestSimpleTimer {
-  SimpleTimer timer = new SimpleTimer(SpectatorUtils.createDefaultId("name"));
+  SimpleTimer timer = new SimpleTimer(new Id("test", Tags.empty(), null, null, Type.TIMER));
 
   @Test
   public void measure() {
@@ -35,6 +38,6 @@ public class TestSimpleTimer {
         "[Measurement(name:statistic=count,1,1.0), Measurement(name:statistic=totalTime,1,3.0000000000000004E-9), Measurement(name:statistic=max,1,4.0E-9)]",
         timer.measure().toString());
     Assertions.assertFalse(timer.hasExpired());
-    Assertions.assertEquals("name", timer.id().name());
+    Assertions.assertEquals("name", timer.id().getName());
   }
 }

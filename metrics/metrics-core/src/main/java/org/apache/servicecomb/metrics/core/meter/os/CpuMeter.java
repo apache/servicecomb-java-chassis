@@ -23,8 +23,11 @@ import org.apache.servicecomb.metrics.core.meter.os.cpu.ProcessCpuUsage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Tag;
+
 
 public class CpuMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CpuMeter.class);
@@ -36,8 +39,8 @@ public class CpuMeter {
   private final ProcessCpuUsage processCpuUsage;
 
   public CpuMeter(Id id) {
-    allCpuUsage = new OsCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU));
-    processCpuUsage = new ProcessCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU));
+    allCpuUsage = new OsCpuUsage(id.withTag(Tag.of(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU)));
+    processCpuUsage = new ProcessCpuUsage(id.withTag(Tag.of(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU)));
 
     //must refresh all first
     update();
@@ -47,8 +50,8 @@ public class CpuMeter {
 
   public void calcMeasurements(List<Measurement> measurements, long msNow) {
     update();
-    measurements.add(new Measurement(allCpuUsage.getId(), msNow, allCpuUsage.getUsage()));
-    measurements.add(new Measurement(processCpuUsage.getId(), msNow, processCpuUsage.getUsage()));
+    measurements.add(new Measurement(() -> allCpuUsage.getUsage(), Statistic.VALUE));
+    measurements.add(new Measurement(() -> processCpuUsage.getUsage(), Statistic.VALUE));
   }
 
   public void update() {
