@@ -19,8 +19,8 @@ package org.apache.servicecomb.foundation.metrics.meter;
 import java.util.Collections;
 import java.util.List;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
+
 
 public abstract class AbstractPeriodMeter implements PeriodMeter {
   protected Id id;

@@ -31,8 +31,9 @@ import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
+
+import io.micrometer.core.instrument.Meter;
 
 public class PublishModelFactory {
   private final MeasurementTree tree;

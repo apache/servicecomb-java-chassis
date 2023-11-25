@@ -25,8 +25,10 @@ import static org.apache.servicecomb.metrics.core.meter.os.NetMeter.TAG_SEND;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Tag;
 
 public class InterfaceUsage {
   private final String name;
@@ -35,7 +37,7 @@ public class InterfaceUsage {
 
   public InterfaceUsage(Id id, String name) {
     this.name = name;
-    id = id.withTag(INTERFACE, name);
+    id = id.withTag(Tag.of(INTERFACE, name));
     init(id);
   }
 
@@ -52,7 +54,7 @@ public class InterfaceUsage {
   }
 
   public void calcMeasurements(List<Measurement> measurements, long msNow) {
-    netStats.forEach(netStat -> measurements.add(new Measurement(netStat.getId(), msNow, netStat.getRate())));
+    netStats.forEach(netStat -> measurements.add(new Measurement(() -> netStat.getRate(), Statistic.VALUE)));
   }
 
   public void update(String interfaceData, long secondInterval) {

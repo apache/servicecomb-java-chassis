@@ -20,13 +20,13 @@ import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.metrics.core.meter.invocation.AbstractInvocationMeters;
 import org.apache.servicecomb.metrics.core.meter.invocation.ConsumerInvocationMeters;
 
-import com.netflix.spectator.api.Registry;
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class ConsumerMeters {
   private final AbstractInvocationMeters invocationMeters;
 
-  public ConsumerMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
-    invocationMeters = new ConsumerInvocationMeters(registry, metricsBootstrapConfig);
+  public ConsumerMeters(MeterRegistry meterRegistry, MetricsBootstrapConfig metricsBootstrapConfig) {
+    invocationMeters = new ConsumerInvocationMeters(meterRegistry, metricsBootstrapConfig);
   }
 
   public AbstractInvocationMeters getInvocationMeters() {

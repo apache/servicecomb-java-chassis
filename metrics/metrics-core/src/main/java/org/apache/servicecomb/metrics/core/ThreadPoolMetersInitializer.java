@@ -26,27 +26,22 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.GroupExecutor;
-import org.apache.servicecomb.core.executor.ThreadPoolExecutorEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.BasicTag;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Tag;
-import com.netflix.spectator.api.patterns.PolledMeter;
-import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
+
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class ThreadPoolMetersInitializer implements MetricsInitializer {
   public static String REJECTED_COUNT = "threadpool.rejectedCount";
 
-  private Registry registry;
+  private MeterRegistry meterRegistry;
 
   @Override
-  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    registry = globalRegistry.getDefaultRegistry();
+  public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    this.meterRegistry = meterRegistry;
 
     createThreadPoolMeters();
   }
@@ -93,15 +88,16 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
       return;
     }
 
-    ThreadPoolMonitor.attach(registry, (ThreadPoolExecutor) executor, threadPoolName);
-
-    if (executor instanceof ThreadPoolExecutorEx) {
-      Tag idTag = new BasicTag("id", threadPoolName);
-
-      PolledMeter.using(registry)
-          .withName(REJECTED_COUNT)
-          .withTag(idTag)
-          .monitorMonotonicCounter((ThreadPoolExecutorEx) executor, ThreadPoolExecutorEx::getRejectedCount);
-    }
+    // TODO: add thread pool meter
+//    ThreadPoolMonitor.attach(registry, (ThreadPoolExecutor) executor, threadPoolName);
+//
+//    if (executor instanceof ThreadPoolExecutorEx) {
+//      Tag idTag = new BasicTag("id", threadPoolName);
+//
+//      PolledMeter.using(registry)
+//          .withName(REJECTED_COUNT)
+//          .withTag(idTag)
+//          .monitorMonotonicCounter((ThreadPoolExecutorEx) executor, ThreadPoolExecutorEx::getRejectedCount);
+//    }
   }
 }

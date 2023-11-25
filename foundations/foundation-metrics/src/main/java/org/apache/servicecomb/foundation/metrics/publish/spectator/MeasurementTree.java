@@ -19,10 +19,10 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.Iterator;
 import java.util.List;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
-import com.netflix.spectator.api.Tag;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Tag;
 
 // like select * from meters group by ......
 // but output a tree not a table
@@ -38,22 +38,21 @@ public class MeasurementTree extends MeasurementNode {
   public void from(Iterator<Meter> meters, MeasurementGroupConfig groupConfig) {
     meters.forEachRemaining(meter -> {
       Iterable<Measurement> measurements = meter.measure();
-      from(measurements, groupConfig);
+      from(meter.getId(), measurements, groupConfig);
     });
   }
 
-  public void from(Iterable<Measurement> measurements, MeasurementGroupConfig groupConfig) {
+  public void from(Id id, Iterable<Measurement> measurements, MeasurementGroupConfig groupConfig) {
     for (Measurement measurement : measurements) {
-      Id id = measurement.id();
-      MeasurementNode node = addChild(id.name(), measurement);
+      MeasurementNode node = addChild(id.getName(), measurement);
 
-      List<TagFinder> tagFinders = groupConfig.findTagFinders(id.name());
+      List<TagFinder> tagFinders = groupConfig.findTagFinders(id.getName());
       if (tagFinders == null) {
         continue;
       }
 
       for (TagFinder tagFinder : tagFinders) {
-        Tag tag = tagFinder.find(id.tags());
+        Tag tag = tagFinder.find(id.getTags());
         if (tag == null) {
           if (tagFinder.skipOnNull()) {
             break;
@@ -64,7 +63,7 @@ public class MeasurementTree extends MeasurementNode {
                   measurement));
         }
 
-        node = node.addChild(tag.value(), measurement);
+        node = node.addChild(tag.getValue(), measurement);
       }
     }
   }

@@ -25,12 +25,15 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.SpectatorUtils;
 
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Meter.Type;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+
 public abstract class AbstractInvocationMeters {
-  protected Registry registry;
+  protected MeterRegistry registry;
 
   private final Map<String, AbstractInvocationMeter> metersMap = new ConcurrentHashMapEx<>();
 
@@ -39,13 +42,13 @@ public abstract class AbstractInvocationMeters {
 
   protected MetricsBootstrapConfig metricsBootstrapConfig;
 
-  public AbstractInvocationMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
+  public AbstractInvocationMeters(MeterRegistry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
     this.registry = registry;
     this.metricsBootstrapConfig = metricsBootstrapConfig;
   }
 
   protected AbstractInvocationMeter getOrCreateMeters(Invocation invocation, Response response) {
-    // build string key is faster then use Id to locate timer directly
+    // build string key is faster than use Id to locate timer directly
     StringBuilder keyBuilder = new StringBuilder(maxKeyLen);
     String invocationName;
     //check edge
@@ -65,15 +68,12 @@ public abstract class AbstractInvocationMeters {
     }
 
     return metersMap.computeIfAbsent(keyBuilder.toString(), k -> {
-      Id id = registry.createId(MeterInvocationConst.INVOCATION_NAME,
-          MeterInvocationConst.TAG_ROLE,
-          invocationName,
-          MeterInvocationConst.TAG_TRANSPORT,
-          invocation.getRealTransportName(),
-          MeterInvocationConst.TAG_OPERATION,
-          invocation.getMicroserviceQualifiedName(),
-          MeterInvocationConst.TAG_STATUS,
-          String.valueOf(response.getStatusCode()));
+      Id id = new Id(MeterInvocationConst.INVOCATION_NAME, Tags.empty()
+          .and(MeterInvocationConst.TAG_ROLE, invocationName)
+          .and(MeterInvocationConst.TAG_TRANSPORT, invocation.getRealTransportName())
+          .and(MeterInvocationConst.TAG_OPERATION, invocation.getMicroserviceQualifiedName())
+          .and(MeterInvocationConst.TAG_STATUS, String.valueOf(response.getStatusCode())),
+          null, null, Type.OTHER);
 
       AbstractInvocationMeter meter = createMeter(id);
       SpectatorUtils.registerMeter(registry, meter);

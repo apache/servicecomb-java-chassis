@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
-import com.netflix.spectator.api.Tag;
+import io.micrometer.core.instrument.Tag;
 
 public interface TagFinder {
   static TagFinder build(Object obj) {

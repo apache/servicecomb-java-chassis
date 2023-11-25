@@ -31,10 +31,10 @@ import org.apache.servicecomb.metrics.core.meter.os.net.NetStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.spectator.api.BasicTag;
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Tag;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Tag;
+
 
 public class NetMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(NetMeter.class);
@@ -43,13 +43,13 @@ public class NetMeter {
 
   public static final String INTERFACE = "interface";
 
-  public static final Tag TAG_RECEIVE = new BasicTag(STATISTIC, "receive");
+  public static final Tag TAG_RECEIVE = Tag.of(STATISTIC, "receive");
 
-  public static final Tag TAG_PACKETS_RECEIVE = new BasicTag(STATISTIC, "receivePackets");
+  public static final Tag TAG_PACKETS_RECEIVE = Tag.of(STATISTIC, "receivePackets");
 
-  public static final Tag TAG_SEND = new BasicTag(STATISTIC, "send");
+  public static final Tag TAG_SEND = Tag.of(STATISTIC, "send");
 
-  public static final Tag TAG_PACKETS_SEND = new BasicTag(STATISTIC, "sendPackets");
+  public static final Tag TAG_PACKETS_SEND = Tag.of(STATISTIC, "sendPackets");
 
   private final Id id;
 

@@ -16,21 +16,15 @@
  */
 package com.netflix.spectator.api;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+
 public final class SpectatorUtils {
   private SpectatorUtils() {
   }
 
-  public static Id createDefaultId(String name) {
-    return new DefaultId(name);
-  }
-
-  public static void removeExpiredMeters(Registry registry) {
-    if (registry instanceof AbstractRegistry) {
-      ((AbstractRegistry) registry).removeExpiredMeters();
-    }
-  }
-
-  public static void registerMeter(Registry registry, Meter meter) {
+  public static void registerMeter(MeterRegistry registry, Meter meter) {
+    registry.counter()
     if (!(registry instanceof AbstractRegistry)) {
       throw new IllegalStateException("registry must be a AbstractRegistry, class=" + registry.getClass().getName());
     }

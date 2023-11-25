@@ -21,7 +21,6 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.ConsumerMeters;
 import org.apache.servicecomb.metrics.core.meter.EdgeMeters;
 import org.apache.servicecomb.metrics.core.meter.ProducerMeters;
@@ -30,7 +29,8 @@ import org.apache.servicecomb.metrics.core.meter.invocation.AbstractInvocationMe
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.Registry;
+
+import io.micrometer.core.instrument.MeterRegistry;
 
 public class InvocationMetersInitializer implements MetricsInitializer {
   private ConsumerMeters consumerMeters;
@@ -40,12 +40,10 @@ public class InvocationMetersInitializer implements MetricsInitializer {
   private EdgeMeters edgeMeters;
 
   @Override
-  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    Registry registry = globalRegistry.getDefaultRegistry();
-
-    consumerMeters = new ConsumerMeters(registry, config);
-    producerMeters = new ProducerMeters(registry, config);
-    edgeMeters = new EdgeMeters(registry, config);
+  public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    consumerMeters = new ConsumerMeters(meterRegistry, config);
+    producerMeters = new ProducerMeters(meterRegistry, config);
+    edgeMeters = new EdgeMeters(meterRegistry, config);
 
     eventBus.register(this);
   }

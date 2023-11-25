@@ -22,8 +22,10 @@ import java.util.List;
 import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
+
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 
 /**
  * name=os type=cpu value = 0
@@ -48,10 +50,10 @@ public class OsMeter extends AbstractPeriodMeter {
 
   private final NetMeter netMeter;
 
-  public OsMeter(Registry registry) {
-    this.id = registry.createId(OS_NAME);
+  public OsMeter(MeterRegistry meterRegistry) {
+    this.id = Id.
     cpuMeter = new CpuMeter(id);
-    netMeter = new NetMeter(id.withTag(OS_TYPE, OS_TYPE_NET));
+    netMeter = new NetMeter(id.withTag(Tag.of(OS_TYPE, OS_TYPE_NET)));
   }
 
   @Override

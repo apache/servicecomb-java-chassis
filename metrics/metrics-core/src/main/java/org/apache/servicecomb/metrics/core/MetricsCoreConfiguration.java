@@ -43,11 +43,6 @@ public class MetricsCoreConfiguration {
   }
 
   @Bean
-  public DefaultRegistryInitializer defaultRegistryInitializer() {
-    return new DefaultRegistryInitializer();
-  }
-
-  @Bean
   public InvocationMetersInitializer invocationMetersInitializer() {
     return new InvocationMetersInitializer();
   }

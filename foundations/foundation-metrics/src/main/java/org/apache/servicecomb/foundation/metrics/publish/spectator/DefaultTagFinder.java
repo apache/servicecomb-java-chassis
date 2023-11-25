@@ -16,7 +16,8 @@
  */
 package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
-import com.netflix.spectator.api.Tag;
+
+import io.micrometer.core.instrument.Tag;
 
 public class DefaultTagFinder implements TagFinder {
   private final String tagKey;
@@ -45,7 +46,7 @@ public class DefaultTagFinder implements TagFinder {
   @Override
   public Tag find(Iterable<Tag> tags) {
     for (Tag tag : tags) {
-      if (tag.key().equals(tagKey)) {
+      if (tag.getKey().equals(tagKey)) {
         return tag;
       }
     }

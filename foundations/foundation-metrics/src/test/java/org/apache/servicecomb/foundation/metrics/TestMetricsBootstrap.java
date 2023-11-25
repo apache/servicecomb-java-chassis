@@ -25,7 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -36,12 +35,11 @@ import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import mockit.Deencapsulation;
 
 public class TestMetricsBootstrap {
   MetricsBootstrap bootstrap = new MetricsBootstrap();
-
-  GlobalRegistry globalRegistry = new GlobalRegistry();
 
   EventBus eventBus = new EventBus();
 
@@ -63,14 +61,14 @@ public class TestMetricsBootstrap {
     List<MetricsInitializer> initList = new ArrayList<>();
     MetricsInitializer metricsInitializer = new MetricsInitializer() {
       @Override
-      public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
         initList.add(this);
       }
     };
 
     bootstrap.setMetricsInitializers(Arrays.asList(metricsInitializer, metricsInitializer));
 
-    bootstrap.start(globalRegistry, eventBus);
+    bootstrap.start(eventBus);
     bootstrap.shutdown();
 
     MatcherAssert.assertThat(initList, Matchers.contains(metricsInitializer, metricsInitializer));
@@ -87,7 +85,7 @@ public class TestMetricsBootstrap {
       }
 
       @Override
-      public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
       }
 
       @Override
@@ -103,7 +101,7 @@ public class TestMetricsBootstrap {
       }
 
       @Override
-      public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
       }
 
       @Override

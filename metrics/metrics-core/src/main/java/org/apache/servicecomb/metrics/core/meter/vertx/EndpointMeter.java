@@ -21,8 +21,10 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Tag;
+
 
 public class EndpointMeter {
   private static final double SNV_MILLI_SECONDS = 1.0 / TimeUnit.MILLISECONDS.toNanos(1L);
@@ -76,15 +78,15 @@ public class EndpointMeter {
   private long lastLatency;
 
   public EndpointMeter(Id id, DefaultEndpointMetric metric) {
-    id = id.withTag(ADDRESS, metric.getAddress());
+    id = id.withTag(Tag.of(ADDRESS, metric.getAddress()));
     this.id = id;
-    idConnect = id.withTag(STATISTIC, CONNECT_COUNT);
-    idDisconnect = id.withTag(STATISTIC, DISCONNECT_COUNT);
-    idConnections = id.withTag(STATISTIC, CONNECTIONS);
-    idBytesRead = id.withTag(STATISTIC, BYTES_READ);
-    idBytesWritten = id.withTag(STATISTIC, BYTES_WRITTEN);
-    idRequests = id.withTag(STATISTIC, REQUESTS);
-    idLatency = id.withTag(STATISTIC, LATENCY);
+    idConnect = id.withTag(Tag.of(STATISTIC, CONNECT_COUNT);
+    idDisconnect = id.withTag(Tag.of(STATISTIC, DISCONNECT_COUNT));
+    idConnections = id.withTag(Tag.of(STATISTIC, CONNECTIONS));
+    idBytesRead = id.withTag(Tag.of(STATISTIC, BYTES_READ));
+    idBytesWritten = id.withTag(Tag.of(STATISTIC, BYTES_WRITTEN));
+    idRequests = id.withTag(Tag.of(STATISTIC, REQUESTS));
+    idLatency = id.withTag(Tag.of(STATISTIC, LATENCY));
     this.metric = metric;
   }
 

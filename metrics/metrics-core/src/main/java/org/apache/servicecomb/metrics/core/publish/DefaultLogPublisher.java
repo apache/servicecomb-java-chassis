@@ -31,7 +31,6 @@ import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionConfig
 import org.apache.servicecomb.foundation.metrics.meter.LatencyScopeConfig;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
@@ -50,8 +49,9 @@ import org.springframework.core.env.Environment;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.Meter;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.vertx.core.Vertx;
 
 public class DefaultLogPublisher implements MetricsInitializer {
@@ -102,7 +102,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   @Override
-  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+  public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     if (!environment.getProperty(ENABLED, boolean.class, false)) {
       return;
     }
@@ -181,10 +181,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
     StringBuilder tmpSb = new StringBuilder();
     for (MeasurementNode interfaceNode : netNode.getChildren().values()) {
-      double sendRate = interfaceNode.findChild(NetMeter.TAG_SEND.value()).summary();
-      double sendPacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_SEND.value()).summary();
-      double receiveRate = interfaceNode.findChild(NetMeter.TAG_RECEIVE.value()).summary();
-      double receivePacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_RECEIVE.value()).summary();
+      double sendRate = interfaceNode.findChild(NetMeter.TAG_SEND.getValue()).summary();
+      double sendPacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_SEND.getValue()).summary();
+      double receiveRate = interfaceNode.findChild(NetMeter.TAG_RECEIVE.getValue()).summary();
+      double receivePacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_RECEIVE.getValue()).summary();
       if (sendRate == 0 && receiveRate == 0 && receivePacketsRate == 0 && sendPacketsRate == 0) {
         continue;
       }
