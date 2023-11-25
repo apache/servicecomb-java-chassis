@@ -19,8 +19,8 @@ package org.apache.servicecomb.metrics.core.meter.invocation;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 
-import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
 public class EdgeInvocationMeters extends ConsumerInvocationMeters {
   public EdgeInvocationMeters(MeterRegistry meterRegistry, MetricsBootstrapConfig metricsBootstrapConfig) {
@@ -28,7 +28,7 @@ public class EdgeInvocationMeters extends ConsumerInvocationMeters {
   }
 
   @Override
-  protected AbstractInvocationMeter createMeter(Id id) {
-    return new EdgeInvocationMeter(id, metricsBootstrapConfig);
+  protected AbstractInvocationMeter createMeter(String name, Tags tags) {
+    return new EdgeInvocationMeter(registry, name, tags, metricsBootstrapConfig);
   }
 }

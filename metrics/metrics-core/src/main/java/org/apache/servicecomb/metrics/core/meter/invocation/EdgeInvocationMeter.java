@@ -17,28 +17,37 @@
 
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
 
 public class EdgeInvocationMeter extends ConsumerInvocationMeter {
-  private final SimpleTimer providerDecodeRequestTimer;
+  private final Timer providerDecodeRequestTimer;
 
-  private final SimpleTimer providerEncodeResponseTimer;
+  private final Timer providerEncodeResponseTimer;
 
-  private final SimpleTimer sendResponseTimer;
+  private final Timer sendResponseTimer;
 
-  public EdgeInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
-    super(id, metricsBootstrapConfig);
-    providerDecodeRequestTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST);
-    providerEncodeResponseTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE);
-    sendResponseTimer = createStageTimer(InvocationStageTrace.STAGE_PROVIDER_SEND);
+  public EdgeInvocationMeter(MeterRegistry meterRegistry, String name, Tags tags,
+      MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(meterRegistry, name, tags, metricsBootstrapConfig);
+    providerDecodeRequestTimer = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_PROVIDER_DECODE_REQUEST))
+        .register(meterRegistry);
+    providerEncodeResponseTimer = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_PROVIDER_ENCODE_RESPONSE))
+        .register(meterRegistry);
+    sendResponseTimer = Timer.builder(name).tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_PROVIDER_SEND))
+        .register(meterRegistry);
   }
 
   @Override
@@ -46,17 +55,8 @@ public class EdgeInvocationMeter extends ConsumerInvocationMeter {
     super.onInvocationFinish(event);
     InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
 
-    providerDecodeRequestTimer.record(invocationStageTrace.calcProviderDecodeRequest());
-    providerEncodeResponseTimer.record(invocationStageTrace.calcProviderEncodeResponse());
-    sendResponseTimer.record(invocationStageTrace.calcProviderSendResponse());
-  }
-
-  @Override
-  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
-    super.calcMeasurements(measurements, msNow, secondInterval);
-
-    providerDecodeRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
-    providerEncodeResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
-    sendResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    providerDecodeRequestTimer.record(invocationStageTrace.calcProviderDecodeRequest(), TimeUnit.NANOSECONDS);
+    providerEncodeResponseTimer.record(invocationStageTrace.calcProviderEncodeResponse(), TimeUnit.NANOSECONDS);
+    sendResponseTimer.record(invocationStageTrace.calcProviderSendResponse(), TimeUnit.NANOSECONDS);
   }
 }

@@ -16,34 +16,47 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.Timer;
 
 public class ConsumerInvocationMeter extends AbstractInvocationMeter {
-  private final SimpleTimer consumerEncodeRequestTimer;
+  private final Timer consumerEncodeRequestTimer;
 
-  private final SimpleTimer consumerDecodeResponseTimer;
+  private final Timer consumerDecodeResponseTimer;
 
-  private final SimpleTimer consumerGetConnectionTimer;
+  private final Timer consumerGetConnectionTimer;
 
-  private final SimpleTimer consumerSendRequestTimer;
+  private final Timer consumerSendRequestTimer;
 
-  private final SimpleTimer consumerWaitResponseTimer;
+  private final Timer consumerWaitResponseTimer;
 
-  public ConsumerInvocationMeter(Id id, MetricsBootstrapConfig metricsBootstrapConfig) {
-    super(id, metricsBootstrapConfig);
-    consumerSendRequestTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_SEND);
-    consumerGetConnectionTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_CONNECTION);
-    consumerEncodeRequestTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_ENCODE_REQUEST);
-    consumerDecodeResponseTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_DECODE_RESPONSE);
-    consumerWaitResponseTimer = createStageTimer(InvocationStageTrace.STAGE_CONSUMER_WAIT);
+  public ConsumerInvocationMeter(MeterRegistry meterRegistry, String name, Tags tags,
+      MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(meterRegistry, name, tags, metricsBootstrapConfig);
+    consumerSendRequestTimer = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_CONSUMER_SEND)).register(meterRegistry);
+    consumerGetConnectionTimer = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_CONSUMER_CONNECTION)).register(meterRegistry);
+    consumerEncodeRequestTimer = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_CONSUMER_ENCODE_REQUEST))
+        .register(meterRegistry);
+    consumerDecodeResponseTimer = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_CONSUMER_DECODE_RESPONSE))
+        .register(meterRegistry);
+    consumerWaitResponseTimer = Timer.builder(name)
+        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
+            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_CONSUMER_WAIT)).register(meterRegistry);
   }
 
   @Override
@@ -51,21 +64,10 @@ public class ConsumerInvocationMeter extends AbstractInvocationMeter {
     super.onInvocationFinish(event);
 
     InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
-    consumerEncodeRequestTimer.record(invocationStageTrace.calcConsumerEncodeRequest());
-    consumerSendRequestTimer.record(invocationStageTrace.calcConsumerSendRequest());
-    consumerGetConnectionTimer.record(invocationStageTrace.calcConnection());
-    consumerWaitResponseTimer.record(invocationStageTrace.calcWait());
-    consumerDecodeResponseTimer.record(invocationStageTrace.calcConsumerDecodeResponse());
-  }
-
-  @Override
-  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
-    super.calcMeasurements(measurements, msNow, secondInterval);
-
-    consumerSendRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
-    consumerGetConnectionTimer.calcMeasurements(measurements, msNow, secondInterval);
-    consumerEncodeRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
-    consumerWaitResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
-    consumerDecodeResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerEncodeRequestTimer.record(invocationStageTrace.calcConsumerEncodeRequest(), TimeUnit.NANOSECONDS);
+    consumerSendRequestTimer.record(invocationStageTrace.calcConsumerSendRequest(), TimeUnit.NANOSECONDS);
+    consumerGetConnectionTimer.record(invocationStageTrace.calcConnection(), TimeUnit.NANOSECONDS);
+    consumerWaitResponseTimer.record(invocationStageTrace.calcWait(), TimeUnit.NANOSECONDS);
+    consumerDecodeResponseTimer.record(invocationStageTrace.calcConsumerDecodeResponse(), TimeUnit.NANOSECONDS);
   }
 }

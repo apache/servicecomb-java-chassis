@@ -18,8 +18,8 @@ package org.apache.servicecomb.metrics.core.meter.invocation;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 
-import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
 public class ProducerInvocationMeters extends AbstractInvocationMeters {
   public ProducerInvocationMeters(MeterRegistry meterRegistry, MetricsBootstrapConfig metricsBootstrapConfig) {
@@ -27,7 +27,7 @@ public class ProducerInvocationMeters extends AbstractInvocationMeters {
   }
 
   @Override
-  protected AbstractInvocationMeter createMeter(Id id) {
-    return new ProducerInvocationMeter(id, metricsBootstrapConfig);
+  protected AbstractInvocationMeter createMeter(String name, Tags tags) {
+    return new ProducerInvocationMeter(registry, name, tags, metricsBootstrapConfig);
   }
 }
