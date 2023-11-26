@@ -47,8 +47,6 @@ public class OperationMeta {
 
   private final ResponsesMeta responsesMeta = new ResponsesMeta();
 
-  private OperationConfig config;
-
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
   public OperationMeta init(SchemaMeta schemaMeta, SwaggerOperation swaggerOperation) {
@@ -60,7 +58,6 @@ public class OperationMeta {
     this.operationPath = swaggerOperation.getPath();
     this.swaggerOperation = swaggerOperation.getOperation();
     this.executor = schemaMeta.getMicroserviceMeta().getScbEngine().getExecutorManager().findExecutor(this);
-    this.config = schemaMeta.getMicroserviceMeta().getMicroserviceVersionsMeta().getOrCreateOperationConfig(this);
     this.responsesMeta.init(schemaMeta.getSwagger(), swaggerOperation.getOperation());
 
     return this;
@@ -75,7 +72,7 @@ public class OperationMeta {
   }
 
   public OperationConfig getConfig() {
-    return config;
+    return schemaMeta.getMicroserviceMeta().getMicroserviceVersionsMeta().getOrCreateOperationConfig(this);
   }
 
   public String getHttpMethod() {
