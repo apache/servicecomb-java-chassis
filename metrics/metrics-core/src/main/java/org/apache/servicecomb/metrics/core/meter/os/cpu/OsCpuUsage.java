@@ -18,8 +18,6 @@ package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
 import java.io.IOException;
 
-import io.micrometer.core.instrument.Meter.Id;
-
 /*
  * unit : 1 jiffies
  * more details :
@@ -37,8 +35,7 @@ public class OsCpuUsage extends AbstractCpuUsage {
 
   private final Period idle = new Period();
 
-  public OsCpuUsage(Id id) {
-    super(id);
+  public OsCpuUsage() {
   }
 
   public void update() throws IOException {

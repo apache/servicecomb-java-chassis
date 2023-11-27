@@ -16,20 +16,21 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
-import java.util.List;
+import java.io.IOException;
 
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.OsCpuUsage;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.ProcessCpuUsage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter.Id;
-import io.micrometer.core.instrument.Statistic;
-import io.micrometer.core.instrument.Tag;
+import com.google.common.annotations.VisibleForTesting;
 
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
-public class CpuMeter {
+public class CpuMeter implements PeriodMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CpuMeter.class);
 
   // read from /proc/stat
@@ -38,35 +39,33 @@ public class CpuMeter {
   // read from /proc/self/stat /proc/uptime
   private final ProcessCpuUsage processCpuUsage;
 
-  public CpuMeter(Id id) {
-    allCpuUsage = new OsCpuUsage(id.withTag(Tag.of(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU)));
-    processCpuUsage = new ProcessCpuUsage(id.withTag(Tag.of(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU)));
+  public CpuMeter(MeterRegistry meterRegistry, String name) {
+    allCpuUsage = new OsCpuUsage();
+    processCpuUsage = new ProcessCpuUsage();
 
-    //must refresh all first
-    update();
-    allCpuUsage.setUsage(0);
-    processCpuUsage.setUsage(0);
+    Gauge.builder(name, allCpuUsage::getUsage).tags(Tags.of(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU))
+        .register(meterRegistry);
+
+    Gauge.builder(name, processCpuUsage::getUsage).tags(Tags.of(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU))
+        .register(meterRegistry);
   }
 
-  public void calcMeasurements(List<Measurement> measurements, long msNow) {
-    update();
-    measurements.add(new Measurement(() -> allCpuUsage.getUsage(), Statistic.VALUE));
-    measurements.add(new Measurement(() -> processCpuUsage.getUsage(), Statistic.VALUE));
-  }
-
-  public void update() {
+  @Override
+  public void poll(long msNow, long secondInterval) {
     try {
       allCpuUsage.update();
       processCpuUsage.update();
-    } catch (Throwable e) {
-      LOGGER.error("Failed to update usage", e);
+    } catch (IOException e) {
+      LOGGER.error("Failed to update cpu usage", e);
     }
   }
 
+  @VisibleForTesting
   public OsCpuUsage getAllCpuUsage() {
     return allCpuUsage;
   }
 
+  @VisibleForTesting
   public ProcessCpuUsage getProcessCpuUsage() {
     return processCpuUsage;
   }

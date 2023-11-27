@@ -17,5 +17,5 @@
 package org.apache.servicecomb.foundation.metrics.meter;
 
 public interface PeriodMeter {
-  void calcMeasurements(long msNow, long secondInterval);
+  void poll(long msNow, long secondInterval);
 }
