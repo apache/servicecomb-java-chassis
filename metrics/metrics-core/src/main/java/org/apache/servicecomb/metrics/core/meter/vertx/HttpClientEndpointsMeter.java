@@ -16,20 +16,21 @@
  */
 package org.apache.servicecomb.metrics.core.meter.vertx;
 
-import java.util.Map;
-
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
 public class HttpClientEndpointsMeter extends VertxEndpointsMeter {
-  public <T extends DefaultEndpointMetric> HttpClientEndpointsMeter(MeterRegistry meterRegistry, Id id,
-      Map<String, T> endpointMetricMap) {
-    super(meterRegistry, id, endpointMetricMap);
+  public <T extends DefaultEndpointMetric> HttpClientEndpointsMeter(MeterRegistry meterRegistry, String name, Tags tags,
+      DefaultClientEndpointMetricManager clientEndpointMetricManager) {
+    super(meterRegistry, name, tags, clientEndpointMetricManager.getClientEndpointMetricMap());
+    clientEndpointMetricManager.addChangeListener(this::onChanged);
   }
 
   @Override
-  protected EndpointMeter createEndpointMeter(Id id, DefaultEndpointMetric metric) {
-    return new HttpClientEndpointMeter(id, metric);
+  protected EndpointMeter createEndpointMeter(DefaultEndpointMetric metric) {
+    return new HttpClientEndpointMeter(meterRegistry, name, tags, metric);
   }
 }

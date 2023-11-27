@@ -482,7 +482,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
 
     ClientEndpointsLogPublisher client = new ClientEndpointsLogPublisher(tree, sb,
-        VertxMetersInitializer.ENDPOINTS_CLINET);
+        VertxMetersInitializer.ENDPOINTS_CLIENT);
     ServerEndpointsLogPublisher server = new ServerEndpointsLogPublisher(tree, sb,
         VertxMetersInitializer.ENDPOINTS_SERVER);
     if (client.isExists() || server.isExists()) {
