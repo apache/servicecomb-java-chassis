@@ -19,10 +19,10 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.Arrays;
 import java.util.List;
 
-import com.netflix.spectator.api.BasicTag;
-import com.netflix.spectator.api.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.micrometer.core.instrument.Tag;
 
 public class TestDefaultTagFinder {
   TagFinder finder = new DefaultTagFinder("key");
@@ -34,8 +34,8 @@ public class TestDefaultTagFinder {
 
   @Test
   public void readSucc() {
-    Tag tag = new BasicTag("key", "value");
-    List<Tag> tags = Arrays.asList(new BasicTag("t1", "t1v"),
+    Tag tag = Tag.of("key", "value");
+    List<Tag> tags = Arrays.asList(Tag.of("t1", "t1v"),
         tag);
 
     Assertions.assertSame(tag, finder.find(tags));
@@ -43,7 +43,7 @@ public class TestDefaultTagFinder {
 
   @Test
   public void readFail() {
-    List<Tag> tags = Arrays.asList(new BasicTag("t1", "t1v"));
+    List<Tag> tags = Arrays.asList(Tag.of("t1", "t1v"));
 
     Assertions.assertNull(finder.find(tags));
   }

@@ -28,7 +28,7 @@ import io.micrometer.core.instrument.Tag;
 // but output a tree not a table
 public class MeasurementTree extends MeasurementNode {
   public MeasurementTree() {
-    super(null, null);
+    super(null, null, null);
   }
 
   // groupConfig:
@@ -44,7 +44,7 @@ public class MeasurementTree extends MeasurementNode {
 
   public void from(Id id, Iterable<Measurement> measurements, MeasurementGroupConfig groupConfig) {
     for (Measurement measurement : measurements) {
-      MeasurementNode node = addChild(id.getName(), measurement);
+      MeasurementNode node = addChild(id.getName(), id, null);
 
       List<TagFinder> tagFinders = groupConfig.findTagFinders(id.getName());
       if (tagFinders == null) {
@@ -60,11 +60,13 @@ public class MeasurementTree extends MeasurementNode {
           throw new IllegalStateException(
               String.format("tag key \"%s\" not exist in %s",
                   tagFinder.getTagKey(),
-                  measurement));
+                  id));
         }
 
-        node = node.addChild(tag.getValue(), measurement);
+        node = node.addChild(tag.getValue(), id, null);
       }
+
+      node.addChild(measurement.getStatistic().name(), id, measurement);
     }
   }
 }

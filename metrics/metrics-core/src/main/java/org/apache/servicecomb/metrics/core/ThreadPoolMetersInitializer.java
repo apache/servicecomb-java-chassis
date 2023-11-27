@@ -26,16 +26,34 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.GroupExecutor;
+import org.apache.servicecomb.core.executor.ThreadPoolExecutorEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 
 import com.google.common.eventbus.EventBus;
 
+import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 
 public class ThreadPoolMetersInitializer implements MetricsInitializer {
-  public static String REJECTED_COUNT = "threadpool.rejectedCount";
+  public static final String ID = "id";
+
+  public static final String REJECTED_COUNT = "threadpool.rejectedCount";
+
+  public static final String TASK_COUNT = "threadpool.taskCount";
+
+  public static final String COMPLETED_TASK_COUNT = "threadpool.completedTaskCount";
+
+  public static final String CURRENT_THREADS_BUSY = "threadpool.currentThreadsBusy";
+
+  public static final String MAX_THREADS = "threadpool.maxThreads";
+
+  public static final String POOL_SIZE = "threadpool.poolSize";
+
+  public static final String CORE_POOL_SIZE = "threadpool.corePoolSize";
+
+  public static final String QUEUE_SIZE = "threadpool.queueSize";
 
   private MeterRegistry meterRegistry;
 
@@ -57,7 +75,7 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
         continue;
       }
 
-      if (GroupExecutor.class.isInstance(executor)) {
+      if (executor instanceof GroupExecutor) {
         createThreadPoolMeters(entry.getKey(), (GroupExecutor) executor);
         continue;
       }
@@ -84,20 +102,29 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
   }
 
   protected void createThreadPoolMeters(String threadPoolName, Executor executor) {
-    if (!ThreadPoolExecutor.class.isInstance(executor)) {
+    if (!(executor instanceof ThreadPoolExecutor threadPoolExecutor)) {
       return;
     }
 
-    // TODO: add thread pool meter
-//    ThreadPoolMonitor.attach(registry, (ThreadPoolExecutor) executor, threadPoolName);
-//
-//    if (executor instanceof ThreadPoolExecutorEx) {
-//      Tag idTag = new BasicTag("id", threadPoolName);
-//
-//      PolledMeter.using(registry)
-//          .withName(REJECTED_COUNT)
-//          .withTag(idTag)
-//          .monitorMonotonicCounter((ThreadPoolExecutorEx) executor, ThreadPoolExecutorEx::getRejectedCount);
-//    }
+    Gauge.builder(TASK_COUNT, threadPoolExecutor::getTaskCount).tags(ID, threadPoolName)
+        .register(meterRegistry);
+    Gauge.builder(COMPLETED_TASK_COUNT, threadPoolExecutor::getCompletedTaskCount).tags(ID, threadPoolName)
+        .register(meterRegistry);
+    Gauge.builder(CURRENT_THREADS_BUSY, threadPoolExecutor::getActiveCount).tags(ID, threadPoolName)
+        .register(meterRegistry);
+    Gauge.builder(MAX_THREADS, threadPoolExecutor::getMaximumPoolSize).tags(ID, threadPoolName)
+        .register(meterRegistry);
+    Gauge.builder(POOL_SIZE, threadPoolExecutor::getPoolSize).tags(ID, threadPoolName)
+        .register(meterRegistry);
+    Gauge.builder(CORE_POOL_SIZE, threadPoolExecutor::getCorePoolSize).tags(ID, threadPoolName)
+        .register(meterRegistry);
+    Gauge.builder(QUEUE_SIZE, () -> threadPoolExecutor.getQueue().size()).tags(ID, threadPoolName)
+        .register(meterRegistry);
+
+    if (executor instanceof ThreadPoolExecutorEx) {
+      Gauge.builder(REJECTED_COUNT, () -> ((ThreadPoolExecutorEx) (executor)).getRejectedCount())
+          .tags(ID, threadPoolName)
+          .register(meterRegistry);
+    }
   }
 }
