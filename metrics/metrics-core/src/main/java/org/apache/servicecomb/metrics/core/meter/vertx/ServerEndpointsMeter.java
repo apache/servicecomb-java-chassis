@@ -20,15 +20,17 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
-import com.netflix.spectator.api.Id;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
 public class ServerEndpointsMeter extends VertxEndpointsMeter {
-  public <T extends DefaultEndpointMetric> ServerEndpointsMeter(Id id, Map<String, T> endpointMetricMap) {
-    super(id, endpointMetricMap);
+  public <T extends DefaultEndpointMetric> ServerEndpointsMeter(MeterRegistry meterRegistry, String name, Tags tags,
+      Map<String, T> endpointMetricMap) {
+    super(meterRegistry, name, tags, endpointMetricMap);
   }
 
   @Override
-  protected EndpointMeter createEndpointMeter(Id id, DefaultEndpointMetric metric) {
-    return new ServerEndpointMeter(id, metric);
+  protected EndpointMeter createEndpointMeter(DefaultEndpointMetric metric) {
+    return new ServerEndpointMeter(meterRegistry, name, tags, metric);
   }
 }

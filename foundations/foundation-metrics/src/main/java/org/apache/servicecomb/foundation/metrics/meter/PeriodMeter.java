@@ -16,14 +16,6 @@
  */
 package org.apache.servicecomb.foundation.metrics.meter;
 
-import java.util.List;
-
-import io.micrometer.core.instrument.Measurement;
-import io.micrometer.core.instrument.Meter;
-
-
-public interface PeriodMeter extends Meter {
+public interface PeriodMeter {
   void calcMeasurements(long msNow, long secondInterval);
-
-  void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval);
 }

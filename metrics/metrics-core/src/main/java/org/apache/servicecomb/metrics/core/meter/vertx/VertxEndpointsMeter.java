@@ -16,70 +16,52 @@
  */
 package org.apache.servicecomb.metrics.core.meter.vertx;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
-import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
-public class VertxEndpointsMeter extends AbstractPeriodMeter {
+public class VertxEndpointsMeter {
   private final Map<String, DefaultEndpointMetric> endpointMetricMap;
 
-  private final MeterRegistry meterRegistry;
+  protected final MeterRegistry meterRegistry;
+
+  protected final String name;
+
+  protected final Tags tags;
 
   private final Map<String, EndpointMeter> endpointMeterMap = new ConcurrentHashMapEx<>();
 
   @SuppressWarnings("unchecked")
-  public <T extends DefaultEndpointMetric> VertxEndpointsMeter(MeterRegistry meterRegistry, Id id,
+  public <T extends DefaultEndpointMetric> VertxEndpointsMeter(MeterRegistry meterRegistry, String name, Tags tags,
       Map<String, T> endpointMetricMap) {
-    this.id = id;
     this.meterRegistry = meterRegistry;
+    this.name = name;
+    this.tags = tags;
     this.endpointMetricMap = (Map<String, DefaultEndpointMetric>) endpointMetricMap;
-  }
-
-  @Override
-  public void calcMeasurements(long msNow, long secondInterval) {
-    List<Measurement> measurements = new ArrayList<>();
-    calcMeasurements(measurements, msNow, secondInterval);
-    allMeasurements = measurements;
-  }
-
-  @Override
-  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     syncMeters();
-
-    for (EndpointMeter meter : endpointMeterMap.values()) {
-      meter.calcMeasurements(measurements, msNow, secondInterval);
-    }
   }
 
   private void syncMeters() {
     for (EndpointMeter meter : endpointMeterMap.values()) {
       if (!endpointMetricMap.containsKey(meter.getMetric().getAddress())) {
-        endpointMeterMap.remove(meter.getMetric().getAddress());
+        EndpointMeter removed = endpointMeterMap.remove(meter.getMetric().getAddress());
+        removed.destroy();
       }
     }
     for (DefaultEndpointMetric metric : endpointMetricMap.values()) {
-      endpointMeterMap.computeIfAbsent(metric.getAddress(), addr -> createEndpointMeter(id, metric));
+      endpointMeterMap.computeIfAbsent(metric.getAddress(), address -> createEndpointMeter(metric));
     }
   }
 
-  protected EndpointMeter createEndpointMeter(Id id, DefaultEndpointMetric metric) {
-    return new EndpointMeter(id, metric);
+  protected EndpointMeter createEndpointMeter(DefaultEndpointMetric metric) {
+    return new EndpointMeter(meterRegistry, name, tags, metric);
   }
 
-  @Override
-  public Iterable<Measurement> measure() {
-    return allMeasurements;
-  }
-
-  @Override
-  public boolean hasExpired() {
-    return false;
+  protected void onChanged() {
+    syncMeters();
   }
 }
