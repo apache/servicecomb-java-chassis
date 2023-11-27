@@ -19,6 +19,7 @@ package org.apache.servicecomb.metrics.core;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ import com.google.common.eventbus.EventBus;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
-public class OsMetersInitializer implements MetricsInitializer {
+public class OsMetersInitializer implements MetricsInitializer, PeriodMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(OsMetersInitializer.class);
 
   private OsMeter osMeter;
@@ -53,5 +54,12 @@ public class OsMetersInitializer implements MetricsInitializer {
 
   public OsMeter getOsMeter() {
     return osMeter;
+  }
+
+  @Override
+  public void poll(long msNow, long secondInterval) {
+    if (osMeter != null) {
+      osMeter.poll(msNow, secondInterval);
+    }
   }
 }

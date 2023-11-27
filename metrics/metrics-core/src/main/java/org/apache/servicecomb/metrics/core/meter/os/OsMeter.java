@@ -16,16 +16,12 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 
 /**
  * name=os type=cpu value = 0
@@ -35,7 +31,7 @@ import io.micrometer.core.instrument.Tag;
  * name=os type=net interface=eth0 statistic=sendPackets value=100
  * name=os type=net interface=eth0 statistic=receivePackets value=100
  */
-public class OsMeter extends AbstractPeriodMeter {
+public class OsMeter implements PeriodMeter {
   public static final String OS_NAME = "os";
 
   public static final String OS_TYPE = "type";
@@ -51,22 +47,14 @@ public class OsMeter extends AbstractPeriodMeter {
   private final NetMeter netMeter;
 
   public OsMeter(MeterRegistry meterRegistry) {
-    this.id = Id.
-    cpuMeter = new CpuMeter(id);
-    netMeter = new NetMeter(id.withTag(Tag.of(OS_TYPE, OS_TYPE_NET)));
+    cpuMeter = new CpuMeter(meterRegistry, OS_NAME);
+    netMeter = new NetMeter(meterRegistry, OS_NAME, Tags.of(OS_TYPE, OS_TYPE_NET));
   }
 
   @Override
-  public void calcMeasurements(long msNow, long secondInterval) {
-    List<Measurement> measurements = new ArrayList<>();
-    calcMeasurements(measurements, msNow, secondInterval);
-    allMeasurements = measurements;
-  }
-
-  @Override
-  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
-    cpuMeter.calcMeasurements(measurements, msNow);
-    netMeter.calcMeasurements(measurements, msNow, secondInterval);
+  public void poll(long msNow, long secondInterval) {
+    cpuMeter.poll(msNow, secondInterval);
+    netMeter.poll(msNow, secondInterval);
   }
 
   @VisibleForTesting

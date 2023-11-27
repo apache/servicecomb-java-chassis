@@ -17,12 +17,8 @@
 package org.apache.servicecomb.metrics.core.meter.os.net;
 
 
-import io.micrometer.core.instrument.Meter.Id;
-
 public class NetStat {
   private final int index;
-
-  private final Id id;
 
   // send/recv bytes/packets
   private long lastValue;
@@ -30,8 +26,7 @@ public class NetStat {
   // Bps/pps
   private double rate;
 
-  public NetStat(Id id, int index) {
-    this.id = id;
+  public NetStat(int index) {
     this.index = index;
   }
 
@@ -55,9 +50,5 @@ public class NetStat {
 
   public int getIndex() {
     return index;
-  }
-
-  public Id getId() {
-    return id;
   }
 }

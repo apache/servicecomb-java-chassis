@@ -22,6 +22,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +92,11 @@ public class MetricsBootstrap {
   }
 
   public synchronized void pollMeters() {
+    metricsInitializers.forEach(initializer -> {
+      if (initializer instanceof PeriodMeter) {
+        ((PeriodMeter) initializer).poll(System.currentTimeMillis(), config.getMsPollInterval());
+      }
+    });
     try {
       PolledEvent polledEvent = new PolledEvent(meterRegistry.getMeters());
       eventBus.post(polledEvent);
