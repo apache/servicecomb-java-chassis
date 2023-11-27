@@ -22,21 +22,29 @@ import java.util.List;
 import java.util.Map;
 
 import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
 
 public class MeasurementNode implements Comparable<MeasurementNode> {
   private final String name;
+
+  private final Id id;
 
   private final List<Measurement> measurements = new ArrayList<>();
 
   private Map<String, MeasurementNode> children;
 
-  public MeasurementNode(String name, Map<String, MeasurementNode> children) {
+  public MeasurementNode(String name, Id id, Map<String, MeasurementNode> children) {
     this.name = name;
+    this.id = id;
     this.children = children;
   }
 
   public String getName() {
-    return name;
+    return id.getName();
+  }
+
+  public Id getId() {
+    return id;
   }
 
   public Map<String, MeasurementNode> getChildren() {
@@ -62,13 +70,16 @@ public class MeasurementNode implements Comparable<MeasurementNode> {
     return node;
   }
 
-  public MeasurementNode addChild(String childName, Measurement measurement) {
+  public MeasurementNode addChild(String childName, Id id, Measurement measurement) {
     if (children == null) {
       children = new LinkedHashMap<>();
     }
 
-    MeasurementNode node = children.computeIfAbsent(childName, name -> new MeasurementNode(name, null));
-    node.addMeasurement(measurement);
+    MeasurementNode node = children.computeIfAbsent(childName, name -> new MeasurementNode(name, id, null));
+
+    if (measurement != null) {
+      node.addMeasurement(measurement);
+    }
 
     return node;
   }

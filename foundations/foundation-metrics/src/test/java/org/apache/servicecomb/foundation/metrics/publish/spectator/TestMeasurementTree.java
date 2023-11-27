@@ -22,18 +22,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Statistic;
-import com.netflix.spectator.api.Timer;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 public class TestMeasurementTree {
   MeasurementTree tree = new MeasurementTree();
 
-  ManualClock clock = new ManualClock();
-
-  Registry registry = new DefaultRegistry(clock);
+  MeterRegistry registry = new SimpleMeterRegistry();
 
   Timer timer;
 
@@ -53,17 +50,19 @@ public class TestMeasurementTree {
 
   @Test
   public void from() {
-    timer.record(10, TimeUnit.NANOSECONDS);
-    timer.record(2, TimeUnit.NANOSECONDS);
+    timer.record(10, TimeUnit.SECONDS);
+    timer.record(2, TimeUnit.SECONDS);
 
-    MeasurementGroupConfig config = new MeasurementGroupConfig("id", "g1", "g2", Statistic.count.key());
-    tree.from(registry.iterator(), config);
+    MeasurementGroupConfig config = new MeasurementGroupConfig("id", "g1", "g2");
+    tree.from(registry.getMeters().iterator(), config);
 
     Assertions.assertEquals(2, tree.getChildren().size());
 
     MeasurementNode node = tree.findChild("id", "g1v", "g2v");
-    Assertions.assertEquals(2d, node.findChild(Statistic.count.value()).getMeasurements().get(0).value(), 0);
-    Assertions.assertEquals(12d, node.findChild(Statistic.totalTime.value()).getMeasurements().get(0).value(), 0);
+    Assertions.assertEquals(2d,
+        node.findChild(Statistic.COUNT.name()).getMeasurements().get(0).getValue(), 0);
+    Assertions.assertEquals(12d,
+        node.findChild(Statistic.TOTAL_TIME.name()).getMeasurements().get(0).getValue(), 0);
     Assertions.assertEquals(0d, tree.findChild("id_notCare").summary(), 0);
   }
 
@@ -71,7 +70,7 @@ public class TestMeasurementTree {
   public void from_withSkipOnNull() {
     try {
       MeasurementGroupConfig config = new MeasurementGroupConfig("id", new DefaultTagFinder("notExist", true));
-      tree.from(registry.iterator(), config);
+      tree.from(registry.getMeters().iterator(), config);
     } catch (Exception e) {
       Assertions.fail("should not throw exception");
     }
@@ -81,8 +80,10 @@ public class TestMeasurementTree {
   public void from_failed() {
     IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, () -> {
       MeasurementGroupConfig config = new MeasurementGroupConfig("id", "notExist");
-      tree.from(registry.iterator(), config);
+      tree.from(registry.getMeters().iterator(), config);
     });
-    Assertions.assertEquals("tag key \"notExist\" not exist in Measurement(id:g1=g1v:g2=g2v:statistic=count:t3=t3v:t4=t4v,0,0.0)", exception.getMessage());
+    Assertions.assertEquals(
+        "tag key \"notExist\" not exist in MeterId{name='id', tags=[tag(g1=g1v),tag(g2=g2v),tag(t3=t3v),tag(t4=t4v)]}",
+        exception.getMessage());
   }
 }
