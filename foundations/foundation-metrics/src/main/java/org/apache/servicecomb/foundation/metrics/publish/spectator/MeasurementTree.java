@@ -16,17 +16,26 @@
  */
 package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.distribution.CountAtBucket;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 
 // like select * from meters group by ......
 // but output a tree not a table
 public class MeasurementTree extends MeasurementNode {
+  public static final String TAG_LATENCY_DISTRIBUTION = "latencyDistribution";
+
+  public static final String TAG_TYPE = "type";
+
   public MeasurementTree() {
     super(null, null, null);
   }
@@ -39,12 +48,32 @@ public class MeasurementTree extends MeasurementNode {
     meters.forEachRemaining(meter -> {
       Iterable<Measurement> measurements = meter.measure();
       from(meter.getId(), measurements, groupConfig);
+
+      // This code snip is not very good design. But timer is quite special.
+      if (meter instanceof Timer) {
+        HistogramSnapshot snapshot = ((Timer) meter).takeSnapshot();
+        CountAtBucket[] countAtBuckets = snapshot.histogramCounts();
+        if (countAtBuckets.length > 2) {
+          List<Measurement> latency = new ArrayList<>(countAtBuckets.length);
+          for (int i = 0; i < countAtBuckets.length; i++) {
+            final int index = i;
+            if (index == 0) {
+              latency.add(new Measurement(() -> countAtBuckets[index].count(),
+                  Statistic.VALUE));
+              continue;
+            }
+            latency.add(new Measurement(() -> countAtBuckets[index].count() - countAtBuckets[index - 1].count(),
+                Statistic.VALUE));
+          }
+          from(meter.getId().withTag(Tag.of(TAG_TYPE, TAG_LATENCY_DISTRIBUTION)), latency, groupConfig);
+        }
+      }
     });
   }
 
   public void from(Id id, Iterable<Measurement> measurements, MeasurementGroupConfig groupConfig) {
     for (Measurement measurement : measurements) {
-      MeasurementNode node = addChild(id.getName(), id, null);
+      MeasurementNode node = addChild(id.getName(), id, measurement);
 
       List<TagFinder> tagFinders = groupConfig.findTagFinders(id.getName());
       if (tagFinders == null) {
@@ -63,7 +92,7 @@ public class MeasurementTree extends MeasurementNode {
                   id));
         }
 
-        node = node.addChild(tag.getValue(), id, null);
+        node = node.addChild(tag.getValue(), id, measurement);
       }
 
       node.addChild(measurement.getStatistic().name(), id, measurement);

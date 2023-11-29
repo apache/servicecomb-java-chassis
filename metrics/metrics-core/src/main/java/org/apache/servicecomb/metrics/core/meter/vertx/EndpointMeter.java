@@ -18,6 +18,7 @@ package org.apache.servicecomb.metrics.core.meter.vertx;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
 import io.micrometer.core.instrument.Gauge;
@@ -25,7 +26,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 
-public class EndpointMeter {
+public class EndpointMeter implements PeriodMeter {
   private static final double SNV_MILLI_SECONDS = 1.0 / TimeUnit.MILLISECONDS.toNanos(1L);
 
   public static final String ADDRESS = "address";
@@ -64,72 +65,60 @@ public class EndpointMeter {
 
   private final Gauge latency;
 
+  private long currentConnectCount;
+
   private long lastConnectCount;
+
+  private long currentDisconnectCount;
 
   private long lastDisconnectCount;
 
+  private long currentBytesRead;
+
   private long lastBytesRead;
+
+  private long currentBytesWritten;
 
   private long lastBytesWritten;
 
+  private long currentRequests;
+
   private long lastRequests;
 
+  private long currentRequestsForLatency;
+
   private long lastRequestsForLatency;
+
+  private long currentLatency;
 
   private long lastLatency;
 
   public EndpointMeter(MeterRegistry meterRegistry, String name, Tags tags, DefaultEndpointMetric metric) {
     this.meterRegistry = meterRegistry;
+    this.metric = metric;
 
     tags = tags.and(Tag.of(ADDRESS, metric.getAddress()));
-    connectCount = Gauge.builder(name, () -> {
-          long current = metric.getConnectCount();
-          long result = current - lastConnectCount;
-          lastConnectCount = current;
-          return result;
-        })
+    connectCount = Gauge.builder(name, () -> currentConnectCount)
         .tags(tags.and(Tag.of(STATISTIC, CONNECT_COUNT)))
         .register(meterRegistry);
-    disconnectCount = Gauge.builder(name, () -> {
-          long current = metric.getDisconnectCount();
-          long result = current - lastDisconnectCount;
-          lastDisconnectCount = current;
-          return result;
-        }).tags(tags.and(Tag.of(STATISTIC, DISCONNECT_COUNT)))
+    disconnectCount = Gauge.builder(name, () -> currentDisconnectCount)
+        .tags(tags.and(Tag.of(STATISTIC, DISCONNECT_COUNT)))
         .register(meterRegistry);
-    connections = Gauge.builder(name, () -> metric.getConnectCount() - metric.getDisconnectCount())
+    connections = Gauge.builder(name, () -> currentConnectCount - currentDisconnectCount)
         .tags(tags.and(Tag.of(STATISTIC, CONNECTIONS)))
         .register(meterRegistry);
-    bytesRead = Gauge.builder(name, () -> {
-          long current = metric.getBytesRead();
-          long result = current - lastBytesRead;
-          lastBytesRead = current;
-          return result;
-        }).tags(tags.and(Tag.of(STATISTIC, BYTES_READ)))
+    bytesRead = Gauge.builder(name, () -> currentBytesRead)
+        .tags(tags.and(Tag.of(STATISTIC, BYTES_READ)))
         .register(meterRegistry);
-    bytesWritten = Gauge.builder(name, () -> {
-          long current = metric.getBytesWritten();
-          long result = current - lastBytesWritten;
-          lastBytesWritten = current;
-          return result;
-        }).tags(tags.and(Tag.of(STATISTIC, BYTES_WRITTEN)))
+    bytesWritten = Gauge.builder(name, () -> currentBytesWritten)
+        .tags(tags.and(Tag.of(STATISTIC, BYTES_WRITTEN)))
         .register(meterRegistry);
-    requests = Gauge.builder(name, () -> {
-          long current = metric.getRequests();
-          long result = current - lastRequests;
-          lastRequests = current;
-          return result;
-        }).tags(tags.and(Tag.of(STATISTIC, REQUESTS)))
+    requests = Gauge.builder(name, () -> currentRequests)
+        .tags(tags.and(Tag.of(STATISTIC, REQUESTS)))
         .register(meterRegistry);
-    latency = Gauge.builder(name, () -> {
-          long currentLatency = metric.getLatency();
-          long currentRequests = metric.getRequests();
-          double result = currentRequests - lastRequestsForLatency == 0 ? 0 :
-              (currentLatency - lastLatency) / ((double) (currentRequests - lastRequestsForLatency)) * SNV_MILLI_SECONDS;
-          lastRequestsForLatency = currentRequests;
-          lastLatency = currentLatency;
-          return result;
-        }).tags(tags.and(Tag.of(STATISTIC, LATENCY)))
+    latency = Gauge.builder(name, () -> currentRequestsForLatency == 0 ? 0 :
+            (currentLatency) / ((double) (currentRequestsForLatency)) * SNV_MILLI_SECONDS)
+        .tags(tags.and(Tag.of(STATISTIC, LATENCY)))
         .register(meterRegistry);
   }
 
@@ -145,5 +134,35 @@ public class EndpointMeter {
     this.meterRegistry.remove(bytesWritten);
     this.meterRegistry.remove(requests);
     this.meterRegistry.remove(latency);
+  }
+
+  @Override
+  public void poll(long msNow, long secondInterval) {
+    long temp = metric.getConnectCount();
+    currentConnectCount = temp - lastConnectCount;
+    lastConnectCount = temp;
+
+    temp = metric.getDisconnectCount();
+    currentDisconnectCount = temp - lastDisconnectCount;
+    lastDisconnectCount = temp;
+
+    temp = metric.getBytesRead();
+    currentBytesRead = temp - lastBytesRead;
+    lastBytesRead = temp;
+
+    temp = metric.getBytesWritten();
+    currentBytesWritten = temp - lastBytesWritten;
+    lastBytesWritten = temp;
+
+    temp = metric.getRequests();
+    currentRequests = temp - lastRequests;
+    lastRequests = temp;
+
+    temp = metric.getRequests();
+    currentRequestsForLatency = temp - lastRequestsForLatency;
+    lastRequestsForLatency = temp;
+    temp = metric.getLatency();
+    currentLatency = temp - lastLatency;
+    lastLatency = temp;
   }
 }

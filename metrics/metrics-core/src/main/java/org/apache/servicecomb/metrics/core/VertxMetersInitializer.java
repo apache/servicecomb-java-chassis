@@ -18,6 +18,7 @@ package org.apache.servicecomb.metrics.core;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.metrics.core.meter.vertx.HttpClientEndpointsMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.ServerEndpointsMeter;
@@ -27,7 +28,7 @@ import com.google.common.eventbus.EventBus;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 
-public class VertxMetersInitializer implements MetricsInitializer {
+public class VertxMetersInitializer implements MetricsInitializer, PeriodMeter {
   public static final String VERTX_ENDPOINTS = "servicecomb.vertx.endpoints";
 
   public static final String ENDPOINTS_TYPE = "type";
@@ -36,18 +37,28 @@ public class VertxMetersInitializer implements MetricsInitializer {
 
   public static final String ENDPOINTS_SERVER = "server";
 
+  private HttpClientEndpointsMeter httpClientEndpointsMeter;
+
+  private ServerEndpointsMeter serverEndpointsMeter;
+
   @Override
   public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    new HttpClientEndpointsMeter(meterRegistry, VERTX_ENDPOINTS,
+    httpClientEndpointsMeter = new HttpClientEndpointsMeter(meterRegistry, VERTX_ENDPOINTS,
         Tags.of(ENDPOINTS_TYPE, ENDPOINTS_CLIENT),
         SharedVertxFactory.getMetricsFactory(config.getEnvironment())
             .getVertxMetrics()
             .getClientEndpointMetricManager());
 
-    new ServerEndpointsMeter(meterRegistry, VERTX_ENDPOINTS,
+    serverEndpointsMeter = new ServerEndpointsMeter(meterRegistry, VERTX_ENDPOINTS,
         Tags.of(ENDPOINTS_TYPE, ENDPOINTS_SERVER),
         SharedVertxFactory.getMetricsFactory(config.getEnvironment())
             .getVertxMetrics()
             .getServerEndpointMetricMap());
+  }
+
+  @Override
+  public void poll(long msNow, long secondInterval) {
+    httpClientEndpointsMeter.poll(msNow, secondInterval);
+    serverEndpointsMeter.poll(msNow, secondInterval);
   }
 }

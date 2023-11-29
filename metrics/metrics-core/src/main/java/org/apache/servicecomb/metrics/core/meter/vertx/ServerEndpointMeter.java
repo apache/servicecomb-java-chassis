@@ -29,15 +29,21 @@ public class ServerEndpointMeter extends EndpointMeter {
 
   private long lastRejectByConnectionLimit;
 
+  private long currentRejectByConnectionLimit;
+
   public ServerEndpointMeter(MeterRegistry meterRegistry, String name, Tags tags, DefaultEndpointMetric metric) {
     super(meterRegistry, name, tags, metric);
-    Gauge.builder(name, () -> {
-          long current = ((DefaultServerEndpointMetric) metric).getRejectByConnectionLimitCount();
-          long result = current - lastRejectByConnectionLimit;
-          lastRejectByConnectionLimit = current;
-          return result;
-        })
-        .tags(tags.and(Tag.of(STATISTIC, REJECT_BY_CONNECTION_LIMIT)))
+    Gauge.builder(name, () -> currentRejectByConnectionLimit)
+        .tags(tags.and(Tag.of(STATISTIC, REJECT_BY_CONNECTION_LIMIT), Tag.of(ADDRESS, metric.getAddress())))
         .register(meterRegistry);
+  }
+
+  @Override
+  public void poll(long msNow, long secondInterval) {
+    super.poll(msNow, secondInterval);
+
+    long current = ((DefaultServerEndpointMetric) metric).getRejectByConnectionLimitCount();
+    currentRejectByConnectionLimit = current - lastRejectByConnectionLimit;
+    lastRejectByConnectionLimit = current;
   }
 }

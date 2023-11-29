@@ -33,7 +33,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,16 +40,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.netflix.spectator.api.Counter;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Registry;
 import com.sun.net.httpserver.HttpServer;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 
 public class TestPrometheusPublisher {
-  GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
+  MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
   PrometheusPublisher publisher = new PrometheusPublisher();
 
@@ -75,7 +73,7 @@ public class TestPrometheusPublisher {
     Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
         .thenReturn("a:b:c");
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      publisher.init(globalRegistry, null, null);
+      publisher.init(meterRegistry, null, null);
     });
   }
 
@@ -84,7 +82,7 @@ public class TestPrometheusPublisher {
     Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
         .thenReturn("localhost:xxxx");
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      publisher.init(globalRegistry, null, null);
+      publisher.init(meterRegistry, null, null);
     });
   }
 
@@ -93,7 +91,7 @@ public class TestPrometheusPublisher {
     Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
         .thenReturn("localhost:9999999");
     Assertions.assertThrows(ServiceCombException.class, () -> {
-      publisher.init(globalRegistry, null, null);
+      publisher.init(meterRegistry, null, null);
     });
   }
 
@@ -103,12 +101,9 @@ public class TestPrometheusPublisher {
     Mockito.when(environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696"))
         .thenReturn("localhost:0");
     publisher.setEnvironment(environment);
-    publisher.init(globalRegistry, null, new MetricsBootstrapConfig(environment));
+    publisher.init(meterRegistry, null, new MetricsBootstrapConfig(environment));
 
-    Registry registry = new DefaultRegistry(new ManualClock());
-    globalRegistry.add(registry);
-
-    Counter counter = registry.counter("count.name", "tag1", "tag1v", "tag2", "tag2v");
+    Counter counter = meterRegistry.counter("count.name", "tag1", "tag1v", "tag2", "tag2v");
     counter.increment();
 
     HTTPServer httpServer = (HTTPServer) FieldUtils.readField(publisher, "httpServer", true);

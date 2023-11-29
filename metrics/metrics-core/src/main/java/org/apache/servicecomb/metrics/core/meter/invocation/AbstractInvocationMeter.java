@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionConfig;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
@@ -53,7 +54,7 @@ public abstract class AbstractInvocationMeter {
   }
 
   protected static Duration[] toDuration(String config) {
-    config = config.trim() + "," + Long.MAX_VALUE;
+    config = config.trim() + "," + LatencyDistributionConfig.MAX_LATENCY;
     String[] array = config.split("\\s*,+\\s*");
     Duration[] result = new Duration[array.length];
 
@@ -67,7 +68,13 @@ public abstract class AbstractInvocationMeter {
 
       result[idx] = Duration.ofMillis(msMin);
     }
-    result[array.length - 1] = Duration.ofMillis(Long.MAX_VALUE);
+    result[array.length - 1] = Duration.ofMillis(LatencyDistributionConfig.MAX_LATENCY);
+
+    if (result[0].toMillis() == 0) {
+      Duration[] target = new Duration[result.length - 1];
+      System.arraycopy(result, 1, target, 0, target.length);
+      return target;
+    }
 
     return result;
   }

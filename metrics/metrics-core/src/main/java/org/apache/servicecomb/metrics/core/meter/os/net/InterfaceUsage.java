@@ -22,6 +22,8 @@ import static org.apache.servicecomb.metrics.core.meter.os.NetMeter.TAG_PACKETS_
 import static org.apache.servicecomb.metrics.core.meter.os.NetMeter.TAG_RECEIVE;
 import static org.apache.servicecomb.metrics.core.meter.os.NetMeter.TAG_SEND;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
@@ -44,16 +46,16 @@ public class InterfaceUsage {
 
     // recv/Bps
     receive = new NetStat(0);
-    Gauge.builder(name, receive::getRate).tags(tags.and(TAG_RECEIVE, null)).register(meterRegistry);
+    Gauge.builder(name, receive::getRate).tags(tags.and(TAG_RECEIVE)).register(meterRegistry);
     // send/Bps
     send = new NetStat(8);
-    Gauge.builder(name, send::getRate).tags(tags.and(TAG_SEND, null)).register(meterRegistry);
+    Gauge.builder(name, send::getRate).tags(tags.and(TAG_SEND)).register(meterRegistry);
     // recv/pps
     packetsReceive = new NetStat(1);
-    Gauge.builder(name, packetsReceive::getRate).tags(tags.and(TAG_PACKETS_RECEIVE, null)).register(meterRegistry);
+    Gauge.builder(name, packetsReceive::getRate).tags(tags.and(TAG_PACKETS_RECEIVE)).register(meterRegistry);
     // send/pps
     packetsSend = new NetStat(9);
-    Gauge.builder(name, packetsSend::getRate).tags(tags.and(TAG_PACKETS_SEND, null)).register(meterRegistry);
+    Gauge.builder(name, packetsSend::getRate).tags(tags.and(TAG_PACKETS_SEND)).register(meterRegistry);
   }
 
   public void update(String interfaceData, long secondInterval) {
@@ -62,6 +64,26 @@ public class InterfaceUsage {
     send.update(netInfo, secondInterval);
     packetsReceive.update(netInfo, secondInterval);
     packetsSend.update(netInfo, secondInterval);
+  }
+
+  @VisibleForTesting
+  public NetStat getReceive() {
+    return receive;
+  }
+
+  @VisibleForTesting
+  public NetStat getSend() {
+    return send;
+  }
+
+  @VisibleForTesting
+  public NetStat getPacketsReceive() {
+    return packetsReceive;
+  }
+
+  @VisibleForTesting
+  public NetStat getPacketsSend() {
+    return packetsSend;
   }
 
   public String getName() {

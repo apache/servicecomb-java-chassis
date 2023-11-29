@@ -101,7 +101,7 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
     }
   }
 
-  protected void createThreadPoolMeters(String threadPoolName, Executor executor) {
+  public void createThreadPoolMeters(String threadPoolName, Executor executor) {
     if (!(executor instanceof ThreadPoolExecutor threadPoolExecutor)) {
       return;
     }

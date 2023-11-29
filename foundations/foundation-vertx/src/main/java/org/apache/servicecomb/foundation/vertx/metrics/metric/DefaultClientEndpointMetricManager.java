@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -30,10 +28,6 @@ import com.google.common.annotations.VisibleForTesting;
 import io.vertx.core.Vertx;
 
 public class DefaultClientEndpointMetricManager {
-  public interface ChangeListener {
-    void endpointsChanged();
-  }
-
   private final MetricsOptionsEx metricsOptionsEx;
 
   // to avoid save too many endpoint that not exist any more
@@ -49,14 +43,8 @@ public class DefaultClientEndpointMetricManager {
   // so must lock the logic
   private final ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
-  private final List<ChangeListener> changeListeners = new ArrayList<>();
-
   public DefaultClientEndpointMetricManager(MetricsOptionsEx metricsOptionsEx) {
     this.metricsOptionsEx = metricsOptionsEx;
-  }
-
-  public void addChangeListener(ChangeListener listener) {
-    this.changeListeners.add(listener);
   }
 
   public DefaultClientEndpointMetric getOrCreateEndpointMetric(String address) {
@@ -64,7 +52,6 @@ public class DefaultClientEndpointMetricManager {
     try {
       if (clientEndpointMetricMap.get(address) == null) {
         clientEndpointMetricMap.put(address, new DefaultClientEndpointMetric(address));
-        onChanged();
       }
       return clientEndpointMetricMap.get(address);
     } finally {
@@ -83,31 +70,22 @@ public class DefaultClientEndpointMetricManager {
 
   @VisibleForTesting
   public void onCheckClientEndpointMetricExpired(long periodic) {
-    boolean changed = false;
     for (DefaultClientEndpointMetric metric : clientEndpointMetricMap.values()) {
       if (metric.isExpired(metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano())) {
         rwlock.writeLock().lock();
         try {
           if (metric.isExpired(metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano())) {
             clientEndpointMetricMap.remove(metric.getAddress());
-            changed = true;
           }
         } finally {
           rwlock.writeLock().unlock();
         }
       }
     }
-    if (changed) {
-      onChanged();
-    }
   }
 
   public void setVertx(Vertx vertx) {
     vertx.setPeriodic(metricsOptionsEx.getCheckClientEndpointMetricIntervalInMilliseconds(),
         this::onCheckClientEndpointMetricExpired);
-  }
-
-  private void onChanged() {
-    this.changeListeners.forEach(ChangeListener::endpointsChanged);
   }
 }

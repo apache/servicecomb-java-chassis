@@ -26,7 +26,6 @@ public class HttpClientEndpointsMeter extends VertxEndpointsMeter {
   public <T extends DefaultEndpointMetric> HttpClientEndpointsMeter(MeterRegistry meterRegistry, String name, Tags tags,
       DefaultClientEndpointMetricManager clientEndpointMetricManager) {
     super(meterRegistry, name, tags, clientEndpointMetricManager.getClientEndpointMetricMap());
-    clientEndpointMetricManager.addChangeListener(this::onChanged);
   }
 
   @Override

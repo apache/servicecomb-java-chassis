@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
-import java.io.IOException;
-
 import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.OsCpuUsage;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.ProcessCpuUsage;
@@ -48,6 +46,11 @@ public class CpuMeter implements PeriodMeter {
 
     Gauge.builder(name, processCpuUsage::getUsage).tags(Tags.of(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU))
         .register(meterRegistry);
+
+    // read initial data, and cannot calculate usage, set to 0 first.
+    poll(0, 0);
+    allCpuUsage.setUsage(0);
+    processCpuUsage.setUsage(0);
   }
 
   @Override
@@ -55,7 +58,7 @@ public class CpuMeter implements PeriodMeter {
     try {
       allCpuUsage.update();
       processCpuUsage.update();
-    } catch (IOException e) {
+    } catch (Throwable e) {
       LOGGER.error("Failed to update cpu usage", e);
     }
   }

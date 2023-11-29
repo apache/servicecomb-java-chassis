@@ -40,7 +40,7 @@ public class MeasurementNode implements Comparable<MeasurementNode> {
   }
 
   public String getName() {
-    return id.getName();
+    return this.name;
   }
 
   public Id getId() {

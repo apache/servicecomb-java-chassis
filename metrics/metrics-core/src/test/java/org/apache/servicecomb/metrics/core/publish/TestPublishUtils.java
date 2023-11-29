@@ -32,7 +32,7 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.Utils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
-import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
+import org.apache.servicecomb.metrics.core.meter.ThreadPoolMonitorPublishModelFactory;
 
 import jakarta.ws.rs.core.Response.Status;
 

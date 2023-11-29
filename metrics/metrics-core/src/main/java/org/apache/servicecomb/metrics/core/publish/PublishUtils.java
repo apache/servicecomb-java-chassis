@@ -26,7 +26,7 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 
-import com.netflix.spectator.api.Statistic;
+import io.micrometer.core.instrument.Statistic;
 
 public final class PublishUtils {
   private PublishUtils() {
@@ -34,10 +34,10 @@ public final class PublishUtils {
 
   public static PerfInfo createPerfInfo(MeasurementNode stageNode) {
     PerfInfo perfInfo = new PerfInfo();
-    perfInfo.setTps(stageNode.findChild(Statistic.count.name()).summary());
-    perfInfo.setMsTotalTime(stageNode.findChild(Statistic.totalTime.name()).summary() * 1000);
+    perfInfo.setTps(stageNode.findChild(Statistic.COUNT.name()).summary());
+    perfInfo.setMsTotalTime(stageNode.findChild(Statistic.TOTAL_TIME.name()).summary() * 1000);
     // when UT with DefaultRegistry, there is no max value
-    MeasurementNode maxNode = stageNode.findChild(Statistic.max.name());
+    MeasurementNode maxNode = stageNode.findChild(Statistic.MAX.name());
     if (maxNode != null) {
       perfInfo.setMsMaxLatency(maxNode.summary() * 1000);
     }
@@ -57,7 +57,7 @@ public final class PublishUtils {
     MeasurementNode latencyNode = statusNode.findChild(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
     if (latencyNode != null && latencyNode.getMeasurements() != null) {
       operationPerf.setLatencyDistribution(latencyNode.getMeasurements().stream()
-          .map(m -> (int) m.value())
+          .map(m -> (int) m.getValue())
           .toArray(Integer[]::new));
     }
     return operationPerf;

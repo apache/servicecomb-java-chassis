@@ -19,12 +19,13 @@ package org.apache.servicecomb.metrics.core.meter.vertx;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 
-public class VertxEndpointsMeter {
+public class VertxEndpointsMeter implements PeriodMeter {
   private final Map<String, DefaultEndpointMetric> endpointMetricMap;
 
   protected final MeterRegistry meterRegistry;
@@ -42,10 +43,9 @@ public class VertxEndpointsMeter {
     this.name = name;
     this.tags = tags;
     this.endpointMetricMap = (Map<String, DefaultEndpointMetric>) endpointMetricMap;
-    syncMeters();
   }
 
-  private void syncMeters() {
+  private void syncMeters(long msNow, long secondInterval) {
     for (EndpointMeter meter : endpointMeterMap.values()) {
       if (!endpointMetricMap.containsKey(meter.getMetric().getAddress())) {
         EndpointMeter removed = endpointMeterMap.remove(meter.getMetric().getAddress());
@@ -53,7 +53,9 @@ public class VertxEndpointsMeter {
       }
     }
     for (DefaultEndpointMetric metric : endpointMetricMap.values()) {
-      endpointMeterMap.computeIfAbsent(metric.getAddress(), address -> createEndpointMeter(metric));
+      EndpointMeter updated = endpointMeterMap.computeIfAbsent(metric.getAddress(),
+          address -> createEndpointMeter(metric));
+      updated.poll(msNow, secondInterval);
     }
   }
 
@@ -61,7 +63,8 @@ public class VertxEndpointsMeter {
     return new EndpointMeter(meterRegistry, name, tags, metric);
   }
 
-  protected void onChanged() {
-    syncMeters();
+  @Override
+  public void poll(long msNow, long secondInterval) {
+    syncMeters(msNow, secondInterval);
   }
 }
