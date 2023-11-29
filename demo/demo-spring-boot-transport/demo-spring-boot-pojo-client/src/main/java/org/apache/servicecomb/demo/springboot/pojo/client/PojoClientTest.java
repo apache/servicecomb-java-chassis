@@ -38,7 +38,7 @@ public class PojoClientTest {
   @RpcReference(microserviceName = "spring-boot-pojo-server", schemaId = "server")
   public static Test test;
 
-  public static Test testFromXml;
+  private static Test testFromXml;
 
   public static final byte[] buffer = new byte[1024];
 

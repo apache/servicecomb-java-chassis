@@ -36,6 +36,121 @@
     </Match>
 
     <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.common.Version"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.common.base.DynamicEnumCache"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.common.event.SimpleSubscriber"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.common.http.HttpStatusManager"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.common.net.URIEndpointObject"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.config.file.MicroserviceConfigLoader"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.vertx.server.TcpParser"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.core.executor.ThreadPoolExecutorEx"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.protobuf.internal.schema.EnumMeta"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.enums.EnumNotPackedReadSchemas$EnumNotPackedReaders"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.enums.EnumPackedReadSchemas$EnumPackedReaders"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.repeated.impl.enums.EnumNotPackedWriteSchemas$EnumNotPackedWriters"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.repeated.impl.enums.EnumPackedWriteSchemas$EnumsPackedWriters"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.localregistry.LocalDiscoveryInstance"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.common.rest.definition.path.PathRegExp"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.common.accessLog.core.element.impl.ConfigurableDatetimeAccessItem"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.common.accessLog.core.parser.impl.VertxRestAccessLogPatternParser"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.loadbalance.filter.PriorityInstancePropertyDiscoveryFilter$PriorityInstanceProperty"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.http.client.common.URLEndPoint"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.http.client.common.WebSocketTransport"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.zeroconfig.multicast.Multicast"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+        <Class name="org.apache.servicecomb.demo.edge.business.ImplV2"/>
+    </Match>
+
+    <Match>
         <Bug pattern="DC_DOUBLECHECK"/>
     </Match>
 
@@ -187,6 +302,41 @@
     </Match>
 
     <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Class name="org.apache.servicecomb.demo.localRegistryServer.SelfServiceInvoker"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Class name="org.apache.servicecomb.demo.mapnull.ParseRequest"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Class name="org.apache.servicecomb.demo.mapnull.ParseResponse"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Class name="org.apache.servicecomb.demo.pojo.client.PojoClient"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Class name="org.apache.servicecomb.demo.registry.SelfServiceInvoker"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Class name="org.apache.servicecomb.demo.zeroconfig.server.SelfServiceInvoker"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Class name="org.apache.servicecomb.demo.zeroconfig.edge.SelfServiceInvoker"/>
+    </Match>
+
+    <Match>
         <Bug pattern="RC_REF_COMPARISON"/>
     </Match>
 
@@ -225,6 +375,11 @@
 
     <Match>
         <Bug pattern="SSD_DO_NOT_USE_INSTANCE_LOCK_ON_SHARED_STATIC_DATA"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="SS_SHOULD_BE_STATIC"/>
+        <Class name="org.apache.servicecomb.huaweicloud.servicestage.AKSKAuthHeaderProvider"/>
     </Match>
 
     <Match>
