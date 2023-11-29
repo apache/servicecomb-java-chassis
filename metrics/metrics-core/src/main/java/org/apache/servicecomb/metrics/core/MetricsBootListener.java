@@ -19,14 +19,9 @@ package org.apache.servicecomb.metrics.core;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
 public class MetricsBootListener implements BootListener {
   private final MetricsBootstrap metricsBootstrap;
-
-  public MetricsBootstrap getMetricsBootstrap() {
-    return metricsBootstrap;
-  }
 
   public MetricsBootListener(MetricsBootstrap metricsBootstrap) {
     this.metricsBootstrap = metricsBootstrap;
@@ -37,9 +32,13 @@ public class MetricsBootListener implements BootListener {
 
   }
 
+  public MetricsBootstrap getMetricsBootstrap() {
+    return metricsBootstrap;
+  }
+
   @Override
   public void onAfterRegistry(BootEvent event) {
-    metricsBootstrap.start(new GlobalRegistry(), EventManager.getEventBus());
+    metricsBootstrap.start(EventManager.getEventBus());
   }
 
   @Override

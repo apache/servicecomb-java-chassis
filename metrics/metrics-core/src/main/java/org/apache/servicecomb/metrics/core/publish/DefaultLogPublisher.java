@@ -119,7 +119,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     latencyDistributionConfig = new LatencyDistributionConfig(config.getLatencyDistribution());
     String header;
     for (LatencyScopeConfig scopeConfig : latencyDistributionConfig.getScopeConfigs()) {
-      if (scopeConfig.getMsMax() == Long.MAX_VALUE) {
+      if (scopeConfig.getMsMax() == LatencyDistributionConfig.MAX_LATENCY) {
         header = String.format("[%d,) ", scopeConfig.getMsMin());
       } else {
         header = String.format("[%d,%d) ", scopeConfig.getMsMin(), scopeConfig.getMsMax());

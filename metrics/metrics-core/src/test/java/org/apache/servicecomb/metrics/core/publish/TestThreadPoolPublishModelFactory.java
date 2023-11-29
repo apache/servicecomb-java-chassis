@@ -19,27 +19,26 @@ package org.apache.servicecomb.metrics.core.publish;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
+import org.apache.servicecomb.metrics.core.ThreadPoolMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runners.MethodSorters;
+import org.mockito.Mockito;
 
-import com.google.common.collect.Lists;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.patterns.PolledMeter;
-import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
-
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestThreadPoolPublishModelFactory {
-  protected Registry registry = new DefaultRegistry(new ManualClock());
+  MeterRegistry registry = new SimpleMeterRegistry();
 
   @Mocked
   BlockingQueue<Runnable> queue;
@@ -55,10 +54,15 @@ public class TestThreadPoolPublishModelFactory {
       }
     };
 
-    ThreadPoolMonitor.attach(registry, threadPoolExecutor, "test");
-
-    PolledMeter.update(registry);
-    PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
+    MetricsBootstrapConfig metricsBootstrapConfig = Mockito.mock(MetricsBootstrapConfig.class);
+    ThreadPoolMetersInitializer threadPoolMetersInitializer = new ThreadPoolMetersInitializer() {
+      @Override
+      public void createThreadPoolMeters() {
+        createThreadPoolMeters("test", threadPoolExecutor);
+      }
+    };
+    threadPoolMetersInitializer.init(registry, EventManager.getEventBus(), metricsBootstrapConfig);
+    PublishModelFactory factory = new PublishModelFactory(registry.getMeters());
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     Assertions.assertEquals(

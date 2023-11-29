@@ -31,7 +31,7 @@ import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
+import org.apache.servicecomb.metrics.core.meter.ThreadPoolMonitorPublishModelFactory;
 
 import io.micrometer.core.instrument.Meter;
 
@@ -62,19 +62,16 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_OPERATION,
         MeterInvocationConst.TAG_STATUS,
         MeterInvocationConst.TAG_TYPE,
-        new DefaultTagFinder(MeterInvocationConst.TAG_STAGE, true),
-        MeterInvocationConst.TAG_STATISTIC);
+        new DefaultTagFinder(MeterInvocationConst.TAG_STAGE, true));
 
     //os config
     groupConfig.addGroup(OsMeter.OS_NAME,
         OsMeter.OS_TYPE,
-        new DefaultTagFinder(NetMeter.INTERFACE, true),
-        NetMeter.STATISTIC);
+        new DefaultTagFinder(NetMeter.INTERFACE, true));
 
     groupConfig.addGroup(VertxMetersInitializer.VERTX_ENDPOINTS,
         VertxMetersInitializer.ENDPOINTS_TYPE,
-        EndpointMeter.ADDRESS,
-        EndpointMeter.STATISTIC);
+        EndpointMeter.ADDRESS, EndpointMeter.STATISTIC);
 
     return groupConfig;
   }

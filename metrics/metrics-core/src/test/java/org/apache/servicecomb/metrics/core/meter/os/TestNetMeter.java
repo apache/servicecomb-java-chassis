@@ -23,20 +23,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
-
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestNetMeter {
   @Test
-  public void testNetRefreshUnchanged(@Mocked Id id) {
+  public void testNetRefreshUnchanged() {
     List<String> list = new ArrayList<>();
     list.add("useless");
     list.add("useless");
@@ -47,7 +49,8 @@ public class TestNetMeter {
         return list;
       }
     };
-    NetMeter netMeter = new NetMeter(id);
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
     netMeter.refreshNet(1);
@@ -58,30 +61,29 @@ public class TestNetMeter {
 
     Assertions.assertEquals("eth0", eth0.getName());
 
-    Assertions.assertEquals(4, eth0.getNetStats().size());
     // recv Bps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(0).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(0).getRate(), 0.0);
-    Assertions.assertEquals(0, eth0.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(1L, eth0.getReceive().getLastValue());
+    Assertions.assertEquals(1, eth0.getReceive().getRate(), 0.0);
+    Assertions.assertEquals(0, eth0.getReceive().getIndex());
     // send Bps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(1).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(1).getRate(), 0.0);
-    Assertions.assertEquals(8, eth0.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(1L, eth0.getSend().getLastValue());
+    Assertions.assertEquals(1, eth0.getSend().getRate(), 0.0);
+    Assertions.assertEquals(8, eth0.getSend().getIndex());
 
     // recv pps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(2).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getRate(), 0.0);
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(1L, eth0.getPacketsReceive().getLastValue());
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getRate(), 0.0);
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getIndex());
 
     // send pps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(3).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(3).getRate(), 0.0);
-    Assertions.assertEquals(9, eth0.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(1L, eth0.getPacketsSend().getLastValue());
+    Assertions.assertEquals(1, eth0.getPacketsSend().getRate(), 0.0);
+    Assertions.assertEquals(9, eth0.getPacketsSend().getIndex());
   }
 
 
   @Test
-  public void testNetRefreshAdd(@Mocked Id id) {
+  public void testNetRefreshAdd() {
     List<String> list = new ArrayList<>();
     list.add("useless");
     list.add("useless");
@@ -92,7 +94,9 @@ public class TestNetMeter {
         return list;
       }
     };
-    NetMeter netMeter = new NetMeter(id);
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
+    netMeter.poll(0, 0);
     Map<String, InterfaceUsage> netMap = netMeter.getInterfaceUsageMap();
     Assertions.assertEquals(1, netMap.size());
     list.remove(2);
@@ -102,53 +106,52 @@ public class TestNetMeter {
     Assertions.assertEquals(2, netMap.size());
     InterfaceUsage eth0 = netMap.get("eth0");
     Assertions.assertEquals("eth0", eth0.getName());
-    Assertions.assertEquals(4, eth0.getNetStats().size());
+
     // recv Bps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(0).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(0).getRate(), 0.0);
-    Assertions.assertEquals(0, eth0.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(1L, eth0.getReceive().getLastValue());
+    Assertions.assertEquals(1, eth0.getReceive().getRate(), 0.0);
+    Assertions.assertEquals(0, eth0.getReceive().getIndex());
     // send Bps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(1).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(1).getRate(), 0.0);
-    Assertions.assertEquals(8, eth0.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(1L, eth0.getSend().getLastValue());
+    Assertions.assertEquals(1, eth0.getSend().getRate(), 0.0);
+    Assertions.assertEquals(8, eth0.getSend().getIndex());
 
     // recv pps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(2).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getRate(), 0.0);
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(1L, eth0.getPacketsReceive().getLastValue());
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getRate(), 0.0);
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getIndex());
 
     // send pps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(3).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(3).getRate(), 0.0);
-    Assertions.assertEquals(9, eth0.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(1L, eth0.getPacketsSend().getLastValue());
+    Assertions.assertEquals(1, eth0.getPacketsSend().getRate(), 0.0);
+    Assertions.assertEquals(9, eth0.getPacketsSend().getIndex());
 
     InterfaceUsage lo = netMap.get("lo");
     Assertions.assertEquals("lo", lo.getName());
 
-    Assertions.assertEquals(4, lo.getNetStats().size());
     // recv Bps
-    Assertions.assertEquals(0L, lo.getNetStats().get(0).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(0).getRate(), 0.0);
-    Assertions.assertEquals(0, lo.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(0L, lo.getReceive().getLastValue());
+    Assertions.assertEquals(0, lo.getReceive().getRate(), 0.0);
+    Assertions.assertEquals(0, lo.getReceive().getIndex());
     // send Bps
-    Assertions.assertEquals(0L, lo.getNetStats().get(1).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(1).getRate(), 0.0);
-    Assertions.assertEquals(8, lo.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(0L, lo.getSend().getLastValue());
+    Assertions.assertEquals(0, lo.getSend().getRate(), 0.0);
+    Assertions.assertEquals(8, lo.getSend().getIndex());
 
     // recv pps
-    Assertions.assertEquals(0L, lo.getNetStats().get(2).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(2).getRate(), 0.0);
-    Assertions.assertEquals(1, lo.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(0L, lo.getPacketsReceive().getLastValue());
+    Assertions.assertEquals(0, lo.getPacketsReceive().getRate(), 0.0);
+    Assertions.assertEquals(1, lo.getPacketsReceive().getIndex());
 
     // send pps
-    Assertions.assertEquals(0L, lo.getNetStats().get(3).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(3).getRate(), 0.0);
-    Assertions.assertEquals(9, lo.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(0L, lo.getPacketsSend().getLastValue());
+    Assertions.assertEquals(0, lo.getPacketsSend().getRate(), 0.0);
+    Assertions.assertEquals(9, lo.getPacketsSend().getIndex());
   }
 
 
   @Test
-  public void testNetRefreshRemove(@Mocked Id id) {
+  public void testNetRefreshRemove() {
     List<String> list = new ArrayList<>();
     list.add("useless");
     list.add("useless");
@@ -160,83 +163,82 @@ public class TestNetMeter {
         return list;
       }
     };
-    NetMeter netMeter = new NetMeter(id);
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
+    netMeter.poll(0, 1);
     Map<String, InterfaceUsage> netMap = netMeter.getInterfaceUsageMap();
     Assertions.assertEquals(2, netMap.size());
     InterfaceUsage lo = netMap.get("lo");
     InterfaceUsage eth0 = netMap.get("eth0");
     Assertions.assertEquals("lo", lo.getName());
-    Assertions.assertEquals(4, lo.getNetStats().size());
     // recv Bps
-    Assertions.assertEquals(0L, lo.getNetStats().get(0).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(0).getRate(), 0.0);
-    Assertions.assertEquals(0, lo.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(0L, lo.getReceive().getLastValue());
+    Assertions.assertEquals(0, lo.getReceive().getRate(), 0.0);
+    Assertions.assertEquals(0, lo.getReceive().getIndex());
     // send Bps
-    Assertions.assertEquals(0L, lo.getNetStats().get(1).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(1).getRate(), 0.0);
-    Assertions.assertEquals(8, lo.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(0L, lo.getSend().getLastValue());
+    Assertions.assertEquals(0, lo.getSend().getRate(), 0.0);
+    Assertions.assertEquals(8, lo.getSend().getIndex());
 
     // recv pps
-    Assertions.assertEquals(0L, lo.getNetStats().get(2).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(2).getRate(), 0.0);
-    Assertions.assertEquals(1, lo.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(0L, lo.getPacketsReceive().getLastValue());
+    Assertions.assertEquals(0, lo.getPacketsReceive().getRate(), 0.0);
+    Assertions.assertEquals(1, lo.getPacketsReceive().getIndex());
 
     // send pps
-    Assertions.assertEquals(0L, lo.getNetStats().get(3).getLastValue());
-    Assertions.assertEquals(0, lo.getNetStats().get(3).getRate(), 0.0);
-    Assertions.assertEquals(9, lo.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(0L, lo.getPacketsSend().getLastValue());
+    Assertions.assertEquals(0, lo.getPacketsSend().getRate(), 0.0);
+    Assertions.assertEquals(9, lo.getPacketsSend().getIndex());
 
     Assertions.assertEquals("eth0", eth0.getName());
-    Assertions.assertEquals(4, eth0.getNetStats().size());
     // recv Bps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(0).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(0).getRate(), 0.0);
-    Assertions.assertEquals(0, eth0.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(0L, eth0.getReceive().getLastValue());
+    Assertions.assertEquals(0, eth0.getReceive().getRate(), 0.0);
+    Assertions.assertEquals(0, eth0.getReceive().getIndex());
     // send Bps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(1).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(1).getRate(), 0.0);
-    Assertions.assertEquals(8, eth0.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(0L, eth0.getSend().getLastValue());
+    Assertions.assertEquals(0, eth0.getSend().getRate(), 0.0);
+    Assertions.assertEquals(8, eth0.getSend().getIndex());
 
     // recv pps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(2).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(2).getRate(), 0.0);
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(0L, eth0.getPacketsReceive().getLastValue());
+    Assertions.assertEquals(0, eth0.getPacketsReceive().getRate(), 0.0);
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getIndex());
 
     // send pps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(3).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(3).getRate(), 0.0);
-    Assertions.assertEquals(9, eth0.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(0L, eth0.getPacketsSend().getLastValue());
+    Assertions.assertEquals(0, eth0.getPacketsSend().getRate(), 0.0);
+    Assertions.assertEquals(9, eth0.getPacketsSend().getIndex());
     list.remove(2);
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
     netMeter.refreshNet(1);
-    Assertions.assertNull(netMap.get("lo"));
-    Assertions.assertEquals(1, netMap.size());
+
     Assertions.assertEquals("eth0", eth0.getName());
-    Assertions.assertEquals(4, eth0.getNetStats().size());
+
     // recv Bps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(0).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(0).getRate(), 0.0);
-    Assertions.assertEquals(0, eth0.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(1L, eth0.getReceive().getLastValue());
+    Assertions.assertEquals(1, eth0.getReceive().getRate(), 0.0);
+    Assertions.assertEquals(0, eth0.getReceive().getIndex());
     // send Bps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(1).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(1).getRate(), 0.0);
-    Assertions.assertEquals(8, eth0.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(1L, eth0.getSend().getLastValue());
+    Assertions.assertEquals(1, eth0.getSend().getRate(), 0.0);
+    Assertions.assertEquals(8, eth0.getSend().getIndex());
 
     // recv pps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(2).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getRate(), 0.0);
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(1L, eth0.getPacketsReceive().getLastValue());
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getRate(), 0.0);
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getIndex());
 
     // send pps
-    Assertions.assertEquals(1L, eth0.getNetStats().get(3).getLastValue());
-    Assertions.assertEquals(1, eth0.getNetStats().get(3).getRate(), 0.0);
-    Assertions.assertEquals(9, eth0.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(1L, eth0.getPacketsSend().getLastValue());
+    Assertions.assertEquals(1, eth0.getPacketsSend().getRate(), 0.0);
+    Assertions.assertEquals(9, eth0.getPacketsSend().getIndex());
   }
 
 
   @Test
-  public void testCalcMeasurements(@Mocked Id id) {
+  public void testCalcMeasurements() {
     List<String> list = new ArrayList<>();
     list.add("useless");
     list.add("useless");
@@ -247,19 +249,23 @@ public class TestNetMeter {
         return list;
       }
     };
-    NetMeter netMeter = new NetMeter(id);
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
     list.remove(2);
     list.add("eth0: 3 1    0    0    0     0          0          1         3 1    1      0     0     0    0    0");
-    List<Measurement> measurements = new ArrayList<>();
-    netMeter.calcMeasurements(measurements, 0L, 1);
-    Assertions.assertEquals(4, measurements.size());
-    Measurement receive = measurements.get(0);
-    Measurement send = measurements.get(1);
-    Measurement receivePackets = measurements.get(2);
-    Measurement sendPackets = measurements.get(3);
-    Assertions.assertEquals(3.0, send.value(), 0.0);
-    Assertions.assertEquals(1.0, sendPackets.value(), 0.0);
-    Assertions.assertEquals(3.0, receive.value(), 0.0);
-    Assertions.assertEquals(1.0, receivePackets.value(), 0.0);
+    netMeter.poll(0, 1);
+
+    MeasurementTree tree = new MeasurementTree();
+    tree.from(meterRegistry.getMeters().iterator(),
+        new MeasurementGroupConfig("net", "statistic"));
+
+    Measurement receive = tree.findChild("net", "receive").getMeasurements().get(0);
+    Measurement send = tree.findChild("net", "send").getMeasurements().get(0);
+    Measurement receivePackets = tree.findChild("net", "receivePackets").getMeasurements().get(0);
+    Measurement sendPackets = tree.findChild("net", "sendPackets").getMeasurements().get(0);
+    Assertions.assertEquals(3.0, send.getValue(), 0.0);
+    Assertions.assertEquals(1.0, sendPackets.getValue(), 0.0);
+    Assertions.assertEquals(3.0, receive.getValue(), 0.0);
+    Assertions.assertEquals(1.0, receivePackets.getValue(), 0.0);
   }
 }

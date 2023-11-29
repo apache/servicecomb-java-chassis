@@ -38,7 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.Meter;
+
+import io.micrometer.core.instrument.Meter;
 
 /**
  * Monitor data based on metrics-core module.

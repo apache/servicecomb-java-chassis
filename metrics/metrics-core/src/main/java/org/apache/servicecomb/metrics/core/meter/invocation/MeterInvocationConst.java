@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import com.netflix.spectator.api.Statistic;
+import io.micrometer.core.instrument.Statistic;
 
 public interface MeterInvocationConst {
   String INVOCATION_NAME = "servicecomb.invocation";
@@ -36,7 +36,7 @@ public interface MeterInvocationConst {
 
   String TAG_STATUS = "status";
 
-  String TAG_STATISTIC = Statistic.count.key();
+  String TAG_STATISTIC = Statistic.COUNT.name();
 
   String EDGE_INVOCATION_NAME = "EDGE";
 }

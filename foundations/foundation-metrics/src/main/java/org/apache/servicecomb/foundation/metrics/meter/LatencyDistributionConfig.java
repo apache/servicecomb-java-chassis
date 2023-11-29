@@ -24,6 +24,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LatencyDistributionConfig {
+  public static final Long MAX_LATENCY = 60 * 60 * 1000L;
+
   private static final Logger LOGGER = LoggerFactory.getLogger(LatencyDistributionConfig.class);
 
   private final List<LatencyScopeConfig> scopeConfigs = new ArrayList<>();
@@ -36,7 +38,7 @@ public class LatencyDistributionConfig {
     if (StringUtils.isEmpty(config)) {
       return;
     }
-    config = config.trim() + "," + Long.MAX_VALUE;
+    config = config.trim() + "," + MAX_LATENCY;
     String[] array = config.split("\\s*,+\\s*");
     try {
       for (int idx = 0; idx < array.length - 1; idx++) {

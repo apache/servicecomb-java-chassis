@@ -24,13 +24,16 @@ import java.util.stream.StreamSupport;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.metrics.core.meter.vertx.EndpointMeter;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 import com.google.common.eventbus.EventBus;
 
+import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 
 @RestSchema(schemaId = MetricsEndpoint.NAME, schemaInterface = MetricsEndpoint.class)
 public class MetricsEndpointImpl implements MetricsInitializer, MetricsEndpoint {
@@ -48,7 +51,7 @@ public class MetricsEndpointImpl implements MetricsInitializer, MetricsEndpoint 
 
     for (Meter meter : this.meterRegistry.getMeters()) {
       meter.measure().forEach(measurement -> {
-        String key = idToString(meter.getId(), sb);
+        String key = idToString(meter.getId(), measurement, sb);
         measurements.put(key, measurement.getValue());
       });
     }
@@ -58,18 +61,23 @@ public class MetricsEndpointImpl implements MetricsInitializer, MetricsEndpoint 
 
   // format id to string:
   // idName(tag1=value1,tag2=value2)
-  protected String idToString(Id id, StringBuilder sb) {
+  protected String idToString(Id id, Measurement measurement, StringBuilder sb) {
     sb.setLength(0);
-    sb.append(id.getName()).append('(');
+    sb.append(id.getName()).append("(").append(EndpointMeter.STATISTIC).append("=")
+        .append(measurement.getStatistic().name()).append(",");
     sb.append(StreamSupport
         .stream(id
             .getTags()
             .spliterator(), false)
-        .map(Object::toString)
+        .map(this::tagToString)
         .collect(
             Collectors.joining(",")));
     sb.append(')');
 
     return sb.toString();
+  }
+
+  private String tagToString(Tag tag) {
+    return tag.getKey() + "=" + tag.getValue();
   }
 }

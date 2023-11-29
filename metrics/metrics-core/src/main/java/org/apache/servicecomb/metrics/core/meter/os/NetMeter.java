@@ -61,6 +61,7 @@ public class NetMeter implements PeriodMeter {
     this.meterRegistry = meterRegistry;
     this.name = name;
     this.tags = tags;
+    poll(0, 0);
   }
 
   @Override
