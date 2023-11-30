@@ -26,7 +26,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -46,8 +45,6 @@ public class TestInvocationPublishModelFactory {
   EventBus eventBus = new EventBus();
 
   MeterRegistry meterRegistry = new SimpleMeterRegistry();
-
-  GlobalRegistry globalRegistry = new GlobalRegistry(meterRegistry);
 
   InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
 
@@ -73,7 +70,6 @@ public class TestInvocationPublishModelFactory {
     invocationMetersInitializer.init(meterRegistry, eventBus, new MetricsBootstrapConfig(environment));
     prepareInvocation();
 
-    globalRegistry.poll(1);
     PublishModelFactory factory = new PublishModelFactory(meterRegistry.getMeters());
     DefaultPublishModel model = factory.createDefaultPublishModel();
 

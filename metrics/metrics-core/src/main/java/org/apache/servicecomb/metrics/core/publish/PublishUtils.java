@@ -19,7 +19,7 @@ package org.apache.servicecomb.metrics.core.publish;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;

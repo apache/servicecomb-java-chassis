@@ -26,7 +26,6 @@ import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -36,22 +35,19 @@ import io.micrometer.core.instrument.MeterRegistry;
 public class MetricsBootstrap {
   private static final Logger LOGGER = LoggerFactory.getLogger(MetricsBootstrap.class);
 
+  private final MetricsBootstrapConfig config;
+
   private MeterRegistry meterRegistry;
 
   private EventBus eventBus;
-
-  private MetricsBootstrapConfig config;
 
   private ScheduledExecutorService executorService;
 
   private List<MetricsInitializer> metricsInitializers;
 
-  private Environment environment;
-
   @Autowired
-  public void setEnvironment(Environment environment) {
-    this.environment = environment;
-    config = new MetricsBootstrapConfig(environment);
+  public MetricsBootstrap(MetricsBootstrapConfig config) {
+    this.config = config;
   }
 
   @Autowired
@@ -68,7 +64,7 @@ public class MetricsBootstrap {
     this.eventBus = eventBus;
     this.executorService = Executors.newScheduledThreadPool(1,
         new ThreadFactoryBuilder()
-            .setNameFormat("spectator-poller-%d")
+            .setNameFormat("metrics-poller-%d")
             .build());
 
     metricsInitializers.forEach(initializer -> initializer.init(this.meterRegistry, eventBus, config));

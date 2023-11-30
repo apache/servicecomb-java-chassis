@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishUtils;
 

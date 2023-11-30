@@ -16,23 +16,50 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import java.time.Duration;
+
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
+import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.CountingMode;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 @Configuration
 public class MetricsCoreConfiguration {
+  @Bean
+  public MetricsBootstrapConfig metricsBootstrapConfig(Environment environment) {
+    return new MetricsBootstrapConfig(environment);
+  }
+
+  @Bean
+  public MeterRegistry meterRegistry(MetricsBootstrapConfig config) {
+    return new SimpleMeterRegistry(s -> {
+      if ("simple.step".equals(s)) {
+        return Duration.ofMillis(config.getMsPollInterval()).toString();
+      }
+      if ("simple.mode".equals(s)) {
+        return CountingMode.STEP.name();
+      }
+      return null;
+    }, Clock.SYSTEM);
+  }
+
   @Bean
   public MetricsBootListener metricsBootListener(MetricsBootstrap metricsBootstrap) {
     return new MetricsBootListener(metricsBootstrap);
   }
 
   @Bean
-  public MetricsBootstrap metricsBootstrap() {
-    return new MetricsBootstrap();
+  public MetricsBootstrap metricsBootstrap(MetricsBootstrapConfig config) {
+    return new MetricsBootstrap(config);
   }
 
   // Begin MetricsInitializers
