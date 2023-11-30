@@ -378,11 +378,6 @@
     </Match>
 
     <Match>
-        <Bug pattern="SS_SHOULD_BE_STATIC"/>
-        <Class name="org.apache.servicecomb.huaweicloud.servicestage.AKSKAuthHeaderProvider"/>
-    </Match>
-
-    <Match>
         <Bug pattern="THROWS_METHOD_THROWS_CLAUSE_BASIC_EXCEPTION"/>
     </Match>
 
