@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

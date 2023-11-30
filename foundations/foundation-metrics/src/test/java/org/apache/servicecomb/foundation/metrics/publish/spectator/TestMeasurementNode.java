@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Test;

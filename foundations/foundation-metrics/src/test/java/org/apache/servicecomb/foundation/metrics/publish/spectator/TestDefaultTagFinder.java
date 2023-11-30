@@ -19,6 +19,8 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.metrics.publish.DefaultTagFinder;
+import org.apache.servicecomb.foundation.metrics.publish.TagFinder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

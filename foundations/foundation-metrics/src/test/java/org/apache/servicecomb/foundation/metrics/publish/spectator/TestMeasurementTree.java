@@ -18,6 +18,10 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.metrics.publish.DefaultTagFinder;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

@@ -18,10 +18,10 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.List;
 
-import org.apache.servicecomb.foundation.metrics.publish.spectator.DefaultTagFinder;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.publish.DefaultTagFinder;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;

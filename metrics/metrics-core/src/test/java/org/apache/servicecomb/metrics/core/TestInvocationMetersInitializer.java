@@ -26,9 +26,8 @@ import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
@@ -49,8 +48,6 @@ public class TestInvocationMetersInitializer {
   EventBus eventBus = new EventBus();
 
   MeterRegistry registry = new SimpleMeterRegistry();
-
-  GlobalRegistry globalRegistry = new GlobalRegistry(registry);
 
   InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
 
@@ -103,8 +100,6 @@ public class TestInvocationMetersInitializer {
 
     eventBus.post(event);
     eventBus.post(event);
-
-    globalRegistry.poll(1);
 
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.getMeters().iterator(),
@@ -230,8 +225,6 @@ public class TestInvocationMetersInitializer {
 
     eventBus.post(event);
     eventBus.post(event);
-
-    globalRegistry.poll(1);
 
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.getMeters().iterator(),
@@ -371,8 +364,6 @@ public class TestInvocationMetersInitializer {
 
     eventBus.post(event);
     eventBus.post(event);
-
-    globalRegistry.poll(1);
 
     MeasurementTree tree = new MeasurementTree();
     tree.from(registry.getMeters().iterator(),

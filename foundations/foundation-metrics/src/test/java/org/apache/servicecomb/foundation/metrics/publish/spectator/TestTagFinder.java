@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.foundation.metrics.publish.spectator;
 
+import org.apache.servicecomb.foundation.metrics.publish.DefaultTagFinder;
+import org.apache.servicecomb.foundation.metrics.publish.TagFinder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

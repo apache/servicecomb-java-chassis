@@ -14,21 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.metrics.registry;
-
-import org.apache.servicecomb.foundation.metrics.PolledEvent;
-
-import io.micrometer.core.instrument.MeterRegistry;
+package org.apache.servicecomb.foundation.metrics.publish;
 
 
-public class GlobalRegistry {
-  private final MeterRegistry meterRegistry;
+import io.micrometer.core.instrument.Tag;
 
-  public GlobalRegistry(MeterRegistry meterRegistry) {
-    this.meterRegistry = meterRegistry;
+public class DefaultTagFinder implements TagFinder {
+  private final String tagKey;
+
+  private boolean skipOnNull;
+
+  public DefaultTagFinder(String tagKey) {
+    this.tagKey = tagKey;
   }
 
-  public PolledEvent poll(long secondInterval) {
-    return new PolledEvent(this.meterRegistry.getMeters());
+  public DefaultTagFinder(String tagKey, boolean skipOnNull) {
+    this.tagKey = tagKey;
+    this.skipOnNull = skipOnNull;
+  }
+
+  @Override
+  public boolean skipOnNull() {
+    return skipOnNull;
+  }
+
+  @Override
+  public String getTagKey() {
+    return tagKey;
+  }
+
+  @Override
+  public Tag find(Iterable<Tag> tags) {
+    for (Tag tag : tags) {
+      if (tag.getKey().equals(tagKey)) {
+        return tag;
+      }
+    }
+
+    return null;
   }
 }

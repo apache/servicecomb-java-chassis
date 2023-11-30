@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

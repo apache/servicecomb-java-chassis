@@ -14,43 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.metrics.publish.spectator;
-
+package org.apache.servicecomb.foundation.metrics.publish;
 
 import io.micrometer.core.instrument.Tag;
 
-public class DefaultTagFinder implements TagFinder {
-  private final String tagKey;
-
-  private boolean skipOnNull;
-
-  public DefaultTagFinder(String tagKey) {
-    this.tagKey = tagKey;
-  }
-
-  public DefaultTagFinder(String tagKey, boolean skipOnNull) {
-    this.tagKey = tagKey;
-    this.skipOnNull = skipOnNull;
-  }
-
-  @Override
-  public boolean skipOnNull() {
-    return skipOnNull;
-  }
-
-  @Override
-  public String getTagKey() {
-    return tagKey;
-  }
-
-  @Override
-  public Tag find(Iterable<Tag> tags) {
-    for (Tag tag : tags) {
-      if (tag.getKey().equals(tagKey)) {
-        return tag;
-      }
+public interface TagFinder {
+  static TagFinder build(Object obj) {
+    if (String.class.isInstance(obj)) {
+      return new DefaultTagFinder((String) obj);
     }
 
-    return null;
+    if (TagFinder.class.isInstance(obj)) {
+      return (TagFinder) obj;
+    }
+
+    throw new IllegalArgumentException(
+        "only support String or TagFinder, but got " +
+            (obj == null ? "null" : obj.getClass().getName()));
   }
+
+  default boolean skipOnNull() {
+    return false;
+  }
+
+  String getTagKey();
+
+  // read target tag from tags
+  // return directly or do some change and then return
+  Tag find(Iterable<Tag> tags);
 }
