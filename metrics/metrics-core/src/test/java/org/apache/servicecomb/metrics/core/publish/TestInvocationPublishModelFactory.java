@@ -75,198 +75,198 @@ public class TestInvocationPublishModelFactory {
 
     String expect = """
         {
-           "operationPerfGroups" : {
-             "groups" : {
-               "rest" : {
-                 "200" : {
-                   "transport" : "rest",
-                   "status" : "200",
-                   "operationPerfs" : [ {
-                     "operation" : "m.s.o",
-                     "stages" : {
-                       "consumer-encode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "prepare" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "wait" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "total" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.4E-5,
-                         "msMaxLatency" : 1.4E-5
-                       },
-                       "consumer-send" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "connection" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "consumer-decode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       }
-                     },
-                     "latencyDistribution" : [ 1, 0, 0 ]
-                   } ],
-                   "summary" : {
-                     "operation" : "",
-                     "stages" : {
-                       "consumer-encode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "prepare" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "total" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.4E-5,
-                         "msMaxLatency" : 1.4E-5
-                       },
-                       "wait" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "consumer-send" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "connection" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "consumer-decode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       }
-                     },
-                     "latencyDistribution" : [ 1, 0, 0 ]
-                   }
-                 }
-               }
-             }
-           }
-         }
+            "operationPerfGroups" : {
+              "groups" : {
+                "rest" : {
+                  "200" : {
+                    "transport" : "rest",
+                    "status" : "200",
+                    "operationPerfs" : [ {
+                      "operation" : "m.s.o",
+                      "stages" : {
+                        "consumer-encode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "prepare" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "wait" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "total" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.4E-5,
+                          "msMaxLatency" : 1.4E-5
+                        },
+                        "consumer-send" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "connection" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "consumer-decode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        }
+                      },
+                      "latencyDistribution" : [ 1, 0, 0 ]
+                    } ],
+                    "summary" : {
+                      "operation" : "",
+                      "stages" : {
+                        "consumer-encode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "prepare" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "total" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.4E-5,
+                          "msMaxLatency" : 1.4E-5
+                        },
+                        "wait" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "consumer-send" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "connection" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        },
+                        "consumer-decode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0E-6,
+                          "msMaxLatency" : 1.0E-6
+                        }
+                      },
+                      "latencyDistribution" : [ 1, 0, 0 ]
+                    }
+                  }
+                }
+              }
+            }
+          }
         """;
     Assertions.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
         Json.encodePrettily(model.getConsumer()));
 
     expect = """
         {
-           "operationPerfGroups" : {
-             "groups" : {
-               "rest" : {
-                 "200" : {
-                   "transport" : "rest",
-                   "status" : "200",
-                   "operationPerfs" : [ {
-                     "operation" : "m.s.o",
-                     "stages" : {
-                       "consumer-encode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "prepare" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "wait" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "total" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.4E-5,
-                         "msMaxLatency" : 1.4E-5
-                       },
-                       "consumer-send" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "connection" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "consumer-decode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       }
-                     },
-                     "latencyDistribution" : [ 1, 0, 0 ]
-                   } ],
-                   "summary" : {
-                     "operation" : "",
-                     "stages" : {
-                       "consumer-encode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "prepare" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "total" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.4E-5,
-                         "msMaxLatency" : 1.4E-5
-                       },
-                       "wait" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "consumer-send" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "connection" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       },
-                       "consumer-decode" : {
-                         "tps" : 1.0,
-                         "msTotalTime" : 1.0000000000000002E-6,
-                         "msMaxLatency" : 1.0000000000000002E-6
-                       }
-                     },
-                     "latencyDistribution" : [ 1, 0, 0 ]
-                   }
-                 }
-               }
-             }
-           }
-         }
+          "operationPerfGroups" : {
+            "groups" : {
+              "rest" : {
+                "200" : {
+                  "transport" : "rest",
+                  "status" : "200",
+                  "operationPerfs" : [ {
+                    "operation" : "m.s.o",
+                    "stages" : {
+                      "consumer-encode" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "prepare" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "wait" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "total" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.4E-5,
+                        "msMaxLatency" : 1.4E-5
+                      },
+                      "consumer-send" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "connection" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "consumer-decode" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      }
+                    },
+                    "latencyDistribution" : [ 1, 0, 0 ]
+                  } ],
+                  "summary" : {
+                    "operation" : "",
+                    "stages" : {
+                      "consumer-encode" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "prepare" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "total" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.4E-5,
+                        "msMaxLatency" : 1.4E-5
+                      },
+                      "wait" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "consumer-send" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "connection" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      },
+                      "consumer-decode" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0E-6,
+                        "msMaxLatency" : 1.0E-6
+                      }
+                    },
+                    "latencyDistribution" : [ 1, 0, 0 ]
+                  }
+                }
+              }
+            }
+          }
+        }
         """;
     Assertions.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
         Json.encodePrettily(model.getProducer()));

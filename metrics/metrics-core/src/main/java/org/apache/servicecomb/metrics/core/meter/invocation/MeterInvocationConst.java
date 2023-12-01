@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import io.micrometer.core.instrument.Statistic;
-
 public interface MeterInvocationConst {
   String INVOCATION_NAME = "servicecomb.invocation";
 
@@ -32,11 +30,7 @@ public interface MeterInvocationConst {
 
   String TAG_STAGE = "stage";
 
-  String TAG_LATENCY_DISTRIBUTION = "latencyDistribution";
-
   String TAG_STATUS = "status";
-
-  String TAG_STATISTIC = Statistic.COUNT.name();
 
   String EDGE_INVOCATION_NAME = "EDGE";
 }

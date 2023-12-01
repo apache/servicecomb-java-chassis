@@ -32,7 +32,9 @@ import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.core.executor.ThreadPoolExecutorEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
+import org.apache.servicecomb.metrics.core.meter.pool.ThreadPoolMeter;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
@@ -127,22 +129,18 @@ public class TestThreadPoolMetersInitializer {
 
     MeasurementTree tree = new MeasurementTree();
     MeasurementGroupConfig group = new MeasurementGroupConfig();
-    group.addGroup("threadpool.maxThreads", "id");
-    group.addGroup("threadpool.rejectedCount", "id");
-    group.addGroup("threadpool.completedTaskCount", "id");
-    group.addGroup("threadpool.currentThreadsBusy", "id");
-    group.addGroup("threadpool.corePoolSize", "id");
-    group.addGroup("threadpool.poolSize", "id");
-    group.addGroup("threadpool.queueSize", "id");
-    group.addGroup("threadpool.taskCount", "id");
+    group.addGroup(ThreadPoolMeter.THREAD_POOL_METER, ThreadPoolMeter.ID,
+        ThreadPoolMeter.STAGE);
     tree.from(registry.getMeters().iterator(), group);
-    Assertions.assertEquals(tree.findChild("threadpool.maxThreads", "groupExecutor-group0").summary(), 0, 0);
-    Assertions.assertEquals(tree.findChild("threadpool.rejectedCount", "groupExecutor-group0").summary(), 0, 0);
-    Assertions.assertEquals(tree.findChild("threadpool.completedTaskCount", "groupExecutor-group0").summary(), 0, 0);
-    Assertions.assertEquals(tree.findChild("threadpool.currentThreadsBusy", "groupExecutor-group0").summary(), 0, 0);
-    Assertions.assertEquals(tree.findChild("threadpool.corePoolSize", "groupExecutor-group0").summary(), 0, 0);
-    Assertions.assertEquals(tree.findChild("threadpool.poolSize", "groupExecutor-group0").summary(), 0, 0);
-    Assertions.assertEquals(tree.findChild("threadpool.queueSize", "groupExecutor-group0").summary(), 10, 0);
-    Assertions.assertEquals(tree.findChild("threadpool.taskCount", "groupExecutor-group0").summary(), 0, 0);
+
+    MeasurementNode node = tree.findChild(ThreadPoolMeter.THREAD_POOL_METER);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "maxThreads").summary(), 0, 0);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "rejectedCount").summary(), 0, 0);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "completedTaskCount").summary(), 0, 0);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "currentThreadsBusy").summary(), 0, 0);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "corePoolSize").summary(), 0, 0);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "poolSize").summary(), 0, 0);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "queueSize").summary(), 10, 0);
+    Assertions.assertEquals(node.findChild("groupExecutor-group0", "taskCount").summary(), 0, 0);
   }
 }

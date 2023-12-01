@@ -24,7 +24,7 @@ public class TestPerfInfo {
   public void construct() {
     PerfInfo perf = new PerfInfo();
 
-    Assertions.assertEquals(0, perf.getTps(), 0);
+    Assertions.assertEquals(0, perf.getTotalRequests(), 0);
     Assertions.assertEquals(0, perf.getMsTotalTime(), 0);
     Assertions.assertEquals(0, perf.getMsMaxLatency(), 0);
     Assertions.assertEquals(0, perf.calcMsLatency(), 0);
@@ -35,18 +35,18 @@ public class TestPerfInfo {
     PerfInfo sum = new PerfInfo();
 
     PerfInfo other = new PerfInfo();
-    other.setTps(10);
+    other.setTotalRequests(10);
     other.setMsTotalTime(10);
     other.setMsMaxLatency(100);
     sum.add(other);
 
     other = new PerfInfo();
-    other.setTps(20);
+    other.setTotalRequests(20);
     other.setMsTotalTime(20);
     other.setMsMaxLatency(200);
     sum.add(other);
 
-    Assertions.assertEquals(30, sum.getTps(), 0);
+    Assertions.assertEquals(30, sum.getTotalRequests(), 0);
     Assertions.assertEquals(30, sum.getMsTotalTime(), 0);
     Assertions.assertEquals(200, sum.getMsMaxLatency(), 0);
     Assertions.assertEquals(1.0, sum.calcMsLatency(), 0);
@@ -57,18 +57,18 @@ public class TestPerfInfo {
     PerfInfo sum = new PerfInfo();
 
     PerfInfo other = new PerfInfo();
-    other.setTps(10);
+    other.setTotalRequests(10);
     other.setMsTotalTime(10);
     other.setMsMaxLatency(100);
     sum.add(other);
 
     other = new PerfInfo();
-    other.setTps(20);
+    other.setTotalRequests(20);
     other.setMsTotalTime(20);
     other.setMsMaxLatency(50);
     sum.add(other);
 
-    Assertions.assertEquals(30, sum.getTps(), 0);
+    Assertions.assertEquals(30, sum.getTotalRequests(), 0);
     Assertions.assertEquals(1.0, sum.calcMsLatency(), 0);
     Assertions.assertEquals(100, sum.getMsMaxLatency(), 0);
   }
@@ -76,7 +76,7 @@ public class TestPerfInfo {
   @Test
   public void testToString() {
     PerfInfo perf = new PerfInfo();
-    perf.setTps(10);
+    perf.setTotalRequests(10);
     perf.setMsTotalTime(10);
     perf.setMsMaxLatency(100);
 

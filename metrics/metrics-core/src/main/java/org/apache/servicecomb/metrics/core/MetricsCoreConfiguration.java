@@ -23,6 +23,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -40,6 +41,7 @@ public class MetricsCoreConfiguration {
   }
 
   @Bean
+  @ConditionalOnMissingBean
   public MeterRegistry meterRegistry(MetricsBootstrapConfig config) {
     return new SimpleMeterRegistry(s -> {
       if ("simple.step".equals(s)) {

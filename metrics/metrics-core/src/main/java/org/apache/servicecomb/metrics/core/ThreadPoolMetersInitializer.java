@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,36 +27,20 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.GroupExecutor;
-import org.apache.servicecomb.core.executor.ThreadPoolExecutorEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
+import org.apache.servicecomb.metrics.core.meter.pool.ThreadPoolMeter;
 
 import com.google.common.eventbus.EventBus;
 
-import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 
-public class ThreadPoolMetersInitializer implements MetricsInitializer {
-  public static final String ID = "id";
-
-  public static final String REJECTED_COUNT = "threadpool.rejectedCount";
-
-  public static final String TASK_COUNT = "threadpool.taskCount";
-
-  public static final String COMPLETED_TASK_COUNT = "threadpool.completedTaskCount";
-
-  public static final String CURRENT_THREADS_BUSY = "threadpool.currentThreadsBusy";
-
-  public static final String MAX_THREADS = "threadpool.maxThreads";
-
-  public static final String POOL_SIZE = "threadpool.poolSize";
-
-  public static final String CORE_POOL_SIZE = "threadpool.corePoolSize";
-
-  public static final String QUEUE_SIZE = "threadpool.queueSize";
-
+public class ThreadPoolMetersInitializer implements MetricsInitializer, PeriodMeter {
   private MeterRegistry meterRegistry;
+
+  private Map<String, ThreadPoolMeter> threadPoolMeters = new HashMap<>();
 
   @Override
   public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
@@ -106,25 +91,12 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
       return;
     }
 
-    Gauge.builder(TASK_COUNT, threadPoolExecutor::getTaskCount).tags(ID, threadPoolName)
-        .register(meterRegistry);
-    Gauge.builder(COMPLETED_TASK_COUNT, threadPoolExecutor::getCompletedTaskCount).tags(ID, threadPoolName)
-        .register(meterRegistry);
-    Gauge.builder(CURRENT_THREADS_BUSY, threadPoolExecutor::getActiveCount).tags(ID, threadPoolName)
-        .register(meterRegistry);
-    Gauge.builder(MAX_THREADS, threadPoolExecutor::getMaximumPoolSize).tags(ID, threadPoolName)
-        .register(meterRegistry);
-    Gauge.builder(POOL_SIZE, threadPoolExecutor::getPoolSize).tags(ID, threadPoolName)
-        .register(meterRegistry);
-    Gauge.builder(CORE_POOL_SIZE, threadPoolExecutor::getCorePoolSize).tags(ID, threadPoolName)
-        .register(meterRegistry);
-    Gauge.builder(QUEUE_SIZE, () -> threadPoolExecutor.getQueue().size()).tags(ID, threadPoolName)
-        .register(meterRegistry);
+    threadPoolMeters.computeIfAbsent(threadPoolName,
+        (key) -> new ThreadPoolMeter(meterRegistry, threadPoolName, threadPoolExecutor));
+  }
 
-    if (executor instanceof ThreadPoolExecutorEx) {
-      Gauge.builder(REJECTED_COUNT, () -> ((ThreadPoolExecutorEx) (executor)).getRejectedCount())
-          .tags(ID, threadPoolName)
-          .register(meterRegistry);
-    }
+  @Override
+  public void poll(long msNow, long secondInterval) {
+    threadPoolMeters.forEach((key, value) -> value.poll(msNow, secondInterval));
   }
 }

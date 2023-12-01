@@ -163,7 +163,7 @@ public class TestDefaultLogPublisher {
       };
       DefaultPublishModel model = new DefaultPublishModel();
       PerfInfo perfTotal = new PerfInfo();
-      perfTotal.setTps(10_0000);
+      perfTotal.setTotalRequests(10_0000);
       perfTotal.setMsTotalTime(30000L * 1_0000);
       perfTotal.setMsMaxLatency(30000);
       OperationPerf operationPerf = new OperationPerf();
@@ -264,8 +264,9 @@ public class TestDefaultLogPublisher {
                 0        0          0        0           NaN      0         0.0       0.0          test
               consumer:
                simple:
-                status      tps      latency            [0,1) [1,100) [100,) operation
-                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                status      requests      latency       [0,1) [1,100) [100,) operation
+                rest.OK:  \s
+                            100000.0 3000.000/30000.000 12    120     1200   op
                             100000.0 3000.000/30000.000 12    120     1200   (summary)
                details:
                   rest.OK:
@@ -274,8 +275,9 @@ public class TestDefaultLogPublisher {
                       wait  : 3000.000/30000.000 decode-response    : 3000.000/30000.000
               producer:
                simple:
-                status      tps      latency            [0,1) [1,100) [100,) operation
-                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                status      requests      latency       [0,1) [1,100) [100,) operation
+                rest.OK:  \s
+                            100000.0 3000.000/30000.000 12    120     1200   op
                             100000.0 3000.000/30000.000 12    120     1200   (summary)
                details:
                   rest.OK:
@@ -284,8 +286,9 @@ public class TestDefaultLogPublisher {
                       encode-response: 3000.000/30000.000 send: 3000.000/30000.000
               edge:
                simple:
-                status      tps      latency            [0,1) [1,100) [100,) operation
-                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                status      requests      latency       [0,1) [1,100) [100,) operation
+                rest.OK:  \s
+                            100000.0 3000.000/30000.000 12    120     1200   op
                             100000.0 3000.000/30000.000 12    120     1200   (summary)
                details:
                   rest.OK:

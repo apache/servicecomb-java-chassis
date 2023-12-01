@@ -17,18 +17,18 @@
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
 public class PerfInfo {
-  private double tps;
+  private double totalRequests;
 
   private double msTotalTime;
 
   private double msMaxLatency;
 
-  public double getTps() {
-    return tps;
+  public double getTotalRequests() {
+    return totalRequests;
   }
 
-  public void setTps(double tps) {
-    this.tps = tps;
+  public void setTotalRequests(double totalRequests) {
+    this.totalRequests = totalRequests;
   }
 
   public double getMsTotalTime() {
@@ -48,7 +48,7 @@ public class PerfInfo {
   }
 
   public void add(PerfInfo other) {
-    tps += other.tps;
+    totalRequests += other.totalRequests;
     msTotalTime += other.msTotalTime;
     if (msMaxLatency < other.msMaxLatency) {
       msMaxLatency = other.msMaxLatency;
@@ -56,12 +56,12 @@ public class PerfInfo {
   }
 
   public double calcMsLatency() {
-    return (tps != 0) ? msTotalTime / tps : 0;
+    return (totalRequests != 0) ? msTotalTime / totalRequests : 0;
   }
 
   @Override
   public String toString() {
-    return "PerfInfo [tps=" + tps + ", msTotalTime=" + msTotalTime + ", msLatency=" + calcMsLatency()
+    return "PerfInfo [tps=" + totalRequests + ", msTotalTime=" + msTotalTime + ", msLatency=" + calcMsLatency()
         + ", msMaxLatency="
         + msMaxLatency + "]";
   }

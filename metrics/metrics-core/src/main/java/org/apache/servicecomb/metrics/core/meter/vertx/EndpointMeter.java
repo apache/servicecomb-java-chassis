@@ -104,7 +104,7 @@ public class EndpointMeter implements PeriodMeter {
     disconnectCount = Gauge.builder(name, () -> currentDisconnectCount)
         .tags(tags.and(Tag.of(STATISTIC, DISCONNECT_COUNT)))
         .register(meterRegistry);
-    connections = Gauge.builder(name, () -> currentConnectCount - currentDisconnectCount)
+    connections = Gauge.builder(name, () -> this.metric.getConnectCount() - this.metric.getDisconnectCount())
         .tags(tags.and(Tag.of(STATISTIC, CONNECTIONS)))
         .register(meterRegistry);
     bytesRead = Gauge.builder(name, () -> currentBytesRead)

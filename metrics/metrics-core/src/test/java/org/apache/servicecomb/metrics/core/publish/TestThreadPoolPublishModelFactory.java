@@ -17,8 +17,8 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.servicecomb.core.executor.ThreadPoolExecutorEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
@@ -44,7 +44,7 @@ public class TestThreadPoolPublishModelFactory {
   BlockingQueue<Runnable> queue;
 
   @Test
-  public void createDefaultPublishModel(@Injectable ThreadPoolExecutor threadPoolExecutor) throws Exception {
+  public void createDefaultPublishModel(@Injectable ThreadPoolExecutorEx threadPoolExecutor) throws Exception {
     new Expectations() {
       {
         threadPoolExecutor.getQueue();
@@ -66,7 +66,8 @@ public class TestThreadPoolPublishModelFactory {
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     Assertions.assertEquals(
-        "{\"test\":{\"avgTaskCount\":0.0,\"avgCompletedTaskCount\":0.0,\"currentThreadsBusy\":0,\"maxThreads\":0,\"poolSize\":0,\"corePoolSize\":0,\"queueSize\":10,\"rejected\":\"NaN\"}}",
+        """
+            {"test":{"avgTaskCount":0.0,"avgCompletedTaskCount":0.0,"currentThreadsBusy":0,"maxThreads":0,"poolSize":0,"corePoolSize":0,"queueSize":10,"rejected":0.0}}""",
         JsonUtils.writeValueAsString(model.getThreadPools()));
   }
 }

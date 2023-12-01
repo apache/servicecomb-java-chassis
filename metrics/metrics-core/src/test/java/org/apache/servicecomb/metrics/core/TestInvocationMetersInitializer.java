@@ -110,9 +110,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
         .getMeasurements();
@@ -120,9 +120,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-send")
         .getMeasurements();
@@ -130,9 +130,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.0E-8");
+        "statistic='TOTAL_TIME', value=1.0E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=5.0E-9");
+        "statistic='MAX', value=5.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
         .getMeasurements();
@@ -140,9 +140,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-encode")
         .getMeasurements();
@@ -151,9 +151,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=8.0E-9");
+        "statistic='TOTAL_TIME', value=8.0E-6");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=4.0E-9");
+        "statistic='MAX', value=4.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
         .getMeasurements();
@@ -161,9 +161,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "wait")
         .getMeasurements();
@@ -171,9 +171,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-decode")
         .getMeasurements();
@@ -181,9 +181,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
   }
 
   @Test
@@ -236,9 +236,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
         .getMeasurements();
@@ -246,9 +246,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-send")
         .getMeasurements();
@@ -256,9 +256,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.0E-8");
+        "statistic='TOTAL_TIME', value=1.0E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=5.0E-9");
+        "statistic='MAX', value=5.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
         .getMeasurements();
@@ -266,9 +266,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-encode")
         .getMeasurements();
@@ -276,9 +276,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=8.0E-9");
+        "statistic='TOTAL_TIME', value=8.0E-6");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=4.0E-9");
+        "statistic='MAX', value=4.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "wait")
         .getMeasurements();
@@ -286,9 +286,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-decode")
         .getMeasurements();
@@ -296,9 +296,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.6E-8");
+        "statistic='TOTAL_TIME', value=1.6E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=8.0E-9");
+        "statistic='MAX', value=8.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-decode")
         .getMeasurements();
@@ -306,9 +306,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-encode")
         .getMeasurements();
@@ -316,9 +316,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-send")
         .getMeasurements();
@@ -326,9 +326,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
   }
 
   @Test
@@ -375,9 +375,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
         .getMeasurements();
@@ -385,9 +385,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "queue")
         .getMeasurements();
@@ -395,9 +395,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "execute")
         .getMeasurements();
@@ -405,9 +405,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-decode")
         .getMeasurements();
@@ -415,9 +415,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-encode")
         .getMeasurements();
@@ -425,9 +425,9 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-send")
         .getMeasurements();
@@ -435,8 +435,8 @@ public class TestInvocationMetersInitializer {
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "statistic='TOTAL_TIME', value=1.8E-8");
+        "statistic='TOTAL_TIME', value=1.8E-5");
     AssertUtil.assertMeasure(measurements, 2,
-        "statistic='MAX', value=9.0E-9");
+        "statistic='MAX', value=9.0E-6");
   }
 }
