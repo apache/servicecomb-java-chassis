@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.io.CharSource;
 import com.google.common.io.Files;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -55,10 +56,10 @@ public class TestOsMeterInitializer {
     list.add("13  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
     list.add("useless");
     list.add("eth0: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
-    new MockUp<Files>() {
+    new MockUp<CharSource>() {
       //Files.readFirstLine
       @Mock
-      public String readFirstLine(File file, Charset encoding) {
+      public String readFirstLine() {
         return list.get(0);
       }
     };
