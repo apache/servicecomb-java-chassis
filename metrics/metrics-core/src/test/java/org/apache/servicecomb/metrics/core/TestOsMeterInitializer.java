@@ -35,7 +35,6 @@ import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.CharSource;
-import com.google.common.io.Files;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
