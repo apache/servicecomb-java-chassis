@@ -14,25 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.metrics.core.meter.invocation;
+package org.apache.servicecomb.metrics.core;
 
-public interface MeterInvocationConst {
-  String INVOCATION_NAME = "servicecomb.invocation";
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
+import io.micrometer.core.instrument.distribution.Histogram;
+import io.micrometer.core.instrument.step.StepDistributionSummary;
 
-  // consumer or producer
-  String TAG_ROLE = "role";
-
-  String TAG_OPERATION = "operation";
-
-  String TAG_TRANSPORT = "transport";
-
-  String TAG_TYPE = "type";
-
-  String TAG_STAGE = "stage";
-
-  String TAG_DISTRIBUTION = "distribution";
-
-  String TAG_STATUS = "status";
-
-  String EDGE_INVOCATION_NAME = "EDGE";
+public class StepDistributionSummaryExt extends StepDistributionSummary {
+  public StepDistributionSummaryExt(Id id, Clock clock,
+      DistributionStatisticConfig distributionStatisticConfig, double scale, long stepMillis,
+      Histogram histogram) {
+    super(id, clock, distributionStatisticConfig, scale, stepMillis, histogram);
+  }
 }

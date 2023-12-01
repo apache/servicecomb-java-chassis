@@ -25,11 +25,15 @@ import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionConfig;
 
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 
 public abstract class AbstractInvocationMeter {
+  // total time distribution
+  private final DistributionSummary totalSummary;
+
   //total time
   private final Timer totalTimer;
 
@@ -42,22 +46,24 @@ public abstract class AbstractInvocationMeter {
       MetricsBootstrapConfig metricsBootstrapConfig) {
     this.metricsBootstrapConfig = metricsBootstrapConfig;
 
-    Timer.Builder totalBuilder = Timer.builder(name)
-        .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
-            MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_TOTAL));
     if (!StringUtils.isEmpty(metricsBootstrapConfig.getLatencyDistribution())) {
-      totalBuilder.sla(toDuration(metricsBootstrapConfig.getLatencyDistribution()))
-          .distributionStatisticExpiry(Duration.ofMillis(metricsBootstrapConfig.getMsPollInterval()));
+      totalSummary = DistributionSummary.builder(name)
+          .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_DISTRIBUTION))
+          .distributionStatisticExpiry(Duration.ofMillis(metricsBootstrapConfig.getMsPollInterval()))
+          .serviceLevelObjectives(toSla(metricsBootstrapConfig.getLatencyDistribution())).register(meterRegistry);
+    } else {
+      totalSummary = null;
     }
-    this.totalTimer = totalBuilder.register(meterRegistry);
+    this.totalTimer = Timer.builder(name).tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE
+        , MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_TOTAL)).register(meterRegistry);
     this.prepareTimer = Timer.builder(name).tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE
         , MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_PREPARE)).register(meterRegistry);
   }
 
-  protected static Duration[] toDuration(String config) {
+  protected static double[] toSla(String config) {
     config = config.trim() + "," + LatencyDistributionConfig.MAX_LATENCY;
     String[] array = config.split("\\s*,+\\s*");
-    Duration[] result = new Duration[array.length];
+    double[] result = new double[array.length];
 
     for (int idx = 0; idx < array.length - 1; idx++) {
       long msMin = Long.parseLong(array[idx]);
@@ -67,12 +73,12 @@ public abstract class AbstractInvocationMeter {
         throw new IllegalStateException(msg);
       }
 
-      result[idx] = Duration.ofMillis(msMin);
+      result[idx] = msMin;
     }
-    result[array.length - 1] = Duration.ofMillis(LatencyDistributionConfig.MAX_LATENCY);
+    result[array.length - 1] = LatencyDistributionConfig.MAX_LATENCY;
 
-    if (result[0].toMillis() == 0) {
-      Duration[] target = new Duration[result.length - 1];
+    if (Double.compare(0, result[0]) == 0) {
+      double[] target = new double[result.length - 1];
       System.arraycopy(result, 1, target, 0, target.length);
       return target;
     }
@@ -84,5 +90,8 @@ public abstract class AbstractInvocationMeter {
     InvocationStageTrace stageTrace = event.getInvocation().getInvocationStageTrace();
     totalTimer.record(stageTrace.calcTotal(), TimeUnit.NANOSECONDS);
     prepareTimer.record(stageTrace.calcPrepare(), TimeUnit.NANOSECONDS);
+    if (totalSummary != null) {
+      totalSummary.record(TimeUnit.NANOSECONDS.toMillis(stageTrace.calcTotal()));
+    }
   }
 }

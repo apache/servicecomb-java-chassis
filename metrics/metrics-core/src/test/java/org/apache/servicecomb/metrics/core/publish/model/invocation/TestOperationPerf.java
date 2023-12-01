@@ -36,12 +36,12 @@ public class TestOperationPerf {
 
     PerfInfo perfInfo = opPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
     Assertions.assertEquals(10, perfInfo.getTotalRequests(), 0);
-    Assertions.assertEquals(1, perfInfo.calcMsLatency(), 0);
-    Assertions.assertEquals(100, perfInfo.getMsMaxLatency(), 0);
+    Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
+    Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
 
     perfInfo = opPerf.findStage(InvocationStageTrace.STAGE_PROVIDER_BUSINESS);
     Assertions.assertEquals(10, perfInfo.getTotalRequests(), 0);
-    Assertions.assertEquals(1, perfInfo.calcMsLatency(), 0);
-    Assertions.assertEquals(100, perfInfo.getMsMaxLatency(), 0);
+    Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
+    Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
   }
 }

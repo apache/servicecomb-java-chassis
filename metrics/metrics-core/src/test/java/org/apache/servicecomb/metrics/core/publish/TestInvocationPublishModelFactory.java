@@ -44,6 +44,7 @@ import io.vertx.core.json.Json;
 public class TestInvocationPublishModelFactory {
   EventBus eventBus = new EventBus();
 
+  // not step mode.
   MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
   InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
@@ -86,18 +87,18 @@ public class TestInvocationPublishModelFactory {
                       "stages" : {
                         "consumer-encode" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "prepare" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "wait" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "total" : {
                           "totalRequests" : 1.0,
@@ -106,34 +107,34 @@ public class TestInvocationPublishModelFactory {
                         },
                         "consumer-send" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "connection" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "consumer-decode" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         }
                       },
-                      "latencyDistribution" : [ 1, 0, 0 ]
+                      "latencyDistribution" : [ 1, 1, 1 ]
                     } ],
                     "summary" : {
                       "operation" : "",
                       "stages" : {
                         "consumer-encode" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "prepare" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "total" : {
                           "totalRequests" : 1.0,
@@ -142,26 +143,26 @@ public class TestInvocationPublishModelFactory {
                         },
                         "wait" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "consumer-send" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "connection" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         },
                         "consumer-decode" : {
                           "totalRequests" : 1.0,
-                          "msTotalTime" : 1.0E-6,
-                          "msMaxLatency" : 1.0E-6
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
                         }
                       },
-                      "latencyDistribution" : [ 1, 0, 0 ]
+                      "latencyDistribution" : [ 1, 1, 1 ]
                     }
                   }
                 }
@@ -185,18 +186,18 @@ public class TestInvocationPublishModelFactory {
                     "stages" : {
                       "consumer-encode" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "prepare" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "wait" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "total" : {
                         "totalRequests" : 1.0,
@@ -205,34 +206,34 @@ public class TestInvocationPublishModelFactory {
                       },
                       "consumer-send" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "connection" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "consumer-decode" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       }
                     },
-                    "latencyDistribution" : [ 1, 0, 0 ]
+                    "latencyDistribution" : [ 1, 1, 1 ]
                   } ],
                   "summary" : {
                     "operation" : "",
                     "stages" : {
                       "consumer-encode" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "prepare" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "total" : {
                         "totalRequests" : 1.0,
@@ -241,26 +242,26 @@ public class TestInvocationPublishModelFactory {
                       },
                       "wait" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "consumer-send" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "connection" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "consumer-decode" : {
                         "totalRequests" : 1.0,
-                        "msTotalTime" : 1.0E-6,
-                        "msMaxLatency" : 1.0E-6
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       }
                     },
-                    "latencyDistribution" : [ 1, 0, 0 ]
+                    "latencyDistribution" : [ 1, 1, 1 ]
                   }
                 }
               }

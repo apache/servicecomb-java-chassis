@@ -44,8 +44,8 @@ public class TestPublishUtils {
     PerfInfo perf = PublishUtils.createPerfInfo(stageNode);
 
     Assertions.assertEquals(10, perf.getTotalRequests(), 0);
-    Assertions.assertEquals(1, perf.calcMsLatency(), 0);
-    Assertions.assertEquals(100, perf.getMsMaxLatency(), 0);
+    Assertions.assertEquals(1000, perf.calcMsLatency(), 0);
+    Assertions.assertEquals(100000, perf.getMsMaxLatency(), 0);
   }
 
   @Test
@@ -55,8 +55,8 @@ public class TestPublishUtils {
     PerfInfo perfInfo = opPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
     Integer[] latencyDistribution = opPerf.getLatencyDistribution();
     Assertions.assertEquals(10, perfInfo.getTotalRequests(), 0);
-    Assertions.assertEquals(1, perfInfo.calcMsLatency(), 0);
-    Assertions.assertEquals(100, perfInfo.getMsMaxLatency(), 0);
+    Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
+    Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
     Assertions.assertEquals(2, latencyDistribution.length);
     Assertions.assertEquals(1, latencyDistribution[0].intValue());
     Assertions.assertEquals(2, latencyDistribution[1].intValue());
@@ -76,8 +76,8 @@ public class TestPublishUtils {
     PerfInfo perfInfo = group.getSummary().findStage(InvocationStageTrace.STAGE_TOTAL);
     Integer[] latencyDistribution = group.getSummary().getLatencyDistribution();
     Assertions.assertEquals(10, perfInfo.getTotalRequests(), 0);
-    Assertions.assertEquals(1, perfInfo.calcMsLatency(), 0);
-    Assertions.assertEquals(100, perfInfo.getMsMaxLatency(), 0);
+    Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
+    Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
     Assertions.assertEquals(2, latencyDistribution.length);
     Assertions.assertEquals(1, latencyDistribution[0].intValue());
     Assertions.assertEquals(2, latencyDistribution[1].intValue());

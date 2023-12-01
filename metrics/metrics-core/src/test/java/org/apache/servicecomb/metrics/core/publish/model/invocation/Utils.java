@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishUtils;
 
@@ -61,7 +60,7 @@ public class Utils {
     Id id = initId;
     MeasurementNode statusNode = new MeasurementNode(status, id, new HashMap<>());
     MeasurementNode typeNode = new MeasurementNode(MeterInvocationConst.TAG_STAGE, id, new HashMap<>());
-    MeasurementNode latencyNode = new MeasurementNode(MeasurementTree.TAG_LATENCY_DISTRIBUTION, id,
+    MeasurementNode latencyNode = new MeasurementNode(MeterInvocationConst.TAG_DISTRIBUTION, id,
         new HashMap<>());
     List<Measurement> measurements = latencyNode.getMeasurements();
     measurements.add(new Measurement(() -> 1, Statistic.VALUE));

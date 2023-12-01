@@ -31,7 +31,6 @@ import org.springframework.core.env.Environment;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.CountingMode;
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 @Configuration
 public class MetricsCoreConfiguration {
@@ -43,7 +42,7 @@ public class MetricsCoreConfiguration {
   @Bean
   @ConditionalOnMissingBean
   public MeterRegistry meterRegistry(MetricsBootstrapConfig config) {
-    return new SimpleMeterRegistry(s -> {
+    return new SimpleMeterRegistryExt(s -> {
       if ("simple.step".equals(s)) {
         return Duration.ofMillis(config.getMsPollInterval()).toString();
       }
