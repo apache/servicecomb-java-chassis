@@ -54,8 +54,8 @@ public class TestMeasurementTree {
 
   @Test
   public void from() {
-    timer.record(10, TimeUnit.MILLISECONDS);
-    timer.record(2, TimeUnit.MILLISECONDS);
+    timer.record(10, TimeUnit.SECONDS);
+    timer.record(2, TimeUnit.SECONDS);
 
     MeasurementGroupConfig config = new MeasurementGroupConfig("id", "g1", "g2");
     tree.from(registry.getMeters().iterator(), config);

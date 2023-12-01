@@ -17,27 +17,21 @@
 package org.apache.servicecomb.foundation.metrics.publish;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
+import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.Meter.Id;
 import io.micrometer.core.instrument.Statistic;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.distribution.CountAtBucket;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 
 // like select * from meters group by ......
 // but output a tree not a table
 public class MeasurementTree extends MeasurementNode {
-  public static final String TAG_LATENCY_DISTRIBUTION = "latencyDistribution";
-
-  public static final String TAG_TYPE = "type";
-
   public MeasurementTree() {
     super(null, null, null);
   }
@@ -48,30 +42,18 @@ public class MeasurementTree extends MeasurementNode {
   // only id name exists in groupConfig will accept, others will be ignored
   public void from(Iterator<Meter> meters, MeasurementGroupConfig groupConfig) {
     meters.forEachRemaining(meter -> {
-      // This code snip is not very good design. But timer is quite special.
-      if (meter instanceof Timer timer) {
-        HistogramSnapshot snapshot = timer.takeSnapshot();
-        List<Measurement> summary = Arrays.asList(new Measurement(snapshot::count, Statistic.COUNT),
-            new Measurement(() -> snapshot.total(TimeUnit.MILLISECONDS), Statistic.TOTAL_TIME),
-            new Measurement(() -> snapshot.max(TimeUnit.MILLISECONDS), Statistic.MAX));
-        from(meter.getId(), summary, groupConfig);
-
+      // This code snip is not very good design. But DistributionSummary is quite special.
+      if (meter instanceof DistributionSummary distributionSummary) {
+        HistogramSnapshot snapshot = distributionSummary.takeSnapshot();
         CountAtBucket[] countAtBuckets = snapshot.histogramCounts();
-        if (countAtBuckets.length > 2) {
-          List<Measurement> distributions = new ArrayList<>(countAtBuckets.length);
-          for (int i = 0; i < countAtBuckets.length; i++) {
-            final int index = i;
-            if (index == 0) {
-              distributions.add(new Measurement(() -> countAtBuckets[index].count(),
-                  Statistic.COUNT));
-              continue;
-            }
-            distributions.add(new Measurement(() -> countAtBuckets[index].count() - countAtBuckets[index - 1].count(),
-                Statistic.COUNT));
-          }
-
-          from(meter.getId().withTag(Tag.of(TAG_TYPE, TAG_LATENCY_DISTRIBUTION)), distributions, groupConfig);
+        List<Measurement> distributions = new ArrayList<>(countAtBuckets.length);
+        for (CountAtBucket countAtBucket : countAtBuckets) {
+          final double value = countAtBucket.count();
+          distributions.add(new Measurement(() -> value,
+              Statistic.COUNT));
         }
+
+        from(meter.getId(), distributions, groupConfig);
         return;
       }
 

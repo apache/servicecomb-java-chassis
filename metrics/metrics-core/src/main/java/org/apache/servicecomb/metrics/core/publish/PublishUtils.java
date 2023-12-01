@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
@@ -36,8 +35,8 @@ public final class PublishUtils {
   public static PerfInfo createPerfInfo(MeasurementNode stageNode) {
     PerfInfo perfInfo = new PerfInfo();
     perfInfo.setTotalRequests(stageNode.findChild(Statistic.COUNT.name()).summary());
-    perfInfo.setMsTotalTime(stageNode.findChild(Statistic.TOTAL_TIME.name()).summary());
-    perfInfo.setMsMaxLatency(stageNode.findChild(Statistic.MAX.name()).summary());
+    perfInfo.setMsTotalTime(stageNode.findChild(Statistic.TOTAL_TIME.name()).summary() * 1000);
+    perfInfo.setMsMaxLatency(stageNode.findChild(Statistic.MAX.name()).summary() * 1000);
     return perfInfo;
   }
 
@@ -51,7 +50,7 @@ public final class PublishUtils {
       operationPerf.getStages().put(mNode.getName(), perfInfo);
     });
 
-    MeasurementNode latencyNode = statusNode.findChild(MeasurementTree.TAG_LATENCY_DISTRIBUTION);
+    MeasurementNode latencyNode = statusNode.findChild(MeterInvocationConst.TAG_DISTRIBUTION);
     if (latencyNode != null && latencyNode.getMeasurements() != null) {
       operationPerf.setLatencyDistribution(latencyNode.getMeasurements().stream()
           .map(m -> (int) m.getValue())
