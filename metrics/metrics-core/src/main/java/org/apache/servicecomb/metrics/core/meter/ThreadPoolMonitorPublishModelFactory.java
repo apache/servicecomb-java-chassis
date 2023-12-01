@@ -16,11 +16,12 @@
  */
 package org.apache.servicecomb.metrics.core.meter;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
-import org.apache.servicecomb.metrics.core.ThreadPoolMetersInitializer;
+import org.apache.servicecomb.metrics.core.meter.pool.ThreadPoolMeter;
 import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 
 import io.micrometer.core.instrument.Measurement;
@@ -30,54 +31,41 @@ public class ThreadPoolMonitorPublishModelFactory {
     void set(ThreadPoolPublishModel model, Measurement measurement);
   }
 
-  private final MeasurementTree tree;
-
-  private final Map<String, ThreadPoolPublishModel> threadPools;
-
-  public ThreadPoolMonitorPublishModelFactory(MeasurementTree tree,
-      Map<String, ThreadPoolPublishModel> threadPools) {
-    this.tree = tree;
-    this.threadPools = threadPools;
-  }
-
-  public static void create(MeasurementTree tree,
-      Map<String, ThreadPoolPublishModel> threadPools) {
-    new ThreadPoolMonitorPublishModelFactory(tree, threadPools).create();
-  }
-
-  public void create() {
-    readMeasurement(ThreadPoolMetersInitializer.TASK_COUNT,
+  public static Map<String, ThreadPoolPublishModel> create(MeasurementTree tree) {
+    Map<String, ThreadPoolPublishModel> result = new HashMap<>(8);
+    readMeasurement(result, tree, ThreadPoolMeter.TASK_COUNT,
         (model, measurement) -> model.setAvgTaskCount(measurement.getValue()));
-    readMeasurement(ThreadPoolMetersInitializer.COMPLETED_TASK_COUNT,
+    readMeasurement(result, tree, ThreadPoolMeter.COMPLETED_TASK_COUNT,
         (model, measurement) -> model.setAvgCompletedTaskCount(measurement.getValue()));
-    readMeasurement(ThreadPoolMetersInitializer.CURRENT_THREADS_BUSY,
+    readMeasurement(result, tree, ThreadPoolMeter.CURRENT_THREADS_BUSY,
         (model, measurement) -> model.setCurrentThreadsBusy((int) measurement.getValue()));
-    readMeasurement(ThreadPoolMetersInitializer.MAX_THREADS,
+    readMeasurement(result, tree, ThreadPoolMeter.MAX_THREADS,
         (model, measurement) -> model.setMaxThreads((int) measurement.getValue()));
-    readMeasurement(ThreadPoolMetersInitializer.POOL_SIZE,
+    readMeasurement(result, tree, ThreadPoolMeter.POOL_SIZE,
         (model, measurement) -> model.setPoolSize((int) measurement.getValue()));
-    readMeasurement(ThreadPoolMetersInitializer.CORE_POOL_SIZE,
+    readMeasurement(result, tree, ThreadPoolMeter.CORE_POOL_SIZE,
         (model, measurement) -> model.setCorePoolSize((int) measurement.getValue()));
-    readMeasurement(ThreadPoolMetersInitializer.QUEUE_SIZE,
+    readMeasurement(result, tree, ThreadPoolMeter.QUEUE_SIZE,
         (model, measurement) -> model.setQueueSize((int) measurement.getValue()));
-    readMeasurement(ThreadPoolMetersInitializer.REJECTED_COUNT,
+    readMeasurement(result, tree, ThreadPoolMeter.REJECTED_COUNT,
         (model, measurement) -> model.setRejected(measurement.getValue()));
+    return result;
   }
 
-  protected void readMeasurement(String name, Setter setter) {
-    MeasurementNode node = tree.findChild(name);
+  protected static void readMeasurement(Map<String, ThreadPoolPublishModel> threadPools, MeasurementTree tree,
+      String name, Setter setter) {
+    MeasurementNode node = tree.findChild(ThreadPoolMeter.THREAD_POOL_METER);
     if (node == null) {
       return;
     }
 
-    for (Measurement measurement : node.getMeasurements()) {
-      String threadPoolName = node.getId().getTag(ThreadPoolMetersInitializer.ID);
-      if (threadPoolName == null) {
+    for (String threadPoolName : node.getChildren().keySet()) {
+      MeasurementNode measure = node.findChild(threadPoolName, name);
+      if (measure == null) {
         continue;
       }
-
       ThreadPoolPublishModel model = threadPools.computeIfAbsent(threadPoolName, tpn -> new ThreadPoolPublishModel());
-      setter.set(model, measurement);
+      setter.set(model, measure.getMeasurements().get(0));
     }
   }
 }

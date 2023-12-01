@@ -46,7 +46,8 @@ public abstract class AbstractInvocationMeter {
         .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE,
             MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_TOTAL));
     if (!StringUtils.isEmpty(metricsBootstrapConfig.getLatencyDistribution())) {
-      totalBuilder.sla(toDuration(metricsBootstrapConfig.getLatencyDistribution()));
+      totalBuilder.sla(toDuration(metricsBootstrapConfig.getLatencyDistribution()))
+          .distributionStatisticExpiry(Duration.ofMillis(metricsBootstrapConfig.getMsPollInterval()));
     }
     this.totalTimer = totalBuilder.register(meterRegistry);
     this.prepareTimer = Timer.builder(name).tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE
