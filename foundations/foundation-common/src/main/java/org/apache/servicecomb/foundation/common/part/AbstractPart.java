@@ -21,10 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-import javax.activation.MimetypesFileTypeMap;
-
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.MediaType;
+
+import javax.activation.MimetypesFileTypeMap;
 
 public class AbstractPart implements Part {
   private static final MimetypesFileTypeMap mimetypesFileTypeMap = new MimetypesFileTypeMap();
