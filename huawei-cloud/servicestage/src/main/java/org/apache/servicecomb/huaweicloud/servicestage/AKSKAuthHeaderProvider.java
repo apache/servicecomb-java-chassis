@@ -68,7 +68,7 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
 
   private boolean enabled;
 
-  private final boolean loaded = false;
+  private boolean loaded = false;
 
   public AKSKAuthHeaderProvider() {
     this(ConfigUtil.createLocalConfig());
@@ -103,6 +103,7 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
       headers.put(X_SERVICE_AK, getAccessKey());
       headers.put(X_SERVICE_SHAAKSK, getSecretKey());
       headers.put(X_SERVICE_PROJECT, getProject());
+      loaded = true;
     }
   }
 
