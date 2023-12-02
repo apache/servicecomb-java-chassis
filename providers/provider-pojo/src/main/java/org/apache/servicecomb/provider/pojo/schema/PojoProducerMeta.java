@@ -17,9 +17,8 @@
 
 package org.apache.servicecomb.provider.pojo.schema;
 
-import javax.inject.Inject;
-
 import com.google.common.annotations.VisibleForTesting;
+import jakarta.inject.Inject;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.springframework.beans.factory.InitializingBean;
 
