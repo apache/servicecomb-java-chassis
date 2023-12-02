@@ -32,7 +32,7 @@
   <properties>
     <!-- Dependency versions: sort by alphabetic order -->
     <activation.version>1.2.2</activation.version>
-    <asciidoctorj.version>2.5.3</asciidoctorj.version>
+    <asciidoctorj.version>2.5.10</asciidoctorj.version>
     <aspectj.version>1.9.20.1</aspectj.version>
     <assertj.version>3.24.2</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
