@@ -23,25 +23,38 @@ import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.M
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.Clock;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Registry;
+
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 
 public class TestMetricsEndpointImpl {
   MetricsEndpointImpl publisher = new MetricsEndpointImpl();
 
+  EventBus eventBus = new EventBus();
+
   Environment environment = Mockito.mock(Environment.class);
+
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
+        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
+    Mockito.when(environment.getProperty(
+            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
+        .thenReturn(7);
+  }
 
   @Test
   public void measure_globalRegistryNull() {
+    MeterRegistry registry = new SimpleMeterRegistry();
+    publisher.init(registry, eventBus, new MetricsBootstrapConfig(environment));
+
     Map<String, Double> result = publisher.measure();
 
     Assertions.assertEquals(0, result.size());
@@ -49,25 +62,15 @@ public class TestMetricsEndpointImpl {
 
   @Test
   public void measure_normal() {
-    Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
-        .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
-    Mockito.when(environment.getProperty(
-            CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
-        .thenReturn(7);
+    MeterRegistry registry = new SimpleMeterRegistry();
+    registry.timer("name", "t1", "v1", "t2", "v2");
 
-    Clock clock = new ManualClock();
-    GlobalRegistry globalRegistry = new GlobalRegistry();
-    Registry registry = new DefaultRegistry(clock);
-    registry.timer(registry.createId("name", "t1", "v1", "t2", "v2"));
-    globalRegistry.add(registry);
-
-    EventBus eventBus = new EventBus();
-
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
+    publisher.init(registry, eventBus, new MetricsBootstrapConfig(environment));
     Map<String, Double> result = publisher.measure();
 
-    Assertions.assertEquals(2, result.size());
-    Assertions.assertEquals(0, result.get("name(statistic=count,t1=v1,t2=v2)"), 0);
-    Assertions.assertEquals(0, result.get("name(statistic=totalTime,t1=v1,t2=v2)"), 0);
+    Assertions.assertEquals(3, result.size());
+    Assertions.assertEquals(0, result.get("name(statistic=COUNT,t1=v1,t2=v2)"), 0);
+    Assertions.assertEquals(0, result.get("name(statistic=TOTAL_TIME,t1=v1,t2=v2)"), 0);
+    Assertions.assertEquals(0, result.get("name(statistic=MAX,t1=v1,t2=v2)"), 0);
   }
 }

@@ -14,32 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.metrics.publish.spectator;
+package org.apache.servicecomb.metrics.core;
 
-import com.netflix.spectator.api.Tag;
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.distribution.DistributionStatisticConfig;
+import io.micrometer.core.instrument.distribution.Histogram;
+import io.micrometer.core.instrument.step.StepDistributionSummary;
 
-public interface TagFinder {
-  static TagFinder build(Object obj) {
-    if (String.class.isInstance(obj)) {
-      return new DefaultTagFinder((String) obj);
-    }
-
-    if (TagFinder.class.isInstance(obj)) {
-      return (TagFinder) obj;
-    }
-
-    throw new IllegalArgumentException(
-        "only support String or TagFinder, but got " +
-            (obj == null ? "null" : obj.getClass().getName()));
+public class StepDistributionSummaryExt extends StepDistributionSummary {
+  public StepDistributionSummaryExt(Id id, Clock clock,
+      DistributionStatisticConfig distributionStatisticConfig, double scale, long stepMillis,
+      Histogram histogram) {
+    super(id, clock, distributionStatisticConfig, scale, stepMillis, histogram);
   }
-
-  default boolean skipOnNull() {
-    return false;
-  }
-
-  String getTagKey();
-
-  // read target tag from tags
-  // return directly or do some change and then return
-  Tag find(Iterable<Tag> tags);
 }

@@ -19,8 +19,8 @@ package org.apache.servicecomb.metrics.core.publish;
 import static org.apache.servicecomb.foundation.common.utils.StringBuilderUtils.appendLine;
 
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.vertx.EndpointMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.ServerEndpointMeter;

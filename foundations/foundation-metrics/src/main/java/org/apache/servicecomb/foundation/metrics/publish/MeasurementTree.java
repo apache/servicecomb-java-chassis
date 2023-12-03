@@ -14,21 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.metrics.publish.spectator;
+package org.apache.servicecomb.foundation.metrics.publish;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
-import com.netflix.spectator.api.Tag;
+import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.distribution.CountAtBucket;
+import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 
 // like select * from meters group by ......
 // but output a tree not a table
 public class MeasurementTree extends MeasurementNode {
   public MeasurementTree() {
-    super(null, null);
+    super(null, null, null);
   }
 
   // groupConfig:
@@ -37,23 +42,37 @@ public class MeasurementTree extends MeasurementNode {
   // only id name exists in groupConfig will accept, others will be ignored
   public void from(Iterator<Meter> meters, MeasurementGroupConfig groupConfig) {
     meters.forEachRemaining(meter -> {
+      // This code snip is not very good design. But DistributionSummary is quite special.
+      if (meter instanceof DistributionSummary distributionSummary) {
+        HistogramSnapshot snapshot = distributionSummary.takeSnapshot();
+        CountAtBucket[] countAtBuckets = snapshot.histogramCounts();
+        List<Measurement> distributions = new ArrayList<>(countAtBuckets.length);
+        for (CountAtBucket countAtBucket : countAtBuckets) {
+          final double value = countAtBucket.count();
+          distributions.add(new Measurement(() -> value,
+              Statistic.COUNT));
+        }
+
+        from(meter.getId(), distributions, groupConfig);
+        return;
+      }
+
       Iterable<Measurement> measurements = meter.measure();
-      from(measurements, groupConfig);
+      from(meter.getId(), measurements, groupConfig);
     });
   }
 
-  public void from(Iterable<Measurement> measurements, MeasurementGroupConfig groupConfig) {
+  public void from(Id id, Iterable<Measurement> measurements, MeasurementGroupConfig groupConfig) {
     for (Measurement measurement : measurements) {
-      Id id = measurement.id();
-      MeasurementNode node = addChild(id.name(), measurement);
+      MeasurementNode node = addChild(id.getName(), id, measurement);
 
-      List<TagFinder> tagFinders = groupConfig.findTagFinders(id.name());
+      List<TagFinder> tagFinders = groupConfig.findTagFinders(id.getName());
       if (tagFinders == null) {
         continue;
       }
 
       for (TagFinder tagFinder : tagFinders) {
-        Tag tag = tagFinder.find(id.tags());
+        Tag tag = tagFinder.find(id.getTags());
         if (tag == null) {
           if (tagFinder.skipOnNull()) {
             break;
@@ -61,11 +80,13 @@ public class MeasurementTree extends MeasurementNode {
           throw new IllegalStateException(
               String.format("tag key \"%s\" not exist in %s",
                   tagFinder.getTagKey(),
-                  measurement));
+                  id));
         }
 
-        node = node.addChild(tag.value(), measurement);
+        node = node.addChild(tag.getValue(), id, measurement);
       }
+
+      node.addChild(measurement.getStatistic().name(), id, measurement);
     }
   }
 }

@@ -26,7 +26,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -36,20 +35,17 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Registry;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.vertx.core.json.Json;
 
 public class TestInvocationPublishModelFactory {
   EventBus eventBus = new EventBus();
 
-  GlobalRegistry globalRegistry = new GlobalRegistry();
-
-  Registry registry = new DefaultRegistry(new ManualClock());
+  // not step mode.
+  MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
   InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
 
@@ -71,109 +67,108 @@ public class TestInvocationPublishModelFactory {
             CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
         .thenReturn(7);
     Mockito.when(environment.getProperty(CONFIG_LATENCY_DISTRIBUTION, String.class)).thenReturn("0,1,100");
-    globalRegistry.add(registry);
-    invocationMetersInitializer.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
+
+    invocationMetersInitializer.init(meterRegistry, eventBus, new MetricsBootstrapConfig(environment));
     prepareInvocation();
 
-    globalRegistry.poll(1);
-    PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
+    PublishModelFactory factory = new PublishModelFactory(meterRegistry.getMeters());
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     String expect = """
         {
-          "operationPerfGroups" : {
-            "groups" : {
-              "rest" : {
-                "200" : {
-                  "transport" : "rest",
-                  "status" : "200",
-                  "operationPerfs" : [ {
-                    "operation" : "m.s.o",
-                    "stages" : {
-                      "consumer-encode" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
+            "operationPerfGroups" : {
+              "groups" : {
+                "rest" : {
+                  "200" : {
+                    "transport" : "rest",
+                    "status" : "200",
+                    "operationPerfs" : [ {
+                      "operation" : "m.s.o",
+                      "stages" : {
+                        "consumer-encode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "prepare" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "wait" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "total" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.4E-5,
+                          "msMaxLatency" : 1.4E-5
+                        },
+                        "consumer-send" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "connection" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "consumer-decode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        }
                       },
-                      "prepare" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
+                      "latencyDistribution" : [ 1, 1, 1 ]
+                    } ],
+                    "summary" : {
+                      "operation" : "",
+                      "stages" : {
+                        "consumer-encode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "prepare" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "total" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.4E-5,
+                          "msMaxLatency" : 1.4E-5
+                        },
+                        "wait" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "consumer-send" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "connection" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        },
+                        "consumer-decode" : {
+                          "totalRequests" : 1.0,
+                          "msTotalTime" : 1.0000000000000002E-6,
+                          "msMaxLatency" : 1.0000000000000002E-6
+                        }
                       },
-                      "total" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.4000000000000001E-5,
-                        "msMaxLatency" : 1.4000000000000001E-5
-                      },
-                      "wait" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "consumer-send" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "connection" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "consumer-decode" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      }
-                    },
-                    "latencyDistribution" : [ 1, 0, 0 ]
-                  } ],
-                  "summary" : {
-                    "operation" : "",
-                    "stages" : {
-                      "consumer-encode" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "prepare" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "wait" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "total" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.4000000000000001E-5,
-                        "msMaxLatency" : 1.4000000000000001E-5
-                      },
-                      "consumer-send" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "connection" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "consumer-decode" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      }
-                    },
-                    "latencyDistribution" : [ 1, 0, 0 ]
+                      "latencyDistribution" : [ 1, 1, 1 ]
+                    }
                   }
                 }
               }
             }
           }
-        }
         """;
     Assertions.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
         Json.encodePrettily(model.getConsumer()));
@@ -190,83 +185,83 @@ public class TestInvocationPublishModelFactory {
                     "operation" : "m.s.o",
                     "stages" : {
                       "consumer-encode" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "prepare" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
+                      },
+                      "wait" : {
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "total" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.4000000000000001E-5,
-                        "msMaxLatency" : 1.4000000000000001E-5
-                      },
-                      "wait" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.4E-5,
+                        "msMaxLatency" : 1.4E-5
                       },
                       "consumer-send" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "connection" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "consumer-decode" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       }
                     },
-                    "latencyDistribution" : [ 1, 0, 0 ]
+                    "latencyDistribution" : [ 1, 1, 1 ]
                   } ],
                   "summary" : {
                     "operation" : "",
                     "stages" : {
                       "consumer-encode" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "prepare" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.0000000000000002E-6,
-                        "msMaxLatency" : 1.0000000000000002E-6
-                      },
-                      "wait" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "total" : {
-                        "tps" : 1.0,
-                        "msTotalTime" : 1.4000000000000001E-5,
-                        "msMaxLatency" : 1.4000000000000001E-5
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.4E-5,
+                        "msMaxLatency" : 1.4E-5
+                      },
+                      "wait" : {
+                        "totalRequests" : 1.0,
+                        "msTotalTime" : 1.0000000000000002E-6,
+                        "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "consumer-send" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "connection" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       },
                       "consumer-decode" : {
-                        "tps" : 1.0,
+                        "totalRequests" : 1.0,
                         "msTotalTime" : 1.0000000000000002E-6,
                         "msMaxLatency" : 1.0000000000000002E-6
                       }
                     },
-                    "latencyDistribution" : [ 1, 0, 0 ]
+                    "latencyDistribution" : [ 1, 1, 1 ]
                   }
                 }
               }

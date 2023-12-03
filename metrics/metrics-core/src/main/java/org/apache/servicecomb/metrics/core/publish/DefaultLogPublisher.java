@@ -29,9 +29,8 @@ import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionConfig;
 import org.apache.servicecomb.foundation.metrics.meter.LatencyScopeConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
@@ -50,8 +49,9 @@ import org.springframework.core.env.Environment;
 import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.Meter;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.vertx.core.Vertx;
 
 public class DefaultLogPublisher implements MetricsInitializer {
@@ -62,7 +62,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
   // for a client, maybe will connect to too many endpoints, so default not print detail, just print summary
   public static final String ENDPOINTS_CLIENT_DETAIL_ENABLED = "servicecomb.metrics.publisher.defaultLog.endpoints.client.detail.enabled";
 
-  private static final String FIRST_LINE_SIMPLE_FORMAT = "  %-11s %-8.1f %-18s %s%s\n";
+  private static final String FIRST_LINE_SIMPLE_FORMAT = "  %-11s\n";
 
   private static final String SIMPLE_FORMAT = "              %-8.1f %-18s %s%s\n";
 
@@ -102,7 +102,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   @Override
-  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+  public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     if (!environment.getProperty(ENABLED, boolean.class, false)) {
       return;
     }
@@ -119,7 +119,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     latencyDistributionConfig = new LatencyDistributionConfig(config.getLatencyDistribution());
     String header;
     for (LatencyScopeConfig scopeConfig : latencyDistributionConfig.getScopeConfigs()) {
-      if (scopeConfig.getMsMax() == Long.MAX_VALUE) {
+      if (scopeConfig.getMsMax() == LatencyDistributionConfig.MAX_LATENCY) {
         header = String.format("[%d,) ", scopeConfig.getMsMin());
       } else {
         header = String.format("[%d,%d) ", scopeConfig.getMsMin(), scopeConfig.getMsMax());
@@ -181,10 +181,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
     StringBuilder tmpSb = new StringBuilder();
     for (MeasurementNode interfaceNode : netNode.getChildren().values()) {
-      double sendRate = interfaceNode.findChild(NetMeter.TAG_SEND.value()).summary();
-      double sendPacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_SEND.value()).summary();
-      double receiveRate = interfaceNode.findChild(NetMeter.TAG_RECEIVE.value()).summary();
-      double receivePacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_RECEIVE.value()).summary();
+      double sendRate = interfaceNode.findChild(NetMeter.TAG_SEND.getValue()).summary();
+      double sendPacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_SEND.getValue()).summary();
+      double receiveRate = interfaceNode.findChild(NetMeter.TAG_RECEIVE.getValue()).summary();
+      double receivePacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_RECEIVE.getValue()).summary();
       if (sendRate == 0 && receiveRate == 0 && receivePacketsRate == 0 && sendPacketsRate == 0) {
         continue;
       }
@@ -243,7 +243,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     sb.append(""
             + "edge:\n"
             + " simple:\n"
-            + "  status      tps      latency            ")
+            + "  status      requests      latency       ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
@@ -267,7 +267,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     sb.append(""
             + "consumer:\n"
             + " simple:\n"
-            + "  status      tps      latency            ")
+            + "  status      requests      latency       ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
@@ -291,7 +291,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     sb.append(""
             + "producer:\n"
             + " simple:\n"
-            + "  status      tps      latency            ")
+            + "  status      requests      latency       ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     // use detailsBuilder, we can traverse the map only once
@@ -311,32 +311,24 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private StringBuilder printSamplePerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
-    boolean firstLine = true;
+    String status = perfGroup.getTransport() + "." + perfGroup.getStatus() + ":";
+    sb.append(String.format(FIRST_LINE_SIMPLE_FORMAT, status));
+
     for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
       OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
-      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
-      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (isIngoreEmptyPerf(operationPerf)) {
         continue;
       }
-      if (firstLine) {
-        firstLine = false;
-        String status = perfGroup.getTransport() + "." + perfGroup.getStatus();
-        sb.append(String.format(FIRST_LINE_SIMPLE_FORMAT, status,
-            stageTotal.getTps(),
-            getDetailsFromPerf(stageTotal),
-            formatLatencyDistribution(operationPerf),
-            operationPerf.getOperation()));
-      } else {
-        sb.append(String.format(SIMPLE_FORMAT, stageTotal.getTps(),
-            getDetailsFromPerf(stageTotal),
-            formatLatencyDistribution(operationPerf),
-            operationPerf.getOperation()));
-      }
+      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
+      sb.append(String.format(SIMPLE_FORMAT, stageTotal.getTotalRequests(),
+          getDetailsFromPerf(stageTotal),
+          formatLatencyDistribution(operationPerf),
+          operationPerf.getOperation()));
     }
     OperationPerf summaryOperation = perfGroup.getSummary();
     PerfInfo stageSummaryTotal = summaryOperation.findStage(InvocationStageTrace.STAGE_TOTAL);
     //print summary
-    sb.append(String.format(SIMPLE_FORMAT, stageSummaryTotal.getTps(),
+    sb.append(String.format(SIMPLE_FORMAT, stageSummaryTotal.getTotalRequests(),
         getDetailsFromPerf(stageSummaryTotal),
         formatLatencyDistribution(summaryOperation),
         "(summary)"));
@@ -357,8 +349,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         .append(":\n");
     PerfInfo prepare, queue, providerDecode, providerEncode, execute, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
-      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (isIngoreEmptyPerf(operationPerf)) {
         continue;
       }
       prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
@@ -396,8 +387,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, encodeRequest, decodeResponse, sendReq, getConnect,
         waitResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
-      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (isIngoreEmptyPerf(operationPerf)) {
         continue;
       }
       prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
@@ -436,8 +426,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         encodeConsumerRequest, decodeConsumerResponse, sendReq, getConnect,
         waitResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
-      if (Double.compare(0D, stageTotal.getTps()) == 0) {
+      if (isIngoreEmptyPerf(operationPerf)) {
         continue;
       }
       prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
@@ -469,6 +458,16 @@ public class DefaultLogPublisher implements MetricsInitializer {
     return sb;
   }
 
+  private boolean isIngoreEmptyPerf(OperationPerf operationPerf) {
+    PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
+    // max latency is calculated in ring algorithm, maybe not 0
+    if (Double.compare(0D, stageTotal.getTotalRequests()) == 0
+        && Double.compare(0D, stageTotal.getMsMaxLatency()) == 0) {
+      return true;
+    }
+    return false;
+  }
+
   protected void printVertxMetrics(MeasurementTree tree, StringBuilder sb) {
     appendLine(sb, "vertx:");
 
@@ -482,7 +481,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
 
     ClientEndpointsLogPublisher client = new ClientEndpointsLogPublisher(tree, sb,
-        VertxMetersInitializer.ENDPOINTS_CLINET);
+        VertxMetersInitializer.ENDPOINTS_CLIENT);
     ServerEndpointsLogPublisher server = new ServerEndpointsLogPublisher(tree, sb,
         VertxMetersInitializer.ENDPOINTS_SERVER);
     if (client.isExists() || server.isExists()) {

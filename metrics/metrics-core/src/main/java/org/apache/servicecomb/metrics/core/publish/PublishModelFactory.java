@@ -18,21 +18,22 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.List;
 
-import org.apache.servicecomb.foundation.metrics.publish.spectator.DefaultTagFinder;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.publish.DefaultTagFinder;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
+import org.apache.servicecomb.metrics.core.meter.ThreadPoolMonitorPublishModelFactory;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
+import org.apache.servicecomb.metrics.core.meter.pool.ThreadPoolMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.EndpointMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
-import com.netflix.spectator.api.Meter;
-import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
+import io.micrometer.core.instrument.Meter;
 
 public class PublishModelFactory {
   private final MeasurementTree tree;
@@ -61,19 +62,18 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_OPERATION,
         MeterInvocationConst.TAG_STATUS,
         MeterInvocationConst.TAG_TYPE,
-        new DefaultTagFinder(MeterInvocationConst.TAG_STAGE, true),
-        MeterInvocationConst.TAG_STATISTIC);
+        new DefaultTagFinder(MeterInvocationConst.TAG_STAGE, true));
 
-    //os config
     groupConfig.addGroup(OsMeter.OS_NAME,
         OsMeter.OS_TYPE,
-        new DefaultTagFinder(NetMeter.INTERFACE, true),
-        NetMeter.STATISTIC);
+        new DefaultTagFinder(NetMeter.INTERFACE, true));
 
     groupConfig.addGroup(VertxMetersInitializer.VERTX_ENDPOINTS,
         VertxMetersInitializer.ENDPOINTS_TYPE,
-        EndpointMeter.ADDRESS,
-        EndpointMeter.STATISTIC);
+        EndpointMeter.ADDRESS, EndpointMeter.STATISTIC);
+
+    groupConfig.addGroup(ThreadPoolMeter.THREAD_POOL_METER,
+        ThreadPoolMeter.ID, ThreadPoolMeter.STAGE);
 
     return groupConfig;
   }
@@ -108,11 +108,11 @@ public class PublishModelFactory {
 
     model.getProducer()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.PROVIDER.name()));
-    //edge
+
     model.getEdge()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, MeterInvocationConst.EDGE_INVOCATION_NAME));
 
-    ThreadPoolMonitorPublishModelFactory.create(tree, model.getThreadPools());
+    model.setThreadPools(ThreadPoolMonitorPublishModelFactory.create(tree));
 
     return model;
   }

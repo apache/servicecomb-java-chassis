@@ -47,12 +47,12 @@ public class TestOperationPerfGroup {
     OperationPerf summary = group.getSummary();
 
     PerfInfo perfInfo = summary.findStage(InvocationStageTrace.STAGE_TOTAL);
-    Assertions.assertEquals(20, perfInfo.getTps(), 0);
+    Assertions.assertEquals(20, perfInfo.getTotalRequests(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
 
     perfInfo = summary.findStage(InvocationStageTrace.STAGE_PROVIDER_BUSINESS);
-    Assertions.assertEquals(20, perfInfo.getTps(), 0);
+    Assertions.assertEquals(20, perfInfo.getTotalRequests(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
   }

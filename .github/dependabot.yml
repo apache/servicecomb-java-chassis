@@ -27,38 +27,3 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 20
-    ignore:
-      - dependency-name: "asciidoctorj"
-        versions:
-          - "2.x"
-      - dependency-name: "hibernate-validator"
-        versions:
-          - "8.x"
-      # asciidoctorj new version needs higher swagger2markup, which will need java11
-      - dependency-name: "jakarta.activation"
-        versions:
-          - "2.x"
-      - dependency-name: "jakarta.servlet-api"
-        versions:
-          - "5.x"
-          - "6.x"
-      - dependency-name: "jakarta.ws.rs-api"
-        versions:
-          - "3.x"
-      - dependency-name: "jersey"
-        versions:
-          - "3.x"
-      - dependency-name: "jersey-client"
-        versions:
-          - "3.x"
-      - dependency-name: "jersey-common"
-        versions:
-          - "3.x"
-      - dependency-name: "logback-classic"
-        # logback new versions needs java11 now
-      - dependency-name: "logback-core"
-        # logback new versions needs java11 now
-      - dependency-name: "protostuff-parser"
-        # protostuff-parser new versions needs java11 now
-      - dependency-name: "swagger2markup"
-        # swagger2markup new version needs java11 now

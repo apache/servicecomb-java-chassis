@@ -16,12 +16,8 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
-import com.netflix.spectator.api.Id;
 
 public abstract class AbstractCpuUsage {
-
-  protected Id id;
-
   protected double usage;
 
   protected int cpuCount = Runtime.getRuntime().availableProcessors();
@@ -35,14 +31,6 @@ public abstract class AbstractCpuUsage {
       period = current - last;
       last = current;
     }
-  }
-
-  public AbstractCpuUsage(Id id) {
-    this.id = id;
-  }
-
-  public Id getId() {
-    return id;
   }
 
   public double getUsage() {

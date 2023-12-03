@@ -16,33 +16,34 @@
  */
 package org.apache.servicecomb.metrics.core.meter.vertx;
 
-import java.util.List;
-
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 
 public class ServerEndpointMeter extends EndpointMeter {
   public static final String REJECT_BY_CONNECTION_LIMIT = "rejectByConnectionLimit";
 
-  private final Id idRejectByConnectionLimit;
-
   private long lastRejectByConnectionLimit;
 
-  public ServerEndpointMeter(Id id, DefaultEndpointMetric metric) {
-    super(id, metric);
-    idRejectByConnectionLimit = this.id.withTag(STATISTIC, REJECT_BY_CONNECTION_LIMIT);
+  private long currentRejectByConnectionLimit;
+
+  public ServerEndpointMeter(MeterRegistry meterRegistry, String name, Tags tags, DefaultEndpointMetric metric) {
+    super(meterRegistry, name, tags, metric);
+    Gauge.builder(name, () -> currentRejectByConnectionLimit)
+        .tags(tags.and(Tag.of(STATISTIC, REJECT_BY_CONNECTION_LIMIT), Tag.of(ADDRESS, metric.getAddress())))
+        .register(meterRegistry);
   }
 
   @Override
-  public void calcMeasurements(List<Measurement> measurements, long msNow, double secondInterval) {
-    super.calcMeasurements(measurements, msNow, secondInterval);
+  public void poll(long msNow, long secondInterval) {
+    super.poll(msNow, secondInterval);
 
-    long rejectByConnectionLimit = ((DefaultServerEndpointMetric) metric).getRejectByConnectionLimitCount();
-    measurements
-        .add(newMeasurement(idRejectByConnectionLimit, msNow, rejectByConnectionLimit - lastRejectByConnectionLimit));
-    this.lastRejectByConnectionLimit = rejectByConnectionLimit;
+    long current = ((DefaultServerEndpointMetric) metric).getRejectByConnectionLimitCount();
+    currentRejectByConnectionLimit = current - lastRejectByConnectionLimit;
+    lastRejectByConnectionLimit = current;
   }
 }

@@ -38,7 +38,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.Meter;
+
+import io.micrometer.core.instrument.Meter;
 
 /**
  * Monitor data based on metrics-core module.
@@ -139,16 +140,16 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
               });
           // dashboard calculates the latest 10 seconds, different with metrics cycle.
           interfaceInfo.setTotal(
-              doubleToInt(interfaceInfo.getTotal() + 10 * stageTotal.getTps()));
+              doubleToInt(interfaceInfo.getTotal() + stageTotal.getTotalRequests()));
           if (perfGroup.getStatus().matches(CODE_SUCCESS)) {
-            interfaceInfo.setQps(stageTotal.getTps());
+            interfaceInfo.setQps(stageTotal.getTotalRequests() / 10);
             interfaceInfo.setLatency(doubleToInt(stageTotal.calcMsLatency()));
           } else {
             interfaceInfo.setFailure(
-                doubleToInt(interfaceInfo.getTotal() + stageTotal.getMsTotalTime() * stageTotal.getTps()));
+                doubleToInt(interfaceInfo.getTotal() + stageTotal.getTotalRequests()));
             if (perfGroup.getStatus().equals(CODE_TIMEOUT)) {
               interfaceInfo.setCountTimeout(
-                  doubleToInt(interfaceInfo.getCountTimeout() + stageTotal.getMsTotalTime() * stageTotal.getTps()));
+                  doubleToInt(interfaceInfo.getCountTimeout() + stageTotal.getTotalRequests()));
             }
           }
         }
@@ -175,16 +176,17 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
               });
           // dashboard calculates the latest 10 seconds, different with metrics cycle.
           interfaceInfo.setTotal(
-              doubleToInt(interfaceInfo.getTotal() + 10 * stageTotal.getTps()));
+              doubleToInt(interfaceInfo.getTotal() + stageTotal.getTotalRequests()));
           if (perfGroup.getStatus().matches(CODE_SUCCESS)) {
-            interfaceInfo.setQps(stageTotal.getTps());
+            interfaceInfo.setQps(stageTotal.getTotalRequests() / 10);
             interfaceInfo.setLatency(doubleToInt(stageTotal.calcMsLatency()));
           } else {
             interfaceInfo.setFailure(
-                doubleToInt(interfaceInfo.getTotal() + stageTotal.getMsTotalTime() * stageTotal.getTps()));
+                doubleToInt(interfaceInfo.getTotal() + stageTotal.getTotalRequests()));
             if (perfGroup.getStatus().equals(CODE_TIMEOUT)) {
               interfaceInfo.setCountTimeout(
-                  doubleToInt(interfaceInfo.getCountTimeout() + stageTotal.getMsTotalTime() * stageTotal.getTps()));
+                  doubleToInt(
+                      interfaceInfo.getCountTimeout() + stageTotal.getTotalRequests()));
             }
           }
         }
@@ -211,16 +213,17 @@ public class MetricsMonitorDataProvider implements MonitorDataProvider {
               });
           // dashboard calculates the latest 10 seconds, different with metrics cycle.
           interfaceInfo.setTotal(
-              doubleToInt(interfaceInfo.getTotal() + 10 * stageTotal.getTps()));
+              doubleToInt(interfaceInfo.getTotal() + stageTotal.getTotalRequests()));
           if (perfGroup.getStatus().matches(CODE_SUCCESS)) {
-            interfaceInfo.setQps(stageTotal.getTps());
+            interfaceInfo.setQps(stageTotal.getTotalRequests() / 10);
             interfaceInfo.setLatency(doubleToInt(stageTotal.calcMsLatency()));
           } else {
             interfaceInfo.setFailure(
-                doubleToInt(interfaceInfo.getTotal() + stageTotal.getMsTotalTime() * stageTotal.getTps()));
+                doubleToInt(interfaceInfo.getTotal() + stageTotal.getTotalRequests()));
             if (perfGroup.getStatus().equals(CODE_TIMEOUT)) {
               interfaceInfo.setCountTimeout(
-                  doubleToInt(interfaceInfo.getCountTimeout() + stageTotal.getMsTotalTime() * stageTotal.getTps()));
+                  doubleToInt(
+                      interfaceInfo.getCountTimeout() + stageTotal.getTotalRequests()));
             }
           }
         }

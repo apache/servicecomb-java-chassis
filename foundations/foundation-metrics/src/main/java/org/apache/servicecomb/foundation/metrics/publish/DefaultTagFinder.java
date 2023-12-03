@@ -14,27 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.metrics.meter;
+package org.apache.servicecomb.foundation.metrics.publish;
 
-import com.netflix.spectator.api.SpectatorUtils;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
 
-public class TestSimpleTimer {
-  SimpleTimer timer = new SimpleTimer(SpectatorUtils.createDefaultId("name"));
+import io.micrometer.core.instrument.Tag;
 
-  @Test
-  public void measure() {
-    timer.record(2);
-    timer.record(4);
+public class DefaultTagFinder implements TagFinder {
+  private final String tagKey;
 
-    Assertions.assertFalse(timer.measure().iterator().hasNext());
+  private boolean skipOnNull;
 
-    timer.calcMeasurements(1, 2);
-    Assertions.assertEquals(
-        "[Measurement(name:statistic=count,1,1.0), Measurement(name:statistic=totalTime,1,3.0000000000000004E-9), Measurement(name:statistic=max,1,4.0E-9)]",
-        timer.measure().toString());
-    Assertions.assertFalse(timer.hasExpired());
-    Assertions.assertEquals("name", timer.id().name());
+  public DefaultTagFinder(String tagKey) {
+    this.tagKey = tagKey;
+  }
+
+  public DefaultTagFinder(String tagKey, boolean skipOnNull) {
+    this.tagKey = tagKey;
+    this.skipOnNull = skipOnNull;
+  }
+
+  @Override
+  public boolean skipOnNull() {
+    return skipOnNull;
+  }
+
+  @Override
+  public String getTagKey() {
+    return tagKey;
+  }
+
+  @Override
+  public Tag find(Iterable<Tag> tags) {
+    for (Tag tag : tags) {
+      if (tag.getKey().equals(tagKey)) {
+        return tag;
+      }
+    }
+
+    return null;
   }
 }

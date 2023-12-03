@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 
 public abstract class AbstractMeasurementNodeLogPublisher {
   protected StringBuilder sb;

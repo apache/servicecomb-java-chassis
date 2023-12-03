@@ -16,13 +16,13 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
+import org.apache.servicecomb.metrics.core.meter.ThreadPoolMonitorPublishModelFactory;
 import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
@@ -31,8 +31,6 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.Utils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-
-import com.netflix.spectator.api.patterns.ThreadPoolMonitorPublishModelFactory;
 
 import jakarta.ws.rs.core.Response.Status;
 
@@ -45,7 +43,7 @@ public class TestPublishUtils {
 
     PerfInfo perf = PublishUtils.createPerfInfo(stageNode);
 
-    Assertions.assertEquals(10, perf.getTps(), 0);
+    Assertions.assertEquals(10, perf.getTotalRequests(), 0);
     Assertions.assertEquals(1000, perf.calcMsLatency(), 0);
     Assertions.assertEquals(100000, perf.getMsMaxLatency(), 0);
   }
@@ -56,7 +54,7 @@ public class TestPublishUtils {
 
     PerfInfo perfInfo = opPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
     Integer[] latencyDistribution = opPerf.getLatencyDistribution();
-    Assertions.assertEquals(10, perfInfo.getTps(), 0);
+    Assertions.assertEquals(10, perfInfo.getTotalRequests(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
     Assertions.assertEquals(2, latencyDistribution.length);
@@ -77,7 +75,7 @@ public class TestPublishUtils {
 
     PerfInfo perfInfo = group.getSummary().findStage(InvocationStageTrace.STAGE_TOTAL);
     Integer[] latencyDistribution = group.getSummary().getLatencyDistribution();
-    Assertions.assertEquals(10, perfInfo.getTps(), 0);
+    Assertions.assertEquals(10, perfInfo.getTotalRequests(), 0);
     Assertions.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assertions.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
     Assertions.assertEquals(2, latencyDistribution.length);
@@ -87,9 +85,8 @@ public class TestPublishUtils {
 
   @Test
   public void createThreadPoolPublishModels_empty() {
-    Map<String, ThreadPoolPublishModel> threadPools = new HashMap<>();
-
-    ThreadPoolMonitorPublishModelFactory.create(new MeasurementTree(), threadPools);
+    Map<String, ThreadPoolPublishModel> threadPools =
+        ThreadPoolMonitorPublishModelFactory.create(new MeasurementTree());
 
     Assertions.assertTrue(threadPools.isEmpty());
   }

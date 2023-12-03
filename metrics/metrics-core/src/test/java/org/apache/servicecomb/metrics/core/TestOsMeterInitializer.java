@@ -25,30 +25,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.io.Files;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Registry;
+import com.google.common.io.CharSource;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestOsMeterInitializer {
-  GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
-
-  Registry registry = new DefaultRegistry(globalRegistry.getClock());
+  MeterRegistry registry = new SimpleMeterRegistry();
 
   @Mocked
   EventBus eventBus;
@@ -59,10 +55,10 @@ public class TestOsMeterInitializer {
     list.add("13  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
     list.add("useless");
     list.add("eth0: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
-    new MockUp<Files>() {
+    new MockUp<CharSource>() {
       //Files.readFirstLine
       @Mock
-      public String readFirstLine(File file, Charset encoding) {
+      public String readFirstLine() {
         return list.get(0);
       }
     };
@@ -97,10 +93,11 @@ public class TestOsMeterInitializer {
         result = 2;
       }
     };
-    globalRegistry.add(registry);
+
     OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
     osMetersInitializer.setOsLinux(true);
-    osMetersInitializer.init(globalRegistry, eventBus, null);
+    osMetersInitializer.init(registry, eventBus, null);
+    osMetersInitializer.poll(System.currentTimeMillis(), 1000);
     OsMeter osMeter = osMetersInitializer.getOsMeter();
     Assertions.assertNotNull(osMeter);
     Assertions.assertNotNull(osMeter.getCpuMeter());
@@ -114,25 +111,24 @@ public class TestOsMeterInitializer {
     Map<String, InterfaceUsage> interfaceInfoMap = netMeter.getInterfaceUsageMap();
     Assertions.assertEquals(1, interfaceInfoMap.size());
     InterfaceUsage eth0 = interfaceInfoMap.get("eth0");
-    Assertions.assertEquals(4, eth0.getNetStats().size());
     // recv Bps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(0).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(0).getRate(), 0.0);
-    Assertions.assertEquals(0, eth0.getNetStats().get(0).getIndex());
+    Assertions.assertEquals(0L, eth0.getReceive().getLastValue());
+    Assertions.assertEquals(0, eth0.getReceive().getRate(), 0.0);
+    Assertions.assertEquals(0, eth0.getReceive().getIndex());
     // send Bps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(1).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(1).getRate(), 0.0);
-    Assertions.assertEquals(8, eth0.getNetStats().get(1).getIndex());
+    Assertions.assertEquals(0L, eth0.getSend().getLastValue());
+    Assertions.assertEquals(0, eth0.getSend().getRate(), 0.0);
+    Assertions.assertEquals(8, eth0.getSend().getIndex());
 
     // recv pps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(2).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(2).getRate(), 0.0);
-    Assertions.assertEquals(1, eth0.getNetStats().get(2).getIndex());
+    Assertions.assertEquals(0L, eth0.getPacketsReceive().getLastValue());
+    Assertions.assertEquals(0, eth0.getPacketsReceive().getRate(), 0.0);
+    Assertions.assertEquals(1, eth0.getPacketsReceive().getIndex());
 
     // send pps
-    Assertions.assertEquals(0L, eth0.getNetStats().get(3).getLastValue());
-    Assertions.assertEquals(0, eth0.getNetStats().get(3).getRate(), 0.0);
-    Assertions.assertEquals(9, eth0.getNetStats().get(3).getIndex());
+    Assertions.assertEquals(0L, eth0.getPacketsSend().getLastValue());
+    Assertions.assertEquals(0, eth0.getPacketsSend().getRate(), 0.0);
+    Assertions.assertEquals(9, eth0.getPacketsSend().getIndex());
   }
 
   @Test

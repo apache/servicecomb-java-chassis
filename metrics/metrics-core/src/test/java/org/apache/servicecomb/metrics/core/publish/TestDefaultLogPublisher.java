@@ -30,9 +30,8 @@ import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
@@ -52,8 +51,14 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.Measurement;
 
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Meter.Type;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.vertx.core.impl.VertxImpl;
 import jakarta.ws.rs.core.Response.Status;
 import mockit.Expectations;
@@ -63,7 +68,7 @@ import mockit.MockUp;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestDefaultLogPublisher {
-  GlobalRegistry globalRegistry = new GlobalRegistry();
+  MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
   EventBus eventBus = new EventBus();
 
@@ -99,7 +104,7 @@ public class TestDefaultLogPublisher {
       }
     };
 
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
+    publisher.init(meterRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertFalse(registered.value);
   }
 
@@ -114,7 +119,7 @@ public class TestDefaultLogPublisher {
       }
     };
 
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
+    publisher.init(meterRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertTrue(registered.value);
   }
 
@@ -129,7 +134,7 @@ public class TestDefaultLogPublisher {
       }
     };
 
-    publisher.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
+    publisher.init(meterRegistry, eventBus, new MetricsBootstrapConfig(environment));
     Assertions.assertNull(registered.value);
   }
 
@@ -144,12 +149,12 @@ public class TestDefaultLogPublisher {
 
   @Test
   public void onPolledEvent(@Injectable VertxImpl vertxImpl, @Injectable MeasurementTree tree,
-      @Injectable GlobalRegistry globalRegistry, @Injectable EventBus eventBus) {
+      @Injectable EventBus eventBus) {
     MetricsBootstrapConfig config = Mockito.mock(MetricsBootstrapConfig.class);
     try {
       Mockito.when(environment.getProperty(DefaultLogPublisher.ENABLED, boolean.class, false)).thenReturn(true);
       Mockito.when(config.getLatencyDistribution()).thenReturn("0,1,100");
-      publisher.init(globalRegistry, eventBus, config);
+      publisher.init(meterRegistry, eventBus, config);
       new Expectations(VertxUtils.class) {
         {
           VertxUtils.getVertxMap();
@@ -158,7 +163,7 @@ public class TestDefaultLogPublisher {
       };
       DefaultPublishModel model = new DefaultPublishModel();
       PerfInfo perfTotal = new PerfInfo();
-      perfTotal.setTps(10_0000);
+      perfTotal.setTotalRequests(10_0000);
       perfTotal.setMsTotalTime(30000L * 1_0000);
       perfTotal.setMsMaxLatency(30000);
       OperationPerf operationPerf = new OperationPerf();
@@ -188,17 +193,18 @@ public class TestDefaultLogPublisher {
       model.getEdge().setOperationPerfGroups(operationPerfGroups);
 
       model.getThreadPools().put("test", new ThreadPoolPublishModel());
-      Measurement measurement = new Measurement(null, 0L, 1.0);
+      Id id = new Id("test", Tags.empty(), null, null, Type.OTHER);
+      Measurement measurement = new Measurement(() -> 1.0, Statistic.VALUE);
 
-      MeasurementNode measurementNodeCpuAll = new MeasurementNode("allProcess", new HashMap<>());
-      MeasurementNode measurementNodeCpuProcess = new MeasurementNode("currentProcess", new HashMap<>());
-      MeasurementNode measurementNodeSend = new MeasurementNode("send", new HashMap<>());
-      MeasurementNode measurementNodeSendPacket = new MeasurementNode("sendPackets", new HashMap<>());
-      MeasurementNode measurementNodeRecv = new MeasurementNode("receive", new HashMap<>());
-      MeasurementNode measurementNodeRecvPacket = new MeasurementNode("receivePackets", new HashMap<>());
-      MeasurementNode measurementNodeEth0 = new MeasurementNode("eth0", new HashMap<>());
-      MeasurementNode measurementNodeNet = new MeasurementNode("net", new HashMap<>());
-      MeasurementNode measurementNodeOs = new MeasurementNode("os", new HashMap<>());
+      MeasurementNode measurementNodeCpuAll = new MeasurementNode("allProcess", id, new HashMap<>());
+      MeasurementNode measurementNodeCpuProcess = new MeasurementNode("currentProcess", id, new HashMap<>());
+      MeasurementNode measurementNodeSend = new MeasurementNode("send", id, new HashMap<>());
+      MeasurementNode measurementNodeSendPacket = new MeasurementNode("sendPackets", id, new HashMap<>());
+      MeasurementNode measurementNodeRecv = new MeasurementNode("receive", id, new HashMap<>());
+      MeasurementNode measurementNodeRecvPacket = new MeasurementNode("receivePackets", id, new HashMap<>());
+      MeasurementNode measurementNodeEth0 = new MeasurementNode("eth0", id, new HashMap<>());
+      MeasurementNode measurementNodeNet = new MeasurementNode("net", id, new HashMap<>());
+      MeasurementNode measurementNodeOs = new MeasurementNode("os", id, new HashMap<>());
 
       measurementNodeSend.getMeasurements().add(measurement);
       measurementNodeRecv.getMeasurements().add(measurement);
@@ -238,7 +244,7 @@ public class TestDefaultLogPublisher {
           result = measurementNodeOs;
         }
       };
-      publisher.onPolledEvent(new PolledEvent(Collections.emptyList(), Collections.emptyList()));
+      publisher.onPolledEvent(new PolledEvent(Collections.emptyList()));
       List<LogEvent> events = collector.getEvents().stream()
           .filter(e -> "scb-metrics".equals(e.getLoggerName())).toList();
       LogEvent event = events.get(0);
@@ -258,8 +264,9 @@ public class TestDefaultLogPublisher {
                 0        0          0        0           NaN      0         0.0       0.0          test
               consumer:
                simple:
-                status      tps      latency            [0,1) [1,100) [100,) operation
-                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                status      requests      latency       [0,1) [1,100) [100,) operation
+                rest.OK:  \s
+                            100000.0 3000.000/30000.000 12    120     1200   op
                             100000.0 3000.000/30000.000 12    120     1200   (summary)
                details:
                   rest.OK:
@@ -268,8 +275,9 @@ public class TestDefaultLogPublisher {
                       wait  : 3000.000/30000.000 decode-response    : 3000.000/30000.000
               producer:
                simple:
-                status      tps      latency            [0,1) [1,100) [100,) operation
-                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                status      requests      latency       [0,1) [1,100) [100,) operation
+                rest.OK:  \s
+                            100000.0 3000.000/30000.000 12    120     1200   op
                             100000.0 3000.000/30000.000 12    120     1200   (summary)
                details:
                   rest.OK:
@@ -278,8 +286,9 @@ public class TestDefaultLogPublisher {
                       encode-response: 3000.000/30000.000 send: 3000.000/30000.000
               edge:
                simple:
-                status      tps      latency            [0,1) [1,100) [100,) operation
-                rest.OK     100000.0 3000.000/30000.000 12    120     1200   op
+                status      requests      latency       [0,1) [1,100) [100,) operation
+                rest.OK:  \s
+                            100000.0 3000.000/30000.000 12    120     1200   op
                             100000.0 3000.000/30000.000 12    120     1200   (summary)
                details:
                   rest.OK:

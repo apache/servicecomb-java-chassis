@@ -16,15 +16,15 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import com.netflix.spectator.api.Measurement;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 
-import java.util.List;
+import io.micrometer.core.instrument.Measurement;
 
 public class AssertUtil {
 
-    public static void assertMeasure(List<Measurement> measurements, int index, String expected) {
-        Assertions.assertEquals(String.format("Measurement(%s)", expected), measurements.get(index).toString());
-    }
-
+  public static void assertMeasure(List<Measurement> measurements, int index, String expected) {
+    Assertions.assertEquals(String.format("Measurement{%s}", expected), measurements.get(index).toString());
+  }
 }

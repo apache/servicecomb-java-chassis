@@ -19,14 +19,14 @@ package org.apache.servicecomb.metrics.core.publish;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 
-import com.netflix.spectator.api.Statistic;
+import io.micrometer.core.instrument.Statistic;
 
 public final class PublishUtils {
   private PublishUtils() {
@@ -34,13 +34,9 @@ public final class PublishUtils {
 
   public static PerfInfo createPerfInfo(MeasurementNode stageNode) {
     PerfInfo perfInfo = new PerfInfo();
-    perfInfo.setTps(stageNode.findChild(Statistic.count.name()).summary());
-    perfInfo.setMsTotalTime(stageNode.findChild(Statistic.totalTime.name()).summary() * 1000);
-    // when UT with DefaultRegistry, there is no max value
-    MeasurementNode maxNode = stageNode.findChild(Statistic.max.name());
-    if (maxNode != null) {
-      perfInfo.setMsMaxLatency(maxNode.summary() * 1000);
-    }
+    perfInfo.setTotalRequests(stageNode.findChild(Statistic.COUNT.name()).summary());
+    perfInfo.setMsTotalTime(stageNode.findChild(Statistic.TOTAL_TIME.name()).summary() * 1000);
+    perfInfo.setMsMaxLatency(stageNode.findChild(Statistic.MAX.name()).summary() * 1000);
     return perfInfo;
   }
 
@@ -54,10 +50,10 @@ public final class PublishUtils {
       operationPerf.getStages().put(mNode.getName(), perfInfo);
     });
 
-    MeasurementNode latencyNode = statusNode.findChild(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
+    MeasurementNode latencyNode = statusNode.findChild(MeterInvocationConst.TAG_DISTRIBUTION);
     if (latencyNode != null && latencyNode.getMeasurements() != null) {
       operationPerf.setLatencyDistribution(latencyNode.getMeasurements().stream()
-          .map(m -> (int) m.value())
+          .map(m -> (int) m.getValue())
           .toArray(Integer[]::new));
     }
     return operationPerf;

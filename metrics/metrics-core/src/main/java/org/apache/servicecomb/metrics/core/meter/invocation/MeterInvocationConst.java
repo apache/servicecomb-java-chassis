@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import com.netflix.spectator.api.Statistic;
-
 public interface MeterInvocationConst {
   String INVOCATION_NAME = "servicecomb.invocation";
 
@@ -32,11 +30,9 @@ public interface MeterInvocationConst {
 
   String TAG_STAGE = "stage";
 
-  String TAG_LATENCY_DISTRIBUTION = "latencyDistribution";
+  String TAG_DISTRIBUTION = "distribution";
 
   String TAG_STATUS = "status";
-
-  String TAG_STATISTIC = Statistic.count.key();
 
   String EDGE_INVOCATION_NAME = "EDGE";
 }

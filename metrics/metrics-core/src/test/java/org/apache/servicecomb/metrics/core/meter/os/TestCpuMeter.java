@@ -26,22 +26,23 @@ import java.util.List;
 
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
 
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestCpuMeter {
 
   @Test
-  public void testRefreshCpuSuccess(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
+  public void testRefreshCpuSuccess(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
       @Mocked CharSource charSource) throws IOException {
     new MockUp<Files>() {
       @Mock
@@ -75,7 +76,8 @@ public class TestCpuMeter {
         result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
       }
     };
-    CpuMeter cpuMeter = new CpuMeter(id);
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    CpuMeter cpuMeter = new CpuMeter(meterRegistry, "cpu");
     Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
     Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
 
@@ -85,14 +87,14 @@ public class TestCpuMeter {
         result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
       }
     };
-    cpuMeter.update();
+    cpuMeter.poll(0, 0);
 
     Assertions.assertEquals(0.875, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
     Assertions.assertEquals(0.5, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
   }
 
   @Test
-  public void testRefreshError(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
+  public void testRefreshError(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
       @Mocked CharSource charSource) throws IOException {
 
     new MockUp<Files>() {
@@ -127,7 +129,8 @@ public class TestCpuMeter {
         result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
       }
     };
-    CpuMeter cpuMeter = new CpuMeter(id);
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    CpuMeter cpuMeter = new CpuMeter(meterRegistry, "cpu");
     Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
     Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
     new Expectations() {
@@ -136,17 +139,15 @@ public class TestCpuMeter {
         result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
       }
     };
-    cpuMeter.update();
+    cpuMeter.poll(0, 0);
 
     Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
     Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
   }
 
   @Test
-  public void testCalcMeasurements(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
+  public void testCalcMeasurements(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
       @Mocked CharSource charSource) throws IOException {
-    List<Measurement> measurements = new ArrayList<>();
-
     new MockUp<Files>() {
       @Mock
       public CharSource asCharSource(File file, Charset encoding) {
@@ -179,7 +180,9 @@ public class TestCpuMeter {
         result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
       }
     };
-    CpuMeter cpuMeter = new CpuMeter(id);
+
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+    CpuMeter cpuMeter = new CpuMeter(meterRegistry, "cpu");
 
     new Expectations() {
       {
@@ -187,13 +190,14 @@ public class TestCpuMeter {
         result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
       }
     };
-    cpuMeter.calcMeasurements(measurements, 0);
-    Assertions.assertEquals(2, measurements.size());
+
+    cpuMeter.poll(System.currentTimeMillis(), 1000);
+
+    List<Measurement> measurements = new ArrayList<>();
+    meterRegistry.getMeters().forEach(meter -> meter.measure().forEach(measurement -> measurements.add(measurement)));
     Measurement measurement = measurements.get(0);
-    Assertions.assertEquals(0, measurement.timestamp());
-    Assertions.assertEquals(0.875, measurement.value(), 0.0);
+    Assertions.assertEquals(0.5, measurement.getValue(), 0.0);
     measurement = measurements.get(1);
-    Assertions.assertEquals(0, measurement.timestamp());
-    Assertions.assertEquals(0.5, measurement.value(), 0.0);
+    Assertions.assertEquals(0.875, measurement.getValue(), 0.0);
   }
 }

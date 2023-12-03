@@ -22,49 +22,71 @@ import static org.apache.servicecomb.metrics.core.meter.os.NetMeter.TAG_PACKETS_
 import static org.apache.servicecomb.metrics.core.meter.os.NetMeter.TAG_RECEIVE;
 import static org.apache.servicecomb.metrics.core.meter.os.NetMeter.TAG_SEND;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.annotations.VisibleForTesting;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 
 public class InterfaceUsage {
-  private final String name;
+  private final String interfaceName;
 
-  private final List<NetStat> netStats = new ArrayList<>();
+  private final NetStat receive;
 
-  public InterfaceUsage(Id id, String name) {
-    this.name = name;
-    id = id.withTag(INTERFACE, name);
-    init(id);
-  }
+  private final NetStat send;
 
-  private void init(Id id) {
+  private final NetStat packetsReceive;
+
+  private final NetStat packetsSend;
+
+  public InterfaceUsage(MeterRegistry meterRegistry, String name, Tags tags, String interfaceName) {
+    this.interfaceName = interfaceName;
+    tags = tags.and(Tag.of(INTERFACE, name));
+
     // recv/Bps
-    netStats.add(new NetStat(id.withTag(TAG_RECEIVE), 0));
+    receive = new NetStat(0);
+    Gauge.builder(name, receive::getRate).tags(tags.and(TAG_RECEIVE)).register(meterRegistry);
     // send/Bps
-    netStats.add(new NetStat(id.withTag(TAG_SEND), 8));
-
+    send = new NetStat(8);
+    Gauge.builder(name, send::getRate).tags(tags.and(TAG_SEND)).register(meterRegistry);
     // recv/pps
-    netStats.add(new NetStat(id.withTag(TAG_PACKETS_RECEIVE), 1));
+    packetsReceive = new NetStat(1);
+    Gauge.builder(name, packetsReceive::getRate).tags(tags.and(TAG_PACKETS_RECEIVE)).register(meterRegistry);
     // send/pps
-    netStats.add(new NetStat(id.withTag(TAG_PACKETS_SEND), 9));
-  }
-
-  public void calcMeasurements(List<Measurement> measurements, long msNow) {
-    netStats.forEach(netStat -> measurements.add(new Measurement(netStat.getId(), msNow, netStat.getRate())));
+    packetsSend = new NetStat(9);
+    Gauge.builder(name, packetsSend::getRate).tags(tags.and(TAG_PACKETS_SEND)).register(meterRegistry);
   }
 
   public void update(String interfaceData, long secondInterval) {
     String[] netInfo = interfaceData.trim().split("\\s+");
-    netStats.forEach(netStat -> netStat.update(netInfo, secondInterval));
+    receive.update(netInfo, secondInterval);
+    send.update(netInfo, secondInterval);
+    packetsReceive.update(netInfo, secondInterval);
+    packetsSend.update(netInfo, secondInterval);
+  }
+
+  @VisibleForTesting
+  public NetStat getReceive() {
+    return receive;
+  }
+
+  @VisibleForTesting
+  public NetStat getSend() {
+    return send;
+  }
+
+  @VisibleForTesting
+  public NetStat getPacketsReceive() {
+    return packetsReceive;
+  }
+
+  @VisibleForTesting
+  public NetStat getPacketsSend() {
+    return packetsSend;
   }
 
   public String getName() {
-    return name;
-  }
-
-  public List<NetStat> getNetStats() {
-    return netStats;
+    return interfaceName;
   }
 }

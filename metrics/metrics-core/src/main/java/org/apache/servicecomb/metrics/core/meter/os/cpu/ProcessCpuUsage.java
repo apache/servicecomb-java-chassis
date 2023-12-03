@@ -18,8 +18,6 @@ package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
 import java.io.IOException;
 
-import com.netflix.spectator.api.Id;
-
 /*
  * unit : 1 jiffies
  * more details :
@@ -41,8 +39,7 @@ public class ProcessCpuUsage extends AbstractCpuUsage {
 
   private final int userHZ = CpuUtils.calcHertz();
 
-  public ProcessCpuUsage(Id id) {
-    super(id);
+  public ProcessCpuUsage() {
   }
 
   public void update() throws IOException {

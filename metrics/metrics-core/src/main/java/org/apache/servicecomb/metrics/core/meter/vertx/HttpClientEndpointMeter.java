@@ -16,29 +16,30 @@
  */
 package org.apache.servicecomb.metrics.core.meter.vertx;
 
-import java.util.List;
-
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 
 public class HttpClientEndpointMeter extends EndpointMeter {
   public static final String QUEUE_COUNT = "queueCount";
 
-  private final Id idQueueCount;
+  private long currentQueueCount;
 
-  public HttpClientEndpointMeter(Id id, DefaultEndpointMetric metric) {
-    super(id, metric);
-    idQueueCount = this.id.withTag(STATISTIC, QUEUE_COUNT);
+  public HttpClientEndpointMeter(MeterRegistry meterRegistry, String name, Tags tags, DefaultEndpointMetric metric) {
+    super(meterRegistry, name, tags, metric);
+    Gauge.builder(name, () -> currentQueueCount)
+        .tags(tags.and(Tag.of(STATISTIC, QUEUE_COUNT), Tag.of(ADDRESS, metric.getAddress())))
+        .register(meterRegistry);
   }
 
   @Override
-  public void calcMeasurements(List<Measurement> measurements, long msNow, double secondInterval) {
-    super.calcMeasurements(measurements, msNow, secondInterval);
+  public void poll(long msNow, long secondInterval) {
+    super.poll(msNow, secondInterval);
 
-    long queueCount = ((DefaultClientEndpointMetric) metric).getQueueCount();
-    measurements.add(newMeasurement(idQueueCount, msNow, queueCount));
+    currentQueueCount = ((DefaultClientEndpointMetric) metric).getQueueCount();
   }
 }

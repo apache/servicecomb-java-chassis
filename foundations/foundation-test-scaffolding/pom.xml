@@ -41,8 +41,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.netflix.spectator</groupId>
-      <artifactId>spectator-reg-servo</artifactId>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

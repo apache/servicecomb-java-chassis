@@ -25,18 +25,17 @@ import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Tag;
 
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
 import io.prometheus.client.Collector;
 import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 import io.prometheus.client.CollectorRegistry;
@@ -49,7 +48,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
 
   private HTTPServer httpServer;
 
-  private GlobalRegistry globalRegistry;
+  private MeterRegistry meterRegistry;
 
   private Environment environment;
 
@@ -59,8 +58,8 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
   }
 
   @Override
-  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    this.globalRegistry = globalRegistry;
+  public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    this.meterRegistry = meterRegistry;
 
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
     String address = environment.getProperty(METRICS_PROMETHEUS_ADDRESS, String.class, "0.0.0.0:9696");
@@ -87,18 +86,14 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
   @Override
   public List<MetricFamilySamples> describe() {
     List<MetricFamilySamples> familySamples = new ArrayList<>();
-    if (globalRegistry == null) {
-      return familySamples;
-    }
 
     List<Sample> samples = new ArrayList<>();
-    for (Registry registry : globalRegistry.getRegistries()) {
-      for (Meter meter : registry) {
-        meter.measure().forEach(measurement -> {
-          Sample sample = convertMeasurementToSample(measurement);
-          samples.add(sample);
-        });
-      }
+
+    for (Meter meter : this.meterRegistry.getMeters()) {
+      meter.measure().forEach(measurement -> {
+        Sample sample = convertMeasurementToSample(meter, measurement);
+        samples.add(sample);
+      });
     }
 
     familySamples.add(new MetricFamilySamples("ServiceComb_Metrics", Type.UNKNOWN, "ServiceComb Metrics", samples));
@@ -106,20 +101,20 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     return familySamples;
   }
 
-  protected Sample convertMeasurementToSample(Measurement measurement) {
-    String prometheusName = measurement.id().name().replace(".", "_");
+  protected Sample convertMeasurementToSample(Meter meter, Measurement measurement) {
+    String prometheusName = meter.getId().getName().replace(".", "_");
     List<String> labelNames = new ArrayList<>();
     List<String> labelValues = new ArrayList<>();
 
     labelNames.add("appId");
     labelValues.add(BootStrapProperties.readApplication(environment));
 
-    for (Tag tag : measurement.id().tags()) {
-      labelNames.add(tag.key());
-      labelValues.add(tag.value());
+    for (Tag tag : meter.getId().getTags()) {
+      labelNames.add(tag.getKey());
+      labelValues.add(tag.getValue());
     }
 
-    return new Sample(prometheusName, labelNames, labelValues, measurement.value());
+    return new Sample(prometheusName, labelNames, labelValues, measurement.getValue());
   }
 
   @Override

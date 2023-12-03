@@ -26,29 +26,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
-import com.google.common.collect.Lists;
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestOsMeter {
-  Registry registry = new DefaultRegistry(new ManualClock());
-
   @Test
   public void testCalcMeasurement(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
       @Mocked CharSource charSource) throws IOException {
+    MeterRegistry meterRegistry = new SimpleMeterRegistry();
+
     List<String> list = new ArrayList<>();
     list.add("useless");
     list.add("useless");
@@ -91,7 +90,7 @@ public class TestOsMeter {
         result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
       }
     };
-    OsMeter osMeter = new OsMeter(registry);
+    OsMeter osMeter = new OsMeter(meterRegistry);
     list.clear();
     list.add("useless");
     list.add("useless");
@@ -102,14 +101,17 @@ public class TestOsMeter {
         result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
       }
     };
-    osMeter.calcMeasurements(1, 1);
-    ArrayList<Measurement> measurements = Lists.newArrayList(osMeter.measure());
-    Assertions.assertEquals(6, measurements.size());
-    Assertions.assertEquals(0.875, measurements.get(0).value(), 0.0);
-    Assertions.assertEquals(0.5, measurements.get(1).value(), 0.0);
-    Assertions.assertEquals(1.0, measurements.get(2).value(), 0.0);
-    Assertions.assertEquals(1.0, measurements.get(3).value(), 0.0);
-    Assertions.assertEquals(1.0, measurements.get(4).value(), 0.0);
-    Assertions.assertEquals(1.0, measurements.get(5).value(), 0.0);
+    osMeter.poll(0, 1);
+
+    MeasurementTree tree = new MeasurementTree();
+    tree.from(meterRegistry.getMeters().iterator(),
+        new MeasurementGroupConfig("os", "type"));
+
+    Assertions.assertEquals(0.875, tree.findChild("os", "cpu").getMeasurements().get(0).getValue(), 0.0);
+    Assertions.assertEquals(0.5, tree.findChild("os", "processCpu").getMeasurements().get(0).getValue(), 0.0);
+    Assertions.assertEquals(1.0, tree.findChild("os", "net").getMeasurements().get(0).getValue(), 0.0);
+    Assertions.assertEquals(1.0, tree.findChild("os", "net").getMeasurements().get(1).getValue(), 0.0);
+    Assertions.assertEquals(1.0, tree.findChild("os", "net").getMeasurements().get(2).getValue(), 0.0);
+    Assertions.assertEquals(1.0, tree.findChild("os", "net").getMeasurements().get(3).getValue(), 0.0);
   }
 }

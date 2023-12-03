@@ -19,16 +19,16 @@ package org.apache.servicecomb.metrics.core.meter.invocation;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Registry;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
 public class EdgeInvocationMeters extends ConsumerInvocationMeters {
-  public EdgeInvocationMeters(Registry registry, MetricsBootstrapConfig metricsBootstrapConfig) {
-    super(registry, metricsBootstrapConfig);
+  public EdgeInvocationMeters(MeterRegistry meterRegistry, MetricsBootstrapConfig metricsBootstrapConfig) {
+    super(meterRegistry, metricsBootstrapConfig);
   }
 
   @Override
-  protected AbstractInvocationMeter createMeter(Id id) {
-    return new EdgeInvocationMeter(id, metricsBootstrapConfig);
+  protected AbstractInvocationMeter createMeter(String name, Tags tags) {
+    return new EdgeInvocationMeter(registry, name, tags, metricsBootstrapConfig);
   }
 }

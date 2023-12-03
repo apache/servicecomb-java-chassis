@@ -21,13 +21,11 @@ import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.D
 import static org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig.METRICS_WINDOW_TIME;
 import static org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher.ENDPOINTS_CLIENT_DETAIL_ENABLED;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -40,14 +38,11 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
-import com.netflix.spectator.api.Registry;
 
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Promise;
@@ -59,9 +54,7 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
 
 public class TestVertxMetersInitializer {
-  GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
-
-  Registry registry = new DefaultRegistry(globalRegistry.getClock());
+  MeterRegistry registry = new SimpleMeterRegistry();
 
   EventBus eventBus = new EventBus();
 
@@ -135,36 +128,31 @@ public class TestVertxMetersInitializer {
             CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
         .thenReturn(7);
     Mockito.when(environment.getProperty(DefaultLogPublisher.ENABLED, boolean.class, false)).thenReturn(false);
-
-    globalRegistry.add(registry);
-    vertxMetersInitializer.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
-    logPublisher.setEnvironment(environment);
-    logPublisher.init(null, eventBus, null);
     VertxUtils
         .blockDeploy(SharedVertxFactory.getSharedVertx(environment), TestServerVerticle.class, new DeploymentOptions());
     VertxUtils
         .blockDeploy(SharedVertxFactory.getSharedVertx(environment), TestClientVerticle.class, new DeploymentOptions());
 
-    globalRegistry.poll(1);
-    List<Meter> meters = Lists.newArrayList(registry.iterator());
-    List<Measurement> measurements = new ArrayList<>();
-    for (Meter meter : meters) {
-      meter.measure().forEach(measurements::add);
-    }
+    vertxMetersInitializer.init(registry, eventBus, new MetricsBootstrapConfig(environment));
+    logPublisher.setEnvironment(environment);
+    logPublisher.init(registry, eventBus, null);
+
+    vertxMetersInitializer.poll(0, 1);
+    List<Meter> meters = registry.getMeters();
 
     LogCollector logCollector = new LogCollector();
 
-    testLog(logCollector, meters, measurements, true);
+    testLog(logCollector, meters, true);
     logCollector.clear();
-    testLog(logCollector, meters, measurements, false);
+
+    testLog(logCollector, meters, false);
 
     logCollector.teardown();
   }
 
-  private void testLog(LogCollector logCollector, List<Meter> meters, List<Measurement> measurements,
-      boolean printDetail) {
+  private void testLog(LogCollector logCollector, List<Meter> meters, boolean printDetail) {
     Mockito.when(environment.getProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, boolean.class, true)).thenReturn(printDetail);
-    logPublisher.onPolledEvent(new PolledEvent(meters, measurements));
+    logPublisher.onPolledEvent(new PolledEvent(meters));
 
     StringBuilder sb = new StringBuilder();
     logCollector.getEvents().forEach(event -> sb.append(event.getMessage()).append("\n"));

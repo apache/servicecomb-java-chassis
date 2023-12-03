@@ -26,9 +26,8 @@ import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
@@ -38,20 +37,17 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.ManualClock;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
 
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestInvocationMetersInitializer {
   EventBus eventBus = new EventBus();
 
-  GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
-
-  Registry registry = new DefaultRegistry(globalRegistry.getClock());
+  MeterRegistry registry = new SimpleMeterRegistry();
 
   InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
 
@@ -67,8 +63,7 @@ public class TestInvocationMetersInitializer {
     Mockito.when(environment.getProperty(
             CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, int.class, 7))
         .thenReturn(7);
-    globalRegistry.add(registry);
-    invocationMetersInitializer.init(globalRegistry, eventBus, new MetricsBootstrapConfig(environment));
+    invocationMetersInitializer.init(registry, eventBus, new MetricsBootstrapConfig(environment));
   }
 
   @Test
@@ -106,54 +101,89 @@ public class TestInvocationMetersInitializer {
     eventBus.post(event);
     eventBus.post(event);
 
-    globalRegistry.poll(1);
-
     MeasurementTree tree = new MeasurementTree();
-    tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
-    List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME).getMeasurements();
-    Assert.assertEquals(21, measurements.size());
+    tree.from(registry.getMeters().iterator(),
+        new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME, "stage"));
+    List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "total")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0");
+        "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
+        "statistic='TOTAL_TIME', value=1.8E-8");
     AssertUtil.assertMeasure(measurements, 2,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 3,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=prepare:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 4,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=prepare:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 5,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=prepare:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 6,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 7,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.0E-8");
-    AssertUtil.assertMeasure(measurements, 8,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-send:statistic=max:status=0:transport=rest:type=stage,0,5.0E-9");
-    AssertUtil.assertMeasure(measurements, 9,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=connection:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 10,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=connection:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 11,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=connection:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 12,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 13,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,8.0E-9");
-    AssertUtil.assertMeasure(measurements, 14,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-encode:statistic=max:status=0:transport=rest:type=stage,0,4.0E-9");
-    AssertUtil.assertMeasure(measurements, 15,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=wait:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 16,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=wait:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 17,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=wait:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, 18,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, 19,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, 20,
-        "servicecomb.invocation:operation=m.s.o:role=CONSUMER:stage=consumer-decode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-send")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.0E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=5.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-encode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=8.0E-9");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=4.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "wait")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-decode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
   }
 
   @Test
@@ -196,73 +226,109 @@ public class TestInvocationMetersInitializer {
     eventBus.post(event);
     eventBus.post(event);
 
-    globalRegistry.poll(1);
-
     MeasurementTree tree = new MeasurementTree();
-    tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
-    List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME).getMeasurements();
-    Assert.assertEquals(30, measurements.size());
-    int i = 0;
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=prepare:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=prepare:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=prepare:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.0E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-send:statistic=max:status=0:transport=rest:type=stage,0,5.0E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=connection:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=connection:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=connection:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,8.0E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-encode:statistic=max:status=0:transport=rest:type=stage,0,4.0E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=wait:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=wait:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=wait:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.6E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=consumer-decode:statistic=max:status=0:transport=rest:type=stage,0,8.0E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-decode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-encode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=EDGE:stage=provider-send:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+    tree.from(registry.getMeters().iterator(),
+        new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME, "stage"));
+
+    List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "total")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-send")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.0E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=5.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-encode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=8.0E-9");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=4.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "wait")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-decode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.6E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=8.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-decode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-encode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-send")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
   }
 
   @Test
@@ -299,54 +365,78 @@ public class TestInvocationMetersInitializer {
     eventBus.post(event);
     eventBus.post(event);
 
-    globalRegistry.poll(1);
-
     MeasurementTree tree = new MeasurementTree();
-    tree.from(registry.iterator(), new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME));
-    List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME).getMeasurements();
-    Assert.assertEquals(21, measurements.size());
-    int i = 0;
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=total:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=total:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=total:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=prepare:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=prepare:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=prepare:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=queue:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=queue:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=queue:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execute:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execute:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=execute:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-decode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-decode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-decode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-encode:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-encode:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-encode:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-send:statistic=count:status=0:transport=rest:type=stage,0,2.0");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-send:statistic=totalTime:status=0:transport=rest:type=stage,0,1.8000000000000002E-8");
-    AssertUtil.assertMeasure(measurements, i++,
-        "servicecomb.invocation:operation=m.s.o:role=PROVIDER:stage=provider-send:statistic=max:status=0:transport=rest:type=stage,0,9.000000000000001E-9");
+    tree.from(registry.getMeters().iterator(),
+        new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME, "stage"));
+
+    List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "total")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "queue")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "execute")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-decode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-encode")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
+
+    measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-send")
+        .getMeasurements();
+    Assert.assertEquals(3, measurements.size());
+    AssertUtil.assertMeasure(measurements, 0,
+        "statistic='COUNT', value=2.0");
+    AssertUtil.assertMeasure(measurements, 1,
+        "statistic='TOTAL_TIME', value=1.8E-8");
+    AssertUtil.assertMeasure(measurements, 2,
+        "statistic='MAX', value=9.0E-9");
   }
 }

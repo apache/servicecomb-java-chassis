@@ -50,7 +50,10 @@ public class DefaultClientEndpointMetricManager {
   public DefaultClientEndpointMetric getOrCreateEndpointMetric(String address) {
     rwlock.readLock().lock();
     try {
-      return clientEndpointMetricMap.computeIfAbsent(address, DefaultClientEndpointMetric::new);
+      if (clientEndpointMetricMap.get(address) == null) {
+        clientEndpointMetricMap.put(address, new DefaultClientEndpointMetric(address));
+      }
+      return clientEndpointMetricMap.get(address);
     } finally {
       rwlock.readLock().unlock();
     }

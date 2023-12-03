@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,27 +27,24 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.GroupExecutor;
-import org.apache.servicecomb.core.executor.ThreadPoolExecutorEx;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
+import org.apache.servicecomb.metrics.core.meter.pool.ThreadPoolMeter;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.BasicTag;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Tag;
-import com.netflix.spectator.api.patterns.PolledMeter;
-import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
 
-public class ThreadPoolMetersInitializer implements MetricsInitializer {
-  public static String REJECTED_COUNT = "threadpool.rejectedCount";
+import io.micrometer.core.instrument.MeterRegistry;
 
-  private Registry registry;
+public class ThreadPoolMetersInitializer implements MetricsInitializer, PeriodMeter {
+  private MeterRegistry meterRegistry;
+
+  private Map<String, ThreadPoolMeter> threadPoolMeters = new HashMap<>();
 
   @Override
-  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    registry = globalRegistry.getDefaultRegistry();
+  public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    this.meterRegistry = meterRegistry;
 
     createThreadPoolMeters();
   }
@@ -62,7 +60,7 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
         continue;
       }
 
-      if (GroupExecutor.class.isInstance(executor)) {
+      if (executor instanceof GroupExecutor) {
         createThreadPoolMeters(entry.getKey(), (GroupExecutor) executor);
         continue;
       }
@@ -88,20 +86,17 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
     }
   }
 
-  protected void createThreadPoolMeters(String threadPoolName, Executor executor) {
-    if (!ThreadPoolExecutor.class.isInstance(executor)) {
+  public void createThreadPoolMeters(String threadPoolName, Executor executor) {
+    if (!(executor instanceof ThreadPoolExecutor threadPoolExecutor)) {
       return;
     }
 
-    ThreadPoolMonitor.attach(registry, (ThreadPoolExecutor) executor, threadPoolName);
+    threadPoolMeters.computeIfAbsent(threadPoolName,
+        (key) -> new ThreadPoolMeter(meterRegistry, threadPoolName, threadPoolExecutor));
+  }
 
-    if (executor instanceof ThreadPoolExecutorEx) {
-      Tag idTag = new BasicTag("id", threadPoolName);
-
-      PolledMeter.using(registry)
-          .withName(REJECTED_COUNT)
-          .withTag(idTag)
-          .monitorMonotonicCounter((ThreadPoolExecutorEx) executor, ThreadPoolExecutorEx::getRejectedCount);
-    }
+  @Override
+  public void poll(long msNow, long secondInterval) {
+    threadPoolMeters.forEach((key, value) -> value.poll(msNow, secondInterval));
   }
 }

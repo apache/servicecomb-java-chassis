@@ -19,6 +19,8 @@ package org.apache.servicecomb.foundation.metrics.publish.spectator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.TagFinder;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 

@@ -20,50 +20,51 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.PublishUtils;
 
-import com.netflix.spectator.api.DefaultRegistry;
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Statistic;
-
+import io.micrometer.core.instrument.Measurement;
+import io.micrometer.core.instrument.Meter.Id;
+import io.micrometer.core.instrument.Meter.Type;
+import io.micrometer.core.instrument.Statistic;
+import io.micrometer.core.instrument.Tags;
 import jakarta.ws.rs.core.Response.Status;
 
 public class Utils {
-  static Registry registry = new DefaultRegistry();
-
   public static MeasurementNode totalStageNode = Utils.createStageNode(InvocationStageTrace.STAGE_TOTAL, 10, 10, 100);
 
   public static MeasurementNode executeStageNode =
       Utils.createStageNode(InvocationStageTrace.STAGE_PROVIDER_BUSINESS, 10, 10, 100);
 
+  public static Id initId = new Id("id", Tags.empty(), null, null, Type.OTHER);
+
   public static MeasurementNode createStageNode(String stage,
       double count,
       double totalTime,
       double max) {
-    Id id = registry.createId("id").withTag(Statistic.count);
-    Measurement countMeasurement = new Measurement(id.withTag(Statistic.count), 0, count);
-    Measurement totalTimeMeasurement = new Measurement(id.withTag(Statistic.totalTime), 0, totalTime);
-    Measurement maxMeasurement = new Measurement(id.withTag(Statistic.max), 0, max);
+    Id id = initId;
+    Measurement countMeasurement = new Measurement(() -> count, Statistic.COUNT);
+    Measurement totalTimeMeasurement = new Measurement(() -> totalTime, Statistic.TOTAL_TIME);
+    Measurement maxMeasurement = new Measurement(() -> max, Statistic.MAX);
 
-    MeasurementNode stageNode = new MeasurementNode(stage, null);
-    stageNode.addChild(Statistic.count.name(), countMeasurement);
-    stageNode.addChild(Statistic.totalTime.name(), totalTimeMeasurement);
-    stageNode.addChild(Statistic.max.name(), maxMeasurement);
+    MeasurementNode stageNode = new MeasurementNode(stage, id, null);
+    stageNode.addChild(Statistic.COUNT.name(), id, countMeasurement);
+    stageNode.addChild(Statistic.TOTAL_TIME.name(), id, totalTimeMeasurement);
+    stageNode.addChild(Statistic.MAX.name(), id, maxMeasurement);
 
     return stageNode;
   }
 
   public static MeasurementNode createStatusNode(String status, MeasurementNode... stageNodes) {
-    MeasurementNode statusNode = new MeasurementNode(status, new HashMap<>());
-    MeasurementNode typeNode = new MeasurementNode(MeterInvocationConst.TAG_STAGE, new HashMap<>());
-    MeasurementNode latencyNode = new MeasurementNode(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION, new HashMap<>());
+    Id id = initId;
+    MeasurementNode statusNode = new MeasurementNode(status, id, new HashMap<>());
+    MeasurementNode typeNode = new MeasurementNode(MeterInvocationConst.TAG_STAGE, id, new HashMap<>());
+    MeasurementNode latencyNode = new MeasurementNode(MeterInvocationConst.TAG_DISTRIBUTION, id,
+        new HashMap<>());
     List<Measurement> measurements = latencyNode.getMeasurements();
-    measurements.add(new Measurement(null, 0L, 1));
-    measurements.add(new Measurement(null, 0L, 2));
+    measurements.add(new Measurement(() -> 1, Statistic.VALUE));
+    measurements.add(new Measurement(() -> 2, Statistic.VALUE));
     for (MeasurementNode stageNode : stageNodes) {
       typeNode.getChildren().put(stageNode.getName(), stageNode);
     }

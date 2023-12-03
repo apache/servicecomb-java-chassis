@@ -19,55 +19,55 @@ package org.apache.servicecomb.metrics.core.meter.os;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
-import org.apache.servicecomb.metrics.core.meter.os.net.NetStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.spectator.api.BasicTag;
-import com.netflix.spectator.api.Id;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Tag;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 
-public class NetMeter {
+
+public class NetMeter implements PeriodMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(NetMeter.class);
 
   public static final String STATISTIC = "statistic";
 
   public static final String INTERFACE = "interface";
 
-  public static final Tag TAG_RECEIVE = new BasicTag(STATISTIC, "receive");
+  public static final Tag TAG_RECEIVE = Tag.of(STATISTIC, "receive");
 
-  public static final Tag TAG_PACKETS_RECEIVE = new BasicTag(STATISTIC, "receivePackets");
+  public static final Tag TAG_PACKETS_RECEIVE = Tag.of(STATISTIC, "receivePackets");
 
-  public static final Tag TAG_SEND = new BasicTag(STATISTIC, "send");
+  public static final Tag TAG_SEND = Tag.of(STATISTIC, "send");
 
-  public static final Tag TAG_PACKETS_SEND = new BasicTag(STATISTIC, "sendPackets");
-
-  private final Id id;
+  public static final Tag TAG_PACKETS_SEND = Tag.of(STATISTIC, "sendPackets");
 
   private final Map<String, InterfaceUsage> interfaceUsageMap = new ConcurrentHashMap<>();
 
-  public NetMeter(Id id) {
-    this.id = id;
-    // init lastRxBytes, lastRxPackets, lastTxBytes, lastTxPackets
-    refreshNet(1);
-    interfaceUsageMap.values().forEach(interfaceUsage -> interfaceUsage.getNetStats().forEach(NetStat::clearRate));
+  protected final MeterRegistry meterRegistry;
+
+  protected final String name;
+
+  protected final Tags tags;
+
+  public NetMeter(MeterRegistry meterRegistry, String name, Tags tags) {
+    this.meterRegistry = meterRegistry;
+    this.name = name;
+    this.tags = tags;
+    poll(0, 0);
   }
 
-  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
+  @Override
+  public void poll(long msNow, long secondInterval) {
     refreshNet(secondInterval);
-
-    interfaceUsageMap.values().forEach(interfaceUsage -> interfaceUsage.calcMeasurements(measurements, msNow));
   }
-
 
   /*
    * Inter-|   Receive                                                            |  Transmit
@@ -79,7 +79,6 @@ public class NetMeter {
     try {
       File file = new File("/proc/net/dev");
       List<String> netInfo = FileUtils.readLines(file, StandardCharsets.UTF_8);
-      Set<String> nameSet = new HashSet<>();
 
       //the first two lines is useless
       for (int i = 2; i < netInfo.size(); i++) {
@@ -90,18 +89,11 @@ public class NetMeter {
           continue;
         }
 
-        String name = strings[0].trim();
-        nameSet.add(name);
+        String interfaceName = strings[0].trim();
 
-        InterfaceUsage interfaceUsage = interfaceUsageMap.computeIfAbsent(name, key -> new InterfaceUsage(id, key));
+        InterfaceUsage interfaceUsage = interfaceUsageMap.computeIfAbsent(interfaceName,
+            key -> new InterfaceUsage(meterRegistry, name, tags, key));
         interfaceUsage.update(strings[1], secondInterval);
-      }
-
-      // clear deleted interfaces
-      for (String interfaceName : interfaceUsageMap.keySet()) {
-        if (!nameSet.contains(interfaceName)) {
-          this.interfaceUsageMap.remove(interfaceName);
-        }
       }
     } catch (IOException e) {
       LOGGER.error("Failed to read net info/", e);

@@ -16,13 +16,6 @@
  */
 package org.apache.servicecomb.foundation.metrics.meter;
 
-import java.util.List;
-
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
-
-public interface PeriodMeter extends Meter {
-  void calcMeasurements(long msNow, long secondInterval);
-
-  void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval);
+public interface PeriodMeter {
+  void poll(long msNow, long secondInterval);
 }
