@@ -17,28 +17,28 @@
 package org.apache.servicecomb.metrics.core;
 
 import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
-import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
+import org.apache.servicecomb.metrics.core.meter.os.SystemMeter;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.io.CharSource;
+import com.sun.management.OperatingSystemMXBean;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -50,7 +50,7 @@ public class TestOsMeterInitializer {
   EventBus eventBus;
 
   @Test
-  public void init(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
+  public void init() {
     List<String> list = new ArrayList<>();
     list.add("13  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
     list.add("useless");
@@ -68,45 +68,30 @@ public class TestOsMeterInitializer {
         return list;
       }
     };
-    new MockUp<CpuUtils>() {
-      @Mock
-      public int calcHertz() {
-        return 100;
-      }
-    };
-    new MockUp<ManagementFactory>() {
-      @Mock
-      RuntimeMXBean getRuntimeMXBean() {
-        return mxBean;
-      }
-    };
-
-    new MockUp<Runtime>() {
-      @Mock
-      public Runtime getRuntime() {
-        return runtime;
-      }
-    };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
-      }
-    };
 
     OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
-    osMetersInitializer.setOsLinux(true);
     osMetersInitializer.init(registry, eventBus, null);
-    osMetersInitializer.poll(System.currentTimeMillis(), 1000);
-    OsMeter osMeter = osMetersInitializer.getOsMeter();
-    Assertions.assertNotNull(osMeter);
-    Assertions.assertNotNull(osMeter.getCpuMeter());
-    Assertions.assertNotNull(osMeter.getNetMeter());
-    CpuMeter cpuMeter = osMeter.getCpuMeter();
-    NetMeter netMeter = osMeter.getNetMeter();
-    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
 
-    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    OsMeter osMeter = osMetersInitializer.getOsMeter();
+    SystemMeter systemMeter = osMeter.getCpuMeter();
+    OperatingSystemMXBean osBean = Mockito.mock(OperatingSystemMXBean.class);
+    Mockito.when(osBean.getCpuLoad()).thenReturn(3.2D);
+    Mockito.when(osBean.getProcessCpuLoad()).thenReturn(1.2D);
+    systemMeter.setOsBean(osBean);
+    NetMeter netMeter = osMeter.getNetMeter();
+    netMeter.setOsLinux(true);
+
+    osMetersInitializer.poll(System.currentTimeMillis(), 1000);
+
+    MeasurementTree tree = new MeasurementTree();
+    MeasurementGroupConfig group = new MeasurementGroupConfig();
+    group.addGroup(OsMeter.OS_NAME, OsMeter.OS_TYPE);
+    tree.from(registry.getMeters().iterator(), group);
+
+    Assertions.assertEquals(1.2D,
+        tree.findChild(OsMeter.OS_NAME, SystemMeter.PROCESS_CPU_USAGE).summary(), 0.0);
+    Assertions.assertEquals(3.2D,
+        tree.findChild(OsMeter.OS_NAME, SystemMeter.CPU_USAGE).summary(), 0.0);
 
     Map<String, InterfaceUsage> interfaceInfoMap = netMeter.getInterfaceUsageMap();
     Assertions.assertEquals(1, interfaceInfoMap.size());
@@ -129,13 +114,5 @@ public class TestOsMeterInitializer {
     Assertions.assertEquals(0L, eth0.getPacketsSend().getLastValue());
     Assertions.assertEquals(0, eth0.getPacketsSend().getRate(), 0.0);
     Assertions.assertEquals(9, eth0.getPacketsSend().getIndex());
-  }
-
-  @Test
-  public void initFail() {
-    OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
-    osMetersInitializer.setOsLinux(false);
-    osMetersInitializer.init(null, eventBus, null);
-    Assertions.assertNull(osMetersInitializer.getOsMeter());
   }
 }

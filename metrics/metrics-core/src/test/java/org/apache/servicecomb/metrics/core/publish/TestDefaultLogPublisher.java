@@ -198,6 +198,8 @@ public class TestDefaultLogPublisher {
 
       MeasurementNode measurementNodeCpuAll = new MeasurementNode("allProcess", id, new HashMap<>());
       MeasurementNode measurementNodeCpuProcess = new MeasurementNode("currentProcess", id, new HashMap<>());
+      MeasurementNode measurementNodeSla = new MeasurementNode("sla", id, new HashMap<>());
+      MeasurementNode measurementNodeMemory = new MeasurementNode("memory", id, new HashMap<>());
       MeasurementNode measurementNodeSend = new MeasurementNode("send", id, new HashMap<>());
       MeasurementNode measurementNodeSendPacket = new MeasurementNode("sendPackets", id, new HashMap<>());
       MeasurementNode measurementNodeRecv = new MeasurementNode("receive", id, new HashMap<>());
@@ -210,6 +212,8 @@ public class TestDefaultLogPublisher {
       measurementNodeRecv.getMeasurements().add(measurement);
       measurementNodeCpuAll.getMeasurements().add(measurement);
       measurementNodeCpuProcess.getMeasurements().add(measurement);
+      measurementNodeSla.getMeasurements().add(measurement);
+      measurementNodeMemory.getMeasurements().add(measurement);
       measurementNodeRecvPacket.getMeasurements().add(measurement);
       measurementNodeSendPacket.getMeasurements().add(measurement);
 
@@ -221,6 +225,8 @@ public class TestDefaultLogPublisher {
       measurementNodeNet.getChildren().put("eth0", measurementNodeEth0);
       measurementNodeOs.getChildren().put("cpu", measurementNodeCpuAll);
       measurementNodeOs.getChildren().put("processCpu", measurementNodeCpuProcess);
+      measurementNodeOs.getChildren().put("sla", measurementNodeSla);
+      measurementNodeOs.getChildren().put("memory", measurementNodeMemory);
       measurementNodeOs.getChildren().put("net", measurementNodeNet);
 
       measurementNodeOs.getMeasurements().add(measurement);
@@ -251,7 +257,7 @@ public class TestDefaultLogPublisher {
       Assertions.assertEquals("""
               os:
                 cpu:
-                  all usage: 100.00%    all idle: 0.00%    process: 100.00%
+                  all usage: 100.00%    process usage: 100.00%    sla: 1.00    memory usage: 100.00%
                 net:
                   send(Bps)    recv(Bps)    send(pps)    recv(pps)    interface
                   1            1            1            1            eth0

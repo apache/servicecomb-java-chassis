@@ -36,30 +36,26 @@ public class OsMeter implements PeriodMeter {
 
   public static final String OS_TYPE = "type";
 
-  public static final String OS_TYPE_ALL_CPU = "cpu";
-
-  public static final String OS_TYPE_PROCESS_CPU = "processCpu";
-
   public static final String OS_TYPE_NET = "net";
 
-  private final CpuMeter cpuMeter;
+  private final SystemMeter systemMeter;
 
   private final NetMeter netMeter;
 
   public OsMeter(MeterRegistry meterRegistry) {
-    cpuMeter = new CpuMeter(meterRegistry, OS_NAME);
+    systemMeter = new SystemMeter(meterRegistry, OS_NAME);
     netMeter = new NetMeter(meterRegistry, OS_NAME, Tags.of(OS_TYPE, OS_TYPE_NET));
   }
 
   @Override
   public void poll(long msNow, long secondInterval) {
-    cpuMeter.poll(msNow, secondInterval);
+    systemMeter.poll(msNow, secondInterval);
     netMeter.poll(msNow, secondInterval);
   }
 
   @VisibleForTesting
-  public CpuMeter getCpuMeter() {
-    return cpuMeter;
+  public SystemMeter getCpuMeter() {
+    return systemMeter;
   }
 
   @VisibleForTesting

@@ -35,6 +35,7 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
+import org.apache.servicecomb.metrics.core.meter.os.SystemMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
@@ -201,17 +202,14 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   private void printCpuLog(StringBuilder sb, MeasurementNode osNode) {
-    MeasurementNode cpuNode = osNode.findChild(OsMeter.OS_TYPE_ALL_CPU);
-    MeasurementNode processNode = osNode.findChild(OsMeter.OS_TYPE_PROCESS_CPU);
-    if (cpuNode == null || cpuNode.getMeasurements().isEmpty() ||
-        processNode == null || processNode.getMeasurements().isEmpty()) {
-      return;
-    }
-    double allRate = cpuNode.summary();
-    double processRate = processNode.summary();
+    MeasurementNode cpuNode = osNode.findChild(SystemMeter.CPU_USAGE);
+    MeasurementNode processNode = osNode.findChild(SystemMeter.PROCESS_CPU_USAGE);
+    MeasurementNode memoryNode = osNode.findChild(SystemMeter.MEMORY_USAGE);
+    MeasurementNode slaNode = osNode.findChild(SystemMeter.SYSTEM_LOAD_AVERAGE);
     appendLine(sb, "  cpu:");
-    appendLine(sb, "    all usage: %.2f%%    all idle: %.2f%%    process: %.2f%%", allRate * 100,
-        (1 - allRate) * 100, processRate * 100);
+    appendLine(sb, "    all usage: %.2f%%    process usage: %.2f%%    sla: %.2f    memory usage: %.2f%%",
+        cpuNode.summary() * 100, processNode.summary() * 100,
+        slaNode.summary(), memoryNode.summary() * 100);
   }
 
   protected void printThreadPoolMetrics(DefaultPublishModel model, StringBuilder sb) {

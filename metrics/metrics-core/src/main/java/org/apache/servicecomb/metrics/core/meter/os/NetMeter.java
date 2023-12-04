@@ -24,15 +24,17 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
-
 
 public class NetMeter implements PeriodMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(NetMeter.class);
@@ -51,6 +53,8 @@ public class NetMeter implements PeriodMeter {
 
   private final Map<String, InterfaceUsage> interfaceUsageMap = new ConcurrentHashMap<>();
 
+  private boolean isOsLinux = SystemUtils.IS_OS_LINUX;
+
   protected final MeterRegistry meterRegistry;
 
   protected final String name;
@@ -64,9 +68,16 @@ public class NetMeter implements PeriodMeter {
     poll(0, 0);
   }
 
+  @VisibleForTesting
+  public void setOsLinux(boolean osLinux) {
+    isOsLinux = osLinux;
+  }
+
   @Override
   public void poll(long msNow, long secondInterval) {
-    refreshNet(secondInterval);
+    if (isOsLinux) {
+      refreshNet(secondInterval);
+    }
   }
 
   /*

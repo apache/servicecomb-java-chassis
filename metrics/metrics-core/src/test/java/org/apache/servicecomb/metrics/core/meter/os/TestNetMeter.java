@@ -96,6 +96,7 @@ public class TestNetMeter {
     };
     MeterRegistry meterRegistry = new SimpleMeterRegistry();
     NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
+    netMeter.setOsLinux(true);
     netMeter.poll(0, 0);
     Map<String, InterfaceUsage> netMap = netMeter.getInterfaceUsageMap();
     Assertions.assertEquals(1, netMap.size());
@@ -165,6 +166,7 @@ public class TestNetMeter {
     };
     MeterRegistry meterRegistry = new SimpleMeterRegistry();
     NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
+    netMeter.setOsLinux(true);
     netMeter.poll(0, 1);
     Map<String, InterfaceUsage> netMap = netMeter.getInterfaceUsageMap();
     Assertions.assertEquals(2, netMap.size());
@@ -251,6 +253,7 @@ public class TestNetMeter {
     };
     MeterRegistry meterRegistry = new SimpleMeterRegistry();
     NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
+    netMeter.setOsLinux(true);
     list.remove(2);
     list.add("eth0: 3 1    0    0    0     0          0          1         3 1    1      0     0     0    0    0");
     netMeter.poll(0, 1);

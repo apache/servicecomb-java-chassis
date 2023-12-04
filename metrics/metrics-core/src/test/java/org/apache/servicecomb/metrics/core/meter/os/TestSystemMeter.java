@@ -16,11 +16,8 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
-
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,24 +25,23 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
-import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import com.google.common.io.CharSource;
 import com.google.common.io.Files;
+import com.sun.management.OperatingSystemMXBean;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-public class TestOsMeter {
+public class TestSystemMeter {
   @Test
-  public void testCalcMeasurement(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
-      @Mocked CharSource charSource) throws IOException {
+  public void testCalcMeasurement(@Mocked CharSource charSource) throws IOException {
     MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
     List<String> list = new ArrayList<>();
@@ -58,49 +54,31 @@ public class TestOsMeter {
         return list;
       }
     };
-    new MockUp<CpuUtils>() {
-      @Mock
-      public int calcHertz() {
-        return 4;
-      }
-    };
+
     new MockUp<Files>() {
       @Mock
       public CharSource asCharSource(File file, Charset encoding) {
         return charSource;
       }
     };
-    new MockUp<ManagementFactory>() {
-      @Mock
-      RuntimeMXBean getRuntimeMXBean() {
-        return mxBean;
-      }
-    };
-    new MockUp<Runtime>() {
-      @Mock
-      public Runtime getRuntime() {
-        return runtime;
-      }
-    };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
-        charSource.readFirstLine();
-        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
-      }
-    };
+
     OsMeter osMeter = new OsMeter(meterRegistry);
     list.clear();
     list.add("useless");
     list.add("useless");
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
-    new Expectations() {
-      {
-        charSource.readFirstLine();
-        result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
-      }
-    };
+
+    SystemMeter systemMeter = osMeter.getCpuMeter();
+    OperatingSystemMXBean osBean = Mockito.mock(OperatingSystemMXBean.class);
+    Mockito.when(osBean.getSystemLoadAverage()).thenReturn(0.775);
+    Mockito.when(osBean.getCpuLoad()).thenReturn(0.875);
+    Mockito.when(osBean.getProcessCpuLoad()).thenReturn(0.5);
+    Mockito.when(osBean.getTotalMemorySize()).thenReturn(1000000000L);
+    Mockito.when(osBean.getFreeMemorySize()).thenReturn(300000000L);
+    systemMeter.setOsBean(osBean);
+    NetMeter netMeter = osMeter.getNetMeter();
+    netMeter.setOsLinux(true);
+
     osMeter.poll(0, 1);
 
     MeasurementTree tree = new MeasurementTree();
@@ -109,6 +87,8 @@ public class TestOsMeter {
 
     Assertions.assertEquals(0.875, tree.findChild("os", "cpu").getMeasurements().get(0).getValue(), 0.0);
     Assertions.assertEquals(0.5, tree.findChild("os", "processCpu").getMeasurements().get(0).getValue(), 0.0);
+    Assertions.assertEquals(0.7, tree.findChild("os", "memory").getMeasurements().get(0).getValue(), 0.0);
+    Assertions.assertEquals(0.775, tree.findChild("os", "sla").getMeasurements().get(0).getValue(), 0.0);
     Assertions.assertEquals(1.0, tree.findChild("os", "net").getMeasurements().get(0).getValue(), 0.0);
     Assertions.assertEquals(1.0, tree.findChild("os", "net").getMeasurements().get(1).getValue(), 0.0);
     Assertions.assertEquals(1.0, tree.findChild("os", "net").getMeasurements().get(2).getValue(), 0.0);
