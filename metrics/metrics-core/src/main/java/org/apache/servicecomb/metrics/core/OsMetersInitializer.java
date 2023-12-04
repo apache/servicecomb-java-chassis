@@ -16,39 +16,20 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.meter.PeriodMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
 public class OsMetersInitializer implements MetricsInitializer, PeriodMeter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(OsMetersInitializer.class);
-
   private OsMeter osMeter;
-
-  private boolean isOsLinux = SystemUtils.IS_OS_LINUX;
-
-  @VisibleForTesting
-  OsMetersInitializer setOsLinux(boolean osLinux) {
-    isOsLinux = osLinux;
-    return this;
-  }
 
   @Override
   public void init(MeterRegistry meterRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    if (!isOsLinux) {
-      LOGGER.info("only support linux os to collect cpu and net info");
-      return;
-    }
-
     osMeter = new OsMeter(meterRegistry);
   }
 
