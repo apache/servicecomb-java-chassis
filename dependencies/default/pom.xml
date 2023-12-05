@@ -83,7 +83,6 @@
     <resilience4j.versioin>1.7.0</resilience4j.versioin>
     <ribbon.version>2.7.18</ribbon.version>
     <rxjava.version>1.3.8</rxjava.version>
-    <rxnetty.version>0.5.1</rxnetty.version>
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
     <servlet-api.version>6.0.0</servlet-api.version>
@@ -252,26 +251,6 @@
         <groupId>io.reactivex</groupId>
         <artifactId>rxjava</artifactId>
         <version>${rxjava.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.reactivex</groupId>
-        <artifactId>rxnetty</artifactId>
-        <version>${rxnetty.version}</version>
-        <exclusions>
-          <!-- already in io.netty-all -->
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-codec-http</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-handler</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport-native-epoll</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
