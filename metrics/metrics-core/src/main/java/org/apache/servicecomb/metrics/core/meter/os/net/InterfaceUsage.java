@@ -42,7 +42,7 @@ public class InterfaceUsage {
 
   public InterfaceUsage(MeterRegistry meterRegistry, String name, Tags tags, String interfaceName) {
     this.interfaceName = interfaceName;
-    tags = tags.and(Tag.of(INTERFACE, name));
+    tags = tags.and(Tag.of(INTERFACE, interfaceName));
 
     // recv/Bps
     receive = new NetStat(0);
