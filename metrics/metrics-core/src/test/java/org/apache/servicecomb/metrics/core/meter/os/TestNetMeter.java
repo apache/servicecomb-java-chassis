@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
+import static org.apache.servicecomb.metrics.core.meter.os.OsMeter.OS_TYPE;
+import static org.apache.servicecomb.metrics.core.meter.os.OsMeter.OS_TYPE_NET;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -23,7 +26,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.foundation.metrics.publish.DefaultTagFinder;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
+import org.apache.servicecomb.foundation.metrics.publish.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.Test;
@@ -50,10 +55,12 @@ public class TestNetMeter {
       }
     };
     MeterRegistry meterRegistry = new SimpleMeterRegistry();
-    NetMeter netMeter = new NetMeter(meterRegistry, "net", Tags.empty());
+    NetMeter netMeter = new NetMeter(meterRegistry, "os", Tags.of(OS_TYPE, OS_TYPE_NET));
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
     netMeter.refreshNet(1);
+
+
     Map<String, InterfaceUsage> meterInterfaceInfoMap = netMeter.getInterfaceUsageMap();
     Assertions.assertTrue(meterInterfaceInfoMap.containsKey("eth0"));
 
@@ -79,6 +86,30 @@ public class TestNetMeter {
     Assertions.assertEquals(1L, eth0.getPacketsSend().getLastValue());
     Assertions.assertEquals(1, eth0.getPacketsSend().getRate(), 0.0);
     Assertions.assertEquals(9, eth0.getPacketsSend().getIndex());
+
+    // measurement tree test
+    MeasurementGroupConfig group = new MeasurementGroupConfig();
+    group.addGroup(OsMeter.OS_NAME,
+        OS_TYPE,
+        new DefaultTagFinder(NetMeter.INTERFACE, true),
+        new DefaultTagFinder(NetMeter.STATISTIC, true));
+
+    MeasurementTree tree = new MeasurementTree();
+    tree.from(meterRegistry.getMeters().iterator(), group);
+    MeasurementNode osNode = tree.findChild(OsMeter.OS_NAME);
+    MeasurementNode netNode = osNode.findChild(OS_TYPE_NET);
+    Assertions.assertEquals(1, netNode.getChildren().size());
+    for (MeasurementNode interfaceNode : netNode.getChildren().values()) {
+      double sendRate = interfaceNode.findChild(NetMeter.TAG_SEND.getValue()).summary();
+      double sendPacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_SEND.getValue()).summary();
+      double receiveRate = interfaceNode.findChild(NetMeter.TAG_RECEIVE.getValue()).summary();
+      double receivePacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_RECEIVE.getValue()).summary();
+      Assertions.assertEquals(1, sendRate, 0);
+      Assertions.assertEquals(1, sendPacketsRate, 0);
+      Assertions.assertEquals(1, receiveRate, 0);
+      Assertions.assertEquals(1, receivePacketsRate, 0);
+    }
+
   }
 
 

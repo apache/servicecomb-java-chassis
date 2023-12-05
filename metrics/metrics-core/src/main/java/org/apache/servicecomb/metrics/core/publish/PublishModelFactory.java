@@ -66,7 +66,8 @@ public class PublishModelFactory {
 
     groupConfig.addGroup(OsMeter.OS_NAME,
         OsMeter.OS_TYPE,
-        new DefaultTagFinder(NetMeter.INTERFACE, true));
+        new DefaultTagFinder(NetMeter.INTERFACE, true),
+        new DefaultTagFinder(NetMeter.STATISTIC, true));
 
     groupConfig.addGroup(VertxMetersInitializer.VERTX_ENDPOINTS,
         VertxMetersInitializer.ENDPOINTS_TYPE,
