@@ -86,14 +86,14 @@ public final class VertxUtils {
   }
 
   // deploy Verticle and wait for its success. do not call this method in event-loop thread
-  public static <VERTICLE extends Verticle> Map<String, String> blockDeploy(Vertx vertx,
+  public static <VERTICLE extends Verticle> Map<String, Object> blockDeploy(Vertx vertx,
       Class<VERTICLE> cls,
       DeploymentOptions options) throws InterruptedException {
-    Map<String, String> result = new HashMap<>();
+    Map<String, Object> result = new HashMap<>();
 
     CountDownLatch latch = new CountDownLatch(1);
     vertx.deployVerticle(cls.getName(), options, ar -> {
-      result.put("code", String.valueOf(ar.succeeded()));
+      result.put("code", ar.succeeded());
       if (ar.failed()) {
         result.put("message", ar.cause().getMessage());
         LOGGER.error("deploy vertx failed, cause ", ar.cause());

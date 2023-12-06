@@ -64,9 +64,9 @@ public class HighwayClient {
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
         HighwayConfig.getClientThreadCount());
-    Map<String, String> result = VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
-    if (!Boolean.parseBoolean(result.get("code"))) {
-      throw new Exception(result.get("message"));
+    Map<String, Object> result = VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
+    if (!(boolean)result.get("code")) {
+      throw new IllegalStateException((String) result.get("message"));
     }
   }
 

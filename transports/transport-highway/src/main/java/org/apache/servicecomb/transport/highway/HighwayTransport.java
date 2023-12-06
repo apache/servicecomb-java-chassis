@@ -48,11 +48,11 @@ public class HighwayTransport extends AbstractTransport {
     json.put(ENDPOINT_KEY, getEndpoint());
     deployOptions.setConfig(json);
     deployOptions.setWorkerPoolName("pool-worker-transport-highway");
-    Map<String, String> result = VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
-    if (Boolean.parseBoolean(result.get("code"))) {
+    Map<String, Object> result = VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
+    if ((boolean)result.get("code")) {
       return true;
     } else {
-      throw new Exception(result.get("message"));
+      throw new Exception((String) result.get("message"));
     }
   }
 

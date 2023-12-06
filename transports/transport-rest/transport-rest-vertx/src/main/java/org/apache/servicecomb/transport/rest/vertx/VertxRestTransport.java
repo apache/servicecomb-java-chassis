@@ -106,12 +106,12 @@ public class VertxRestTransport extends AbstractTransport {
     options.setWorkerPoolSize(VertxOptions.DEFAULT_WORKER_POOL_SIZE);
 
     prepareBlockResource();
-    Map<String, String> result = VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(),
+    Map<String, Object> result = VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(),
         options);
-    if (Boolean.parseBoolean(result.get("code"))) {
+    if ((boolean)result.get("code")) {
       return true;
     } else {
-      throw new Exception(result.get("message"));
+      throw new Exception((String) result.get("message"));
     }
   }
 
