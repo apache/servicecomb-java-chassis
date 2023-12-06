@@ -16,177 +16,75 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
-import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
-import com.google.common.io.CharSource;
-import com.google.common.io.Files;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
+import com.sun.management.OperatingSystemMXBean;
 
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestCpuMeter {
 
   @Test
-  public void testRefreshCpuSuccess(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
-      @Mocked CharSource charSource) throws IOException {
-    new MockUp<Files>() {
-      @Mock
-      public CharSource asCharSource(File file, Charset encoding) {
-        return charSource;
-      }
-    };
-    new MockUp<ManagementFactory>() {
-      @Mock
-      RuntimeMXBean getRuntimeMXBean() {
-        return mxBean;
-      }
-    };
-    new MockUp<CpuUtils>() {
-      @Mock
-      public int calcHertz() {
-        return 4;
-      }
-    };
-    new MockUp<Runtime>() {
-      @Mock
-      public Runtime getRuntime() {
-        return runtime;
-      }
-    };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
-        charSource.readFirstLine();
-        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
-      }
-    };
+  public void testRefreshCpuSuccess(@Mocked Id id) throws IOException {
+
     CpuMeter cpuMeter = new CpuMeter(id);
-    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    OperatingSystemMXBean systemMXBean = Mockito.mock(OperatingSystemMXBean.class);
+    Mockito.when(systemMXBean.getSystemCpuLoad()).thenReturn(0.2);
+    Mockito.when(systemMXBean.getProcessCpuLoad()).thenReturn(0.1);
+    cpuMeter.setOsBean(systemMXBean);
+    List<Measurement> measurements = new ArrayList<>();
+    cpuMeter.calcMeasurements(measurements, 0);
 
-    new Expectations() {
-      {
-        charSource.readFirstLine();
-        result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
-      }
-    };
-    cpuMeter.update();
+    Assertions.assertEquals(0.2, measurements.get(0).value(), 0.0);
+    Assertions.assertEquals(0.1, measurements.get(1).value(), 0.0);
 
-    Assertions.assertEquals(0.875, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assertions.assertEquals(0.5, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Mockito.when(systemMXBean.getSystemCpuLoad()).thenReturn(0.875);
+    Mockito.when(systemMXBean.getProcessCpuLoad()).thenReturn(0.5);
+    measurements = new ArrayList<>();
+    cpuMeter.calcMeasurements(measurements, 0);
+
+    Assertions.assertEquals(0.875, measurements.get(0).value(), 0.0);
+    Assertions.assertEquals(0.5, measurements.get(1).value(), 0.0);
   }
 
   @Test
-  public void testRefreshError(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
-      @Mocked CharSource charSource) throws IOException {
+  public void testRefreshError(@Mocked Id id) throws IOException {
 
-    new MockUp<Files>() {
-      @Mock
-      public CharSource asCharSource(File file, Charset encoding) {
-        return charSource;
-      }
-    };
-    new MockUp<CpuUtils>() {
-      @Mock
-      public int calcHertz() {
-        return 4;
-      }
-    };
-    new MockUp<ManagementFactory>() {
-      @Mock
-      RuntimeMXBean getRuntimeMXBean() {
-        return mxBean;
-      }
-    };
-    new MockUp<Runtime>() {
-      @Mock
-      public Runtime getRuntime() {
-        return runtime;
-      }
-    };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
-        charSource.readFirstLine();
-        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
-      }
-    };
     CpuMeter cpuMeter = new CpuMeter(id);
-    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
-    new Expectations() {
-      {
-        charSource.readFirstLine();
-        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
-      }
-    };
-    cpuMeter.update();
+    OperatingSystemMXBean systemMXBean = Mockito.mock(OperatingSystemMXBean.class);
+    Mockito.when(systemMXBean.getSystemCpuLoad()).thenReturn(0.2);
+    Mockito.when(systemMXBean.getProcessCpuLoad()).thenReturn(0.1);
+    cpuMeter.setOsBean(systemMXBean);
+    List<Measurement> measurements = new ArrayList<>();
+    cpuMeter.calcMeasurements(measurements, 0);
 
-    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Assertions.assertEquals(0.2, measurements.get(0).value(), 0.0);
+    Assertions.assertEquals(0.1, measurements.get(1).value(), 0.0);
+
+    cpuMeter.calcMeasurements(measurements, 0);
+
+    Assertions.assertEquals(0.2, measurements.get(0).value(), 0.0);
+    Assertions.assertEquals(0.1, measurements.get(1).value(), 0.0);
   }
 
   @Test
-  public void testCalcMeasurements(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
-      @Mocked CharSource charSource) throws IOException {
+  public void testCalcMeasurements(@Mocked Id id) throws IOException {
     List<Measurement> measurements = new ArrayList<>();
 
-    new MockUp<Files>() {
-      @Mock
-      public CharSource asCharSource(File file, Charset encoding) {
-        return charSource;
-      }
-    };
-    new MockUp<CpuUtils>() {
-      @Mock
-      public int calcHertz() {
-        return 4;
-      }
-    };
-    new MockUp<ManagementFactory>() {
-      @Mock
-      RuntimeMXBean getRuntimeMXBean() {
-        return mxBean;
-      }
-    };
-    new MockUp<Runtime>() {
-      @Mock
-      public Runtime getRuntime() {
-        return runtime;
-      }
-    };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
-        charSource.readFirstLine();
-        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
-      }
-    };
     CpuMeter cpuMeter = new CpuMeter(id);
+    OperatingSystemMXBean systemMXBean = Mockito.mock(OperatingSystemMXBean.class);
+    Mockito.when(systemMXBean.getSystemCpuLoad()).thenReturn(0.875);
+    Mockito.when(systemMXBean.getProcessCpuLoad()).thenReturn(0.5);
+    cpuMeter.setOsBean(systemMXBean);
 
-    new Expectations() {
-      {
-        charSource.readFirstLine();
-        result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
-      }
-    };
     cpuMeter.calcMeasurements(measurements, 0);
     Assertions.assertEquals(2, measurements.size());
     Measurement measurement = measurements.get(0);

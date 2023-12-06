@@ -19,36 +19,30 @@ package org.apache.servicecomb.metrics.core.meter.os;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
-import com.google.common.io.CharSource;
-import com.google.common.io.Files;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
+import com.sun.management.OperatingSystemMXBean;
 
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestOsMeter {
   Registry registry = new DefaultRegistry(new ManualClock());
 
   @Test
-  public void testCalcMeasurement(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
-      @Mocked CharSource charSource) throws IOException {
+  public void testCalcMeasurement() throws IOException {
     List<String> list = new ArrayList<>();
     list.add("useless");
     list.add("useless");
@@ -59,49 +53,18 @@ public class TestOsMeter {
         return list;
       }
     };
-    new MockUp<CpuUtils>() {
-      @Mock
-      public int calcHertz() {
-        return 4;
-      }
-    };
-    new MockUp<Files>() {
-      @Mock
-      public CharSource asCharSource(File file, Charset encoding) {
-        return charSource;
-      }
-    };
-    new MockUp<ManagementFactory>() {
-      @Mock
-      RuntimeMXBean getRuntimeMXBean() {
-        return mxBean;
-      }
-    };
-    new MockUp<Runtime>() {
-      @Mock
-      public Runtime getRuntime() {
-        return runtime;
-      }
-    };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
-        charSource.readFirstLine();
-        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
-      }
-    };
+
     OsMeter osMeter = new OsMeter(registry);
     list.clear();
     list.add("useless");
     list.add("useless");
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
-    new Expectations() {
-      {
-        charSource.readFirstLine();
-        result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
-      }
-    };
+
+    OperatingSystemMXBean systemMXBean = Mockito.mock(OperatingSystemMXBean.class);
+    Mockito.when(systemMXBean.getSystemCpuLoad()).thenReturn(0.875);
+    Mockito.when(systemMXBean.getProcessCpuLoad()).thenReturn(0.5);
+    osMeter.getCpuMeter().setOsBean(systemMXBean);
+
     osMeter.calcMeasurements(1, 1);
     ArrayList<Measurement> measurements = Lists.newArrayList(osMeter.measure());
     Assertions.assertEquals(6, measurements.size());
