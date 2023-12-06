@@ -16,55 +16,33 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
+import java.lang.management.ManagementFactory;
 import java.util.List;
 
-import org.apache.servicecomb.metrics.core.meter.os.cpu.OsCpuUsage;
-import org.apache.servicecomb.metrics.core.meter.os.cpu.ProcessCpuUsage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
+import com.sun.management.OperatingSystemMXBean;
 
 public class CpuMeter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CpuMeter.class);
+  private OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 
-  // read from /proc/stat
-  private final OsCpuUsage allCpuUsage;
+  private final Id allCpuUsage;
 
-  // read from /proc/self/stat /proc/uptime
-  private final ProcessCpuUsage processCpuUsage;
+  private final Id processCpuUsage;
 
   public CpuMeter(Id id) {
-    allCpuUsage = new OsCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU));
-    processCpuUsage = new ProcessCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU));
-
-    //must refresh all first
-    update();
-    allCpuUsage.setUsage(0);
-    processCpuUsage.setUsage(0);
+    allCpuUsage = id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU);
+    processCpuUsage = id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU);
   }
 
   public void calcMeasurements(List<Measurement> measurements, long msNow) {
-    update();
-    measurements.add(new Measurement(allCpuUsage.getId(), msNow, allCpuUsage.getUsage()));
-    measurements.add(new Measurement(processCpuUsage.getId(), msNow, processCpuUsage.getUsage()));
+    measurements.add(new Measurement(allCpuUsage, msNow, osBean.getSystemCpuLoad()));
+    measurements.add(new Measurement(processCpuUsage, msNow, osBean.getProcessCpuLoad()));
   }
 
-  public void update() {
-    try {
-      allCpuUsage.update();
-      processCpuUsage.update();
-    } catch (Throwable e) {
-      LOGGER.error("Failed to update usage", e);
-    }
-  }
-
-  public OsCpuUsage getAllCpuUsage() {
-    return allCpuUsage;
-  }
-
-  public ProcessCpuUsage getProcessCpuUsage() {
-    return processCpuUsage;
+  @VisibleForTesting
+  public void setOsBean(OperatingSystemMXBean bean) {
+    this.osBean = bean;
   }
 }

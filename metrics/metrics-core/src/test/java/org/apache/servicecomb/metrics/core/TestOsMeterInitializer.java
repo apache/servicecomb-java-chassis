@@ -17,8 +17,6 @@
 package org.apache.servicecomb.metrics.core;
 
 import java.io.File;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,21 +27,21 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
-import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.io.Files;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
+import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
+import com.sun.management.OperatingSystemMXBean;
 
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
 public class TestOsMeterInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
@@ -54,49 +52,19 @@ public class TestOsMeterInitializer {
   EventBus eventBus;
 
   @Test
-  public void init(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
+  public void init() {
     List<String> list = new ArrayList<>();
     list.add("13  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
     list.add("useless");
     list.add("eth0: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
-    new MockUp<Files>() {
-      //Files.readFirstLine
-      @Mock
-      public String readFirstLine(File file, Charset encoding) {
-        return list.get(0);
-      }
-    };
+
     new MockUp<FileUtils>() {
       @Mock
       public List<String> readLines(File file, Charset encoding) {
         return list;
       }
     };
-    new MockUp<CpuUtils>() {
-      @Mock
-      public int calcHertz() {
-        return 100;
-      }
-    };
-    new MockUp<ManagementFactory>() {
-      @Mock
-      RuntimeMXBean getRuntimeMXBean() {
-        return mxBean;
-      }
-    };
 
-    new MockUp<Runtime>() {
-      @Mock
-      public Runtime getRuntime() {
-        return runtime;
-      }
-    };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
-      }
-    };
     globalRegistry.add(registry);
     OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
     osMetersInitializer.setOsLinux(true);
@@ -106,10 +74,15 @@ public class TestOsMeterInitializer {
     Assertions.assertNotNull(osMeter.getCpuMeter());
     Assertions.assertNotNull(osMeter.getNetMeter());
     CpuMeter cpuMeter = osMeter.getCpuMeter();
+    OperatingSystemMXBean systemMXBean = Mockito.mock(OperatingSystemMXBean.class);
+    Mockito.when(systemMXBean.getSystemCpuLoad()).thenReturn(0.2);
+    Mockito.when(systemMXBean.getProcessCpuLoad()).thenReturn(0.1);
+    cpuMeter.setOsBean(systemMXBean);
     NetMeter netMeter = osMeter.getNetMeter();
-    Assertions.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
-
-    Assertions.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    List<Measurement> measurements = new ArrayList<>();
+    cpuMeter.calcMeasurements(measurements, 0);
+    Assertions.assertEquals(0.2, measurements.get(0).value(), 0.0);
+    Assertions.assertEquals(0.1, measurements.get(1).value(), 0.0);
 
     Map<String, InterfaceUsage> interfaceInfoMap = netMeter.getInterfaceUsageMap();
     Assertions.assertEquals(1, interfaceInfoMap.size());
