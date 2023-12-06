@@ -19,6 +19,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
@@ -105,7 +106,13 @@ public class VertxRestTransport extends AbstractTransport {
     options.setWorkerPoolSize(VertxOptions.DEFAULT_WORKER_POOL_SIZE);
 
     prepareBlockResource();
-    return VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(), options);
+    Map<String, String> result = VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(),
+        options);
+    if (Boolean.parseBoolean(result.get("code"))) {
+      return true;
+    } else {
+      throw new Exception(result.get("message"));
+    }
   }
 
   private void prepareBlockResource() {

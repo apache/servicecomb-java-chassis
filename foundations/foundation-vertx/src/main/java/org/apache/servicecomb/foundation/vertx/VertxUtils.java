@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -85,16 +86,16 @@ public final class VertxUtils {
   }
 
   // deploy Verticle and wait for its success. do not call this method in event-loop thread
-  public static <VERTICLE extends Verticle> boolean blockDeploy(Vertx vertx,
+  public static <VERTICLE extends Verticle> Map<String, String> blockDeploy(Vertx vertx,
       Class<VERTICLE> cls,
       DeploymentOptions options) throws InterruptedException {
-    Holder<Boolean> result = new Holder<>();
+    Map<String, String> result = new HashMap<>();
 
     CountDownLatch latch = new CountDownLatch(1);
     vertx.deployVerticle(cls.getName(), options, ar -> {
-      result.value = ar.succeeded();
-
+      result.put("code", String.valueOf(ar.succeeded()));
       if (ar.failed()) {
+        result.put("message", ar.cause().getMessage());
         LOGGER.error("deploy vertx failed, cause ", ar.cause());
       }
 
@@ -103,7 +104,7 @@ public final class VertxUtils {
 
     latch.await();
 
-    return result.value;
+    return result;
   }
 
   public static Vertx getOrCreateVertxByName(String name, VertxOptions vertxOptions) {
