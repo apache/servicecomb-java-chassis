@@ -49,7 +49,7 @@ public class HighwayTransport extends AbstractTransport {
     deployOptions.setConfig(json);
     deployOptions.setWorkerPoolName("pool-worker-transport-highway");
     Map<String, Object> result = VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
-    if ((boolean)result.get("code")) {
+    if ((boolean) result.get("code")) {
       return true;
     } else {
       throw new IllegalStateException((String) result.get("message"));

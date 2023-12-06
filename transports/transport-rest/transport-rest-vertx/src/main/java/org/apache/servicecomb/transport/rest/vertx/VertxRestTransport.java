@@ -108,7 +108,7 @@ public class VertxRestTransport extends AbstractTransport {
     prepareBlockResource();
     Map<String, Object> result = VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(),
         options);
-    if ((boolean)result.get("code")) {
+    if ((boolean) result.get("code")) {
       return true;
     } else {
       throw new IllegalStateException((String) result.get("message"));

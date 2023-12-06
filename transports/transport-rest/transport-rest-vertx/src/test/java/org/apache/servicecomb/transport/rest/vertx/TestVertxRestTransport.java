@@ -19,6 +19,8 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
@@ -62,9 +64,11 @@ public class TestVertxRestTransport {
         }
 
         @Mock
-        public <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx, Class<VERTICLE> cls,
+        public <VERTICLE extends AbstractVerticle> Map<String, Object> blockDeploy(Vertx vertx, Class<VERTICLE> cls,
             DeploymentOptions options) throws InterruptedException {
-          return true;
+          Map<String, Object> result = new HashMap<>();
+          result.put("code", true);
+          return result;
         }
       };
       instance.init();
