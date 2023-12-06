@@ -24,16 +24,16 @@ import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.Test;
+
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import io.vertx.core.VertxException;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class RetryExtensionTest {
 
