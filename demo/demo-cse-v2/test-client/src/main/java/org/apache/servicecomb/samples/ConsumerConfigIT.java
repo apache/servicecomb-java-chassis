@@ -35,29 +35,29 @@ public class ConsumerConfigIT implements CategorizedTestCase {
 
   private void testConfig() {
     String result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.foo", String.class);
-    TestMgr.check("\"foo\"", result);
+    TestMgr.check("foo", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.bar", String.class);
-    TestMgr.check("\"bar\"", result);
+    TestMgr.check("bar", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.priority", String.class);
-    TestMgr.check("\"v1\"", result);
+    TestMgr.check("v1", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.common", String.class);
-    TestMgr.check("\"common\"", result);
+    TestMgr.check("common", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.extra", String.class);
-    TestMgr.check("\"common\"", result);
+    TestMgr.check("common", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v2.test.priority1", String.class);
-    TestMgr.check("\"v2\"", result);
+    TestMgr.check("v2", result);
   }
 
   private void testFooBar() {
     String result = template.getForObject(Config.GATEWAY_URL + "/bar", String.class);
-    TestMgr.check("\"bar\"", result);
+    TestMgr.check("bar", result);
     result = template.getForObject(Config.GATEWAY_URL + "/foo", String.class);
-    TestMgr.check("\"foo\"", result);
+    TestMgr.check("foo", result);
     result = template.getForObject(Config.GATEWAY_URL + "/priority", String.class);
-    TestMgr.check("\"v1\"", result);
+    TestMgr.check("v1", result);
     result = template.getForObject(Config.GATEWAY_URL + "/common", String.class);
-    TestMgr.check("\"common\"", result);
+    TestMgr.check("common", result);
     result = template.getForObject(Config.GATEWAY_URL + "/extra", String.class);
-    TestMgr.check("\"common\"", result);
+    TestMgr.check("common", result);
   }
 }

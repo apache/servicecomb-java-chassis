@@ -48,8 +48,8 @@ public class SC2Configuration {
   @Bean
   public ServiceCenterClient serviceCenterClient2(
       @Qualifier("scConfigurationProperties2") SCConfigurationProperties scConfigurationProperties2,
-      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
-    return SCClientUtils.serviceCenterClient(scConfigurationProperties2, authHeaderProviders, environment);
+      Environment environment) {
+    return SCClientUtils.serviceCenterClient(scConfigurationProperties2, environment);
   }
 
   @Bean

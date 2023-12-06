@@ -21,16 +21,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
+import org.apache.servicecomb.foundation.vertx.VertxConst;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
+import org.apache.servicecomb.http.client.common.HttpTransport;
+import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.service.center.client.ServiceCenterAddressManager;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
+import org.apache.servicecomb.service.center.client.ServiceCenterRawClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,14 +58,60 @@ public class SCClientUtils {
 
   // add other headers needed for registration by new ServiceCenterClient(...)
   public static ServiceCenterClient serviceCenterClient(SCConfigurationProperties discoveryProperties,
-      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
+      Environment environment) {
     ServiceCenterAddressManager addressManager = createAddressManager(discoveryProperties);
 
     SSLProperties sslProperties = buildSslProperties(addressManager, environment);
 
-    return new ServiceCenterClient(addressManager, sslProperties,
-        getRequestAuthHeaderProvider(authHeaderProviders),
-        "default", new HashMap<>()).setEventBus(EventManager.getEventBus());
+    return new ServiceCenterClient(new ServiceCenterRawClient.Builder()
+        .setTenantName("default")
+        .setAddressManager(addressManager)
+        .setHttpTransport(createHttpTransport(environment, sslProperties)).build());
+  }
+
+  private static HttpTransport createHttpTransport(Environment environment, SSLProperties sslProperties) {
+    List<AuthHeaderProvider> authHeaderProviders = SPIServiceUtils.getOrLoadSortedService(AuthHeaderProvider.class);
+
+    if (isProxyEnable(environment)) {
+      HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
+          setDefaultRequestConfig(HttpTransportFactory.defaultRequestConfig().build());
+      HttpHost proxy = new HttpHost(getProxyHost(environment),
+          getProxyPort(environment), "http");  // now only support http proxy
+      httpClientBuilder.setProxy(proxy);
+      CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+      credentialsProvider.setCredentials(new AuthScope(proxy),
+          new UsernamePasswordCredentials(getProxyUsername(environment),
+              getProxyPasswd(environment)));
+      httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
+      return HttpTransportFactory
+          .createHttpTransport(sslProperties,
+              getRequestAuthHeaderProvider(authHeaderProviders), httpClientBuilder);
+    }
+
+    return HttpTransportFactory
+        .createHttpTransport(sslProperties,
+            getRequestAuthHeaderProvider(authHeaderProviders), HttpTransportFactory.defaultRequestConfig().build());
+  }
+
+  public static Boolean isProxyEnable(Environment environment) {
+    return environment.getProperty(VertxConst.PROXY_ENABLE, boolean.class, false);
+  }
+
+  public static String getProxyHost(Environment environment) {
+    return environment.getProperty(VertxConst.PROXY_HOST, "127.0.0.1");
+  }
+
+  public static int getProxyPort(Environment environment) {
+    return environment.getProperty(VertxConst.PROXY_PORT, int.class, 8080);
+  }
+
+  public static String getProxyUsername(Environment environment) {
+    return environment.getProperty(VertxConst.PROXY_USERNAME);
+  }
+
+  public static String getProxyPasswd(Environment environment) {
+    return environment.getProperty(VertxConst.PROXY_PASSWD);
   }
 
   private static SSLProperties buildSslProperties(ServiceCenterAddressManager addressManager,

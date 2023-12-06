@@ -37,7 +37,8 @@ public class TestAKSKAuthHeaderProvider {
     Mockito.when(environment.getProperty("servicecomb.credentials.akskCustomCipher",
         "default")).thenReturn("default");
 
-    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(environment);
+    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider();
+    provider.startup(environment);
     Assertions.assertEquals("hello", provider.authHeaders().get("X-Service-Project"));
   }
 
@@ -54,7 +55,8 @@ public class TestAKSKAuthHeaderProvider {
         "")).thenReturn("secret key");
     Mockito.when(environment.getProperty("servicecomb.credentials.akskCustomCipher",
         "default")).thenReturn("default");
-    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider(environment);
+    AKSKAuthHeaderProvider provider = new AKSKAuthHeaderProvider();
+    provider.startup(environment);
     Assertions.assertEquals("%E6%B5%8B%E8%AF%95", provider.authHeaders().get("X-Service-Project"));
   }
 }

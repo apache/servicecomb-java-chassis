@@ -39,8 +39,8 @@ public class SCConfiguration {
   @Bean
   public ServiceCenterClient serviceCenterClient(
       @Qualifier("scConfigurationProperties") SCConfigurationProperties scConfigurationProperties,
-      List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
-    return SCClientUtils.serviceCenterClient(scConfigurationProperties, authHeaderProviders, environment);
+      Environment environment) {
+    return SCClientUtils.serviceCenterClient(scConfigurationProperties, environment);
   }
 
   @Bean
