@@ -22,15 +22,14 @@ import java.util.List;
 
 import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class RouterDistributorFileWeightLessTest {
   private static final String TARGET_SERVICE_NAME = "test_server2";

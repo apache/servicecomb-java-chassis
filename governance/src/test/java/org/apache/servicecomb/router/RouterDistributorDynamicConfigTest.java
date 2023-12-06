@@ -30,19 +30,18 @@ import org.apache.servicecomb.governance.marker.GovernanceRequest;
 import org.apache.servicecomb.governance.marker.GovernanceRequestExtractor;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.ConfigDataApplicationContextInitializer;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+@SpringBootTest
 @ContextConfiguration(locations = "classpath:META-INF/spring/*.xml", initializers = ConfigDataApplicationContextInitializer.class)
 public class RouterDistributorDynamicConfigTest {
   private static final String TARGET_SERVICE_NAME = "test_server";
@@ -108,7 +107,7 @@ public class RouterDistributorDynamicConfigTest {
 
   private final Map<String, Object> dynamicValues = new HashMap<>();
 
-  @Before
+  @BeforeEach
   public void setUp() {
     ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
 
