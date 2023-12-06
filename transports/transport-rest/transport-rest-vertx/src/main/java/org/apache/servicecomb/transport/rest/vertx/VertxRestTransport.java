@@ -111,7 +111,7 @@ public class VertxRestTransport extends AbstractTransport {
     if ((boolean)result.get("code")) {
       return true;
     } else {
-      throw new Exception((String) result.get("message"));
+      throw new IllegalStateException((String) result.get("message"));
     }
   }
 
