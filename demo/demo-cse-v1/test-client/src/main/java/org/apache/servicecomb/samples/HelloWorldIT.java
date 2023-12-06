@@ -45,7 +45,7 @@ public class HelloWorldIT implements CategorizedTestCase {
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       String result = template
           .exchange(Config.GATEWAY_URL + "/sayHello?name=World", HttpMethod.GET, entity, String.class).getBody();
-      TestMgr.check("\"Hello World\"", result);
+      TestMgr.check("Hello World", result);
     }
   }
 
@@ -59,9 +59,9 @@ public class HelloWorldIT implements CategorizedTestCase {
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       String result = template
           .exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET, entity, String.class).getBody();
-      if (result.equals("\"Hello Canary World\"")) {
+      if (result.equals("Hello Canary World")) {
         oldCount++;
-      } else if (result.equals("\"Hello Canary in canary World\"")) {
+      } else if (result.equals("Hello Canary in canary World")) {
         newCount++;
       } else {
         TestMgr.fail("not expected result testHelloWorldCanary");

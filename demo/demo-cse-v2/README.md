@@ -52,14 +52,6 @@ cse:
       priority: v3
 ```
 
-  * 自定义配置：priority3.yaml，labels: app=demo-java-chassis-cse-v2,environment=,service=consumer,extra=。类型为 yaml。 
-```yaml
-cse:
-  v2:
-    test:
-      priority: v4
-```
-
 * 应用级配置：consumerApp.yaml，应用选择demo-java-chassis-cse-v2。类型为 yaml。
 ```yaml
 cse:

@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -33,12 +32,13 @@ import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
 import org.apache.servicecomb.foundation.auth.ShaAKSKCipher;
+import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 
-public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
+public class AKSKAuthHeaderProvider implements AuthHeaderProvider, BootStrapService {
   private static final Logger LOGGER = LoggerFactory.getLogger(AKSKAuthHeaderProvider.class);
 
   private static final String CONFIG_AKSK_ENABLED = "servicecomb.credentials.akskEnabled";
@@ -61,21 +61,20 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
 
   private static final String X_SERVICE_PROJECT = "X-Service-Project";
 
+  private static Environment environment;
+
   private final Map<String, String> headers = new HashMap<>();
 
-  private boolean enabled;
+  private boolean enabled = true;
 
   private boolean loaded = false;
 
-  private final Environment environment;
-
-  public AKSKAuthHeaderProvider(Environment environment) {
-    this.environment = environment;
-    this.enabled = environment.getProperty(CONFIG_AKSK_ENABLED, boolean.class, true);
+  public AKSKAuthHeaderProvider() {
   }
 
   public Map<String, String> authHeaders() {
-    if (!enabled) {
+    if (enabled && !environment.getProperty(CONFIG_AKSK_ENABLED, boolean.class, true)) {
+      enabled = false;
       return headers;
     }
 
@@ -127,11 +126,7 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
     if (StringUtils.isEmpty(project)) {
       return project;
     }
-    try {
-      return URLEncoder.encode(project, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      return project;
-    }
+    return URLEncoder.encode(project, StandardCharsets.UTF_8);
   }
 
   private Cipher findCipher() {
@@ -154,5 +149,10 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
     } catch (Exception e) {
       throw new IllegalArgumentException("Can not encode ak sk. Please check the value is correct.", e);
     }
+  }
+
+  @Override
+  public void startup(Environment environment) {
+    AKSKAuthHeaderProvider.environment = environment;
   }
 }

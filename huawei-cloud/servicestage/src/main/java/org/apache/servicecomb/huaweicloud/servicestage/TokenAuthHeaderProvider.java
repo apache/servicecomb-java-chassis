@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.samples;
+package org.apache.servicecomb.huaweicloud.servicestage;
 
-import org.apache.servicecomb.demo.CategorizedTestCase;
-import org.apache.servicecomb.demo.TestMgr;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestOperations;
-import org.springframework.web.client.RestTemplate;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
-@Component
-public class HelloWorldIT implements CategorizedTestCase {
-  RestOperations template = new RestTemplate();
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 
+public class TokenAuthHeaderProvider implements AuthHeaderProvider {
   @Override
-  public void testRestTransport() throws Exception {
-    testHelloWorld();
-  }
+  public Map<String, String> authHeaders() {
+    String token = TokenCacheManager.getInstance().getToken(RBACBootStrapService.DEFAULT_REGISTRY_NAME);
+    if (StringUtils.isEmpty(token)) {
+      return new HashMap<>();
+    }
 
-  private void testHelloWorld() {
-    String result = template
-        .getForObject(Config.GATEWAY_URL + "/sayHello?name=World", String.class);
-    TestMgr.check("Hello World", result);
+    HashMap<String, String> header = new HashMap<>();
+    header.put("Authorization", "Bearer " + token);
+    return Collections.unmodifiableMap(header);
   }
 }

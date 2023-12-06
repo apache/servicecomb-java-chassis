@@ -18,15 +18,9 @@ package org.apache.servicecomb.huaweicloud.servicestage;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 @Configuration
 public class ServiceStageConfiguration {
-  @Bean
-  public AKSKAuthHeaderProvider akskAuthHeaderProvider(Environment environment) {
-    return new AKSKAuthHeaderProvider(environment);
-  }
-
   @Bean
   public CasEnvVariablesAdapter casEnvVariablesAdapter() {
     return new CasEnvVariablesAdapter();

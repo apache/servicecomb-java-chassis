@@ -50,9 +50,16 @@ servicecomb:
               microserviceName: consumer
               versionRule: 0.0.0+
 
-  router:
-    type: router
-    header: canary
+  matchGroup:
+    canary-header: |
+      matches:
+        - headers:
+            canary: 
+              prefix: ""
+  mapper:
+    canary-header: |
+      target:
+        canary: $H{canary}
 
   # Configure AK/SK credentials if needed. Default not enabled.
   credentials:

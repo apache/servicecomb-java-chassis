@@ -38,11 +38,11 @@ public class ConsumerConfigIT implements CategorizedTestCase {
   @SuppressWarnings("unchecked")
   private void testConfig() {
     String result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v1.test.foo", String.class);
-    TestMgr.check("\"foo\"", result);
+    TestMgr.check("foo", result);
     result = template.getForObject(Config.GATEWAY_URL + "/config?key=cse.v1.test.bar", String.class);
-    TestMgr.check("\"bar\"", result);
+    TestMgr.check("bar", result);
     result = template.getForObject(Config.GATEWAY_URL + "/dynamicString?key=cse.v1.test.dynamicString", String.class);
-    TestMgr.check("\"a,b\"", result);
+    TestMgr.check("a,b", result);
 
     List<String> listResult = template
         .getForObject(Config.GATEWAY_URL + "/dynamicArray", List.class);
@@ -53,8 +53,8 @@ public class ConsumerConfigIT implements CategorizedTestCase {
 
   private void testFooBar() {
     String result = template.getForObject(Config.GATEWAY_URL + "/foo", String.class);
-    TestMgr.check("\"foo\"", result);
+    TestMgr.check("foo", result);
     result = template.getForObject(Config.GATEWAY_URL + "/bar", String.class);
-    TestMgr.check("\"bar\"", result);
+    TestMgr.check("bar", result);
   }
 }
