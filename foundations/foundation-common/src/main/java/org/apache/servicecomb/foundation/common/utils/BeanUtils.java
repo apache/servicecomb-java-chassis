@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.common.utils;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,8 @@ public final class BeanUtils {
   private static final String SCB_PACKAGE = "org.apache.servicecomb";
 
   private static ApplicationContext context;
+
+  private static Map<Class, Object> beanClass = new HashMap<>();
 
   private BeanUtils() {
   }
@@ -147,7 +150,10 @@ public final class BeanUtils {
       // for some test case
       return null;
     }
-    return context.getBean(type);
+    if (beanClass.get(type) == null) {
+      beanClass.put(type, context.getBean(type));
+    }
+    return (T) beanClass.get(type);
   }
 
   /**
