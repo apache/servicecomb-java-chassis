@@ -129,8 +129,6 @@ public class SCBEngine {
 
   private final VendorExtensions vendorExtensions = new VendorExtensions();
 
-  private Thread shutdownHook;
-
   protected SCBEngine() {
     eventBus = EventManager.getEventBus();
     eventBus.register(this);
@@ -389,9 +387,6 @@ public class SCBEngine {
 
     RegistrationManager.INSTANCE.run();
     DiscoveryManager.INSTANCE.run();
-
-    shutdownHook = new Thread(this::destroyForShutdownHook);
-    Runtime.getRuntime().addShutdownHook(shutdownHook);
   }
 
   private void createProducerMicroserviceMeta() {
@@ -401,11 +396,6 @@ public class SCBEngine {
     producerMicroserviceMeta.setHandlerChain(producerHandlerManager.getOrCreate(microserviceName));
     producerMicroserviceMeta.setFilterChain(filterChainsManager.findProducerChain(microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
-  }
-
-  public void destroyForShutdownHook() {
-    shutdownHook = null;
-    destroy();
   }
 
   /**
@@ -422,10 +412,6 @@ public class SCBEngine {
   }
 
   private void doDestroy() {
-    if (shutdownHook != null) {
-      Runtime.getRuntime().removeShutdownHook(shutdownHook);
-    }
-
     //Step 0: turn down the status of this instance in service center,
     // so that the consumers can remove this instance record in advance
     turnDownInstanceStatus();
