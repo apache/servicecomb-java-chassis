@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.Response.Status;
@@ -63,7 +64,10 @@ public class HighwayClient {
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
         HighwayConfig.getClientThreadCount());
-    VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
+    Map<String, Object> result = VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
+    if (!(boolean) result.get("code")) {
+      throw new IllegalStateException((String) result.get("message"));
+    }
   }
 
   @VisibleForTesting

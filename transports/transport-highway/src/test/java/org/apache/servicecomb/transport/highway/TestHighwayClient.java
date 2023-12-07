@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
@@ -97,10 +100,12 @@ public class TestHighwayClient {
   public void testHighwayClientSSL(@Mocked Vertx vertx) throws Exception {
     new MockUp<VertxUtils>() {
       @Mock
-      <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
+      <VERTICLE extends AbstractVerticle> Map<String, Object> blockDeploy(Vertx vertx,
           Class<VERTICLE> cls,
           DeploymentOptions options) {
-        return true;
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", true);
+        return result;
       }
     };
 
@@ -114,10 +119,12 @@ public class TestHighwayClient {
       Object decodedResponse) throws Exception {
     new MockUp<VertxUtils>() {
       @Mock
-      <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
+      <VERTICLE extends AbstractVerticle> Map<String, Object> blockDeploy(Vertx vertx,
           Class<VERTICLE> cls,
           DeploymentOptions options) {
-        return true;
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", true);
+        return result;
       }
     };
 
