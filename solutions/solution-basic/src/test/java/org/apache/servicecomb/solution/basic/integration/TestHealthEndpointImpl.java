@@ -22,9 +22,9 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckResult;
 import org.apache.servicecomb.foundation.metrics.health.HealthChecker;
 import org.apache.servicecomb.foundation.metrics.health.HealthCheckerManager;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class TestHealthEndpointImpl {
   private final HealthChecker good = new HealthChecker() {
@@ -52,7 +52,7 @@ public class TestHealthEndpointImpl {
   };
 
 
-  @Before
+  @BeforeEach
   public void reset() {
     HealthCheckerManager.getInstance().unregister(good.getName());
     HealthCheckerManager.getInstance().unregister(bad.getName());
