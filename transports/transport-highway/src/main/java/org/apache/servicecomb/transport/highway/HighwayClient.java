@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import java.util.Map;
+
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
@@ -50,7 +52,10 @@ public class HighwayClient {
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr,
         HighwayConfig.getClientThreadCount());
-    VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
+    Map<String, Object> result = VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
+    if (!(boolean) result.get("code")) {
+      throw new IllegalStateException((String) result.get("message"));
+    }
   }
 
   @VisibleForTesting

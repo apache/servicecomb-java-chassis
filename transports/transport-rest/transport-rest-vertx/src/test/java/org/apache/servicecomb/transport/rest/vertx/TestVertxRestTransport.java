@@ -21,6 +21,8 @@ import static org.apache.servicecomb.core.transport.AbstractTransport.PUBLISH_AD
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -95,9 +97,11 @@ public class TestVertxRestTransport {
         }
 
         @Mock
-        public <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx, Class<VERTICLE> cls,
+        public <VERTICLE extends AbstractVerticle> Map<String, Object> blockDeploy(Vertx vertx, Class<VERTICLE> cls,
             DeploymentOptions options) throws InterruptedException {
-          return true;
+          Map<String, Object> result = new HashMap<>();
+          result.put("code", true);
+          return result;
         }
       };
       instance.init();

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.highway;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.transport.AbstractTransport;
@@ -45,7 +46,12 @@ public class HighwayTransport extends AbstractTransport {
     json.put(ENDPOINT_KEY, getEndpoint());
     deployOptions.setConfig(json);
     deployOptions.setWorkerPoolName("pool-worker-transport-highway");
-    return VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
+    Map<String, Object> result = VertxUtils.blockDeploy(transportVertx, HighwayServerVerticle.class, deployOptions);
+    if ((boolean) result.get("code")) {
+      return true;
+    } else {
+      throw new IllegalStateException((String) result.get("message"));
+    }
   }
 
   public HighwayClient getHighwayClient() {
