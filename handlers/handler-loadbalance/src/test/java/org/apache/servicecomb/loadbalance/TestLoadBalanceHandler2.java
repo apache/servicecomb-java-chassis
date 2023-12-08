@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +42,7 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
+import org.apache.servicecomb.loadbalance.filterext.ZoneAwareDiscoveryFilter;
 import org.apache.servicecomb.localregistry.LocalRegistryStore;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.DataCenterInfo;
@@ -62,8 +65,6 @@ import com.google.common.eventbus.Subscribe;
 import mockit.Mock;
 import mockit.MockUp;
 
-import static org.mockito.Mockito.when;
-
 public class TestLoadBalanceHandler2 {
   private Holder<Long> mockTimeMillis;
 
@@ -85,7 +86,7 @@ public class TestLoadBalanceHandler2 {
 
   @Before
   public void setUp() {
-
+    ArchaiusUtils.setProperty(ZoneAwareDiscoveryFilter.CONFIG_RATIO, 0);
     // avoid mock
     ServiceCombLoadBalancerStats.INSTANCE.init();
     TestServiceCombServerStats.releaseTryingChance();
@@ -472,7 +473,8 @@ public class TestLoadBalanceHandler2 {
 
   @Test
   public void testZoneAwareAndIsolationFilterUsingMockedInvocationWorks() throws Exception {
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+", (inv, aysnc) -> aysnc.success("OK"));
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+",
+        (inv, aysnc) -> aysnc.success("OK"));
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
@@ -602,7 +604,8 @@ public class TestLoadBalanceHandler2 {
   public void testStatusFilterUsingMockedInvocationWorks() throws Exception {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.status.enabled", "false");
 
-    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+", (inv, aysnc) -> aysnc.success("OK"));
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+",
+        (inv, aysnc) -> aysnc.success("OK"));
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
@@ -790,7 +793,8 @@ public class TestLoadBalanceHandler2 {
     } catch (Exception e) {
 
     }
-    Assertions.assertEquals("rest://127.0.0.1:8080?sslEnabled=true&protocol=http2", invocation.getEndpoint().getEndpoint());
+    Assertions.assertEquals("rest://127.0.0.1:8080?sslEnabled=true&protocol=http2",
+        invocation.getEndpoint().getEndpoint());
 
     // reset
     invocation.setEndpoint(null);

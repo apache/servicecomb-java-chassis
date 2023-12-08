@@ -29,6 +29,7 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
+  public static final String CONFIG_RATIO = "servicecomb.loadbalance.filter.zoneaware.ratio";
 
   @Override
   public int getOrder() {
@@ -40,6 +41,11 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty(ZONE_AWARE_FILTER_ENABLED, true)
         .get();
+  }
+
+  private int getRatio() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty(CONFIG_RATIO, 50).get();
   }
 
   @Override
@@ -59,12 +65,28 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
         instancesNoMatch.add(server);
       }
     });
-    if (!instancesRegionAndAZMatch.isEmpty()) {
+
+    int ratio = getRatio();
+
+    if (hasEnoughMembers(servers.size(), instancesRegionAndAZMatch.size(), ratio)) {
       return instancesRegionAndAZMatch;
-    } else if (!instancesAZMatch.isEmpty()) {
+    } else {
+      instancesAZMatch.addAll(instancesRegionAndAZMatch);
+    }
+
+    if (hasEnoughMembers(servers.size(), instancesAZMatch.size(), ratio)) {
       return instancesAZMatch;
+    } else {
+      instancesNoMatch.addAll(instancesAZMatch);
     }
     return instancesNoMatch;
+  }
+
+  private boolean hasEnoughMembers(int totalSize, int groupSize, int ratio) {
+    if (totalSize == 0 || groupSize == 0) {
+      return false;
+    }
+    return Math.floorDiv(groupSize * 100, totalSize) >= ratio;
   }
 
   private boolean regionAndAZMatch(MicroserviceInstance myself, MicroserviceInstance target) {
