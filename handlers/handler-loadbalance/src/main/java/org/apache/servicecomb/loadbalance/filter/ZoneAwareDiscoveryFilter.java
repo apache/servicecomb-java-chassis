@@ -34,6 +34,10 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   public static final String GROUP_SIZE = "zone_aware_group_size";
 
+  public static final String CONFIG_ENABLED = "servicecomb.loadbalance.filter.zoneaware.enabled";
+
+  public static final String CONFIG_RATIO = "servicecomb.loadbalance.filter.zoneaware.ratio";
+
   private DataCenterProperties dataCenterProperties;
 
   @Autowired
@@ -49,8 +53,13 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+    return environment.getProperty(CONFIG_ENABLED,
         Boolean.class, true);
+  }
+
+  private int getRatio() {
+    return environment.getProperty(CONFIG_RATIO,
+        int.class, 50);
   }
 
   @Override
@@ -87,22 +96,35 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
       }
     }
 
-    if (!instancesRegionAndAZMatch.isEmpty()) {
+    int ratio = getRatio();
+
+    if (hasEnoughMembers(instances.size(), instancesRegionAndAZMatch.size(), ratio)) {
       parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
           .subName(parent, GROUP_PREFIX + groups).data(instancesRegionAndAZMatch));
       groups++;
+    } else {
+      instancesAZMatch.addAll(instancesRegionAndAZMatch);
     }
 
-    if (!instancesAZMatch.isEmpty()) {
+    if (hasEnoughMembers(instances.size(), instancesAZMatch.size(), ratio)) {
       parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
           .subName(parent, GROUP_PREFIX + groups).data(instancesAZMatch));
       groups++;
+    } else {
+      instancesNoMatch.addAll(instancesAZMatch);
     }
 
     parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
         .subName(parent, GROUP_PREFIX + groups).data(instancesNoMatch));
 
     parent.attribute(GROUP_SIZE, groups);
+  }
+
+  private boolean hasEnoughMembers(int totalSize, int groupSize, int ratio) {
+    if (totalSize == 0 || groupSize == 0) {
+      return false;
+    }
+    return Math.floorDiv(groupSize * 100, totalSize) >= ratio;
   }
 
   private boolean regionAndAZMatch(StatefulDiscoveryInstance target) {
