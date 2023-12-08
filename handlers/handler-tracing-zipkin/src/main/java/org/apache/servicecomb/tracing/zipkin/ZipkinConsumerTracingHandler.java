@@ -24,10 +24,7 @@ import brave.http.HttpTracing;
 public class ZipkinConsumerTracingHandler extends ZipkinTracingHandler {
 
   public ZipkinConsumerTracingHandler() {
-    this(new ZipkinConsumerDelegate(BeanUtils.getContext().getBean(HttpTracing.class)));
+    super(BeanUtils.getContext().getBean(HttpTracing.class));
   }
 
-  private ZipkinConsumerTracingHandler(ZipkinTracingDelegate tracingHandler) {
-    super(tracingHandler);
-  }
 }
