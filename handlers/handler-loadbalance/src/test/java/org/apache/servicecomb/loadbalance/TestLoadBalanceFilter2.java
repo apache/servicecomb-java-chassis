@@ -57,6 +57,10 @@ public class TestLoadBalanceFilter2 {
   public void setUp() {
     Mockito.when(environment.getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",
         boolean.class, false)).thenReturn(false);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
+        Boolean.class, true)).thenReturn(true);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
+        int.class, 50)).thenReturn(0);
   }
 
   @Test
@@ -137,8 +141,6 @@ public class TestLoadBalanceFilter2 {
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
-        Boolean.class, true)).thenReturn(true);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
         serverDiscoveryFilter));
     handler = new LoadBalanceFilter(new ExtensionsManager(new ArrayList<>()),
@@ -222,8 +224,6 @@ public class TestLoadBalanceFilter2 {
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
     zoneAwareDiscoveryFilter.setEnvironment(environment);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
-        Boolean.class, true)).thenReturn(true);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
@@ -318,8 +318,6 @@ public class TestLoadBalanceFilter2 {
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
     zoneAwareDiscoveryFilter.setEnvironment(environment);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
-        Boolean.class, true)).thenReturn(true);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
@@ -416,11 +414,8 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    Environment environment = Mockito.mock(Environment.class);
     zoneAwareDiscoveryFilter.setEnvironment(environment);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
-        Boolean.class, true)).thenReturn(true);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
@@ -516,11 +511,8 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    Environment environment = Mockito.mock(Environment.class);
     zoneAwareDiscoveryFilter.setEnvironment(environment);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
-        Boolean.class, true)).thenReturn(true);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
     discoveryTree.setDiscoveryFilters(Arrays.asList(zoneAwareDiscoveryFilter,
