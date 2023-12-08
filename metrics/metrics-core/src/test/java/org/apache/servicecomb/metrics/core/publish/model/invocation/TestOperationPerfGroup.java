@@ -18,10 +18,10 @@ package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import jakarta.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Test;
 
 public class TestOperationPerfGroup {
   String op = "op";

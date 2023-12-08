@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
+import com.google.common.eventbus.EventBus;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Endpoint;
@@ -28,34 +29,36 @@ import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import mockit.Expectations;
-import mockit.Mocked;
-
+@ExtendWith(MockitoExtension.class)
 public class TestSlowInvocationLogger {
-  @Mocked
+  @Mock
   SCBEngine scbEngine;
 
-  @Mocked
+  @Mock
   Invocation invocation;
 
-  @Mocked
+  @Mock
   OperationMeta operationMeta;
 
-  @Mocked
+  @Mock
   RestOperationMeta restOperationMeta;
 
-  @Mocked
+  @Mock
   OperationConfig operationConfig;
 
-  @Mocked
+  @Mock
   Response response;
 
-  @Mocked
+  @Mock
   InvocationStageTrace stageTrace;
 
   InvocationFinishEvent event;
@@ -64,14 +67,20 @@ public class TestSlowInvocationLogger {
 
   LogCollector logCollector;
 
-  @Before
+  @BeforeEach
   public void setup() {
+    EventBus eventBus = Mockito.spy(EventBus.class);
+    Mockito.doNothing().when(eventBus).register(Mockito.any());
+    Mockito.when(scbEngine.getEventBus()).thenReturn(eventBus);
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(operationMeta.getConfig()).thenReturn(operationConfig);
+
     logger = new SlowInvocationLogger(scbEngine);
     event = new InvocationFinishEvent(invocation, response);
     logCollector = new LogCollector();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     logCollector.teardown();
   }
@@ -85,41 +94,27 @@ public class TestSlowInvocationLogger {
 
   @Test
   public void enableButNotSlow() {
-    new Expectations() {
-      {
-        operationConfig.isSlowInvocationEnabled();
-        result = true;
-        operationConfig.getNanoSlowInvocation();
-        result = 2;
-        stageTrace.calcTotal();
-        result = 1;
-      }
-    };
+
+    Mockito.when(operationConfig.isSlowInvocationEnabled()).thenReturn(true);
+    Mockito.when(operationConfig.getNanoSlowInvocation()).thenReturn(2L);
+    Mockito.when(stageTrace.calcTotal()).thenReturn(1L);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
     logger.onInvocationFinish(event);
 
     Assertions.assertTrue(logCollector.getEvents().isEmpty());
   }
 
   @Test
-  public void consumerSlow(@Mocked Endpoint endpoint) {
-    new Expectations() {
-      {
-        invocation.getEndpoint();
-        result = endpoint;
-        endpoint.getEndpoint();
-        result = "rest://1.1.1.1:1234";
-        invocation.isConsumer();
-        result = true;
-        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        result = restOperationMeta;
-        operationConfig.isSlowInvocationEnabled();
-        result = true;
-        operationConfig.getNanoSlowInvocation();
-        result = 1;
-        stageTrace.calcTotal();
-        result = 1;
-      }
-    };
+  public void consumerSlow() {
+    Endpoint endpoint = Mockito.mock(Endpoint.class);
+    Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
+    Mockito.when(endpoint.getEndpoint()).thenReturn("rest://1.1.1.1:1234");
+    Mockito.when(invocation.isConsumer()).thenReturn(true);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
+    Mockito.when(operationConfig.isSlowInvocationEnabled()).thenReturn(true);
+    Mockito.when(operationConfig.getNanoSlowInvocation()).thenReturn(1L);
+    Mockito.when(stageTrace.calcTotal()).thenReturn(1L);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
     logger.onInvocationFinish(event);
 
     Assertions.assertEquals("""
@@ -136,31 +131,21 @@ public class TestSlowInvocationLogger {
                 wait            :      0.0ms
                 consumer-decode :      0.0ms
             """,
-        logCollector.getEvent(0).getMessage().getFormattedMessage());
+            logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 
   @Test
-  public void edgeSlow(@Mocked Endpoint endpoint) {
-    new Expectations() {
-      {
-        invocation.getEndpoint();
-        result = endpoint;
-        endpoint.getEndpoint();
-        result = "rest://1.1.1.1:1234";
-        invocation.isConsumer();
-        result = true;
-        invocation.isEdge();
-        result = true;
-        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        result = restOperationMeta;
-        operationConfig.isSlowInvocationEnabled();
-        result = true;
-        operationConfig.getNanoSlowInvocation();
-        result = 1;
-        stageTrace.calcTotal();
-        result = 1;
-      }
-    };
+  public void edgeSlow() {
+    Endpoint endpoint = Mockito.mock(Endpoint.class);
+    Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
+    Mockito.when(endpoint.getEndpoint()).thenReturn("rest://1.1.1.1:1234");
+    Mockito.when(invocation.isConsumer()).thenReturn(true);
+    Mockito.when(invocation.isEdge()).thenReturn(true);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
+    Mockito.when(operationConfig.isSlowInvocationEnabled()).thenReturn(true);
+    Mockito.when(operationConfig.getNanoSlowInvocation()).thenReturn(1L);
+    Mockito.when(stageTrace.calcTotal()).thenReturn(1L);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
     logger.onInvocationFinish(event);
 
     Assertions.assertEquals("""
@@ -184,27 +169,20 @@ public class TestSlowInvocationLogger {
   }
 
   @Test
-  public void producerSlow(@Mocked HttpServletRequestEx requestEx) {
-    new Expectations() {
-      {
-        invocation.getRequestEx();
-        result = requestEx;
-        requestEx.getRemoteAddr();
-        result = "1.1.1.1";
-        requestEx.getRemotePort();
-        result = 1234;
-        invocation.isConsumer();
-        result = false;
-        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-        result = restOperationMeta;
-        operationConfig.isSlowInvocationEnabled();
-        result = true;
-        operationConfig.getNanoSlowInvocation();
-        result = 1;
-        stageTrace.calcTotal();
-        result = 1;
-      }
-    };
+  public void producerSlow() {
+
+    HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
+
+    Mockito.when(invocation.getRequestEx()).thenReturn(requestEx);
+    Mockito.when(requestEx.getRemoteAddr()).thenReturn("1.1.1.1");
+    Mockito.when(requestEx.getRemotePort()).thenReturn(1234);
+    Mockito.when(invocation.isConsumer()).thenReturn(false);
+    Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
+    Mockito.when(operationConfig.isSlowInvocationEnabled()).thenReturn(true);
+    Mockito.when(operationConfig.getNanoSlowInvocation()).thenReturn(1L);
+    Mockito.when(stageTrace.calcTotal()).thenReturn(1L);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
+
     logger.onInvocationFinish(event);
 
     Assertions.assertEquals("""

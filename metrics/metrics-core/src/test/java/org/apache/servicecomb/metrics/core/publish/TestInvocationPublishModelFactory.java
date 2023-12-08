@@ -30,8 +30,8 @@ import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
