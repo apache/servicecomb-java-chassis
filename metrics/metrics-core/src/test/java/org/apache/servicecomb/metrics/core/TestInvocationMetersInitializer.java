@@ -25,15 +25,20 @@ import java.util.List;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementGroupConfig;
 import org.apache.servicecomb.foundation.metrics.publish.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.apache.servicecomb.swagger.invocation.Response;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
@@ -41,9 +46,8 @@ import com.google.common.eventbus.EventBus;
 import io.micrometer.core.instrument.Measurement;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import mockit.Expectations;
-import mockit.Mocked;
 
+@ExtendWith(MockitoExtension.class)
 public class TestInvocationMetersInitializer {
   EventBus eventBus = new EventBus();
 
@@ -51,12 +55,12 @@ public class TestInvocationMetersInitializer {
 
   InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
 
-  @Mocked
+  @Mock
   Invocation invocation;
 
   Environment environment = Mockito.mock(Environment.class);
 
-  @Before
+  @BeforeEach
   public void setup() {
     Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
         .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
@@ -67,36 +71,25 @@ public class TestInvocationMetersInitializer {
   }
 
   @Test
-  public void consumerInvocation(@Mocked InvocationFinishEvent event) {
-    new Expectations() {
-      {
-        invocation.isConsumer();
-        result = true;
-        invocation.getInvocationType();
-        result = InvocationType.CONSUMER;
-        invocation.getRealTransportName();
-        result = CoreConst.RESTFUL;
-        invocation.getMicroserviceQualifiedName();
-        result = "m.s.o";
-        invocation.getInvocationStageTrace().calcTotal();
-        result = 9;
-        invocation.getInvocationStageTrace().calcPrepare();
-        result = 9;
-        invocation.getInvocationStageTrace().calcConnection();
-        result = 9;
-        invocation.getInvocationStageTrace().calcConsumerEncodeRequest();
-        result = 4;
-        invocation.getInvocationStageTrace().calcConsumerSendRequest();
-        result = 5;
-        invocation.getInvocationStageTrace().calcWait();
-        result = 9;
-        invocation.getInvocationStageTrace().calcConsumerDecodeResponse();
-        result = 9;
-
-        event.getInvocation();
-        result = invocation;
-      }
-    };
+  public void consumerInvocation() {
+    InvocationFinishEvent event = Mockito.mock(InvocationFinishEvent.class);
+    Mockito.when(invocation.isConsumer()).thenReturn(true);
+    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
+    Mockito.when(invocation.getRealTransportName()).thenReturn(CoreConst.RESTFUL);
+    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("m.s.o");
+    InvocationStageTrace invocationStageTrace = Mockito.mock(InvocationStageTrace.class);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
+    Mockito.when(invocationStageTrace.calcTotal()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcPrepare()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcConnection()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcConsumerEncodeRequest()).thenReturn(4L);
+    Mockito.when(invocationStageTrace.calcConsumerSendRequest()).thenReturn(5L);
+    Mockito.when(invocationStageTrace.calcWait()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcConsumerDecodeResponse()).thenReturn(9L);
+    Mockito.when(event.getInvocation()).thenReturn(invocation);
+    Response mockResponse = Mockito.spy(Response.class);
+    Mockito.when(event.getResponse()).thenReturn(mockResponse);
+    Mockito.doReturn(0).when(mockResponse).getStatusCode();
 
     eventBus.post(event);
     eventBus.post(event);
@@ -106,7 +99,7 @@ public class TestInvocationMetersInitializer {
         new MeasurementGroupConfig(MeterInvocationConst.INVOCATION_NAME, "stage"));
     List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "total")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -116,7 +109,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -126,7 +119,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-send")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -136,7 +129,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -146,8 +139,8 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-encode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -157,7 +150,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -167,7 +160,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "wait")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -177,7 +170,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-decode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -187,41 +180,28 @@ public class TestInvocationMetersInitializer {
   }
 
   @Test
-  public void edgeInvocation(@Mocked InvocationFinishEvent event) {
-    new Expectations() {
-      {
-        invocation.isConsumer();
-        result = true;
-        invocation.isEdge();
-        result = true;
-        invocation.getRealTransportName();
-        result = CoreConst.RESTFUL;
-        invocation.getMicroserviceQualifiedName();
-        result = "m.s.o";
-        invocation.getInvocationStageTrace().calcTotal();
-        result = 9;
-        invocation.getInvocationStageTrace().calcPrepare();
-        result = 9;
-        invocation.getInvocationStageTrace().calcProviderDecodeRequest();
-        result = 9;
-        invocation.getInvocationStageTrace().calcConnection();
-        result = 9;
-        invocation.getInvocationStageTrace().calcConsumerEncodeRequest();
-        result = 4;
-        invocation.getInvocationStageTrace().calcConsumerSendRequest();
-        result = 5;
-        invocation.getInvocationStageTrace().calcConsumerDecodeResponse();
-        result = 8;
-        invocation.getInvocationStageTrace().calcWait();
-        result = 9;
-        invocation.getInvocationStageTrace().calcProviderEncodeResponse();
-        result = 9;
-        invocation.getInvocationStageTrace().calcProviderSendResponse();
-        result = 9;
-        event.getInvocation();
-        result = invocation;
-      }
-    };
+  public void edgeInvocation() {
+    InvocationFinishEvent event = Mockito.mock(InvocationFinishEvent.class);
+    Mockito.when(invocation.isConsumer()).thenReturn(true);
+    Mockito.when(invocation.isEdge()).thenReturn(true);
+    Mockito.when(invocation.getRealTransportName()).thenReturn(CoreConst.RESTFUL);
+    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("m.s.o");
+    InvocationStageTrace invocationStageTrace = Mockito.mock(InvocationStageTrace.class);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
+    Mockito.when(invocationStageTrace.calcTotal()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcPrepare()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcProviderDecodeRequest()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcConnection()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcConsumerEncodeRequest()).thenReturn(4L);
+    Mockito.when(invocationStageTrace.calcConsumerSendRequest()).thenReturn(5L);
+    Mockito.when(invocationStageTrace.calcConsumerDecodeResponse()).thenReturn(8L);
+    Mockito.when(invocationStageTrace.calcWait()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcProviderEncodeResponse()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcProviderSendResponse()).thenReturn(9L);
+    Mockito.when(event.getInvocation()).thenReturn(invocation);
+    Response mockResponse = Mockito.spy(Response.class);
+    Mockito.when(event.getResponse()).thenReturn(mockResponse);
+    Mockito.doReturn(0).when(mockResponse).getStatusCode();
 
     eventBus.post(event);
     eventBus.post(event);
@@ -232,7 +212,7 @@ public class TestInvocationMetersInitializer {
 
     List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "total")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -242,7 +222,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -252,7 +232,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-send")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -262,7 +242,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "connection")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -272,7 +252,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-encode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -282,7 +262,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "wait")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -292,7 +272,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "consumer-decode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -302,7 +282,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-decode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -312,7 +292,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-encode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -322,7 +302,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-send")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -332,35 +312,25 @@ public class TestInvocationMetersInitializer {
   }
 
   @Test
-  public void producerInvocation(@Mocked InvocationFinishEvent event) {
-    new Expectations() {
-      {
-        invocation.isConsumer();
-        result = false;
-        invocation.getInvocationType();
-        result = InvocationType.PROVIDER;
-        invocation.getRealTransportName();
-        result = CoreConst.RESTFUL;
-        invocation.getMicroserviceQualifiedName();
-        result = "m.s.o";
-        invocation.getInvocationStageTrace().calcTotal();
-        result = 9;
-        invocation.getInvocationStageTrace().calcPrepare();
-        result = 9;
-        invocation.getInvocationStageTrace().calcProviderDecodeRequest();
-        result = 9;
-        invocation.getInvocationStageTrace().calcQueue();
-        result = 9;
-        invocation.getInvocationStageTrace().calcBusinessExecute();
-        result = 9;
-        invocation.getInvocationStageTrace().calcProviderEncodeResponse();
-        result = 9;
-        invocation.getInvocationStageTrace().calcProviderSendResponse();
-        result = 9;
-        event.getInvocation();
-        result = invocation;
-      }
-    };
+  public void producerInvocation() {
+    InvocationFinishEvent event = Mockito.mock(InvocationFinishEvent.class);
+    Mockito.when(invocation.isConsumer()).thenReturn(false);
+    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.PROVIDER);
+    Mockito.when(invocation.getRealTransportName()).thenReturn(CoreConst.RESTFUL);
+    Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("m.s.o");
+    InvocationStageTrace invocationStageTrace = Mockito.mock(InvocationStageTrace.class);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
+    Mockito.when(invocationStageTrace.calcTotal()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcPrepare()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcProviderDecodeRequest()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcQueue()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcBusinessExecute()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcProviderEncodeResponse()).thenReturn(9L);
+    Mockito.when(invocationStageTrace.calcProviderSendResponse()).thenReturn(9L);
+    Mockito.when(event.getInvocation()).thenReturn(invocation);
+    Response mockResponse = Mockito.spy(Response.class);
+    Mockito.when(event.getResponse()).thenReturn(mockResponse);
+    Mockito.doReturn(0).when(mockResponse).getStatusCode();
 
     eventBus.post(event);
     eventBus.post(event);
@@ -371,7 +341,7 @@ public class TestInvocationMetersInitializer {
 
     List<Measurement> measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "total")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -381,7 +351,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "prepare")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -391,7 +361,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "queue")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -401,7 +371,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "execute")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -411,7 +381,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-decode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -421,7 +391,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-encode")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,
@@ -431,7 +401,7 @@ public class TestInvocationMetersInitializer {
 
     measurements = tree.findChild(MeterInvocationConst.INVOCATION_NAME, "provider-send")
         .getMeasurements();
-    Assert.assertEquals(3, measurements.size());
+    Assertions.assertEquals(3, measurements.size());
     AssertUtil.assertMeasure(measurements, 0,
         "statistic='COUNT', value=2.0");
     AssertUtil.assertMeasure(measurements, 1,

@@ -24,35 +24,31 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.metrics.core.ThreadPoolMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
-import org.junit.FixMethodOrder;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.runners.MethodSorters;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@ExtendWith(MockitoExtension.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 public class TestThreadPoolPublishModelFactory {
   MeterRegistry registry = new SimpleMeterRegistry();
 
-  @Mocked
+  @Mock
   BlockingQueue<Runnable> queue;
 
   @Test
-  public void createDefaultPublishModel(@Injectable ThreadPoolExecutorEx threadPoolExecutor) throws Exception {
-    new Expectations() {
-      {
-        threadPoolExecutor.getQueue();
-        result = queue;
-        queue.size();
-        result = 10d;
-      }
-    };
+  public void createDefaultPublishModel() throws Exception {
+    ThreadPoolExecutorEx threadPoolExecutor = Mockito.mock(ThreadPoolExecutorEx.class);
+    Mockito.when(threadPoolExecutor.getQueue()).thenReturn(queue);
+    Mockito.doReturn(10).when(queue).size();
 
     MetricsBootstrapConfig metricsBootstrapConfig = Mockito.mock(MetricsBootstrapConfig.class);
     ThreadPoolMetersInitializer threadPoolMetersInitializer = new ThreadPoolMetersInitializer() {

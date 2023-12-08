@@ -17,8 +17,8 @@
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class TestOperationPerf {
   String op = "op";

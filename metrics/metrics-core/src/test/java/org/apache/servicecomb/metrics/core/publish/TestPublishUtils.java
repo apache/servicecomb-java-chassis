@@ -29,10 +29,10 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.Utils;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import jakarta.ws.rs.core.Response.Status;
+import org.junit.jupiter.api.Test;
 
 public class TestPublishUtils {
   String op = "op";

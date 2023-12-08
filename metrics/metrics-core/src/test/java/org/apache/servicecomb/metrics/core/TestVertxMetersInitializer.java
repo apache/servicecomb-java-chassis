@@ -31,10 +31,10 @@ import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
@@ -105,7 +105,7 @@ public class TestVertxMetersInitializer {
     }
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
         .thenReturn(-1);
@@ -115,7 +115,7 @@ public class TestVertxMetersInitializer {
     HttpClients.load();
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     HttpClients.destroy();
   }
