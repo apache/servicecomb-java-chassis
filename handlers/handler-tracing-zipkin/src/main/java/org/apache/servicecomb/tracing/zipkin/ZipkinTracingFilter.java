@@ -37,10 +37,6 @@ import brave.http.HttpTracing;
 public class ZipkinTracingFilter extends AbstractFilter implements ConsumerFilter, ProviderFilter {
   public static final String NAME = "zipkin";
 
-  private ZipkinConsumerDelegate consumer;
-
-  private ZipkinProviderDelegate producer;
-
   @Autowired
   private HttpTracing httpTracing;
 
