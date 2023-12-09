@@ -39,8 +39,6 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.tracing.zipkin.ZipkinTracingAdviser.ThrowableSupplier;
 import org.hamcrest.MatcherAssert;
-import org.junit.After;
-import org.junit.Test;
 
 import brave.Span;
 import brave.Tracer.SpanInScope;
@@ -48,7 +46,9 @@ import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import zipkin2.reporter.brave.ZipkinSpanHandler;
 
@@ -76,7 +76,7 @@ public class ZipkinTracingAdviserTest {
 
   private final ZipkinTracingAdviser tracingAdviser = new ZipkinTracingAdviser(tracing.tracer());
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     tracing.close();
   }
