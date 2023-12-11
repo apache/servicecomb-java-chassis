@@ -78,7 +78,7 @@ public final class InvokerUtils {
 
   private static volatile ScheduledExecutorService reactiveRetryPool;
 
-  private static Map<Class, Object> classTypeBean = new HashMap<>();
+  private static final Map<Class, Object> classTypeBean = new HashMap<>();
 
   private static ScheduledExecutorService getOrCreateRetryPool() {
     if (reactiveRetryPool == null) {
