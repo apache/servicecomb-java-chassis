@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
+import brave.http.HttpTracing;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -25,31 +26,30 @@ import org.slf4j.LoggerFactory;
 
 import brave.Span;
 import brave.Tracer.SpanInScope;
-import brave.Tracing;
+
+import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
 
 class ZipkinTracingHandler implements Handler {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ZipkinTracingHandler.class);
 
-  private final Tracing tracer;
+  private final HttpTracing httpTracing;
 
-  private final ZipkinTracingDelegate tracingDelegate;
-
-  ZipkinTracingHandler(ZipkinTracingDelegate tracingDelegate) {
-    this.tracer = tracingDelegate.tracer();
-    this.tracingDelegate = tracingDelegate;
+  ZipkinTracingHandler(HttpTracing httpTracing) {
+    this.httpTracing = httpTracing;
   }
 
   @SuppressWarnings({"try", "unused"})
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    ZipkinTracingDelegate tracingDelegate = collectTracing(invocation);
     Span span = tracingDelegate.createSpan(invocation);
-    try (SpanInScope scope = tracer.tracer().withSpanInScope(span)) {
+    try (SpanInScope scope = tracingDelegate.tracer().tracer().withSpanInScope(span)) {
       LOGGER.debug("{}: Generated tracing span for {}",
           tracingDelegate.name(),
           invocation.getOperationName());
 
-      invocation.next(onResponse(invocation, asyncResp, span));
+      invocation.next(onResponse(invocation, asyncResp, span, tracingDelegate));
     } catch (Exception e) {
       LOGGER.debug("{}: Failed invocation on {}",
           tracingDelegate.name(),
@@ -61,7 +61,7 @@ class ZipkinTracingHandler implements Handler {
     }
   }
 
-  private AsyncResponse onResponse(Invocation invocation, AsyncResponse asyncResp, Span span) {
+  private AsyncResponse onResponse(Invocation invocation, AsyncResponse asyncResp, Span span, ZipkinTracingDelegate tracingDelegate) {
     return response -> {
       Throwable error = response.isFailed() ? response.getResult() : null;
       tracingDelegate.onResponse(span, response, error);
@@ -73,5 +73,13 @@ class ZipkinTracingHandler implements Handler {
 
       asyncResp.handle(response);
     };
+  }
+
+  private ZipkinTracingDelegate collectTracing(Invocation invocation) {
+    if (PRODUCER.equals(invocation.getInvocationType())) {
+      return new ZipkinProviderDelegate(httpTracing);
+    }
+
+    return new ZipkinConsumerDelegate(httpTracing);
   }
 }

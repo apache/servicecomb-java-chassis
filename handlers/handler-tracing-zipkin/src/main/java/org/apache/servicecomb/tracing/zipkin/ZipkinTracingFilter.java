@@ -39,20 +39,13 @@ import brave.http.HttpTracing;
 public class ZipkinTracingFilter implements Filter {
   public static final String NAME = "zipkin";
 
-  private ZipkinConsumerDelegate consumer;
-
-  private ZipkinProviderDelegate producer;
+  @Autowired
+  private HttpTracing httpTracing;
 
   @Nonnull
   @Override
   public String getName() {
     return NAME;
-  }
-
-  @Autowired
-  public void setHttpTracing(HttpTracing httpTracing) {
-    this.consumer = new ZipkinConsumerDelegate(httpTracing);
-    this.producer = new ZipkinProviderDelegate(httpTracing);
   }
 
   @SuppressWarnings({"try", "unused"})
@@ -69,9 +62,9 @@ public class ZipkinTracingFilter implements Filter {
 
   private ZipkinTracingDelegate collectTracing(Invocation invocation) {
     if (PRODUCER.equals(invocation.getInvocationType())) {
-      return producer;
+      return new ZipkinProviderDelegate(httpTracing);
     }
 
-    return consumer;
+    return new ZipkinConsumerDelegate(httpTracing);
   }
 }

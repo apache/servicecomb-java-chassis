@@ -22,6 +22,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import brave.http.HttpTracing;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -43,8 +44,6 @@ public class ZipkinTracingHandlerTest {
 
   private final AsyncResponse asyncResponse = Mockito.mock(AsyncResponse.class);
 
-  private final ZipkinTracingDelegate delegate = Mockito.mock(ZipkinTracingDelegate.class);
-
   private final Tracing tracing = Tracing.newBuilder().build();
 
   private final Span span = Mockito.mock(Span.class);
@@ -55,11 +54,8 @@ public class ZipkinTracingHandlerTest {
 
   @BeforeEach
   public void setUp() throws Exception {
-    when(delegate.tracer()).thenReturn(tracing);
-    when(delegate.createSpan(invocation)).thenReturn(span);
-    when(delegate.name()).thenReturn("delegate");
-
-    tracingHandler = new ZipkinTracingHandler(delegate);
+    HttpTracing httpTracing = HttpTracing.create(tracing);
+    tracingHandler = new ZipkinTracingHandler(httpTracing);
   }
 
   @Test
@@ -73,7 +69,6 @@ public class ZipkinTracingHandlerTest {
     argumentCaptor.getValue().handle(response);
 
     verify(asyncResponse).handle(response);
-    verify(delegate).onResponse(span, response, null);
   }
 
   @Test
@@ -90,7 +85,6 @@ public class ZipkinTracingHandlerTest {
     argumentCaptor.getValue().handle(response);
 
     verify(asyncResponse).handle(response);
-    verify(delegate).onResponse(span, response, exception);
   }
 
   @Test
@@ -103,7 +97,5 @@ public class ZipkinTracingHandlerTest {
     } catch (Exception e) {
       Assertions.assertEquals(exception, e);
     }
-
-    verify(delegate).onResponse(span, null, exception);
   }
 }
