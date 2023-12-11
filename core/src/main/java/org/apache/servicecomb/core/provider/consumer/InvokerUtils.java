@@ -23,6 +23,7 @@ import static org.apache.servicecomb.swagger.invocation.exception.ExceptionFacto
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -76,6 +77,8 @@ public final class InvokerUtils {
   private static final Object LOCK = new Object();
 
   private static volatile ScheduledExecutorService reactiveRetryPool;
+
+  private static Map<Class, Object> classTypeBean = new HashMap<>();
 
   private static ScheduledExecutorService getOrCreateRetryPool() {
     if (reactiveRetryPool == null) {
@@ -248,7 +251,8 @@ public final class InvokerUtils {
   private static Response decorateSyncRetry(Invocation invocation, GovernanceRequestExtractor request) {
     try {
       // governance implementations.
-      RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
+      RetryHandler retryHandler = (RetryHandler) classTypeBean.computeIfAbsent(RetryHandler.class,
+          key -> BeanUtils.getBean(RetryHandler.class));
       Retry retry = retryHandler.getActuator(request);
       if (retry != null) {
         CheckedFunction0<Response> supplier = Retry
@@ -329,7 +333,8 @@ public final class InvokerUtils {
   private static void decorateReactiveRetry(Invocation invocation, DecorateCompletionStage<Response> dcs,
       GovernanceRequestExtractor request) {
     // governance implementations.
-    RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
+    RetryHandler retryHandler = (RetryHandler) classTypeBean.computeIfAbsent(RetryHandler.class,
+        key -> BeanUtils.getBean(RetryHandler.class));
     Retry retry = retryHandler.getActuator(request);
     if (retry != null) {
       dcs.withRetry(retry, getOrCreateRetryPool());
