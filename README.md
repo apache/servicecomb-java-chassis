@@ -1,13 +1,19 @@
 # Java Chassis [中文](README_ZH.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
+Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features. 
 
 # releases
 
-| Release Train | Latest Version | Compiled JDK Version | Tested JDK Version            |
-|---------------|----------------|----------------------|-------------------------------|
-| 2.x.x         | 2.8.3          | OpenJDK 8            | OpenJDK 8, 11, 17 | 
-| 1.x.x         | 1.3.10         | OpenJDK 8            | OpenJDK 8         |
+| Release Train | Latest Version | Compiled JDK Version | Tested JDK Version | Open API | Notes                    |
+|---------------|----------------|----------------------|--------------------|----------|--------------------------|
+| 3.x.x         | 3.0.0          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
+| 2.x.x         | 2.8.13         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
+| 1.x.x         | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
+
+>>>NOTICE: Open API 3.0.x is not compatible with 2.0.x and Java Chassis 2.x.x can not 
+> work together with 3.x.x. All related consumers, providers and edge service need use the 3.x.x version when upgrading.
+
+>>>NOTICE: Java Chassis 1.x.x reached its end of support now after it's first release from 2018. 
 
 # Why use Java Chassis
 
@@ -19,11 +25,11 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 - **Native support for OpenAPI**
 
   Java Chassis describes the APIs of the microservices via [Swagger](https://swagger.io) natively, to help
-  developers to design microservices that comply to [OpenAPI standard](https://swagger.io/specification/v2/).
+  developers to design microservices that comply to [OpenAPI standard](https://swagger.io/specification/v3/).
 
 - **Flexible develop style**
 
-  Currently Java Chassis allow developers to develop their microservice APIs in `SpringMVC`/`JAX-RS`/`transparent RPC` styles,
+  Java Chassis allows developers to develop their microservice APIs in `SpringMVC`/`JAX-RS`/`Transparent RPC` styles,
   and to send the request in `RPC`/`RestTemplate` styles. And there are three kind of build-in transport mode:
   `Rest over Vertx`/`Rest over Servlet`/`Highway`. All of these features can be combined and replaced easily,
   because they are decoupled and all based on the Swagger schema, which can provide high flexibility.
@@ -32,30 +38,42 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 
   Java Chassis provides a lot of features for microservice governance and monitor.
 
-# Quick Start
+# Quick Start (Spring MVC)
 
 Provider service:
 ```java
-import org.apache.servicecomb.*;
-@RpcSchema(schemaId = "helloworld")
-public class HelloWorldProvider implements HelloWorld {
-    public String sayHello(String name) {
-        return "Hello " + name;
-    }
+@RestSchema(schemaId = "ProviderController")
+@RequestMapping(path = "/")
+public class ProviderController {
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
+    return "Hello " + name;
+  }
 }
 ```
 
 Consumer service:
-```java
-import org.apache.servicecomb.*;
-@Component
-public class HelloWorldConsumer  {
-	@RpcReference(microserviceName = "pojo", schemaId = "helloworld")
-	private static HelloWorld helloWorld;
 
-	public static void main(String[] args) {
-		helloWorld.sayHello("Tank");
-	}
+Declare Provider service interface to match the Provider method signature. (Method name, return type, parameter name, parameter type)
+```java
+public interface ProviderService {
+  String sayHello(String name);
+}
+```
+
+Invoke Provider service with RPC
+```java
+@RestSchema(schemaId = "ConsumerController")
+@RequestMapping(path = "/")
+public class ConsumerController {
+  @RpcReference(schemaId = "ProviderController", microserviceName = "provider")
+  private ProviderService providerService;
+
+  // consumer service which delegate the implementation to provider service.
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
+    return providerService.sayHello(name);
+  }
 }
 ```
 
@@ -96,13 +114,3 @@ See [CONTRIBUTING](http://servicecomb.apache.org/developers/contributing) for de
 
 # License
 Licensed under an [Apache 2.0 license](LICENSE).
-
-# Export Notice
-
-This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. BEFORE using any encryption software, please check your country's laws, regulations and policies concerning the import, possession, or use, and re-export of encryption software, to see if this is permitted. See <http://www.wassenaar.org/> for more information.
-
-The Apache Software Foundation has classified this software as Export Commodity Control Number (ECCN) 5D002, which includes information security software using or performing cryptographic functions with asymmetric algorithms. The form and manner of this Apache Software Foundation distribution makes it eligible for export under the "publicly available" Section 742.15(b) exemption (see the BIS Export Administration Regulations, Section 742.15(b)) for both object code and source code.
-
-The following provides more details on the included cryptographic software:
-
-  * Vertx transport can be configured for secure communications
