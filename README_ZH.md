@@ -12,10 +12,15 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 # releases
 
-| 版本火车  | 最新版本   | 编译的JDK版本  | 支持的JDK版本 |
-|-------|--------|-----------|-------------------|
-| 2.x.x | 2.8.3  | OpenJDK 8 | OpenJDK 8, 11, 17 | 
-| 1.x.x | 1.3.10 | OpenJDK 8 | OpenJDK 8         |
+| 版本火车  | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
+|-------|--------|------------|-------------------|----------|-----------------|
+| 3.x.x | 3.0.0  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
+| 2.x.x | 2.8.13 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
+| 1.x.x | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
+
+>>>NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2.x.x不能与3.x.x共存互访. 升级3.x.x，需要将相关的消费者、提供者和边缘服务同时升级.
+
+>>>NOTICE: Java Chassis 1.x.x 第一个版本于2018发布，目前已经停止维护.
 
 # 为什么使用Java Chassis
 
@@ -25,41 +30,54 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 - **原生支持OpenAPI**
 
-  Java Chassis 的接口开发、服务治理都基于 [Swagger](https://swagger.io) ，并通过接口语义检查，使得接口定义符合 [OpenAPI 规范](https://swagger.io/specification/v2/). 
+  Java Chassis 的接口开发、服务治理都基于 [Swagger](https://swagger.io) ，并通过接口语义检查，使得接口定义符合 [OpenAPI 规范](https://swagger.io/specification/v3/). 
 
 - **灵活的开发方式**
 
-  开发者可以使用 `SpringMVC`/`JAX-RS`/`transparent RPC` 任意一种方式定义服务端接口, 并使用`RPC`/`RestTemplate` 等方式访问这些接口. 得益于Java Chassis的通信层与开发方式分离的设计，开发者可以在 `Rest over Vertx`/`Rest over Servlet`/`Highway`等通信模式下自由切换.
+  开发者可以使用 `SpringMVC`/`JAX-RS`/`Transparent RPC` 任意一种方式定义服务端接口, 并使用`RPC`/`RestTemplate` 等方式访问这些接口. 得益于Java Chassis的通信层与开发方式分离的设计，开发者可以在 `Rest over Vertx`/`Rest over Servlet`/`Highway`等通信模式下自由切换.
 
 - **开箱即用的服务治理能力**
 
   Java Chassis 提供了大量开箱即用的服务治理能力，包括服务发现、熔断容错、负载均衡、流量控制等。
 
 
-# 快速开始
+# 快速开始 (Spring MVC)
 
-定义提供者:
+定义提供者。
+
 ```java
-import org.apache.servicecomb.*;
-@RpcSchema(schemaId = "helloworld")
-public class HelloWorldProvider implements HelloWorld {
-    public String sayHello(String name) {
-        return "Hello " + name;
-    }
+@RestSchema(schemaId = "ProviderController")
+@RequestMapping(path = "/")
+public class ProviderController {
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
+    return "Hello " + name;
+  }
 }
 ```
 
-定义消费者:
-```java
-import org.apache.servicecomb.*;
-@Component
-public class HelloWorldConsumer  {
-	@RpcReference(microserviceName = "pojo", schemaId = "helloworld")
-	private static HelloWorld helloWorld;
+定义消费者。首先定义一个接口，与需要访问的提供者的方法拥有一样的签名(方法名、返回值类型、参数名称和参数类型)。
 
-	public static void main(String[] args) {
-		helloWorld.sayHello("Tank");
-	}
+```java
+public interface ProviderService {
+  String sayHello(String name);
+}
+```
+
+使用RPC方式访问提供者。 
+
+```java
+@RestSchema(schemaId = "ConsumerController")
+@RequestMapping(path = "/")
+public class ConsumerController {
+  @RpcReference(schemaId = "ProviderController", microserviceName = "provider")
+  private ProviderService providerService;
+
+  // consumer service which delegate the implementation to provider service.
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
+    return providerService.sayHello(name);
+  }
 }
 ```
 
@@ -97,13 +115,3 @@ public class HelloWorldConsumer  {
 
 # License
 Licensed under an [Apache 2.0 license](LICENSE).
-
-# Export Notice
-
-This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. BEFORE using any encryption software, please check your country's laws, regulations and policies concerning the import, possession, or use, and re-export of encryption software, to see if this is permitted. See <http://www.wassenaar.org/> for more information.
-
-The Apache Software Foundation has classified this software as Export Commodity Control Number (ECCN) 5D002, which includes information security software using or performing cryptographic functions with asymmetric algorithms. The form and manner of this Apache Software Foundation distribution makes it eligible for export under the "publicly available" Section 742.15(b) exemption (see the BIS Export Administration Regulations, Section 742.15(b)) for both object code and source code.
-
-The following provides more details on the included cryptographic software:
-
-  * Vertx transport can be configured for secure communications
