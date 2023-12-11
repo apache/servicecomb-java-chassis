@@ -42,7 +42,7 @@
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
     <commons-logging.version>1.3.0</commons-logging.version>
-    <commons-text.version>1.10.0</commons-text.version>
+    <commons-text.version>1.11.0</commons-text.version>
     <classmate.version>1.6.0</classmate.version>
     <esotericsoftware.version>4.0.3</esotericsoftware.version>
     <failureaccess.version>1.0.2</failureaccess.version>
