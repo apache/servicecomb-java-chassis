@@ -4,16 +4,16 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 
 # releases
 
-| Release Train | Latest Version | Compiled JDK Version | Tested JDK Version | Open API | Notes                    |
-|---------------|----------------|----------------------|--------------------|----------|--------------------------|
-| 3.x.x         | 3.0.0          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
-| 2.x.x         | 2.8.13         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
-| 1.x.x         | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
+| Release Train  | Latest Version | Compiled JDK Version | Tested JDK Version | Open API | Notes                    |
+|----------------|----------------|----------------------|--------------------|----------|--------------------------|
+| Java Chassis 3 | 3.0.0          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
+| Java Chassis 2 | 2.8.13         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
+| Java Chassis 1 | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
 
->>>NOTICE: Open API 3.0.x is not compatible with 2.0.x and Java Chassis 2.x.x can not 
-> work together with 3.x.x. All related consumers, providers and edge service need use the 3.x.x version when upgrading.
+>>>NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not 
+> work together with Java Chassis 3. All related consumers, providers and edge service need use Java Chassis 3 when upgrading.
 
->>>NOTICE: Java Chassis 1.x.x reached its end of support now after it's first release from 2018. 
+>>>NOTICE: Java Chassis 1 reached its end of support now after it's first release from 2018. 
 
 # Why use Java Chassis
 
@@ -76,6 +76,8 @@ public class ConsumerController {
   }
 }
 ```
+
+Try out this example [here](https://servicecomb.apache.org/references/java-chassis/zh_CN/start/first-sample.html) . 
 
 # Documentation
 

@@ -12,15 +12,15 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 # releases
 
-| 版本火车  | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
-|-------|--------|------------|-------------------|----------|-----------------|
-| 3.x.x | 3.0.0  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
-| 2.x.x | 2.8.13 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
-| 1.x.x | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
+| 版本火车           | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
+|----------------|--------|------------|-------------------|----------|-----------------|
+| Java Chassis 3 | 3.0.0  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
+| Java Chassis 2 | 2.8.13 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
+| Java Chassis 1 | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
 
->>>NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2.x.x不能与3.x.x共存互访. 升级3.x.x，需要将相关的消费者、提供者和边缘服务同时升级.
+>>>NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2、Java Chassis 1不能与Java Chassis 3共存互访. 升级Java Chassis 3, 需要将相关的消费者、提供者和边缘服务同时升级.
 
->>>NOTICE: Java Chassis 1.x.x 第一个版本于2018发布，目前已经停止维护.
+>>>NOTICE: Java Chassis 1 第一个版本于2018发布，已经停止更新.
 
 # 为什么使用Java Chassis
 
@@ -81,6 +81,8 @@ public class ConsumerController {
 }
 ```
 
+下载并体验上述[示例项目](https://servicecomb.apache.org/references/java-chassis/zh_CN/start/first-sample.html) .
+
 # 用户文档
 
 请访问 [ServiceComb Java Chassis 开发指南][java-chassis-developer-guide].
@@ -89,7 +91,7 @@ public class ConsumerController {
 
 # 编译Java Chassis
 
-开发者可以通过公有mavan仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 8版本，并预先安装maven。 
+开发者可以通过MAVEN仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 17版本，并预先安装maven。 
 
       mvn clean install
 
