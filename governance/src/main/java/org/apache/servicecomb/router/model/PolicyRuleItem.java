@@ -42,6 +42,8 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   private boolean weightLess = false;
 
+  private List<RouteItem> fallback;
+
   public PolicyRuleItem() {
   }
 
@@ -112,6 +114,14 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   public void setWeightLess(boolean weightLess) {
     this.weightLess = weightLess;
+  }
+
+  public List<RouteItem> getFallback() {
+    return fallback;
+  }
+
+  public void setFallback(List<RouteItem> fallback) {
+    this.fallback = fallback;
   }
 
   @Override

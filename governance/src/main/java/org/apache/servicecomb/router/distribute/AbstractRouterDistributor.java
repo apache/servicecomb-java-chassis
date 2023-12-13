@@ -52,6 +52,17 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
   protected AbstractRouterDistributor() {
   }
 
+  /**
+   * distribute logic:
+   * 1、First according to the set route rules to choose target instances, if have just return.
+   * 2、if route rules not match instance, check if fallback rules are set, if set and match instances then return.
+   * 3、if route and fallback routes all have not match instance, then if route rules weight count less 100, return
+   * unset instances, otherwise return all instances.
+   * @param targetServiceName
+   * @param list
+   * @param invokeRule
+   * @return
+   */
   @Override
   public List<INSTANCE> distribute(String targetServiceName, List<INSTANCE> list, PolicyRuleItem invokeRule) {
     invokeRule.check();
@@ -59,11 +70,14 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
     // unSetTags instance list
     List<INSTANCE> unSetTagInstances = new ArrayList<>();
 
-    // get tag list
-    Map<TagItem, List<INSTANCE>> versionServerMap = getDistributList(targetServiceName, list, invokeRule,
-        unSetTagInstances);
+    // record fallback router targItem instance
+    Map<TagItem, List<INSTANCE>> fallbackVersionServerMap = new HashMap<>();
 
-    if (CollectionUtils.isEmpty(versionServerMap)) {
+    // get tag instance map, fallbackVersionServerMap, unSetTagInstances
+    Map<TagItem, List<INSTANCE>> versionServerMap = getDistributList(targetServiceName, list, invokeRule,
+        unSetTagInstances, fallbackVersionServerMap);
+
+    if (CollectionUtils.isEmpty(versionServerMap) && CollectionUtils.isEmpty(fallbackVersionServerMap)) {
       LOGGER.debug("route management can not match any rule and route the latest version");
       // no rule matched instance babel, all instance return, select instance for load balancing later
       return list;
@@ -75,8 +89,16 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
       return versionServerMap.get(targetTag);
     }
 
+    if (!fallbackVersionServerMap.isEmpty()) {
+      // weight calculation to obtain the next fallback tags instance
+      TagItem fallbackTargetTag = getFallbackFiltedServerTagItem(invokeRule.getFallback(), targetServiceName);
+      if (fallbackTargetTag != null && fallbackVersionServerMap.containsKey(fallbackTargetTag)) {
+        return fallbackVersionServerMap.get(fallbackTargetTag);
+      }
+    }
+
     // has weightLess situation and unSetTagInstances has values
-    if (invokeRule.isWeightLess() && unSetTagInstances.size() > 0) {
+    if (invokeRule.isWeightLess() && !unSetTagInstances.isEmpty()) {
       return unSetTagInstances;
     }
     return list;
@@ -96,38 +118,41 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
         .getNextInvokeVersion(rule);
   }
 
+  public TagItem getFallbackFiltedServerTagItem(List<RouteItem> fallback, String targetServiceName) {
+    return routerRuleCache.getServiceInfoCacheMap().get(targetServiceName)
+        .getFallbackNextInvokeVersion(fallback);
+  }
+
   /**
-   * 1.filter targetService
+   * 1.filter set route rules targetService, build fallback targetService map and unSetTagInstances list.
    * 2.establish map is a more complicate way than direct traversal， because of multiple matches.
    *
    * the method getProperties() contains other field that we don't need.
    */
-  private Map<TagItem, List<INSTANCE>> getDistributList(String serviceName,
-      List<INSTANCE> list, PolicyRuleItem invokeRule, List<INSTANCE> unSetTagInstances) {
+  private Map<TagItem, List<INSTANCE>> getDistributList(String serviceName, List<INSTANCE> list,
+      PolicyRuleItem invokeRule, List<INSTANCE> unSetTagInstances, Map<TagItem, List<INSTANCE>> fallbackVersionMap) {
     Map<TagItem, List<INSTANCE>> versionServerMap = new HashMap<>();
     for (INSTANCE instance : list) {
       //get server
       if (getServerName.apply(instance).equals(serviceName)) {
-        //most matching
         TagItem tagItem = new TagItem(getVersion.apply(instance), getProperties.apply(instance));
-        TagItem targetTag = null;
-        int maxMatch = 0;
-        // obtain the rule with the most parameter matches
-        for (RouteItem entry : invokeRule.getRoute()) {
-          if (entry.getTagitem() == null){
-            continue;
-          }
-          int nowMatch = entry.getTagitem().matchNum(tagItem);
-          if (nowMatch > maxMatch) {
-            maxMatch = nowMatch;
-            targetTag = entry.getTagitem();
-          }
+        // route most matching TagItem
+        TagItem targetTag = buildTargetTag(invokeRule.getRoute(), tagItem);
+        TagItem targetTagFallback = null;
+        if (!CollectionUtils.isEmpty(invokeRule.getFallback())) {
+          // fallback most matching TagItem
+          targetTagFallback = buildTargetTag(invokeRule.getFallback(), tagItem);
         }
         if (targetTag != null) {
           if (!versionServerMap.containsKey(targetTag)) {
             versionServerMap.put(targetTag, new ArrayList<>());
           }
           versionServerMap.get(targetTag).add(instance);
+        } else if (targetTagFallback != null) {
+          if (!fallbackVersionMap.containsKey(targetTagFallback)) {
+            fallbackVersionMap.put(targetTagFallback, new ArrayList<>());
+          }
+          fallbackVersionMap.get(targetTagFallback).add(instance);
         } else {
           // not matched, placed in the unset tag instances collection
           unSetTagInstances.add(instance);
@@ -135,5 +160,22 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
       }
     }
     return versionServerMap;
+  }
+
+  private TagItem buildTargetTag(List<RouteItem> route, TagItem tagItem) {
+    int maxMatch = 0;
+    TagItem targetTag = null;
+    // obtain the rule with the most parameter matches
+    for (RouteItem entry : route) {
+      if (entry.getTagitem() == null){
+        continue;
+      }
+      int nowMatch = entry.getTagitem().matchNum(tagItem);
+      if (nowMatch > maxMatch) {
+        maxMatch = nowMatch;
+        targetTag = entry.getTagitem();
+      }
+    }
+    return targetTag;
   }
 }
