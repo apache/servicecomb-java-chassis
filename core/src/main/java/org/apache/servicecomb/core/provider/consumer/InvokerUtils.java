@@ -77,6 +77,8 @@ public final class InvokerUtils {
 
   private static volatile ScheduledExecutorService reactiveRetryPool;
 
+  private static RetryHandler retryHandler = null;
+
   private static ScheduledExecutorService getOrCreateRetryPool() {
     if (reactiveRetryPool == null) {
       synchronized (LOCK) {
@@ -248,7 +250,9 @@ public final class InvokerUtils {
   private static Response decorateSyncRetry(Invocation invocation, GovernanceRequestExtractor request) {
     try {
       // governance implementations.
-      RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
+      if (retryHandler == null) {
+        retryHandler = BeanUtils.getBean(RetryHandler.class);
+      }
       Retry retry = retryHandler.getActuator(request);
       if (retry != null) {
         CheckedFunction0<Response> supplier = Retry
@@ -329,7 +333,9 @@ public final class InvokerUtils {
   private static void decorateReactiveRetry(Invocation invocation, DecorateCompletionStage<Response> dcs,
       GovernanceRequestExtractor request) {
     // governance implementations.
-    RetryHandler retryHandler = BeanUtils.getBean(RetryHandler.class);
+    if (retryHandler == null) {
+      retryHandler = BeanUtils.getBean(RetryHandler.class);
+    }
     Retry retry = retryHandler.getActuator(request);
     if (retry != null) {
       dcs.withRetry(retry, getOrCreateRetryPool());
