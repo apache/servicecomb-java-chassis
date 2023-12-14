@@ -77,12 +77,6 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
     Map<TagItem, List<INSTANCE>> versionServerMap = getDistributList(targetServiceName, list, invokeRule,
         unSetTagInstances, fallbackVersionServerMap);
 
-    if (CollectionUtils.isEmpty(versionServerMap) && CollectionUtils.isEmpty(fallbackVersionServerMap)) {
-      LOGGER.debug("route management can not match any rule and route the latest version");
-      // no rule matched instance babel, all instance return, select instance for load balancing later
-      return list;
-    }
-
     // weight calculation to obtain the next tags instance
     TagItem targetTag = getFiltedServerTagItem(invokeRule, targetServiceName);
     if (targetTag != null && versionServerMap.containsKey(targetTag)) {
@@ -91,7 +85,7 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
 
     if (!fallbackVersionServerMap.isEmpty()) {
       // weight calculation to obtain the next fallback tags instance
-      TagItem fallbackTargetTag = getFallbackFiltedServerTagItem(invokeRule.getFallback(), targetServiceName);
+      TagItem fallbackTargetTag = getFallbackFiltedServerTagItem(invokeRule, targetServiceName);
       if (fallbackTargetTag != null && fallbackVersionServerMap.containsKey(fallbackTargetTag)) {
         return fallbackVersionServerMap.get(fallbackTargetTag);
       }
@@ -118,9 +112,9 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
         .getNextInvokeVersion(rule);
   }
 
-  public TagItem getFallbackFiltedServerTagItem(List<RouteItem> fallback, String targetServiceName) {
+  public TagItem getFallbackFiltedServerTagItem(PolicyRuleItem rule, String targetServiceName) {
     return routerRuleCache.getServiceInfoCacheMap().get(targetServiceName)
-        .getFallbackNextInvokeVersion(fallback);
+        .getFallbackNextInvokeVersion(rule);
   }
 
   /**
@@ -138,24 +132,23 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
         TagItem tagItem = new TagItem(getVersion.apply(instance), getProperties.apply(instance));
         // route most matching TagItem
         TagItem targetTag = buildTargetTag(invokeRule.getRoute(), tagItem);
-        TagItem targetTagFallback = null;
-        if (!CollectionUtils.isEmpty(invokeRule.getFallback())) {
-          // fallback most matching TagItem
-          targetTagFallback = buildTargetTag(invokeRule.getFallback(), tagItem);
-        }
         if (targetTag != null) {
           if (!versionServerMap.containsKey(targetTag)) {
             versionServerMap.put(targetTag, new ArrayList<>());
           }
           versionServerMap.get(targetTag).add(instance);
-        } else if (targetTagFallback != null) {
+        } else {
+          // not matched, placed in the unset tag instances collection
+          unSetTagInstances.add(instance);
+        }
+        // ensure the tags can build when set for both route and fallback at the same time
+        if (!CollectionUtils.isEmpty(invokeRule.getFallback())) {
+          // fallback most matching TagItem
+          TagItem targetTagFallback = buildTargetTag(invokeRule.getFallback(), tagItem);
           if (!fallbackVersionMap.containsKey(targetTagFallback)) {
             fallbackVersionMap.put(targetTagFallback, new ArrayList<>());
           }
           fallbackVersionMap.get(targetTagFallback).add(instance);
-        } else {
-          // not matched, placed in the unset tag instances collection
-          unSetTagInstances.add(instance);
         }
       }
     }

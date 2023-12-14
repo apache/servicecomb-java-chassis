@@ -52,8 +52,12 @@ public class ServiceInfoCache {
     return calculateWeight(rule, policyRuleItem.getTotal());
   }
 
-  public TagItem getFallbackNextInvokeVersion(List<RouteItem> fallback) {
-    return calculateWeight(fallback, fallback.stream().mapToInt(RouteItem::getWeight).sum());
+  public TagItem getFallbackNextInvokeVersion(PolicyRuleItem policyRuleItem) {
+    List<RouteItem> rule = policyRuleItem.getFallback();
+    if (policyRuleItem.getFallbackTotal() == null) {
+      policyRuleItem.setFallbackTotal(rule.stream().mapToInt(RouteItem::getWeight).sum());
+    }
+    return calculateWeight(rule, policyRuleItem.getFallbackTotal());
   }
 
   private TagItem calculateWeight(List<RouteItem> rule, int total) {

@@ -242,3 +242,54 @@ servicecomb:
           - weight: 20
             tags:
               x-group: red
+
+    test_server3: |                              # 服务名
+      - precedence: 2
+        match:
+          headers:
+            canary:
+              exact: 'canary'
+              caseInsensitive: false
+        route:
+          - weight: 20
+            tags:
+              version: 1.0.0
+          - weight: 80
+            tags:
+              version: 2.0.0
+    test_server4: |                              # 服务名
+      - precedence: 2
+        match:
+          headers:
+            canary:
+              exact: 'canary'
+              caseInsensitive: false
+        route:
+          - weight: 20
+            tags:
+              version: 1.0.0
+          - weight: 80
+            tags:
+              version: 2.0.0
+        fallback:
+          - weight: 100
+            tags:
+              x-group: red
+    test_server5: |                              # 服务名
+      - precedence: 2
+        match:
+          headers:
+            canary:
+              exact: 'canary'
+              caseInsensitive: false
+        route:
+          - weight: 50
+            tags:
+              x-group: red
+        fallback:
+          - weight: 50
+            tags:
+              x-group: red
+          - weight: 50
+            tags:
+              x-group: green
