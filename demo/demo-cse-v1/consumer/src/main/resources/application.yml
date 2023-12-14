@@ -59,6 +59,23 @@ servicecomb:
           - weight: 100
             tags:
               version: 0.0.1
+      - precedence: 3
+        match:
+          headers:
+            canary:
+              exact: fallback
+        route:
+          - weight: 100
+            tags:
+              version: 0.0.3
+        fallback:
+          - weight: 20
+            tags:
+              version: 0.0.1
+          - weight: 80
+            tags:
+              version: 0.0.2
+
   router:
     type: router
     header: canary
