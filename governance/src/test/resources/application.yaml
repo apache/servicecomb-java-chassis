@@ -215,10 +215,8 @@ servicecomb:
           headers:                           # header 匹配
             region:                          # 如果配置了多个 header，那么所有的 header 规则都必须和请求匹配
               exact: 'providerRegion'
-              caseInsensitive: false         # 不区分大小写
             type:
               regex: gray_[a-z]+             # java 正则表达式匹配
-              caseInsensitive: true          # 区分大小写
         route:                               # 路由规则
           - weight: 20                       # 权重值
             tags:
@@ -242,3 +240,51 @@ servicecomb:
           - weight: 20
             tags:
               x-group: red
+
+    test_server3: |                              # 服务名
+      - precedence: 2
+        match:
+          headers:
+            canary:
+              exact: 'canary'
+        route:
+          - weight: 20
+            tags:
+              version: 1.0.0
+          - weight: 80
+            tags:
+              version: 2.0.0
+    test_server4: |                              # 服务名
+      - precedence: 2
+        match:
+          headers:
+            canary:
+              exact: 'canary'
+        route:
+          - weight: 20
+            tags:
+              version: 1.0.0
+          - weight: 80
+            tags:
+              version: 2.0.0
+        fallback:
+          - weight: 100
+            tags:
+              x-group: red
+    test_server5: |                              # 服务名
+      - precedence: 2
+        match:
+          headers:
+            canary:
+              exact: 'canary'
+        route:
+          - weight: 50
+            tags:
+              x-group: red
+        fallback:
+          - weight: 50
+            tags:
+              x-group: red
+          - weight: 50
+            tags:
+              x-group: green

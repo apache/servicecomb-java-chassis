@@ -19,6 +19,8 @@ package org.apache.servicecomb.router.model;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.util.CollectionUtils;
+
 /**
  * @Author GuoYl123
  * @Date 2019/10/17
@@ -34,9 +36,12 @@ public class ServiceInfoCache {
   public ServiceInfoCache(List<PolicyRuleItem> policyRuleItemList) {
     this.allrule = policyRuleItemList.stream().sorted().collect(Collectors.toList());
 
-    this.getAllrule().forEach(rule ->
-        rule.getRoute().forEach(RouteItem::initTagItem)
-    );
+    this.getAllrule().forEach(rule -> {
+      rule.getRoute().forEach(RouteItem::initTagItem);
+      if (!CollectionUtils.isEmpty(rule.getFallback())) {
+        rule.getFallback().forEach(RouteItem::initTagItem);
+      }
+    });
   }
 
   public TagItem getNextInvokeVersion(PolicyRuleItem policyRuleItem) {
@@ -44,7 +49,19 @@ public class ServiceInfoCache {
     if (policyRuleItem.getTotal() == null) {
       policyRuleItem.setTotal(rule.stream().mapToInt(RouteItem::getWeight).sum());
     }
-    rule.stream().forEach(RouteItem::addCurrentWeight);
+    return calculateWeight(rule, policyRuleItem.getTotal());
+  }
+
+  public TagItem getFallbackNextInvokeVersion(PolicyRuleItem policyRuleItem) {
+    List<RouteItem> rule = policyRuleItem.getFallback();
+    if (policyRuleItem.getFallbackTotal() == null) {
+      policyRuleItem.setFallbackTotal(rule.stream().mapToInt(RouteItem::getWeight).sum());
+    }
+    return calculateWeight(rule, policyRuleItem.getFallbackTotal());
+  }
+
+  private TagItem calculateWeight(List<RouteItem> rule, int total) {
+    rule.forEach(RouteItem::addCurrentWeight);
     int maxIndex = 0, maxWeight = -1;
     for (int i = 0; i < rule.size(); i++) {
       if (maxWeight < rule.get(i).getCurrentWeight()) {
@@ -52,7 +69,7 @@ public class ServiceInfoCache {
         maxWeight = rule.get(i).getCurrentWeight();
       }
     }
-    rule.get(maxIndex).reduceCurrentWeight(policyRuleItem.getTotal());
+    rule.get(maxIndex).reduceCurrentWeight(total);
     return rule.get(maxIndex).getTagitem();
   }
 

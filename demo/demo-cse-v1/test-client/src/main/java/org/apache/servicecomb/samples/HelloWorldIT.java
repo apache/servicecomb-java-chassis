@@ -34,6 +34,8 @@ public class HelloWorldIT implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
+    testHelloWorldFallback();
+    testHelloWorldNoHeader();
     testHelloWorld();
     testHelloWorldCanary();
   }
@@ -71,5 +73,50 @@ public class HelloWorldIT implements CategorizedTestCase {
 
     double ratio = oldCount / (float) (oldCount + newCount);
     TestMgr.check(ratio > 0.1 && ratio < 0.3, true);
+  }
+
+  private void testHelloWorldFallback() {
+    int oldCount = 0;
+    int newCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "fallback");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      String result = template
+          .exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET, entity, String.class).getBody();
+      if (result.equals("\"Hello Canary World\"")) {
+        oldCount++;
+      } else if (result.equals("\"Hello Canary in canary World\"")) {
+        newCount++;
+      } else {
+        TestMgr.fail("not expected result testHelloWorldCanary");
+        return;
+      }
+    }
+
+    double ratio = oldCount / (float) (oldCount + newCount);
+    TestMgr.check(ratio > 0.1 && ratio < 0.3, true);
+  }
+
+  private void testHelloWorldNoHeader() {
+    int oldCount = 0;
+    int newCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      String result = template
+          .getForObject(Config.GATEWAY_URL + "/sayHelloCanary?name=World", String.class);
+      if (result.equals("\"Hello Canary World\"")) {
+        oldCount++;
+      } else if (result.equals("\"Hello Canary in canary World\"")) {
+        newCount++;
+      } else {
+        TestMgr.fail("not expected result testHelloWorldCanary");
+        return;
+      }
+    }
+
+    double ratio = oldCount / (float) (oldCount + newCount);
+    TestMgr.check(ratio == 0.5, true);
   }
 }
