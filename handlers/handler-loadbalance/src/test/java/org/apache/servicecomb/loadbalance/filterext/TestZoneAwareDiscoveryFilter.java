@@ -49,6 +49,7 @@ public class TestZoneAwareDiscoveryFilter {
 
   @Test
   public void test_not_enough_instance() {
+    ArchaiusUtils.setProperty(ZoneAwareDiscoveryFilter.CONFIG_RATIO, 50);
     ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
 
     // set up data

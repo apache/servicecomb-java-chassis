@@ -234,19 +234,19 @@ public class MicroserviceVersions {
       MergedInstances mergedInstances = mergeInstances(pulledInstances, instances);
       instances = mergedInstances.instanceIdMap.values();
 
-      // set instances to empty for no instance versions
-      versions.forEach((key, value) -> {
-        if (!mergedInstances.microserviceIdMap.containsKey(key)) {
-          value.setInstances(new ArrayList<>());
-        }
-      });
-
       // update instances
       for (Entry<String, List<MicroserviceInstance>> entry : mergedInstances.microserviceIdMap.entrySet()) {
         versions.computeIfAbsent(entry.getKey(),
                 microserviceId -> createMicroserviceVersion(microserviceId, entry.getValue()))
             .setInstances(entry.getValue());
       }
+
+      // set instances to empty for no instance versions
+      versions.forEach((key, value) -> {
+        if (!mergedInstances.microserviceIdMap.containsKey(key)) {
+          value.setInstances(new ArrayList<>());
+        }
+      });
 
       for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
         microserviceVersionRule.update(versions, instances);

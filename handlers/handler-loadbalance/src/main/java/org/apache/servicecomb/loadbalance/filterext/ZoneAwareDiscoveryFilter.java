@@ -45,7 +45,7 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
 
   private int getRatio() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty(CONFIG_RATIO, 50).get();
+        .getIntProperty(CONFIG_RATIO, 30).get();
   }
 
   @Override

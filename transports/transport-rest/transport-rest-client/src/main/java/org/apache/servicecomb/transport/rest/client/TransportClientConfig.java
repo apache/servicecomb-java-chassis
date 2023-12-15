@@ -139,7 +139,7 @@ public final class TransportClientConfig {
 
   public static int getConnectionTimeoutInMillis() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.rest.client.connection.timeoutInMillis", 1000)
+        .getIntProperty("servicecomb.rest.client.connection.timeoutInMillis", 60000)
         .get();
   }
 }
