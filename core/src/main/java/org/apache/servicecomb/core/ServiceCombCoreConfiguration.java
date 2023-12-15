@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.core.bootup.ConfigurationProblemsCollector;
 import org.apache.servicecomb.core.bootup.FilterChainCollector;
 import org.apache.servicecomb.core.bootup.ServiceInformationCollector;
 import org.apache.servicecomb.core.executor.ExecutorManager;
@@ -81,6 +82,11 @@ public class ServiceCombCoreConfiguration {
   @Bean
   public FilterChainCollector filterChainCollector() {
     return new FilterChainCollector();
+  }
+
+  @Bean
+  public ConfigurationProblemsCollector configurationProblemsCollector() {
+    return new ConfigurationProblemsCollector();
   }
 
   @Bean

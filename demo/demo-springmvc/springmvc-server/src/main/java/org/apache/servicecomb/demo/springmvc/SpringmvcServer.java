@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.springmvc;
 
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
+import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -25,5 +27,20 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class SpringmvcServer {
   public static void main(String[] args) throws Exception {
     new SpringApplicationBuilder(SpringmvcServer.class).web(WebApplicationType.NONE).run(args);
+
+    runTests();
+
+    TestMgr.summary();
+    if (!TestMgr.isSuccess()) {
+      System.exit(1);
+    }
+  }
+
+  private static void runTests() {
+    try {
+      CategorizedTestCaseRunner.runCategorizedTestCase("springmvc");
+    } catch (Exception e) {
+      TestMgr.failed("runCategorizedTestCase failed", e);
+    }
   }
 }

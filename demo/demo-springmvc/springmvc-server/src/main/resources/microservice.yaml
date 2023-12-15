@@ -15,8 +15,11 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-instance_description:
+# test not supported configuration
+# service_description.initialStatus
+service_description:
   initialStatus: TESTING
+
 servicecomb:
   service:
     application: springmvctest

@@ -14,16 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.core.bootup;
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.springframework.core.Ordered;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 
-public interface BootUpInformationCollector extends Ordered {
-  default String collect(SCBEngine engine) {
-    return collect();
+public class ConfigurationProblemsAlarmEvent extends AlarmEvent {
+  private final String problems;
+
+  public ConfigurationProblemsAlarmEvent(Type type, String problems) {
+    super(type);
+    this.problems = problems;
   }
 
-  String collect();
+  public String getProblems() {
+    return problems;
+  }
 }
