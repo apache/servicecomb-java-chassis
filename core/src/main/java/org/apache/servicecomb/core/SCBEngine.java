@@ -148,6 +148,10 @@ public class SCBEngine {
   }
 
   public Environment getEnvironment() {
+    if (this.applicationContext == null) {
+      // some test cases
+      return null;
+    }
     return this.applicationContext.getEnvironment();
   }
 

@@ -33,6 +33,10 @@ import org.springframework.core.env.Environment;
 public class ConfigurationProblemsCollector implements BootUpInformationCollector {
   @Override
   public String collect(SCBEngine engine) {
+    if (engine.getEnvironment() == null) {
+      // some test cases
+      return null;
+    }
     StringBuilder result = new StringBuilder();
     collectCsePrefix(engine.getEnvironment(), result);
     collectServiceDefinition(engine.getEnvironment(), result);
