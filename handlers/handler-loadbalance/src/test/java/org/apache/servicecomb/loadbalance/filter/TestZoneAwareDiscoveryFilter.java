@@ -44,7 +44,7 @@ public class TestZoneAwareDiscoveryFilter {
   @Test
   public void test_not_enough_instance() {
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
-        int.class, 50)).thenReturn(50);
+        int.class, 30)).thenReturn(50);
 
     ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
     filter.setEnvironment(environment);

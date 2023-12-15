@@ -60,7 +60,7 @@ public class TestLoadBalanceFilter2 {
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
         Boolean.class, true)).thenReturn(true);
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
-        int.class, 50)).thenReturn(0);
+        int.class, 30)).thenReturn(0);
   }
 
   @Test
