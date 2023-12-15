@@ -22,18 +22,19 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
@@ -52,7 +53,12 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
@@ -341,5 +347,19 @@ public final class ConfigUtil {
     } catch (IllegalAccessException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  public static Set<String> propertiesWithPrefix(Environment environment, String prefix) {
+    Set<String> result = new HashSet<>();
+    for (PropertySource<?> propertySource : ((ConfigurableEnvironment) environment).getPropertySources()) {
+      if (propertySource instanceof EnumerablePropertySource) {
+        for (String key : ((EnumerablePropertySource<?>) propertySource).getPropertyNames()) {
+          if (key.startsWith(prefix)) {
+            result.add(key);
+          }
+        }
+      }
+    }
+    return result;
   }
 }

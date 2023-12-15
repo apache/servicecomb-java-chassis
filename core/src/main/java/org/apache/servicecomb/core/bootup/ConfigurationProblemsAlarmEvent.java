@@ -14,32 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.core.bootup;
 
-package org.apache.servicecomb.demo.springmvc;
+import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 
-import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+public class ConfigurationProblemsAlarmEvent extends AlarmEvent {
+  private final String problems;
 
-public class SpringmvcServer {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
-
-    runTests();
-
-    TestMgr.summary();
-    if (!TestMgr.isSuccess()) {
-      System.exit(1);
-    }
+  public ConfigurationProblemsAlarmEvent(Type type, String problems) {
+    super(type);
+    this.problems = problems;
   }
 
-  private static void runTests() {
-    try {
-      CategorizedTestCaseRunner.runCategorizedTestCase("springmvc");
-    } catch (Exception e) {
-      TestMgr.failed("runCategorizedTestCase failed", e);
-    }
+  public String getProblems() {
+    return problems;
   }
 }

@@ -68,6 +68,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
@@ -144,6 +145,10 @@ public class SCBEngine {
 
   public void setApplicationContext(ApplicationContext applicationContext) {
     this.applicationContext = applicationContext;
+  }
+
+  public Environment getEnvironment() {
+    return this.applicationContext.getEnvironment();
   }
 
   public VendorExtensions getVendorExtensions() {
