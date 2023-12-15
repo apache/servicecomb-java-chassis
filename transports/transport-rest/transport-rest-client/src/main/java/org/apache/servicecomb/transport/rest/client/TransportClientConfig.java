@@ -111,6 +111,6 @@ public final class TransportClientConfig {
 
   public static int getConnectionTimeoutInMillis() {
     return LegacyPropertyFactory
-        .getIntProperty("servicecomb.rest.client.connection.timeoutInMillis", 1000);
+        .getIntProperty("servicecomb.rest.client.connection.timeoutInMillis", 60000);
   }
 }

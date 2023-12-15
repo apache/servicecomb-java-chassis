@@ -59,7 +59,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   private int getRatio() {
     return environment.getProperty(CONFIG_RATIO,
-        int.class, 50);
+        int.class, 30);
   }
 
   @Override
