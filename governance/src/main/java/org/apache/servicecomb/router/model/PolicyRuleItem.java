@@ -42,6 +42,10 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   private boolean weightLess = false;
 
+  private List<RouteItem> fallback;
+
+  private Integer fallbackTotal;
+
   public PolicyRuleItem() {
   }
 
@@ -113,6 +117,22 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
     this.weightLess = weightLess;
   }
 
+  public List<RouteItem> getFallback() {
+    return fallback;
+  }
+
+  public void setFallback(List<RouteItem> fallback) {
+    this.fallback = fallback;
+  }
+
+  public Integer getFallbackTotal() {
+    return fallbackTotal;
+  }
+
+  public void setFallbackTotal(Integer fallbackTotal) {
+    this.fallbackTotal = fallbackTotal;
+  }
+
   @Override
   public String toString() {
     return "PolicyRuleItem{" +
@@ -121,6 +141,8 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
         ", route=" + route +
         ", total=" + total +
         ", weightLess=" + weightLess +
+        ", fallback=" + fallback +
+        ", fallbackTotal=" + fallbackTotal +
         '}';
   }
 }
