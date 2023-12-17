@@ -47,6 +47,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
   private static final boolean enabled = DynamicPropertyFactory.getInstance().getBooleanProperty
       ("servicecomb.http.filter.client.default.enabled", true).get();
 
+  private static final String PRINT_ERROR_RESPONSE = "servicecomb.http.filter.client.default.shouldPrintErrorResponse";
+
   @Override
   public int getOrder() {
     return 10000;
@@ -109,7 +111,11 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       }
       return response;
     } catch (Exception e) {
-      LOGGER.error("failed to decode response body.", e);
+      if (DynamicPropertyFactory.getInstance().getBooleanProperty(PRINT_ERROR_RESPONSE, false). get()) {
+        LOGGER.error("failed to decode response body. response is {}", responseEx.getBodyBuffer());
+      } else {
+        LOGGER.error("failed to decode response body.", e);
+      }
       String msg =
           String.format("Failed to decode response body. Operation %s.",
               invocation.getMicroserviceQualifiedName());
