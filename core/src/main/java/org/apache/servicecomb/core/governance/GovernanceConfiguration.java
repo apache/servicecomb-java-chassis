@@ -46,9 +46,18 @@ public class GovernanceConfiguration {
   }
 
   public static long getWithDuration(String microservice) {
-    String duration = getStringProperty("0", ROOT + microservice + "." + RETRY_ENABLED,
-            ROOT + RETRY_ENABLED);
-    return Long.parseLong(duration);
+    final long defaultValue = 0;
+    String duration = getStringProperty("0", ROOT + microservice + "." + WITH_DURATION,
+            ROOT + WITH_DURATION);
+    try {
+      long result = Long.parseLong(duration);
+      if (result > 0) {
+        return result;
+      }
+      return defaultValue;
+    } catch (NumberFormatException e) {
+      return defaultValue;
+    }
   }
 
   private static int getRetryServer(String microservice, String retryType) {
