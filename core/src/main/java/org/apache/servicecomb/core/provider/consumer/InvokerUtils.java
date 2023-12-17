@@ -296,7 +296,7 @@ public final class InvokerUtils {
             + GovernanceConfiguration.getRetrySameServer(invocation.getMicroserviceName()) + 1)
         .retryOnResult(InvokerUtils::canRetryForStatusCode)
         .retryOnException(InvokerUtils::canRetryForException)
-        .waitDuration(Duration.ofMillis(0))
+        .waitDuration(Duration.ofMillis(GovernanceConfiguration.getWithDuration(invocation.getMicroserviceName())))
         .build();
     RetryRegistry retryRegistry = RetryRegistry.of(retryConfig);
     return retryRegistry.retry(invocation.getMicroserviceName());
