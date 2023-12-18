@@ -233,7 +233,7 @@ public class LoadbalanceHandler implements Handler {
       }
     }
 
-    LOGGER.info("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
+    LOGGER.warn("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
         invocation.getMicroserviceQualifiedName(),
         nextServer == null ? "" : nextServer.getHostPort(),
         lastServer == null ? "" : lastServer.getHostPort(),
