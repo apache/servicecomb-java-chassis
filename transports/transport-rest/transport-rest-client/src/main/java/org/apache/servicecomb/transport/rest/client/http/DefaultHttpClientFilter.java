@@ -111,7 +111,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       }
       return response;
     } catch (Exception e) {
-      if (DynamicPropertyFactory.getInstance().getBooleanProperty(PRINT_ERROR_RESPONSE, false). get()) {
+      if (DynamicPropertyFactory.getInstance().getBooleanProperty(PRINT_ERROR_RESPONSE, false).get()) {
         LOGGER.error("failed to decode response body. response is {}", responseEx.getBodyBuffer());
       } else {
         LOGGER.error("failed to decode response body.", e);
