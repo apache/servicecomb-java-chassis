@@ -32,8 +32,6 @@
   <properties>
     <!-- Dependency versions: sort by alphabetic order -->
     <activation.version>1.2.2</activation.version>
-    <asciidoctorj.version>2.5.10</asciidoctorj.version>
-    <aspectj.version>1.9.20.1</aspectj.version>
     <assertj.version>3.24.2</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <brave.version>5.16.0</brave.version>
@@ -87,7 +85,6 @@
     <spring.version>6.0.9</spring.version>
     <spring-boot.version>3.0.7</spring-boot.version>
     <swagger.version>2.2.19</swagger.version>
-    <swagger2markup.version>1.3.4</swagger2markup.version>
     <vertx.version>4.4.4</vertx.version>
     <zipkin.version>2.25.2</zipkin.version>
     <zipkin-reporter.version>2.17.1</zipkin-reporter.version>
@@ -194,22 +191,6 @@
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>${commons-logging.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>io.github.swagger2markup</groupId>
-        <artifactId>swagger2markup</artifactId>
-        <version>${swagger2markup.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-compat-spec-parser</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
 
       <dependency>
@@ -422,24 +403,6 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j2.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.asciidoctor</groupId>
-        <artifactId>asciidoctorj</artifactId>
-        <version>${asciidoctorj.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jzlib</artifactId>
-          </exclusion>
-        </exclusions>
-      </dependency>
-
-      <dependency>
-        <groupId>org.aspectj</groupId>
-        <artifactId>aspectjweaver</artifactId>
-        <version>${aspectj.version}</version>
       </dependency>
 
       <dependency>
