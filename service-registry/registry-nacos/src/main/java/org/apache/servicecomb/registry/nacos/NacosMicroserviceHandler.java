@@ -29,6 +29,7 @@ import org.apache.servicecomb.config.DataCenterProperties;
 import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.alibaba.nacos.api.naming.utils.NamingUtils;
 
 public class NacosMicroserviceHandler {
   private static final String VERSION_MAPPING = "VERSION_MAPPING";
@@ -48,7 +49,8 @@ public class NacosMicroserviceHandler {
   public static Instance createMicroserviceInstance(
       DataCenterProperties dataCenterProperties, NacosDiscoveryProperties properties, Environment environment) {
     Instance instance = new Instance();
-    instance.setServiceName(BootStrapProperties.readServiceName(environment));
+    instance.setServiceName(NamingUtils.getGroupedName(
+        BootStrapProperties.readServiceName(environment), BootStrapProperties.readApplication(environment)));
     instance.setWeight(properties.getWeight());
     instance.setEnabled(properties.isInstanceEnabled());
     instance.setClusterName(properties.getClusterName());
