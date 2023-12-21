@@ -28,6 +28,8 @@ public class GovernanceConfiguration {
 
   public static final String RETRY_ON_SAME = "retryOnSame";
 
+  public static final String WITH_DURATION = "waitDuration";
+
   public static boolean isRetryEnabled(String microservice) {
     String p = getStringProperty("false",
         ROOT + microservice + "." + RETRY_ENABLED,
@@ -41,6 +43,21 @@ public class GovernanceConfiguration {
 
   public static int getRetrySameServer(String microservice) {
     return getRetryServer(microservice, RETRY_ON_SAME);
+  }
+
+  public static long getWithDuration(String microservice) {
+    final long defaultValue = 0;
+    String duration = getStringProperty("0", ROOT + microservice + "." + WITH_DURATION,
+            ROOT + WITH_DURATION);
+    try {
+      long result = Long.parseLong(duration);
+      if (result > 0) {
+        return result;
+      }
+      return defaultValue;
+    } catch (NumberFormatException e) {
+      return defaultValue;
+    }
   }
 
   private static int getRetryServer(String microservice, String retryType) {
