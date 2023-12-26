@@ -208,14 +208,15 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
                 REQUEST_BODY_NAME,
                 requestBody.getContent().get(SwaggerConst.PROTOBUF_TYPE).getSchema());
         RootDeserializer<PropertyWrapper<Object>> deserializer = protoMapper.getDeserializerSchemaManager()
-            .createRootDeserializer(protoMapper.getProto().getMessage(REQUEST_BODY_NAME), targetType);
+            .createRootDeserializer(protoMapper.getProto().getMessage(REQUEST_BODY_NAME),
+                targetType == null ? OBJECT_TYPE : targetType);
         PropertyWrapper<Object> result = deserializer.deserialize(inputStream.readAllBytes());
         return result.getValue();
       }
 
       if (MediaType.TEXT_PLAIN.equals(contentType)) {
         try {
-          if (String.class.equals(targetType.getRawClass())) {
+          if (targetType != null && String.class.equals(targetType.getRawClass())) {
             return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
           }
           ObjectReader reader = serialViewClass != null
