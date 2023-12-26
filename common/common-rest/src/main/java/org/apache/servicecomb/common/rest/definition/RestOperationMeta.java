@@ -23,8 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
@@ -35,18 +33,12 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
-import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import jakarta.ws.rs.core.MediaType;
 
 @SuppressWarnings("rawtypes")
 public class RestOperationMeta {
@@ -112,7 +104,6 @@ public class RestOperationMeta {
   private void addRestParamByName(OperationMeta operationMeta, String name, Operation operation) {
     Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
         .getSwaggerParameterTypes().get(name) : null;
-    type = correctFormBodyType(operation.getRequestBody(), type);
     RestParam param = new RestParam(operationMeta, name, operation.getRequestBody(), formData, type);
     addParam(param);
   }
@@ -127,35 +118,6 @@ public class RestOperationMeta {
       return operation.getRequestBody().getContent().get(SwaggerConst.FORM_MEDIA_TYPE).getSchema();
     }
     return operation.getRequestBody().getContent().get(SwaggerConst.FILE_MEDIA_TYPE).getSchema();
-  }
-
-  /**
-   * EdgeService cannot recognize the map type form body whose value type is String,
-   * so there should be this additional setting.
-   * @param parameter the swagger information of the parameter
-   * @param type the resolved param type
-   * @return the corrected param type
-   */
-  private Type correctFormBodyType(RequestBody parameter, Type type) {
-    if (null != type || parameter == null) {
-      return type;
-    }
-    if (parameter.getContent().get(MediaType.APPLICATION_JSON) == null
-        || !(parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema() instanceof MapSchema)) {
-      return null;
-    }
-    String className = SwaggerUtils.getClassName(parameter.getExtensions());
-    if (!StringUtils.isEmpty(className)) {
-      try {
-        JavaType javaType = TypeFactory.defaultInstance().constructFromCanonical(className);
-        return RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()
-            .constructMapType(Map.class, String.class, javaType.getRawClass());
-      } catch (Throwable e) {
-        // ignore
-      }
-    }
-    return RestObjectMapperFactory.getRestObjectMapper().getTypeFactory()
-        .constructMapType(Map.class, String.class, Object.class);
   }
 
   public boolean isDownloadFile() {

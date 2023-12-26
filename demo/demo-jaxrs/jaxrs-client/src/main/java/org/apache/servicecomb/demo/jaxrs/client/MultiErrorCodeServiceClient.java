@@ -70,7 +70,6 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     headers.setContentType(MediaType.APPLICATION_JSON);
     String body = "{\"message\":\"hello\",\"code\":\"wrongType\"";
     HttpEntity<String> entity = new HttpEntity<>(body, headers);
-    ResponseEntity<MultiResponse200> result;
     try {
       template
           .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
@@ -83,7 +82,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     try {
       template
           .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
-      TestMgr.check(590, 200);
+      TestMgr.fail("expect failed.");
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 400);
     }
@@ -94,7 +93,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
     try {
       template
           .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
-      TestMgr.check(590, 200);
+      TestMgr.fail("expect failed.");
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 400);
     }
