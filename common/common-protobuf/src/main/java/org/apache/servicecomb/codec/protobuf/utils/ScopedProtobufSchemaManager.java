@@ -42,12 +42,15 @@ public class ScopedProtobufSchemaManager {
   static class SchemaKey {
     String schemaId;
 
+    String rootMessage;
+
     Schema<?> schema;
 
     int hashCode = -1;
 
-    SchemaKey(String schemaId, Schema<?> schema) {
+    SchemaKey(String schemaId, String rootMessage, Schema<?> schema) {
       this.schemaId = schemaId;
+      this.rootMessage = rootMessage;
       this.schema = schema;
     }
 
@@ -60,7 +63,7 @@ public class ScopedProtobufSchemaManager {
         return false;
       }
       SchemaKey other = (SchemaKey) o;
-      return StringUtils.equals(schemaId, other.schemaId)
+      return StringUtils.equals(schemaId, other.schemaId) && StringUtils.equals(rootMessage, other.rootMessage)
           && SwaggerUtils.schemaEquals(schema, other.schema);
     }
 
@@ -69,7 +72,7 @@ public class ScopedProtobufSchemaManager {
       if (hashCode != -1) {
         return hashCode;
       }
-      hashCode = schemaId.hashCode() ^ SwaggerUtils.schemaHashCode(schema);
+      hashCode = schemaId.hashCode() ^ rootMessage.hashCode() ^ SwaggerUtils.schemaHashCode(schema);
       return hashCode;
     }
   }
@@ -100,8 +103,9 @@ public class ScopedProtobufSchemaManager {
   /**
    * get the ProtoMapper from Schema
    */
-  public ProtoMapper getOrCreateProtoMapper(OpenAPI openAPI, String schemaId, String rootMessageName, Schema<?> schema) {
-    SchemaKey schemaKey = new SchemaKey(schemaId, schema);
+  public ProtoMapper getOrCreateProtoMapper(OpenAPI openAPI, String schemaId, String rootMessageName,
+      Schema<?> schema) {
+    SchemaKey schemaKey = new SchemaKey(schemaId, rootMessageName, schema);
     return schemaMapperCache.computeIfAbsent(schemaKey, key -> {
       SchemaToProtoGenerator generator = new SchemaToProtoGenerator("scb.schema", openAPI,
           key.schema, rootMessageName);

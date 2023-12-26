@@ -40,13 +40,11 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
-import io.swagger.v3.oas.models.media.MapSchema;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.parameters.RequestBody;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
-import jakarta.ws.rs.core.MediaType;
 
 @SuppressWarnings("rawtypes")
 public class RestOperationMeta {
@@ -139,10 +137,6 @@ public class RestOperationMeta {
   private Type correctFormBodyType(RequestBody parameter, Type type) {
     if (null != type || parameter == null) {
       return type;
-    }
-    if (parameter.getContent().get(MediaType.APPLICATION_JSON) == null
-        || !(parameter.getContent().get(MediaType.APPLICATION_JSON).getSchema() instanceof MapSchema)) {
-      return null;
     }
     String className = SwaggerUtils.getClassName(parameter.getExtensions());
     if (!StringUtils.isEmpty(className)) {

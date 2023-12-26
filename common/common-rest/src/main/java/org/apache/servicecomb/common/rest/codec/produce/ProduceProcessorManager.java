@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.http.entity.ContentType;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.RegisterManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
@@ -44,6 +45,10 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
   public static final String DEFAULT_SERIAL_CLASS = "servicecomb_default_class";
 
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
+
+  public static final String PARAM_DEFAULT_RESPONSE_ENCODING = "servicecomb.rest.parameter.default-response-encoding";
+
+  private static String defaultResponseEncoding;
 
   private final Map<String, ProduceProcessor> jsonProcessorMap;
 
@@ -75,6 +80,14 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
       LOGGER.warn("Failed to create produceProcessor with {}", serialViewClass.getName(), e);
     }
     return produceViewMap.get(DEFAULT_SERIAL_CLASS);
+  }
+
+  private static String defaultResponseEncoding() {
+    if (defaultResponseEncoding == null) {
+      defaultResponseEncoding = LegacyPropertyFactory
+          .getStringProperty(PARAM_DEFAULT_RESPONSE_ENCODING, MediaType.APPLICATION_JSON);
+    }
+    return defaultResponseEncoding;
   }
 
   public ProduceProcessor findJsonProcessorByViewClass(Class<?> serialViewClass) {
@@ -115,8 +128,8 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
     }
     String actualAccept = accept;
     if (actualAccept == null) {
-      if (response.getContent().get(MediaType.APPLICATION_JSON) != null) {
-        actualAccept = MediaType.APPLICATION_JSON;
+      if (response.getContent().get(defaultResponseEncoding()) != null) {
+        actualAccept = defaultResponseEncoding();
       } else {
         actualAccept = response.getContent().keySet().iterator().next();
       }
@@ -125,8 +138,8 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
     actualAccept = contentType.getMimeType();
     if (MediaType.WILDCARD.equals(contentType.getMimeType()) ||
         MediaType.MEDIA_TYPE_WILDCARD.equals(contentType.getMimeType())) {
-      if (response.getContent().get(MediaType.APPLICATION_JSON) != null) {
-        actualAccept = MediaType.APPLICATION_JSON;
+      if (response.getContent().get(defaultResponseEncoding()) != null) {
+        actualAccept = defaultResponseEncoding();
       } else {
         actualAccept = response.getContent().keySet().iterator().next();
       }
@@ -135,14 +148,14 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
       LOGGER.warn("Operation do not support accept type {}/{}", accept, actualAccept);
       return findDefaultProcessor();
     }
+    if (MediaType.APPLICATION_JSON.equals(actualAccept)) {
+      return findJsonProcessorByViewClass(serialViewClass);
+    }
     if (SwaggerConst.PROTOBUF_TYPE.equals(actualAccept)) {
       return new ProduceProtoBufferProcessor(operationMeta,
           operationMeta.getSchemaMeta().getSwagger(), response.getContent().get(actualAccept).getSchema());
     }
-    if (MediaType.TEXT_PLAIN.equals(actualAccept)) {
-      return findPlainProcessorByViewClass(serialViewClass);
-    }
-    // json
-    return findJsonProcessorByViewClass(serialViewClass);
+    // text plain
+    return findPlainProcessorByViewClass(serialViewClass);
   }
 }

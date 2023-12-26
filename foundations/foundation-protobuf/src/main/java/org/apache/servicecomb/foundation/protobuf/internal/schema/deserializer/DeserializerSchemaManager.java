@@ -249,7 +249,7 @@ public class DeserializerSchemaManager extends SchemaManager {
       if (contentType == null) {
         contentType = ProtoConst.OBJECT_TYPE;
       }
-      SchemaEx<Object> contentSchema = getOrCreateMessageSchema((Message) protoField.getType(), contentType);
+      SchemaEx<Object> contentSchema = createMessageSchema((Message) protoField.getType(), contentType);
       if (isWrapProperty((Message) protoField.getType())) {
         return PropertyWrapperRepeatedReadSchemas.create(protoField, propertyDescriptor, contentSchema);
       }

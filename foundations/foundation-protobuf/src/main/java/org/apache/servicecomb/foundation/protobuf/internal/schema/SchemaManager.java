@@ -55,13 +55,12 @@ public abstract class SchemaManager {
   // key is canonical message name + ":" + canonical type name
   protected final Map<String, SchemaEx<?>> canonicalSchemas = new ConcurrentHashMapEx<>();
 
+  // key is canonical message name + ":" + canonical type name
+  protected final Map<String, SchemaEx<?>> canonicalSchemasCreated = new ConcurrentHashMapEx<>();
+
   public SchemaManager(ProtoMapper protoMapper) {
     this.protoMapper = protoMapper;
     this.proto = protoMapper.getProto();
-  }
-
-  public Map<String, SchemaEx<?>> getCanonicalSchemas() {
-    return canonicalSchemas;
   }
 
   protected String generateCacheKey(Message message, JavaType javaType) {
@@ -72,44 +71,25 @@ public abstract class SchemaManager {
 
   protected abstract <T> SchemaEx<T> newMessageSchema(Message message, Map<String, Type> types);
 
-  /**
-   *
-   * @param protoField
-   * @param propertyDescriptor provide getter/setter/javaType
-   * @return
-   */
   protected abstract <T> FieldSchema<T> createScalarField(Field protoField, PropertyDescriptor propertyDescriptor);
 
   @SuppressWarnings("unchecked")
   protected <T> SchemaEx<T> getOrCreateMessageSchema(Message message, Map<String, Type> types) {
     String cacheKey = generateCacheKey(message, ProtoConst.MAP_TYPE);
-    SchemaEx<T> messageSchema = (SchemaEx<T>) canonicalSchemas.get(cacheKey);
-    if (messageSchema == null) {
-      // messageSchema already put into canonicalSchemas inside createMessageSchema
-      messageSchema = createMessageSchema(message, types);
-    }
-    return messageSchema;
+    return (SchemaEx<T>) canonicalSchemasCreated.computeIfAbsent(cacheKey, key -> createMessageSchema(message, types));
   }
 
   @SuppressWarnings("unchecked")
   protected <T> SchemaEx<T> getOrCreateMessageSchema(Message message, JavaType javaType) {
     String cacheKey = generateCacheKey(message, javaType);
-    SchemaEx<T> messageSchema = (SchemaEx<T>) canonicalSchemas.get(cacheKey);
-    if (messageSchema == null) {
-      // messageSchema already put into canonicalSchemas inside createMessageSchema
-      messageSchema = createMessageSchema(message, javaType);
-    }
-    return messageSchema;
+    return (SchemaEx<T>) canonicalSchemasCreated.computeIfAbsent(cacheKey,
+        key -> createMessageSchema(message, javaType));
   }
 
   @SuppressWarnings("unchecked")
-  protected <T> SchemaEx<T> findSchema(String key) {
-    return (SchemaEx<T>) canonicalSchemas.get(key);
-  }
-
   protected <T> SchemaEx<T> createMessageSchema(Message message, Map<String, Type> types) {
     String cacheKey = generateCacheKey(message, ProtoConst.MAP_TYPE);
-    SchemaEx<T> schema = findSchema(cacheKey);
+    SchemaEx<T> schema = (SchemaEx<T>) canonicalSchemas.get(cacheKey);
     if (schema != null) {
       return schema;
     }
@@ -121,9 +101,10 @@ public abstract class SchemaManager {
     return schema;
   }
 
+  @SuppressWarnings("unchecked")
   protected <T> SchemaEx<T> createMessageSchema(Message message, JavaType javaType) {
     String cacheKey = generateCacheKey(message, javaType);
-    SchemaEx<T> schema = findSchema(cacheKey);
+    SchemaEx<T> schema = (SchemaEx<T>) canonicalSchemas.get(cacheKey);
     if (schema != null) {
       return schema;
     }
@@ -144,7 +125,7 @@ public abstract class SchemaManager {
     JavaType entryType = TypeFactory.defaultInstance().constructParametricType(MapEntry.class,
         javaType.getKeyType(),
         javaType.getContentType());
-    SchemaEx<Entry<Object, Object>> entrySchema = getOrCreateMessageSchema((Message) protoField.getType(),
+    SchemaEx<Entry<Object, Object>> entrySchema = createMessageSchema((Message) protoField.getType(),
         entryType);
     return new MapSchema<>(protoField, propertyDescriptor, entrySchema);
   }
@@ -215,7 +196,7 @@ public abstract class SchemaManager {
 
     // message
     if (protoField.getType().isMessage()) {
-      SchemaEx<Object> messageSchema = getOrCreateMessageSchema((Message) protoField.getType(),
+      SchemaEx<Object> messageSchema = createMessageSchema((Message) protoField.getType(),
           propertyDescriptor.getJavaType());
       if (isWrapProperty((Message) protoField.getType())) {
         return new PropertyWrapperAsFieldSchema<>(protoField, propertyDescriptor, messageSchema);

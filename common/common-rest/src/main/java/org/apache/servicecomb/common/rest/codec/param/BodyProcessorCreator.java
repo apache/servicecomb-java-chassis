@@ -80,6 +80,12 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
   // Do not use it if you are sure how it works. And may be deleted in the future.
   public static final String PARAM_DECODE_AS_OBJECT = "servicecomb.rest.parameter.decodeAsObject";
 
+  public static final String PARAM_DEFAULT_REQUEST_ENCODING = "servicecomb.rest.parameter.default-request-encoding";
+
+  private static Boolean decodeAsObject;
+
+  private static String defaultRequestEncoding;
+
   public static class BodyProcessor implements ParamValueProcessor {
     // Producer target type. For consumer, is null.
     protected JavaType targetType;
@@ -176,9 +182,24 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return null;
       }
 
-      if (!supportedContentTypes.contains(contentType)) {
-        throw new IllegalArgumentException(String.format("operation %s not support content-type %s",
-            operationMeta.getSchemaQualifiedName(), contentType));
+      if (MediaType.APPLICATION_JSON.equals(contentType)) {
+        try {
+          ObjectReader reader = serialViewClass != null
+              ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
+              : RestObjectMapperFactory.getRestObjectMapper().reader();
+          if (decodeAsObject()) {
+            return reader.forType(OBJECT_TYPE).readValue(inputStream);
+          }
+          return reader.forType(targetType == null ? OBJECT_TYPE : targetType)
+              .readValue(inputStream);
+        } catch (MismatchedInputException e) {
+          // there is no way to detect InputStream is empty, so have to catch the exception
+          if (!isRequired && e.getMessage().contains("No content to map due to end-of-input")) {
+            LOGGER.info("Empty content and required is false, taken as null");
+            return null;
+          }
+          throw e;
+        }
       }
 
       if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
@@ -192,33 +213,31 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return result.getValue();
       }
 
-      // For application/json and text/plain
-      try {
-        if (MediaType.TEXT_PLAIN.equals(contentType) &&
-            targetType != null && String.class.equals(targetType.getRawClass())) {
-          return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+      if (MediaType.TEXT_PLAIN.equals(contentType)) {
+        try {
+          if (String.class.equals(targetType.getRawClass())) {
+            return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+          }
+          ObjectReader reader = serialViewClass != null
+              ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
+              : RestObjectMapperFactory.getRestObjectMapper().reader();
+          if (decodeAsObject()) {
+            return reader.forType(OBJECT_TYPE).readValue(inputStream);
+          }
+          return reader.forType(targetType == null ? OBJECT_TYPE : targetType)
+              .readValue(inputStream);
+        } catch (MismatchedInputException e) {
+          // there is no way to detect InputStream is empty, so have to catch the exception
+          if (!isRequired && e.getMessage().contains("No content to map due to end-of-input")) {
+            LOGGER.info("Empty content and required is false, taken as null");
+            return null;
+          }
+          throw e;
         }
-        ObjectReader reader = serialViewClass != null
-            ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
-            : RestObjectMapperFactory.getRestObjectMapper().reader();
-        if (decodeAsObject()) {
-          return reader.forType(OBJECT_TYPE).readValue(inputStream);
-        }
-        return reader.forType(targetType == null ? OBJECT_TYPE : targetType)
-            .readValue(inputStream);
-      } catch (MismatchedInputException e) {
-        // there is no way to detect InputStream is empty, so have to catch the exception
-        if (!isRequired && e.getMessage().contains("No content to map due to end-of-input")) {
-          LOGGER.info("Empty content and required is false, taken as null");
-          return null;
-        }
-        throw e;
       }
-    }
 
-    private boolean decodeAsObject() {
-      return LegacyPropertyFactory
-          .getBooleanProperty(PARAM_DECODE_AS_OBJECT, false);
+      throw new IllegalArgumentException(String.format("operation %s not support content-type %s",
+          operationMeta.getSchemaQualifiedName(), contentType));
     }
 
     private String validContentType(String type) {
@@ -226,8 +245,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         if (supportedContentTypes.size() == 0) {
           throw new IllegalArgumentException("operation do not have any content type support.");
         }
-        if (supportedContentTypes.contains(MediaType.APPLICATION_JSON)) {
-          return MediaType.APPLICATION_JSON;
+        if (supportedContentTypes.contains(clientEncodingDefault())) {
+          return clientEncodingDefault();
         }
         return supportedContentTypes.get(0);
       }
@@ -252,6 +271,13 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
      * Serialize body object into body buffer, according to the Content-Type.
      */
     private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
+      if (MediaType.APPLICATION_JSON.equals(contentType)) {
+        try (BufferOutputStream output = new BufferOutputStream()) {
+          RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
+          return output.getBuffer();
+        }
+      }
+
       if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
         ProtoMapper protoMapper = scopedProtobufSchemaManager
             .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
@@ -265,9 +291,9 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return new BufferImpl().appendBytes(serializer.serialize(bodyArg));
       }
 
-      // For application/json and text/plain
+      // For text/plain
       try (BufferOutputStream output = new BufferOutputStream()) {
-        if (MediaType.TEXT_PLAIN.equals(contentType) && (arg instanceof String)) {
+        if (arg instanceof String) {
           output.write(((String) arg).getBytes(StandardCharsets.UTF_8));
         } else {
           RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
@@ -365,5 +391,21 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
     }
 
     return new BodyProcessor(operationMeta, targetType, parameter);
+  }
+
+  private static boolean decodeAsObject() {
+    if (decodeAsObject == null) {
+      decodeAsObject = LegacyPropertyFactory
+          .getBooleanProperty(PARAM_DECODE_AS_OBJECT, false);
+    }
+    return decodeAsObject;
+  }
+
+  private static String clientEncodingDefault() {
+    if (defaultRequestEncoding == null) {
+      defaultRequestEncoding = LegacyPropertyFactory
+          .getStringProperty(PARAM_DEFAULT_REQUEST_ENCODING, MediaType.APPLICATION_JSON);
+    }
+    return defaultRequestEncoding;
   }
 }

@@ -101,6 +101,8 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
 
   @Override
   public void init() {
+    this.mapFieldMaps = protoMapper.getSerializerSchemaManager().createMapFields(message);
+
     if (ProtoUtils.isWrapProperty(message)) {
       this.mainPojoFieldMaps = createPropertyWrapperFields(javaType);
       return;
@@ -178,10 +180,6 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
   }
 
   protected final void writeFromMap(OutputEx output, Map<String, Object> map) throws IOException {
-    if (mapFieldMaps == null) {
-      mapFieldMaps = protoMapper.getSerializerSchemaManager().createMapFields(message);
-    }
-
     for (Entry<String, Object> entry : map.entrySet()) {
       if (entry.getValue() == null) {
         continue;
