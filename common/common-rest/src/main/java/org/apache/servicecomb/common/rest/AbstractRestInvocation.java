@@ -190,6 +190,8 @@ public abstract class AbstractRestInvocation {
         synchronized (this.requestEx) {
           try {
             if (isInQueueTimeout()) {
+              // record queue time
+              invocation.onExecuteStart();
               throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Timeout when processing the request.");
             }
             if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
