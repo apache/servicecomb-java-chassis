@@ -35,7 +35,6 @@ import org.apache.servicecomb.core.event.InvocationBusinessFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
 import org.apache.servicecomb.core.event.InvocationEncodeResponseStartEvent;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
-import org.apache.servicecomb.core.event.InvocationRunInExecutorFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartSendRequestEvent;
 import org.apache.servicecomb.core.event.InvocationTimeoutCheckEvent;
@@ -338,10 +337,6 @@ public class Invocation extends SwaggerInvocation {
     this.requestEx = requestEx;
 
     onStart();
-  }
-
-  public void onExecuteFinish() {
-    EventManager.post(new InvocationRunInExecutorFinishEvent(this));
   }
 
   public void onStartSendRequest() {

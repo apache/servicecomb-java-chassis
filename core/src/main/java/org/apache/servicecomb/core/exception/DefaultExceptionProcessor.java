@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.tracing.TraceIdLogger;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -113,9 +114,17 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
     try {
       ExceptionConverter<Throwable> converter =
           converterCache.computeIfAbsent(unwrapped.getClass(), clazz -> findConverter(unwrapped));
-      LOGGER.warn("convert operation {} exception using {}.",
-          invocation == null ? "NA" : invocation.getMicroserviceQualifiedName(),
-          converter.getClass().getSimpleName(), throwable);
+      if (invocation == null) {
+        LOGGER.warn("Convert unknown operation exception {}/{} using {}.",
+            throwable.getClass().getSimpleName(), unwrapped.getClass().getSimpleName(),
+            converter.getClass().getSimpleName());
+      } else {
+        invocation.getTraceIdLogger().warn("{} Convert operation {} exception {}/{} using {}.",
+            TraceIdLogger.constructSource(DefaultExceptionProcessor.class.getSimpleName()),
+            invocation.getMicroserviceQualifiedName(),
+            throwable.getClass().getSimpleName(), unwrapped.getClass().getSimpleName(),
+            converter.getClass().getSimpleName());
+      }
       return converter.convert(invocation, unwrapped, genericStatus);
     } catch (Exception e) {
       LOGGER.error("BUG: ExceptionConverter.convert MUST not throw exception, please fix it.\n"
@@ -152,18 +161,18 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
     }
 
     if (isPrintStackTrace()) {
-      LOGGER.error("failed to invoke {}, endpoint={}, trace id={}.",
+      invocation.getTraceIdLogger().error("{} Failed to invoke {}, endpoint={}.",
+          TraceIdLogger.constructSource(DefaultExceptionProcessor.class.getSimpleName()),
           invocation.getMicroserviceQualifiedName(),
           invocation.getEndpoint(),
-          invocation.getTraceId(),
           exception);
       return;
     }
 
-    LOGGER.error("failed to invoke {}, endpoint={}, trace id={}, message={}.",
+    invocation.getTraceIdLogger().error("{} Failed to invoke {}, endpoint={}, message={}.",
+        TraceIdLogger.constructSource(DefaultExceptionProcessor.class.getSimpleName()),
         invocation.getMicroserviceQualifiedName(),
         invocation.getEndpoint(),
-        invocation.getTraceId(),
         ExceptionUtils.getExceptionMessageWithoutTrace(exception));
   }
 
@@ -193,12 +202,14 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
     }
 
     if (isPrintStackTrace()) {
-      LOGGER.error("failed to process {} invocation, operation={}.",
+      invocation.getTraceIdLogger().error("{} Failed to process {} invocation, operation={}.",
+          TraceIdLogger.constructSource(DefaultExceptionProcessor.class.getSimpleName()),
           invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(), exception);
       return;
     }
 
-    LOGGER.error("failed to process {} invocation, operation={}, message={}.",
+    invocation.getTraceIdLogger().error("{} Failed to process {} invocation, operation={}, message={}.",
+        TraceIdLogger.constructSource(DefaultExceptionProcessor.class.getSimpleName()),
         invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(),
         ExceptionUtils.getExceptionMessageWithoutTrace(exception));
   }

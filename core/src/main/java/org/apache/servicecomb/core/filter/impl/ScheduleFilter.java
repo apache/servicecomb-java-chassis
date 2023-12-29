@@ -24,8 +24,10 @@ import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
+import org.apache.servicecomb.core.tracing.TraceIdLogger;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.MDC;
 
 import jakarta.ws.rs.core.Response.Status;
 
@@ -52,12 +54,9 @@ public class ScheduleFilter extends AbstractFilter implements ProviderFilter {
 
   protected CompletableFuture<Response> runInExecutor(Invocation invocation, FilterNode next) {
     invocation.getInvocationStageTrace().finishProviderQueue();
-    try {
-      checkInQueueTimeout(invocation);
-      return next.onFilter(invocation);
-    } finally {
-      invocation.onExecuteFinish();
-    }
+    MDC.put(TraceIdLogger.KEY_TRACE_ID, invocation.getTraceId());
+    checkInQueueTimeout(invocation);
+    return next.onFilter(invocation);
   }
 
   private void checkInQueueTimeout(Invocation invocation) {
