@@ -236,7 +236,7 @@ public class LoadBalanceFilter extends AbstractFilter implements ConsumerFilter,
       }
     }
 
-    LOGGER.info("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
+    LOGGER.warn("operation failed {}, retry to instance [{}], last instance [{}], trace id {}",
         invocation.getMicroserviceQualifiedName(),
         nextServer == null ? "" : nextServer.getEndpoint().getEndpoint(),
         lastServer == null ? "" : nextServer.getEndpoint().getEndpoint(),
