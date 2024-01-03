@@ -17,26 +17,21 @@
 
 package org.apache.servicecomb.demo.multiServiceCenter;
 
-import jakarta.ws.rs.core.MediaType;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import jakarta.ws.rs.core.MediaType;
+
 @RestSchema(schemaId = "ServerEndpoint")
 @RequestMapping(path = "/register/url/prefix", produces = MediaType.APPLICATION_JSON)
 public class ServerEndpoint {
-  private static final Logger LOGGER
-      = LoggerFactory.getLogger(ServerEndpoint.class);
-
   @GetMapping(path = "/getName")
   public String getName(@RequestParam(name = "name") String name) {
-    ((Invocation) ContextUtils.getInvocationContext()).getTraceIdLogger().info(LOGGER, "get name invoked.");
+    ((Invocation) ContextUtils.getInvocationContext()).getTraceIdLogger().info("get name invoked.");
     return name;
   }
 }

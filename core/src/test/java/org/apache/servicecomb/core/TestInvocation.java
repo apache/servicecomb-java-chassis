@@ -268,11 +268,11 @@ public class TestInvocation {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
     invocation.onStart();
-    Assertions.assertEquals("abc-0", invocation.getTraceIdLogger().getName());
+    Assertions.assertEquals("abc", invocation.getTraceIdLogger().getName());
 
     invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
     invocation.onStart();
-    Assertions.assertEquals("abc-1", invocation.getTraceIdLogger().getName());
+    Assertions.assertEquals("abc", invocation.getTraceIdLogger().getName());
   }
 }

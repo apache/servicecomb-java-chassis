@@ -18,17 +18,18 @@ package org.apache.servicecomb.core.tracing;
 
 import org.apache.servicecomb.core.Invocation;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.slf4j.Marker;
 
 public class TraceIdLogger {
+  private static final Logger LOGGER = LoggerFactory.getLogger("scb-trace");
+
   private static final Marker MARKER = new ScbMarker();
 
-  private static final String KEY_TRACE_ID = "SERVICECOMB_TRACE_ID";
+  public static final String KEY_TRACE_ID = "SERVICECOMB_TRACE_ID";
 
   private final Invocation invocation;
-
-  private String name;
 
   public TraceIdLogger(Invocation invocation) {
     this.invocation = invocation;
@@ -38,34 +39,36 @@ public class TraceIdLogger {
     return invocation;
   }
 
+  public static String constructSource(String source) {
+    return "[" + source + "(" +
+        Thread.currentThread().getStackTrace()[2].getLineNumber() + ")]";
+  }
+
   public final String getName() {
-    if (name == null) {
-      name = invocation.getTraceId() + "-" + invocation.getInvocationId();
-    }
-    return name;
+    return invocation.getTraceId();
   }
 
-  public void error(Logger logger, String format, Object... arguments) {
+  public void error(String format, Object... arguments) {
     MDC.put(KEY_TRACE_ID, getName());
-    logger.error(MARKER, format, arguments);
+    LOGGER.error(MARKER, format, arguments);
     MDC.remove(KEY_TRACE_ID);
   }
 
-  public void warn(Logger logger, String format, Object... arguments) {
+  public void warn(String format, Object... arguments) {
     MDC.put(KEY_TRACE_ID, getName());
-    logger.warn(MARKER, format, arguments);
+    LOGGER.warn(MARKER, format, arguments);
     MDC.remove(KEY_TRACE_ID);
   }
 
-  public void info(Logger logger, String format, Object... arguments) {
+  public void info(String format, Object... arguments) {
     MDC.put(KEY_TRACE_ID, getName());
-    logger.info(MARKER, format, arguments);
+    LOGGER.info(MARKER, format, arguments);
     MDC.remove(KEY_TRACE_ID);
   }
 
-  public void debug(Logger logger, String format, Object... arguments) {
+  public void debug(String format, Object... arguments) {
     MDC.put(KEY_TRACE_ID, getName());
-    logger.debug(MARKER, format, arguments);
+    LOGGER.debug(MARKER, format, arguments);
     MDC.remove(KEY_TRACE_ID);
   }
 }

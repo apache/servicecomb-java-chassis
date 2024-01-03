@@ -23,7 +23,7 @@ servicecomb:
 # metrics and access log
   accesslog:
     enabled: true
-    pattern: "|%h|%r|%s|%D"
+    pattern: "|%SCB-traceId|%h|%r|%s|%D"
 
   metrics:
     window_time: 300000
