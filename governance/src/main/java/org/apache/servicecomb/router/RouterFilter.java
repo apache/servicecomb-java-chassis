@@ -58,7 +58,7 @@ public class RouterFilter {
     PolicyRuleItem invokeRule = routerRuleMatcher.match(targetServiceName, extractor);
 
     if (invokeRule == null) {
-      LOGGER.warn("route management hava no rule matched service {}", targetServiceName);
+      LOGGER.debug("route management hava no rule matched service {}", targetServiceName);
       return list;
     }
 
