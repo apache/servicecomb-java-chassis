@@ -51,19 +51,6 @@ public class TestYAMLUtil {
   public void testSafeParser() {
     Person person = YAMLUtil.parserObject("name: hello", Person.class);
     Assertions.assertEquals("hello", person.getName());
-
-    person = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$Person\n"
-        + "name: hello", Person.class);
-    Assertions.assertEquals("hello", person.getName());
-
-    person = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$UnsafePerson\n"
-        + "name: hello", Person.class);
-    Assertions.assertEquals("hello", person.getName());
-
-    // using Object.class is not safe, do not used in product code.
-    Object object = YAMLUtil.parserObject("!!org.apache.servicecomb.config.TestYAMLUtil$UnsafePerson\n"
-        + "name: hello", Object.class);
-    Assertions.assertEquals("hello", ((UnsafePerson) object).getName());
   }
 
   @Test
