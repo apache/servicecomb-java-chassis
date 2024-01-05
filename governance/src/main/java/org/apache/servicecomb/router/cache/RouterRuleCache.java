@@ -123,6 +123,8 @@ public class RouterRuleCache {
     }
     ServiceInfoCache serviceInfoCache = new ServiceInfoCache(policyRuleItemList);
     serviceInfoCacheMap.put(targetServiceName, serviceInfoCache);
+    LOGGER.info("Route management serialization service {} rules success, content: {}", targetServiceName,
+        serviceInfoCache.getAllrule());
     return true;
   }
 
