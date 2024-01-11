@@ -20,6 +20,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -33,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
 public class HealthInstancePing implements InstancePing {
@@ -42,10 +44,17 @@ public class HealthInstancePing implements InstancePing {
 
   private TelnetInstancePing telnetInstancePing;
 
+  private Environment environment;
+
   @Autowired
   @Lazy
   public void setScbEngine(SCBEngine scbEngine) {
     this.scbEngine = scbEngine;
+  }
+
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
   }
 
   @Autowired
@@ -76,7 +85,10 @@ public class HealthInstancePing implements InstancePing {
       if (transport == null) {
         continue;
       }
-      Invocation invocation = InvokerUtils.createInvocation(instance.getServiceName(), transportName,
+      // Use myself service name instead of the target. Because can avoid create
+      // MicroserviceReferenceConfig for the target.
+      Invocation invocation = InvokerUtils.createInvocation(BootStrapProperties.readServiceName(environment),
+          transportName,
           ManagementEndpoint.NAME, "health",
           args, boolean.class);
       invocation.setEndpoint(new Endpoint(transport, endpoint, instance));
