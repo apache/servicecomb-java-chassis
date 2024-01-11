@@ -82,6 +82,7 @@ public class DiscoveryManager implements LifeCycle {
           try {
             runnable.run();
           } catch (Throwable e) {
+            // This would never happen, because Worker will catch Throwable and mute all tasks.
             LOGGER.error("discovery manager task error, not allowed please fix. ", e);
           }
         }
@@ -93,6 +94,15 @@ public class DiscoveryManager implements LifeCycle {
   }
 
   private void doTask() {
+    // doTask can not throw exception or will mute all tasks.
+    try {
+      doTaskImpl();
+    } catch (Throwable e) {
+      LOGGER.error("discovery manager task error. ", e);
+    }
+  }
+
+  private void doTaskImpl() {
     Map<String, Map<String, List<String>>> removed = new HashMap<>();
     for (Entry<String, Map<String, Map<String, StatefulDiscoveryInstance>>> apps : allInstances.entrySet()) {
       for (Entry<String, Map<String, StatefulDiscoveryInstance>> services : apps.getValue().entrySet()) {
