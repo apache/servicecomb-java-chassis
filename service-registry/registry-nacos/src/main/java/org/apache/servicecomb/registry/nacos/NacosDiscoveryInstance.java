@@ -134,6 +134,10 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private static List<String> readEndpoints(Instance instance) {
     if (StringUtils.isEmpty(instance.getMetadata().get(NacosConst.PROPERTY_ENDPOINT))) {
+      // interoperate with spring cloud using nacos
+      if (StringUtils.isNotEmpty(instance.getIp()) && instance.getPort() > 0) {
+        return List.of("rest://" + instance.getIp() + ":" + instance.getPort());
+      }
       return Collections.emptyList();
     }
     return Arrays.asList(instance.getMetadata().get(NacosConst.PROPERTY_ENDPOINT)
