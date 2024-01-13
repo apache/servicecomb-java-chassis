@@ -17,32 +17,24 @@
 
 package org.apache.servicecomb.config.client;
 
-import static org.apache.servicecomb.config.client.ConfigurationAction.CREATE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.DELETE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.SET;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
+import com.ctrip.framework.apollo.Config;
+import com.ctrip.framework.apollo.ConfigFile;
+import com.ctrip.framework.apollo.ConfigService;
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
+import com.ctrip.framework.apollo.enums.PropertyChangeType;
+import com.ctrip.framework.apollo.model.ConfigChange;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.core.type.TypeReference;
+import java.io.IOException;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
+import static org.apache.servicecomb.config.client.ConfigurationAction.*;
 
 public class ApolloClient {
 
@@ -52,27 +44,10 @@ public class ApolloClient {
 
   private static final Map<String, Object> originalConfigMap = new ConcurrentHashMap<>();
 
-  private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
-
-  private final int refreshInterval = APOLLO_CONFIG.getRefreshInterval();
-
-  private final int firstRefreshInterval = APOLLO_CONFIG.getFirstRefreshInterval();
-
-  private final String serviceUri = APOLLO_CONFIG.getServerUri();
-
-  private final String serviceName = APOLLO_CONFIG.getServiceName();
-
-  private final String token = APOLLO_CONFIG.getToken();
-
-  private final String env = APOLLO_CONFIG.getEnv();
-
-  private final String clusters = APOLLO_CONFIG.getServerClusters();
-
   private final String namespace = APOLLO_CONFIG.getNamespace();
 
   private final UpdateHandler updateHandler;
 
-  private static RestTemplate rest = new RestTemplate();
 
   public ApolloClient(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
@@ -83,98 +58,121 @@ public class ApolloClient {
     return originalConfigMap;
   }
 
-  @VisibleForTesting
-  static void setRest(RestTemplate rest) {
-    ApolloClient.rest = rest;
-  }
-
   public void refreshApolloConfig() {
-    EXECUTOR
-        .scheduleWithFixedDelay(new ConfigRefresh(serviceUri), firstRefreshInterval, refreshInterval, TimeUnit.SECONDS);
+    String namespaces = namespace!=null?namespace:"application";
+    List<String> namespaceList = Arrays.asList(namespaces.split(","));
+    for (String ns : namespaceList) {
+      ConfigFileFormat format =determineFileFormat(ns);
+      if (format == ConfigFileFormat.YAML||format == ConfigFileFormat.Properties ||format == ConfigFileFormat.YML){
+        Config config =  ConfigService.getConfig(ns);
+        this.refreshConfig(config);
+        config.addChangeListener(changeEvent -> {
+          LOGGER.info("Changes for namespace {}" , changeEvent.getNamespace());
+          this.refreshConfig(config);
+          for (String key : changeEvent.changedKeys()) {
+            ConfigChange change = changeEvent.getChange(key);
+            String propertyName = change.getPropertyName();
+            String oldValue = change.getOldValue();
+            String newValue = change.getOldValue();
+            PropertyChangeType changeType = change.getChangeType();
+            LOGGER.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", propertyName, oldValue, newValue, changeType);
+          }
+        });
+      }else{
+        ConfigFile configFile = ConfigService.getConfigFile(ns, format);
+        this.refreshConfigForJSON(format, configFile.getContent());
+        configFile.addChangeListener(changeEvent -> {
+          LOGGER.info("Changes for namespace {}" , changeEvent.getNamespace());
+          PropertyChangeType changeType = changeEvent.getChangeType();
+          String newValue = changeEvent.getNewValue();
+          String oldValue = changeEvent.getOldValue();
+          LOGGER.info("Found change - oldValue: {}, newValue: {}, changeType: {}", oldValue, newValue, changeType);
+          this.refreshConfigForJSON(format, newValue);
+        });
+      }
+    }
   }
 
-  class ConfigRefresh implements Runnable {
-    private final String serviceUri;
-
-    ConfigRefresh(String serviceUris) {
-      this.serviceUri = serviceUris;
+  private void refreshConfigForJSON(ConfigFileFormat format, String newValue) {
+    if(format ==ConfigFileFormat.JSON ){
+      Map<String, Object> newConfig = this.parseJsonToFirstLevel(newValue);
+      this.refreshConfigItems(newConfig);
+    }else{
+      Map<String, Object> newConfig = new HashMap<>();
+      newConfig.put("content", newValue);
+      this.refreshConfigItems(newConfig);
     }
+  }
 
-    @Override
-    public void run() {
-      try {
-        refreshConfig();
-      } catch (Throwable e) {
-        LOGGER.error("client refresh thread exception ", e);
-      }
+  private void refreshConfig(Config config) {
+    Map<String, Object> newConfig = new LinkedHashMap<>();
+    config.getPropertyNames().forEach(key ->newConfig.put(key, config.getProperty(key,null)));
+    this.refreshConfigItems(newConfig);
+  }
+
+
+  private ConfigFileFormat determineFileFormat(String namespaceName) {
+    String lowerCase = namespaceName.toLowerCase();
+    ConfigFileFormat format = Arrays.stream(ConfigFileFormat.values()).filter(o-> lowerCase.endsWith("." + o.getValue())).findFirst().get();
+    if(format==null){
+      return ConfigFileFormat.Properties;
     }
+    return format;
+  }
 
-    @SuppressWarnings("unchecked")
-    void refreshConfig() {
-      HttpHeaders headers = new HttpHeaders();
-      headers.add("Content-Type", "application/json;charset=UTF-8");
-      headers.add("Authorization", token);
-      HttpEntity<String> entity = new HttpEntity<>(headers);
-      ResponseEntity<String> exchange = rest.exchange(composeAPI(), HttpMethod.GET, entity, String.class);
-      if (HttpResponseStatus.OK.code() == exchange.getStatusCode().value()) {
-        try {
-          Map<String, Object> body = JsonUtils.OBJ_MAPPER.readValue(exchange.getBody(),
-              new TypeReference<Map<String, Object>>() {
-              });
-          refreshConfigItems((Map<String, Object>) body.get("configurations"));
-        } catch (IOException e) {
-          LOGGER.error("JsonObject parse config center response error: ", e);
-        }
-      } else {
-        LOGGER.error("fetch configuration failed, error code:{} for {}",
-            exchange.getStatusCodeValue(),
-            exchange.getBody());
-      }
-    }
-
-    private String composeAPI() {
-      String api = serviceUri + "/openapi/v1/envs/" + env +
-          "/apps/" + serviceName +
-          "/clusters/" + clusters +
-          "/namespaces/" + namespace +
-          "/releases/latest";
-      return api;
-    }
-
-    private void refreshConfigItems(Map<String, Object> map) {
-      compareChangedConfig(originalConfigMap, map);
-      originalConfigMap.clear();
-      originalConfigMap.putAll(map);
-    }
-
-    void compareChangedConfig(Map<String, Object> before, Map<String, Object> after) {
-      Map<String, Object> itemsCreated = new HashMap<>();
-      Map<String, Object> itemsDeleted = new HashMap<>();
-      Map<String, Object> itemsModified = new HashMap<>();
-      if (before == null || before.isEmpty()) {
-        updateHandler.handle(CREATE, after);
-        return;
-      }
-      if (after == null || after.isEmpty()) {
-        updateHandler.handle(DELETE, before);
-        return;
-      }
-      after.forEach((itemKey, itemValue) -> {
-        if (!before.containsKey(itemKey)) {
-          itemsCreated.put(itemKey, itemValue);
-        } else if (!itemValue.equals(before.get(itemKey))) {
-          itemsModified.put(itemKey, itemValue);
-        }
-      });
-      for (String itemKey : before.keySet()) {
-        if (!after.containsKey(itemKey)) {
-          itemsDeleted.put(itemKey, "");
+  private Map<String, Object> parseJsonToFirstLevel(String json) {
+    Map<String, Object> resultMap = new HashMap<>();
+    ObjectMapper objectMapper = new ObjectMapper();
+    try {
+      JsonNode rootNode = objectMapper.readTree(json);
+      Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
+      while (fieldsIterator.hasNext()) {
+        Map.Entry<String, JsonNode> field = fieldsIterator.next();
+        if (field.getValue().isObject()) {
+          resultMap.put(field.getKey(), field.getValue().asText());
+        } else {
+          resultMap.put(field.getKey(), field.getValue().asText());
         }
       }
-      updateHandler.handle(CREATE, itemsCreated);
-      updateHandler.handle(SET, itemsModified);
-      updateHandler.handle(DELETE, itemsDeleted);
+    } catch (IOException e) {
+      LOGGER.error("JsonObject parse config center response error: ", e);
     }
+    return resultMap;
+  }
+
+  private void refreshConfigItems(Map<String, Object> map) {
+    this.compareChangedConfig(originalConfigMap, map);
+    originalConfigMap.clear();
+    originalConfigMap.putAll(map);
+  }
+
+  private void compareChangedConfig(Map<String, Object> before, Map<String, Object> after) {
+    Map<String, Object> itemsCreated = new HashMap<>();
+    Map<String, Object> itemsDeleted = new HashMap<>();
+    Map<String, Object> itemsModified = new HashMap<>();
+    if (before == null || before.isEmpty()) {
+      updateHandler.handle(CREATE, after);
+      return;
+    }
+    if (after == null || after.isEmpty()) {
+      updateHandler.handle(DELETE, before);
+      return;
+    }
+    after.forEach((itemKey, itemValue) -> {
+      if (!before.containsKey(itemKey)) {
+        itemsCreated.put(itemKey, itemValue);
+      } else if (!itemValue.equals(before.get(itemKey))) {
+        itemsModified.put(itemKey, itemValue);
+      }
+    });
+    for (String itemKey : before.keySet()) {
+      if (!after.containsKey(itemKey)) {
+        itemsDeleted.put(itemKey, "");
+      }
+    }
+    updateHandler.handle(CREATE, itemsCreated);
+    updateHandler.handle(SET, itemsModified);
+    updateHandler.handle(DELETE, itemsDeleted);
   }
 }
 
