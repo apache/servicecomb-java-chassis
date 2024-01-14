@@ -30,7 +30,6 @@ import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceI
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -47,10 +46,12 @@ public class ApolloClient {
   private final String namespace = APOLLO_CONFIG.getNamespace();
 
   private final UpdateHandler updateHandler;
+  private final ObjectMapper objectMapper;
 
 
   public ApolloClient(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
+    this.objectMapper = new ObjectMapper();
   }
 
   @VisibleForTesting
@@ -78,7 +79,7 @@ public class ApolloClient {
             LOGGER.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", propertyName, oldValue, newValue, changeType);
           }
         });
-      }else{
+      }else {
         ConfigFile configFile = ConfigService.getConfigFile(ns, format);
         this.refreshConfigForJSON(format, configFile.getContent());
         configFile.addChangeListener(changeEvent -> {
@@ -94,14 +95,18 @@ public class ApolloClient {
   }
 
   private void refreshConfigForJSON(ConfigFileFormat format, String newValue) {
-    if(format ==ConfigFileFormat.JSON ){
-      Map<String, Object> newConfig = this.parseJsonToFirstLevel(newValue);
-      this.refreshConfigItems(newConfig);
-    }else{
-      Map<String, Object> newConfig = new HashMap<>();
+    Map<String, Object> newConfig = new HashMap<>();
+    if(format ==ConfigFileFormat.JSON){
+      Map<String, Object> jsonMap = this.parseJsonToFirstLevel(newValue);
+      if(jsonMap == null){
+        LOGGER.error("JSON configuration parsing error, do not change the configuration");
+        return;
+      }
+      newConfig.putAll(jsonMap);
+    }else {
       newConfig.put("content", newValue);
-      this.refreshConfigItems(newConfig);
     }
+    this.refreshConfigItems(newConfig);
   }
 
   private void refreshConfig(Config config) {
@@ -111,31 +116,28 @@ public class ApolloClient {
   }
 
 
-  private ConfigFileFormat determineFileFormat(String namespaceName) {
+  ConfigFileFormat determineFileFormat(String namespaceName) {
     String lowerCase = namespaceName.toLowerCase();
-    ConfigFileFormat format = Arrays.stream(ConfigFileFormat.values()).filter(o-> lowerCase.endsWith("." + o.getValue())).findFirst().get();
-    if(format==null){
-      return ConfigFileFormat.Properties;
+    for (ConfigFileFormat format : ConfigFileFormat.values()) {
+      if (lowerCase.endsWith("." + format.getValue())) {
+        return format;
+      }
     }
-    return format;
+    return ConfigFileFormat.Properties;
   }
 
   private Map<String, Object> parseJsonToFirstLevel(String json) {
     Map<String, Object> resultMap = new HashMap<>();
-    ObjectMapper objectMapper = new ObjectMapper();
     try {
       JsonNode rootNode = objectMapper.readTree(json);
       Iterator<Map.Entry<String, JsonNode>> fieldsIterator = rootNode.fields();
       while (fieldsIterator.hasNext()) {
         Map.Entry<String, JsonNode> field = fieldsIterator.next();
-        if (field.getValue().isObject()) {
-          resultMap.put(field.getKey(), field.getValue().asText());
-        } else {
-          resultMap.put(field.getKey(), field.getValue().asText());
-        }
+        resultMap.put(field.getKey(), field.getValue().toString());
       }
-    } catch (IOException e) {
-      LOGGER.error("JsonObject parse config center response error: ", e);
+    } catch (Exception e) {
+      LOGGER.error("ObjectMapper parse JSON configuration response error: ", e);
+      return null;
     }
     return resultMap;
   }
@@ -146,7 +148,7 @@ public class ApolloClient {
     originalConfigMap.putAll(map);
   }
 
-  private void compareChangedConfig(Map<String, Object> before, Map<String, Object> after) {
+  void compareChangedConfig(Map<String, Object> before, Map<String, Object> after) {
     Map<String, Object> itemsCreated = new HashMap<>();
     Map<String, Object> itemsDeleted = new HashMap<>();
     Map<String, Object> itemsModified = new HashMap<>();

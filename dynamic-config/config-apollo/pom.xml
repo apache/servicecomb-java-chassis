@@ -40,5 +40,22 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.ctrip.framework.apollo</groupId>
+      <artifactId>apollo-client</artifactId>
+      <version>2.2.0</version>
+    </dependency>
   </dependencies>
+
+  <build>
+  <resources>
+    <resource>
+      <directory>src/main/resources</directory>
+      <includes>
+        <include>META-INF/**</include>
+      </includes>
+    </resource>
+  </resources>
+
+  </build>
 </project>
