@@ -34,18 +34,14 @@ public class CSEProviderManager implements ProviderManager {
   private Map<Class<? extends Provider>, Provider> providers = new LinkedHashMap<>();
 
   public CSEProviderManager() {
-    // Load per-application configuration, like app id, from classpath://META-INF/app.properties
     Provider applicationProvider = new CSEApplicationProvider();
     applicationProvider.initialize();
     register(applicationProvider);
 
-    // Load network parameters
     Provider networkProvider = new DefaultNetworkProvider();
     networkProvider.initialize();
     register(networkProvider);
 
-    // Load environment (fat, fws, uat, prod ...) and dc, from /opt/settings/server.properties, JVM property and/or OS
-    // environment variables.
     Provider serverProvider = new CSEServerProvider();
     serverProvider.initialize();
     register(serverProvider);
