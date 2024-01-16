@@ -14,8 +14,8 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 | 版本火车           | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
 |----------------|--------|------------|-------------------|----------|-----------------|
-| Java Chassis 3 | 3.0.0  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
-| Java Chassis 2 | 2.8.13 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
+| Java Chassis 3 | 3.0.1  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
+| Java Chassis 2 | 2.8.14 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
 | Java Chassis 1 | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
 
 >>>NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2、Java Chassis 1不能与Java Chassis 3共存互访. 升级Java Chassis 3, 需要将相关的消费者、提供者和边缘服务同时升级.
