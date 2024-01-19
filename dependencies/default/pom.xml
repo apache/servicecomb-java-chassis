@@ -77,6 +77,7 @@
     <mockito.version>4.11.0</mockito.version>
     <mock-server.version>5.14.0</mock-server.version>
     <nacos-client.version>2.2.0</nacos-client.version>
+    <apollo-client.version>2.2.0</apollo-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <netty.version>4.1.87.Final</netty.version>
     <okhttp3.version>4.10.0</okhttp3.version>
@@ -758,6 +759,12 @@
         <groupId>com.alibaba.nacos</groupId>
         <artifactId>nacos-client</artifactId>
         <version>${nacos-client.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.ctrip.framework.apollo</groupId>
+        <artifactId>apollo-client</artifactId>
+        <version>${apollo-client.version}</version>
       </dependency>
 
       <dependency>
