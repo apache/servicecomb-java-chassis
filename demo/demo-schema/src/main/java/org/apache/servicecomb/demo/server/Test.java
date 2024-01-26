@@ -35,4 +35,6 @@ public interface Test {
   String addString(String[] strArr);
 
   String testTraceId();
+
+  int[] testIntArray(int[] request);
 }

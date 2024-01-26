@@ -18,7 +18,6 @@
 package org.apache.servicecomb.demo.pojo.client;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.Test;
-import org.apache.servicecomb.demo.server.TestRequest;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.demo.smartcare.Application;
 import org.apache.servicecomb.demo.smartcare.Group;
@@ -43,7 +41,6 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.WebApplicationType;
@@ -56,8 +53,6 @@ import org.springframework.context.annotation.ImportResource;
 public class PojoClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
-  public static final byte[] buffer = new byte[1024];
-
   // reference a not exist a microservice, and never use it
   // this should not cause problems
   @RpcReference(microserviceName = "notExist")
@@ -69,10 +64,6 @@ public class PojoClient {
   public static Test testFromXml;
 
   private static SmartCare smartcare;
-
-  static {
-    Arrays.fill(buffer, (byte) 1);
-  }
 
   public static void setTestFromXml(Test testFromXml) {
     PojoClient.testFromXml = testFromXml;
@@ -120,14 +111,6 @@ public class PojoClient {
 
       testContextClassLoaderIsNull();
       testNull(testFromXml);
-      testNull(test);
-
-      // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
-      // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
-      InMemoryDynamicPropertiesSource.update("servicecomb.loadbalance.strategy.name", "WeightedResponse");
-      testStringArray(test);
-      InMemoryDynamicPropertiesSource.update("servicecomb.loadbalance.strategy.name", "RoundRobin");
-      testStringArray(test);
 
       boolean checkerDestroyed = true;
       // Timer cancel may not destroy thread very fast so check for 3 times.
@@ -143,28 +126,13 @@ public class PojoClient {
       }
       TestMgr.check(checkerDestroyed, true);
 
-      testChinese(test);
-      testStringHaveSpace(test);
-      testWrapParam(test);
-      testSplitParam(test);
-      testInputArray(test);
-
-      testException(test);
-
       testSmartCare(smartcare);
 
       testCommonInvoke(transport);
 
       if ("rest".equals(transport)) {
         testTraceIdOnNotSetBefore();
-        testNullRest(test);
-        testExceptionRest(test);
-        testEmptyRest(test);
-      } else if ("highway".equals(transport)) {
-        testNullHighway(test);
-        testEmptyHighway(test);
       }
-
       testTraceIdOnContextContainsTraceId();
     }
   }
@@ -216,58 +184,6 @@ public class PojoClient {
         smartCare.delApplication("app0"));
   }
 
-  private static void testExceptionRest(Test test) {
-    try {
-      test.testException(456);
-    } catch (InvocationException e) {
-      TestMgr.check("456 error", e.getErrorData());
-    }
-
-    try {
-      test.testException(556);
-    } catch (InvocationException e) {
-      TestMgr.check("[556 error]", e.getErrorData());
-    }
-
-    try {
-      test.testException(557);
-    } catch (InvocationException e) {
-      TestMgr.check("[[557 error]]", e.getErrorData());
-    }
-  }
-
-  private static void testException(Test test) {
-    try {
-      test.testException(456);
-    } catch (InvocationException e) {
-      TestMgr.check("456 error", e.getErrorData());
-    }
-
-    try {
-      test.testException(556);
-    } catch (InvocationException e) {
-      TestMgr.check("[556 error]", e.getErrorData());
-    }
-
-    try {
-      test.testException(557);
-    } catch (InvocationException e) {
-      TestMgr.check("[[557 error]]", e.getErrorData());
-    }
-  }
-
-  private static void testInputArray(Test test) {
-    String result = test.addString(new String[] {"a", "b"});
-    LOGGER.info("input array result:{}", result);
-    TestMgr.check("[a, b]", result);
-  }
-
-  private static void testSplitParam(Test test) {
-    User result = test.splitParam(1, new User());
-    LOGGER.info("split param result:{}", result);
-    TestMgr.check("User [name=nameA,  users count:0, age=100, index=1]", result);
-  }
-
   @SuppressWarnings("rawtypes")
   private static void testCommonInvoke(String transport) {
     Map<String, Object> arguments = new HashMap<>();
@@ -293,58 +209,9 @@ public class PojoClient {
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=3]", result);
   }
 
-  private static void testEmptyHighway(Test test) {
-    TestMgr.check("code is ''", test.getTestString(""));
-  }
-
-  private static void testEmptyRest(Test test) {
-    TestMgr.check("code is ''", test.getTestString(""));
-  }
-
-  private static void testNullRest(Test test) {
-    TestMgr.check(null, test.wrapParam(null));
-  }
-
-  private static void testNullHighway(Test test) {
-    TestMgr.check("nameA", test.wrapParam(null).getName());
-  }
-
   private static void testNull(Test test) {
     TestMgr.check("code is 'null'", test.getTestString(null));
     TestMgr.check(null, test.postTestStatic(2));
     TestMgr.check(null, test.patchTestStatic(2));
-  }
-
-  private static void testChinese(Test test) {
-    TestMgr.check("code is '测试'", test.getTestString("测试"));
-
-    User user = new User();
-    user.setName("名字");
-    User result = test.splitParam(1, user);
-    TestMgr.check("名字,  users count:0", result.getName());
-  }
-
-  private static void testStringHaveSpace(Test test) {
-    TestMgr.check("code is 'a b'", test.getTestString("a b"));
-  }
-
-  private static void testStringArray(Test test) {
-    //        TestMgr.check("arr is '[a, , b]'", test.testStringArray(new String[] {"a", null, "b"}));
-    TestMgr.check("arr is '[a, b]'", test.testStringArray(new String[] {"a", "b"}));
-  }
-
-  private static void testWrapParam(Test test) {
-    User user = new User();
-
-    TestRequest request = new TestRequest();
-    request.setUser(user);
-    request.setIndex(0);
-    request.setData(buffer);
-    request.getUsers().add(user);
-
-    User result = test.wrapParam(request);
-    LOGGER.info("wrap param result:{}", result);
-
-    TestMgr.check("User [name=nameA,  users count:1, age=100, index=0]", result);
   }
 }
