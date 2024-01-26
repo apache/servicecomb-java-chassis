@@ -20,11 +20,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
-import jakarta.ws.rs.core.Response.StatusType;
-
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
+
+import jakarta.ws.rs.core.Response.StatusType;
 
 public final class ExceptionFactory {
   // cse内置的错误
@@ -46,7 +47,8 @@ public final class ExceptionFactory {
 
   public static final String CONSUMER_INNER_REASON_PHRASE = "Unexpected consumer error, please check logs for details";
 
-  private static final ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
+  private static final ExceptionToProducerResponseConverters exceptionToProducerResponseConverters
+      = SPIServiceUtils.getPriorityHighestService(ExceptionToProducerResponseConverters.class);
 
   public static final StatusType CONSUMER_INNER_STATUS =
       new HttpStatus(CONSUMER_INNER_STATUS_CODE, CONSUMER_INNER_REASON_PHRASE);
@@ -72,12 +74,12 @@ public final class ExceptionFactory {
   }
 
   private static InvocationException doCreate(StatusType status,
-                                              Object errorData) {
+      Object errorData) {
     return new InvocationException(status, errorData);
   }
 
   private static InvocationException doCreate(int statusCode, String reasonPhrase, CommonExceptionData data,
-                                              Throwable e) {
+      Throwable e) {
     return new InvocationException(statusCode, reasonPhrase, data, e);
   }
 
@@ -113,7 +115,7 @@ public final class ExceptionFactory {
   // 则需要创建新的InvocationException实例，此时不允许使用e.getMessage，因为可能会涉及关键信息被传给远端
   // 新创建的InvocationException，会使用errorMsg来构建CommonExceptionData
   private static InvocationException convertException(int statusCode, String reasonPhrase, Throwable e,
-                                                      String errorMsg) {
+      String errorMsg) {
     e = unwrap(e);
 
     if (e instanceof InvocationException) {
