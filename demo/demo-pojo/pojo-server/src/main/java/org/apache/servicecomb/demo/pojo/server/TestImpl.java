@@ -105,4 +105,9 @@ public class TestImpl implements Test {
   public String testTraceId() {
     return ContextUtils.getInvocationContext().getContext(CoreConst.TRACE_ID_NAME);
   }
+
+  @Override
+  public int[] testIntArray(int[] request) {
+    return request;
+  }
 }
