@@ -184,7 +184,7 @@ public final class SSLManager {
           (SSLSocket) factory.createSocket();
       socket.setEnabledProtocols(option.getProtocols().split(","));
       String[] supported = socket.getSupportedCipherSuites();
-      String[] enabled = option.getCiphers().split(",");
+      String[] enabled = option.getCiphers().split("\\s*,\\s*");
       socket.setEnabledCipherSuites(getEnabledCiphers(supported, enabled));
       return socket;
     } catch (UnknownHostException e) {
