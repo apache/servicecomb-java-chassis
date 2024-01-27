@@ -23,6 +23,7 @@ import java.util.Collections;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 
 public abstract class AbstractQueryCodec implements QueryCodec {
@@ -46,6 +47,10 @@ public abstract class AbstractQueryCodec implements QueryCodec {
     }
 
     if (value.getClass().isArray()) {
+      if (!(value instanceof Object[])) {
+        value = RestObjectMapperFactory.getRestObjectMapper()
+            .convertValue(value, Object[].class);
+      }
       encode(builder, name, Arrays.asList((Object[]) value));
       return;
     }
