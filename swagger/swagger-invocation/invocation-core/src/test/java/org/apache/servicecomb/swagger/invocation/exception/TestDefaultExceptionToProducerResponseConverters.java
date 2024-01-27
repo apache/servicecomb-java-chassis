@@ -25,12 +25,12 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import mockit.Expectations;
 import mockit.Mocked;
-import org.junit.jupiter.api.Assertions;
 
-public class TestExceptionToProducerResponseConverters {
+public class TestDefaultExceptionToProducerResponseConverters {
   @Test
   public void convertExceptionToResponse(
       @Mocked ExceptionToProducerResponseConverter<Throwable> c1,
@@ -58,7 +58,7 @@ public class TestExceptionToProducerResponseConverters {
       }
     };
 
-    ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
+    DefaultExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new DefaultExceptionToProducerResponseConverters();
 
     Assertions.assertSame(r1,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new Throwable()));
@@ -103,7 +103,7 @@ public class TestExceptionToProducerResponseConverters {
       }
     };
 
-    ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
+    DefaultExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new DefaultExceptionToProducerResponseConverters();
 
     Assertions.assertSame(r2,
         exceptionToProducerResponseConverters
@@ -160,7 +160,7 @@ public class TestExceptionToProducerResponseConverters {
       }
     };
 
-    ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
+    DefaultExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new DefaultExceptionToProducerResponseConverters();
 
     Assertions.assertSame(rR0,
         exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException0_0()));
