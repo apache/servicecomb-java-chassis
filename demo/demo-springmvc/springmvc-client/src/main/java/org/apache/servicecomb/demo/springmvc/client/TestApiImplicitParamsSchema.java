@@ -1,0 +1,63 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.servicecomb.demo.springmvc.client;
+
+import java.net.URI;
+
+import org.apache.servicecomb.demo.CategorizedTestCase;
+import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.RequestEntity;
+import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestOperations;
+
+@Component
+public class TestApiImplicitParamsSchema implements CategorizedTestCase {
+  private RestOperations restOperations = RestTemplateBuilder.create();
+
+  @Override
+  public void testRestTransport() throws Exception {
+    // test all parameters case
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    headers.add("x-test-a", "a");
+    headers.add("x-test-b", "30");
+    RequestEntity<?> entity = new RequestEntity<>(headers, HttpMethod.GET,
+        new URI("servicecomb://springmvc/implicit/add?a=1&b=2"));
+    String result = restOperations.exchange(entity, String.class).getBody();
+    TestMgr.check("a,30,3", result);
+
+    // test default value
+    headers = new LinkedMultiValueMap<>();
+    headers.add("x-test-b", "10");
+    entity = new RequestEntity<>(headers, HttpMethod.GET,
+        new URI("servicecomb://springmvc/implicit/add?a=1&b=2"));
+    result = restOperations.exchange(entity, String.class).getBody();
+    TestMgr.check("test,10,3", result);
+
+    // test default required check
+    try {
+      restOperations.getForObject("servicecomb://springmvc/implicit/add?a=1&b=2", String.class);
+      TestMgr.fail("do not have required check");
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+    }
+  }
+}
