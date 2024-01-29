@@ -16,11 +16,50 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.inject.PlaceholderResolver;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
+
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiParam;
@@ -44,42 +83,6 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
 import io.swagger.util.Json;
 import io.swagger.util.ReflectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.config.inject.PlaceholderResolver;
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.ParameterGenerator;
-import org.apache.servicecomb.swagger.generator.ParameterProcessor;
-import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
-import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
-
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.Comparator;
-import java.util.stream.Collectors;
-
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
 
 public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected AbstractSwaggerGenerator swaggerGenerator;
@@ -169,8 +172,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected void scanMethodAnnotation() {
     for (Annotation annotation : Arrays.stream(method.getAnnotations())
-            .sorted(Comparator.comparing(a -> a.annotationType().getName()))
-            .collect(Collectors.toList())
+        .sorted(Comparator.comparing(a -> a.annotationType().getName()))
+        .collect(Collectors.toList())
     ) {
       MethodAnnotationProcessor<Annotation> processor = findMethodAnnotationProcessor(annotation.annotationType());
       if (processor == null) {
@@ -261,12 +264,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected boolean isAggregatedParameter(ParameterGenerator parameterGenerator,
-                                          java.lang.reflect.Parameter methodParameter) {
+      java.lang.reflect.Parameter methodParameter) {
     return false;
   }
 
   protected void extractAggregatedParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap,
-                                                      java.lang.reflect.Parameter methodParameter) {
+      java.lang.reflect.Parameter methodParameter) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(methodParameter.getParameterizedType());
     BeanDescription beanDescription = Json.mapper().getSerializationConfig().introspect(javaType);
     for (BeanPropertyDefinition propertyDefinition : beanDescription.findProperties()) {
@@ -293,6 +296,16 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   private Map<String, List<Annotation>> initMethodAnnotationByParameterName() {
     Map<String, List<Annotation>> methodAnnotations = new LinkedHashMap<>();
+
+    for (Annotation annotation : clazz.getAnnotations()) {
+      if (annotation instanceof ApiImplicitParams) {
+        for (ApiImplicitParam apiImplicitParam : ((ApiImplicitParams) annotation).value()) {
+          addMethodAnnotationByParameterName(methodAnnotations, apiImplicitParam.name(), apiImplicitParam);
+        }
+        continue;
+      }
+    }
+
     for (Annotation annotation : method.getAnnotations()) {
       if (annotation instanceof ApiImplicitParams) {
         for (ApiImplicitParam apiImplicitParam : ((ApiImplicitParams) annotation).value()) {
@@ -309,7 +322,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   private void addMethodAnnotationByParameterName(Map<String, List<Annotation>> methodAnnotations, String name,
-                                                  Annotation annotation) {
+      Annotation annotation) {
     if (StringUtils.isEmpty(name)) {
       throw new IllegalStateException(String.format("%s.name should not be empty. method=%s:%s",
           annotation.annotationType().getSimpleName(),
@@ -375,7 +388,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, JavaType type,
-                               List<Annotation> annotations) {
+      List<Annotation> annotations) {
     for (Annotation annotation : annotations) {
       ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
       if (processor != null) {
@@ -395,7 +408,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (parameter instanceof AbstractSerializableParameter) {
       io.swagger.util.ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
       annotations.stream().forEach(annotation -> {
-        if (NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName())){
+        if (NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName())) {
           parameter.setRequired(true);
         }
       });
@@ -426,7 +439,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       convertAnnotationProperty(((JavaType) type).getRawClass());
     } else {
       ((JavaType) type).getBindings().getTypeParameters().
-              forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
+          forEach(javaType -> convertAnnotationProperty(javaType.getRawClass()));
     }
 
     mergeBodyParameter((BodyParameter) parameter, newBodyParameter);
@@ -434,7 +447,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   private void convertAnnotationProperty(Class<?> beanClass) {
     Map<String, Model> definitions = swagger.getDefinitions();
-    if (definitions == null){
+    if (definitions == null) {
       return;
     }
     Field[] fields = beanClass.getDeclaredFields();
@@ -446,7 +459,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     if (properties != null) {
       Arrays.stream(fields).forEach(field -> {
         boolean requireItem = Arrays.stream(field.getAnnotations()).
-                anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
+            anyMatch(annotation -> NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName()));
         if (requireItem) {
           Property property = properties.get(field.getName());
           if (property != null) {
