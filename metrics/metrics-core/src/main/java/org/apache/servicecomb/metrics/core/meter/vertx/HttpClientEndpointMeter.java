@@ -27,13 +27,21 @@ import io.micrometer.core.instrument.Tags;
 public class HttpClientEndpointMeter extends EndpointMeter {
   public static final String QUEUE_COUNT = "queueCount";
 
+  private final Gauge queueCount;
+
   private long currentQueueCount;
 
   public HttpClientEndpointMeter(MeterRegistry meterRegistry, String name, Tags tags, DefaultEndpointMetric metric) {
     super(meterRegistry, name, tags, metric);
-    Gauge.builder(name, () -> currentQueueCount)
+    queueCount = Gauge.builder(name, () -> currentQueueCount)
         .tags(tags.and(Tag.of(STATISTIC, QUEUE_COUNT), Tag.of(ADDRESS, metric.getAddress())))
         .register(meterRegistry);
+  }
+
+  @Override
+  public void destroy() {
+    super.destroy();
+    this.meterRegistry.remove(queueCount);
   }
 
   @Override
