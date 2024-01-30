@@ -49,7 +49,7 @@ public class EndpointMeter implements PeriodMeter {
 
   protected DefaultEndpointMetric metric;
 
-  private final MeterRegistry meterRegistry;
+  protected final MeterRegistry meterRegistry;
 
   private final Gauge connectCount;
 

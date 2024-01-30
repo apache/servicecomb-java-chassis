@@ -27,15 +27,23 @@ import io.micrometer.core.instrument.Tags;
 public class ServerEndpointMeter extends EndpointMeter {
   public static final String REJECT_BY_CONNECTION_LIMIT = "rejectByConnectionLimit";
 
+  private final Gauge rejectByConnectionLimit;
+
   private long lastRejectByConnectionLimit;
 
   private long currentRejectByConnectionLimit;
 
   public ServerEndpointMeter(MeterRegistry meterRegistry, String name, Tags tags, DefaultEndpointMetric metric) {
     super(meterRegistry, name, tags, metric);
-    Gauge.builder(name, () -> currentRejectByConnectionLimit)
+    rejectByConnectionLimit = Gauge.builder(name, () -> currentRejectByConnectionLimit)
         .tags(tags.and(Tag.of(STATISTIC, REJECT_BY_CONNECTION_LIMIT), Tag.of(ADDRESS, metric.getAddress())))
         .register(meterRegistry);
+  }
+
+  @Override
+  public void destroy() {
+    super.destroy();
+    this.meterRegistry.remove(rejectByConnectionLimit);
   }
 
   @Override
