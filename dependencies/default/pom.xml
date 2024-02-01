@@ -86,7 +86,7 @@
     <spring-boot.version>3.0.7</spring-boot.version>
     <swagger.version>2.2.20</swagger.version>
     <vertx.version>4.4.4</vertx.version>
-    <zipkin.version>2.26.0</zipkin.version>
+    <zipkin.version>3.0.5</zipkin.version>
     <zipkin-reporter.version>2.17.1</zipkin-reporter.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
