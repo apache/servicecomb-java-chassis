@@ -34,9 +34,19 @@ import io.swagger.annotations.ApiImplicitParams;
     @ApiImplicitParam(name = "x-test-b", paramType = "header", dataType = "integer", defaultValue = "20", required = true)
 })
 public class ApiImplicitParamsSchema {
-  @GetMapping(path = "/add")
-  public String add(HttpServletRequest request, @RequestParam("a") int a, @RequestParam("b") int b) {
+  @GetMapping(path = "/testImplicitAndExplicitParam")
+  public String testImplicitAndExplicitParam(HttpServletRequest request,
+      @RequestParam("a") int a, @RequestParam("b") int b) {
     return request.getHeader("x-test-a") + "," + request.getHeader("x-test-b") + "," +
         (a + b);
+  }
+
+  @GetMapping(path = "/testIntegerTypeValidation")
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "x-test-c", paramType = "header", dataType = "integer")
+  })
+  public String testIntegerTypeValidation(HttpServletRequest request) {
+    return request.getHeader("x-test-a") + "," + request.getHeader("x-test-b") + "," +
+        request.getHeader("x-test-c");
   }
 }

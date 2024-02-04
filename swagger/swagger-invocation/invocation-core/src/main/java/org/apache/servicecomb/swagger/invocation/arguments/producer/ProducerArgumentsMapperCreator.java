@@ -37,8 +37,16 @@ import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.reflect.TypeToken;
+import com.netflix.config.DynamicPropertyFactory;
+
+import io.swagger.models.parameters.SerializableParameter;
 
 public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreator {
+  // using swagger type instead of method type for primitive method types when deserialize
+  // query/header/etc. parameters.
+  private final boolean useWrapperTypeForPrimitives = DynamicPropertyFactory.getInstance()
+      .getBooleanProperty("servicecomb.rest.parameter.useWrapperTypeForPrimitives", false).get();
+
   // swagger parameter types relate to producer
   // because features of @BeanParam/query, and rpc mode parameter wrapper
   // types is not always equals to producerMethod parameter types directly
@@ -71,7 +79,7 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
 
   @Override
   protected void processPendingSwaggerParameter(io.swagger.models.parameters.Parameter parameter) {
-    swaggerParameterTypes.put(parameter.getName(), Object.class);
+    swaggerParameterTypes.put(parameter.getName(), swaggerTypes(parameter, Object.class));
   }
 
   @Override
@@ -80,9 +88,35 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
     Type providerType = TypeToken.of(providerClass)
         .resolveType(providerMethod.getGenericParameterTypes()[providerParamIdx])
         .getType();
-    swaggerParameterTypes
-        .put(swaggerArgumentName, providerType);
+    if (useWrapperTypeForPrimitives && providerType instanceof Class<?> && ((Class<?>) providerType).isPrimitive()) {
+      // add swagger type to java type
+      providerType = swaggerTypes(swaggerParameters.get(swaggerIdx), providerType);
+    }
+    swaggerParameterTypes.put(swaggerArgumentName, providerType);
     return new ProducerArgumentSame(providerMethod.getParameters()[providerParamIdx].getName(), swaggerArgumentName);
+  }
+
+  private Type swaggerTypes(io.swagger.models.parameters.Parameter parameter, Type defaultType) {
+    if (!(parameter instanceof SerializableParameter)) {
+      return defaultType;
+    }
+    SerializableParameter serializableParameter = (SerializableParameter) parameter;
+    switch (serializableParameter.getType()) {
+      case "integer":
+        if ("int64".equalsIgnoreCase(serializableParameter.getFormat())) {
+          return Long.class;
+        }
+        return Integer.class;
+      case "number":
+        if ("double".equalsIgnoreCase(serializableParameter.getFormat())) {
+          return Double.class;
+        }
+        return Float.class;
+      case "boolean":
+        return Boolean.class;
+      default:
+        return defaultType;
+    }
   }
 
   @Override
