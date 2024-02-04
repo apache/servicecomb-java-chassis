@@ -38,7 +38,7 @@ jobs:
       with:
        java-version: '17'
        distribution: 'temurin'
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
