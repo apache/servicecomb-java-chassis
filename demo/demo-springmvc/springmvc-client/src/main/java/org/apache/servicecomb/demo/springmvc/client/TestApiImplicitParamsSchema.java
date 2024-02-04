@@ -17,6 +17,7 @@
 package org.apache.servicecomb.demo.springmvc.client;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
@@ -31,16 +32,37 @@ import org.springframework.web.client.RestOperations;
 
 @Component
 public class TestApiImplicitParamsSchema implements CategorizedTestCase {
-  private RestOperations restOperations = RestTemplateBuilder.create();
+  private final RestOperations restOperations = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {
+    testImplicitAndExplicitParam();
+    testIntegerTypeValidation();
+  }
+
+  private void testIntegerTypeValidation() throws URISyntaxException {
+    MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+    headers.add("x-test-a", "a");
+    headers.add("x-test-b", "30");
+    headers.add("x-test-c", "x");  // invalid integer for object-mapper.
+    RequestEntity<?> entity = new RequestEntity<>(headers, HttpMethod.GET,
+        new URI("servicecomb://springmvc/implicit/testIntegerTypeValidation"));
+    try {
+      String result = restOperations.exchange(entity, String.class).getBody();
+      TestMgr.check(result, "do not have integer type check");
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+      TestMgr.check(e.getMessage().contains("x-test-c"), true);
+    }
+  }
+
+  private void testImplicitAndExplicitParam() throws URISyntaxException {
     // test all parameters case
     MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
     headers.add("x-test-a", "a");
     headers.add("x-test-b", "30");
     RequestEntity<?> entity = new RequestEntity<>(headers, HttpMethod.GET,
-        new URI("servicecomb://springmvc/implicit/add?a=1&b=2"));
+        new URI("servicecomb://springmvc/implicit/testImplicitAndExplicitParam?a=1&b=2"));
     String result = restOperations.exchange(entity, String.class).getBody();
     TestMgr.check("a,30,3", result);
 
@@ -48,16 +70,18 @@ public class TestApiImplicitParamsSchema implements CategorizedTestCase {
     headers = new LinkedMultiValueMap<>();
     headers.add("x-test-b", "10");
     entity = new RequestEntity<>(headers, HttpMethod.GET,
-        new URI("servicecomb://springmvc/implicit/add?a=1&b=2"));
+        new URI("servicecomb://springmvc/implicit/testImplicitAndExplicitParam?a=1&b=2"));
     result = restOperations.exchange(entity, String.class).getBody();
     TestMgr.check("test,10,3", result);
 
     // test default required check
     try {
-      restOperations.getForObject("servicecomb://springmvc/implicit/add?a=1&b=2", String.class);
-      TestMgr.fail("do not have required check");
+      result = restOperations.getForObject("servicecomb://springmvc/implicit/testImplicitAndExplicitParam?a=1&b=2",
+          String.class);
+      TestMgr.check(result, "do not have required check");
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 400);
+      TestMgr.check(e.getMessage().contains("x-test-b"), true);
     }
   }
 }
