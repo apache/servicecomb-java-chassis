@@ -48,8 +48,8 @@ public class TestApiImplicitParamsSchema implements CategorizedTestCase {
     RequestEntity<?> entity = new RequestEntity<>(headers, HttpMethod.GET,
         new URI("servicecomb://springmvc/implicit/testIntegerTypeValidation"));
     try {
-      restOperations.exchange(entity, String.class).getBody();
-      TestMgr.fail("do not have integer type check");
+      String result = restOperations.exchange(entity, String.class).getBody();
+      TestMgr.check(result, "do not have integer type check");
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 400);
       TestMgr.check(e.getMessage().contains("x-test-c"), true);
@@ -76,9 +76,9 @@ public class TestApiImplicitParamsSchema implements CategorizedTestCase {
 
     // test default required check
     try {
-      restOperations.getForObject("servicecomb://springmvc/implicit/testImplicitAndExplicitParam?a=1&b=2",
+      result = restOperations.getForObject("servicecomb://springmvc/implicit/testImplicitAndExplicitParam?a=1&b=2",
           String.class);
-      TestMgr.fail("do not have required check");
+      TestMgr.check(result, "do not have required check");
     } catch (InvocationException e) {
       TestMgr.check(e.getStatusCode(), 400);
       TestMgr.check(e.getMessage().contains("x-test-b"), true);
