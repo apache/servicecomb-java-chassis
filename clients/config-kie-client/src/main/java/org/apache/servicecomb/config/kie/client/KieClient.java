@@ -20,6 +20,7 @@ package org.apache.servicecomb.config.kie.client;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -125,6 +126,7 @@ public class KieClient implements KieConfigOperation {
   private Map<String, Object> getConfigByLabel(KVResponse resp) {
     Map<String, Object> resultMap = new HashMap<>();
     resp.getData().stream()
+        .sorted(Comparator.comparing(KVDoc::getUpdateTime, Comparator.nullsFirst(Comparator.naturalOrder())))
         .filter(doc -> doc.getStatus() == null || ConfigConstants.STATUS_ENABLED.equalsIgnoreCase(doc.getStatus()))
         .map(this::processValueType)
         .collect(Collectors.toList())
