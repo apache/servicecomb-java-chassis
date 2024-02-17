@@ -212,14 +212,11 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private CorsHandler getCorsHandler() {
     CorsHandler handler = CorsHandler.create();
-    String origin = TransportConfig.getCorsAllowedOrigin();
-    String[] origins = TransportConfig.getCorsAllowedOrigins();
-    if (origins == null && origin == null) {
+    String[] origin = TransportConfig.getCorsAllowedOrigin();
+    if (origin == null) {
       handler.addOrigin("*");
-    } else if (origin != null) {
-      handler.addOrigin(TransportConfig.getCorsAllowedOrigin());
     } else {
-      for (String item : origins) {
+      for (String item : origin) {
         handler.addOrigin(item);
       }
     }
