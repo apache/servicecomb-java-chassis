@@ -267,8 +267,8 @@ public class TestRestServerVerticle {
             false))
         .thenReturn(true);
     Mockito.when(environment.getProperty("servicecomb.cors.origin",
-            "*"))
-        .thenReturn("*");
+            String[].class))
+        .thenReturn(null);
     Mockito.when(environment.getProperty("servicecomb.cors.allowedMethod"))
         .thenReturn("GET,PUT,POST");
     Mockito.when(environment.getProperty("servicecomb.cors.allowedHeader"))
@@ -326,8 +326,7 @@ public class TestRestServerVerticle {
 
     new MockUp<RestServerVerticle>() {
       @Mock
-      CorsHandler getCorsHandler(String corsAllowedOrigin) {
-        Assertions.assertEquals("*", corsAllowedOrigin);
+      CorsHandler getCorsHandler() {
         return corsHandler;
       }
     };
