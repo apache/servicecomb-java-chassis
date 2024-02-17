@@ -30,7 +30,9 @@ servicecomb:
     address: 0.0.0.0:8080
   cors:
     enabled: true
-    origin: "*"
+    origins:
+      - "http://test.domain:8080"
+      - "http://test.domain:9090"
     allowedHeader: abc,def
     allowedMethod: GET,PUT,POST,DELETE
     exposedHeader: abc,def

@@ -167,7 +167,12 @@ public final class TransportConfig {
 
   public static String getCorsAllowedOrigin() {
     return LegacyPropertyFactory
-        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".origin", "*");
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".origin");
+  }
+
+  public static String[] getCorsAllowedOrigins() {
+    return LegacyPropertyFactory
+        .getProperty(SERVICECOMB_CORS_CONFIG_BASE + ".origins", String[].class);
   }
 
   public static boolean isCorsAllowCredentials() {
