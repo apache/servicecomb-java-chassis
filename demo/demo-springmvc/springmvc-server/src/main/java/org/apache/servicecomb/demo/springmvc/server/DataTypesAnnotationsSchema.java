@@ -14,15 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.exception;
+package org.apache.servicecomb.demo.springmvc.server;
 
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-public interface ExceptionToProducerResponseConverters {
-  Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e);
+@RestSchema(schemaId = "DataTypesAnnotationsSchema")
+@RequestMapping(path = "/dataTypes")
+public class DataTypesAnnotationsSchema {
+  @GetMapping(path = "/testIntArrayQuery")
+  public int[] testIntArrayQuery(@RequestParam("param") int[] param) {
+    return param;
+  }
 
-  default int getOrder() {
-    return 0;
+  @GetMapping(path = "/testIntegerArrayQuery")
+  public Integer[] testIntegerArrayQuery(@RequestParam("param") Integer[] param) {
+    return param;
   }
 }

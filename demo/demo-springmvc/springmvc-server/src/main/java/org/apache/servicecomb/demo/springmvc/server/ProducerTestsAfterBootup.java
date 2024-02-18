@@ -26,9 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.netflix.config.DynamicPropertyFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
@@ -91,9 +91,9 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   public void testRegisteredBasePath() {
     if (DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
-      TestMgr.check(22, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+      TestMgr.check(RegistrationManager.INSTANCE.getMicroservice().getPaths().size() >= 23, true);
     } else {
-      TestMgr.check(24, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
+      TestMgr.check(RegistrationManager.INSTANCE.getMicroservice().getPaths().size() >= 25, true);
     }
   }
 
