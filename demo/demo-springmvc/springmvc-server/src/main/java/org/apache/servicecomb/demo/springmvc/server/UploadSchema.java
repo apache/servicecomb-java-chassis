@@ -78,6 +78,21 @@ public class UploadSchema {
     }
   }
 
+  @PostMapping(path = "/uploadFileRequestPartAttributeList", produces = MediaType.TEXT_PLAIN_VALUE)
+  public String uploadFileRequestPartAttributeList(@RequestPart(name = "files") List<MultipartFile> files,
+      @RequestPart(name = "attributes") List<String> attributes) throws IOException {
+    StringBuilder result = new StringBuilder();
+    for (MultipartFile file : files) {
+      try (InputStream is = file.getInputStream()) {
+        result.append(IOUtils.toString(is, StandardCharsets.UTF_8));
+      }
+    }
+    for (String attribute : attributes) {
+      result.append(attribute);
+    }
+    return result.toString();
+  }
+
   @PostMapping(path = "/uploadFileAndAttribute", produces = MediaType.TEXT_PLAIN_VALUE)
   public String uploadFileAndAttribute(@RequestPart(name = "file") MultipartFile file,
       @RequestAttribute(name = "attribute") String attribute) throws IOException {
