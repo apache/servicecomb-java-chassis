@@ -60,6 +60,7 @@ public class TestUploadSchema implements CategorizedTestCase {
     testFileUploadMultiRpc();
     testUploadFileAndAttribute();
     testUploadFileRequestPartAttribute();
+    testUploadFileRequestPartAttributeList();
   }
 
   private void testServerStartupSuccess() {
@@ -140,5 +141,26 @@ public class TestUploadSchema implements CategorizedTestCase {
     String result = template.postForObject("servicecomb://springmvc/upload/uploadFileRequestPartAttribute",
         new HttpEntity<>(map, headers), String.class);
     TestMgr.check("hi test", result);
+  }
+
+  private void testUploadFileRequestPartAttributeList() throws Exception {
+    RestOperations template = RestTemplateBuilder.create();
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    String message1 = "msg1";
+    String message2 = "msg2";
+    File file1 = File.createTempFile("file1", ".txt");
+    FileUtils.writeStringToFile(file1, "test1", StandardCharsets.UTF_8, false);
+    File file2 = File.createTempFile("file2", ".txt");
+    FileUtils.writeStringToFile(file2, "test2", StandardCharsets.UTF_8, false);
+
+    map.add("files", new FileSystemResource(file1));
+    map.add("files", new FileSystemResource(file2));
+    map.add("attributes", message1);
+    map.add("attributes", message2);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(org.springframework.http.MediaType.MULTIPART_FORM_DATA);
+    String result = template.postForObject("servicecomb://springmvc/upload/uploadFileRequestPartAttributeList",
+        new HttpEntity<>(map, headers), String.class);
+    TestMgr.check("test1test2msg1msg2", result);
   }
 }

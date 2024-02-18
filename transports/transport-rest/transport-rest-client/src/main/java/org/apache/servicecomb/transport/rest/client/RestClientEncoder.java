@@ -23,6 +23,7 @@ import static org.apache.servicecomb.transport.rest.client.RestClientExceptionCo
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -185,16 +186,27 @@ public class RestClientEncoder {
     protected Buffer genChunkedFormBuffer(Map<String, Object> formMap, String boundary) throws Exception {
       ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
       for (Entry<String, Object> entry : formMap.entrySet()) {
-        writeCharSequence(byteBuf, "\r\n--");
-        writeCharSequence(byteBuf, boundary);
-        writeCharSequence(byteBuf, "\r\nContent-Disposition: form-data; name=\"");
-        writeCharSequence(byteBuf, entry.getKey());
-        writeCharSequence(byteBuf, "\"\r\n\r\n");
-
-        String value = QueryCodec.convertToString(entry.getValue());
-        writeCharSequence(byteBuf, value);
+        Object content = entry.getValue();
+        if (content instanceof List<?>) {
+          for (Object item : ((List<?>) content)) {
+            writeFormData(byteBuf, boundary, entry.getKey(), item);
+          }
+        } else {
+          writeFormData(byteBuf, boundary, entry.getKey(), entry.getValue());
+        }
       }
       return Buffer.buffer(byteBuf);
+    }
+
+    private void writeFormData(ByteBuf byteBuf, String boundary, String key, Object data) throws Exception {
+      writeCharSequence(byteBuf, "\r\n--");
+      writeCharSequence(byteBuf, boundary);
+      writeCharSequence(byteBuf, "\r\nContent-Disposition: form-data; name=\"");
+      writeCharSequence(byteBuf, key);
+      writeCharSequence(byteBuf, "\"\r\n\r\n");
+
+      String value = QueryCodec.convertToString(data);
+      writeCharSequence(byteBuf, value);
     }
   }
 

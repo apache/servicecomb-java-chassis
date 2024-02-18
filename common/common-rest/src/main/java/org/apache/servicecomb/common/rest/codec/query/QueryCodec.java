@@ -35,7 +35,7 @@ public interface QueryCodec extends Ordered {
     return URLEncoder.encode(value.toString(), StandardCharsets.UTF_8.name());
   }
 
-  // can not replaced by value.toString() because of date serialize
+  // can not be replaced by value.toString() because of date serialize
   static String convertToString(Object value) throws Exception {
     return RestObjectMapperFactory.getRestObjectMapper().convertToString(value);
   }

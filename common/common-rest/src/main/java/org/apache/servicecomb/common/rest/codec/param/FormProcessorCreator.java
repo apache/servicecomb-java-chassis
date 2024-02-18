@@ -120,8 +120,12 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
     MediaType file = parameter.getContent().get(SwaggerConst.FILE_MEDIA_TYPE);
     if (file != null) {
       Schema<?> schema = (Schema<?>) file.getSchema().getProperties().get(paramName);
-      return schema instanceof ArraySchema ||
-          ("string".equals(schema.getType()) && "binary".equals(schema.getFormat()));
+      if (schema instanceof ArraySchema) {
+        return "string".equals(schema.getItems().getType()) &&
+            "binary".equals(schema.getItems().getFormat());
+      } else {
+        return ("string".equals(schema.getType()) && "binary".equals(schema.getFormat()));
+      }
     }
     return false;
   }
