@@ -176,10 +176,11 @@ public final class TransportConfig {
         .get();
   }
 
-  public static String getCorsAllowedOrigin() {
-    return DynamicPropertyFactory.getInstance()
+  public static Set<String> getCorsAllowedOrigin() {
+    String allowedOrigin = DynamicPropertyFactory.getInstance()
         .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".origin", "*")
         .get();
+    return convertToSet(allowedOrigin);
   }
 
   public static boolean isCorsAllowCredentials() {
