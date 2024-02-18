@@ -32,6 +32,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 @Component
@@ -64,25 +66,81 @@ public class CrossappClient {
     result = helloWorld.sayHello();
     TestMgr.check("hello world", result);
 
-    testCorsHandler();
+    testCorsHandlerOptions();
+    testCorsHandlerGet();
   }
 
-  private static void testCorsHandler() {
-    RestTemplate springRestTemplate = new RestTemplate();
+  private static void testCorsHandlerOptions() {
+    // first domain
+    RestOperations springRestTemplate = new RestTemplate();
     MultiValueMap<String, String> requestHeaders = new LinkedMultiValueMap<>();
-    requestHeaders.put("Origin", Collections.singletonList("http://localhost:8080"));
+    requestHeaders.put("Origin", Collections.singletonList("http://test.domain:8080"));
     requestHeaders.put("Access-Control-Request-Method", Collections.singletonList("PUT"));
-
     HttpEntity<Object> requestEntity = new HttpEntity<>(requestHeaders);
     ResponseEntity<String> responseEntity = springRestTemplate
         .exchange("http://127.0.0.1:8080/helloworld/hello", HttpMethod.OPTIONS, requestEntity,
             String.class);
-
-    TestMgr.check("204", responseEntity.getStatusCodeValue());
+    TestMgr.check("204", responseEntity.getStatusCode().value());
     TreeSet<String> sortedSet = new TreeSet<>(responseEntity.getHeaders().get("Access-Control-Allow-Methods"));
     TestMgr.check("[DELETE,POST,GET,PUT]", sortedSet);
     sortedSet = new TreeSet<>(responseEntity.getHeaders().get("Access-Control-Allow-Headers"));
     TestMgr.check("[abc,def]", sortedSet);
-    TestMgr.check("*", responseEntity.getHeaders().getFirst("Access-Control-Allow-Origin"));
+    TestMgr.check("http://test.domain:8080",
+        responseEntity.getHeaders().getFirst("Access-Control-Allow-Origin"));
+
+    // second domain
+    requestHeaders = new LinkedMultiValueMap<>();
+    requestHeaders.put("Origin", Collections.singletonList("http://test.domain:9090"));
+    requestHeaders.put("Access-Control-Request-Method", Collections.singletonList("PUT"));
+    requestEntity = new HttpEntity<>(requestHeaders);
+    responseEntity = springRestTemplate
+        .exchange("http://127.0.0.1:8080/helloworld/hello", HttpMethod.OPTIONS, requestEntity,
+            String.class);
+    TestMgr.check("204", responseEntity.getStatusCode().value());
+    sortedSet = new TreeSet<>(responseEntity.getHeaders().get("Access-Control-Allow-Methods"));
+    TestMgr.check("[DELETE,POST,GET,PUT]", sortedSet);
+    sortedSet = new TreeSet<>(responseEntity.getHeaders().get("Access-Control-Allow-Headers"));
+    TestMgr.check("[abc,def]", sortedSet);
+    TestMgr.check("http://test.domain:9090",
+        responseEntity.getHeaders().getFirst("Access-Control-Allow-Origin"));
+  }
+
+  private static void testCorsHandlerGet() {
+    // allowed origin
+    RestOperations springRestTemplate = new RestTemplate();
+    MultiValueMap<String, String> requestHeaders = new LinkedMultiValueMap<>();
+    requestHeaders.put("Origin", Collections.singletonList("http://test.domain:8080"));
+    HttpEntity<Object> requestEntity = new HttpEntity<>(requestHeaders);
+    ResponseEntity<String> responseEntity = springRestTemplate
+        .exchange("http://127.0.0.1:8080/helloworld/hello", HttpMethod.GET, requestEntity,
+            String.class);
+
+    TestMgr.check("200", responseEntity.getStatusCode().value());
+    TestMgr.check("\"hello world\"", responseEntity.getBody());
+
+    // allowed origin
+    requestHeaders = new LinkedMultiValueMap<>();
+    requestHeaders.put("Origin", Collections.singletonList("http://test.domain:9090"));
+    requestEntity = new HttpEntity<>(requestHeaders);
+    responseEntity = springRestTemplate
+        .exchange("http://127.0.0.1:8080/helloworld/hello", HttpMethod.GET, requestEntity,
+            String.class);
+
+    TestMgr.check("200", responseEntity.getStatusCode().value());
+    TestMgr.check("\"hello world\"", responseEntity.getBody());
+
+    // not allowed origin
+    try {
+      requestHeaders = new LinkedMultiValueMap<>();
+      requestHeaders.put("Origin", Collections.singletonList("http://test.domain:7070"));
+      requestEntity = new HttpEntity<>(requestHeaders);
+      springRestTemplate
+          .exchange("http://127.0.0.1:8080/helloworld/hello", HttpMethod.GET, requestEntity,
+              String.class);
+      TestMgr.fail("must throw");
+    } catch (HttpServerErrorException e) {
+      TestMgr.check(500, e.getStatusCode().value());
+      TestMgr.check(true, e.getMessage().contains("500 CORS Rejected"));
+    }
   }
 }

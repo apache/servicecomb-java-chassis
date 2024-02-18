@@ -242,8 +242,7 @@ public class TestRestServerVerticle {
 
     new MockUp<RestServerVerticle>() {
       @Mock
-      CorsHandler getCorsHandler(String corsAllowedOrigin) {
-        Assertions.assertEquals("*", corsAllowedOrigin);
+      CorsHandler getCorsHandler() {
         return corsHandler;
       }
     };
