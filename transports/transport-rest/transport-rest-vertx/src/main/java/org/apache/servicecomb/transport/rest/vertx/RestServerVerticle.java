@@ -188,7 +188,7 @@ public class RestServerVerticle extends AbstractVerticle {
       return;
     }
 
-    CorsHandler corsHandler = getCorsHandler(TransportConfig.getCorsAllowedOrigin());
+    CorsHandler corsHandler = getCorsHandler();
     // Access-Control-Allow-Credentials
     corsHandler.allowCredentials(TransportConfig.isCorsAllowCredentials());
     // Access-Control-Allow-Headers
@@ -210,8 +210,17 @@ public class RestServerVerticle extends AbstractVerticle {
     mainRouter.route().handler(corsHandler);
   }
 
-  private CorsHandler getCorsHandler(String corsAllowedOrigin) {
-    return CorsHandler.create().addOrigin(corsAllowedOrigin);
+  private CorsHandler getCorsHandler() {
+    CorsHandler handler = CorsHandler.create();
+    String[] origin = TransportConfig.getCorsAllowedOrigin();
+    if (origin == null) {
+      handler.addOrigin("*");
+    } else {
+      for (String item : origin) {
+        handler.addOrigin(item);
+      }
+    }
+    return handler;
   }
 
   private void initDispatcher(Router mainRouter) {
