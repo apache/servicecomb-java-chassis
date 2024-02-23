@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.springmvc;
 
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema;
+import org.apache.servicecomb.swagger.generator.springmvc.model.RestControllerWithPathSchema;
 import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget;
 import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget_ValueOverWritePath;
 import org.junit.jupiter.api.Test;
@@ -134,6 +135,11 @@ public class TestSpringmvc {
   @Test
   public void testDefaultParameterSchema() {
     UnitTestSwaggerUtils.testSwagger("schemas/DefaultParameterSchema.yaml", DefaultParameterSchema.class);
+  }
+
+  @Test
+  public void testRestControllerWithPathSchema() {
+    UnitTestSwaggerUtils.testSwagger("schemas/RestControllerWithPathSchema.yaml", RestControllerWithPathSchema.class);
   }
 
   @Test
