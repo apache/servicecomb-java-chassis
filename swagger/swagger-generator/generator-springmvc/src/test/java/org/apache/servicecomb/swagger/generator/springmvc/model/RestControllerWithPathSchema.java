@@ -14,26 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.springmvc.model;
 
-package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
-
-import java.lang.reflect.Type;
-
-import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-public class RestControllerClassAnnotationProcessor implements ClassAnnotationProcessor<RestController> {
-  @Override
-  public Type getProcessType() {
-    return RestController.class;
-  }
-
-  @Override
-  public void process(SwaggerGenerator swaggerGenerator, RestController restController) {
-    if (SwaggerUtils.getBasePath(swaggerGenerator.getOpenAPI()) == null) {
-      swaggerGenerator.setBasePath("/");
-    }
+@RestController
+@RequestMapping("/prefix")
+public class RestControllerWithPathSchema {
+  @GetMapping("/testSimpleParam")
+  public String testSimpleParam(String strParam) {
+    return strParam;
   }
 }

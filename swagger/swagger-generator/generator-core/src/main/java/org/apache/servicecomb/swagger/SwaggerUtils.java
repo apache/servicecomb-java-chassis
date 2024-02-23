@@ -26,6 +26,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -81,8 +82,11 @@ public final class SwaggerUtils {
    * Only ones servers and contains only base path.
    */
   public static void setBasePath(OpenAPI swagger, String basePath) {
-    if (swagger.getServers() == null || swagger.getServers().size() == 0) {
-      swagger.setServers(List.of(new Server()));
+    if (swagger.getServers() == null) {
+      swagger.setServers(new ArrayList<>());
+    }
+    if (swagger.getServers().size() == 0) {
+      swagger.getServers().add(new Server());
     }
     swagger.getServers().get(0).setUrl(basePath);
   }
