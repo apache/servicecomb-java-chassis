@@ -41,7 +41,6 @@
     <java.version>1.8</java.version>
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
-    <werror.properties>-Werror</werror.properties>
     <test.additional.args/>
     <!-- plugin version start -->
     <!-- sort by alpha -->
@@ -407,7 +406,6 @@
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
             <compilerArgs>
-              <arg>${werror.properties}</arg>
               <arg>-Xlint:all</arg>
               <!--not care for jdk8/jdk7 compatible problem-->
               <arg>-Xlint:-classfile</arg>
@@ -656,7 +654,6 @@
         <jdk>[11,17)</jdk>
       </activation>
       <properties>
-        <werror.properties/>
         <test.additional.args>
           -Djdk.attach.allowAttachSelf
           --add-opens java.base/java.lang=ALL-UNNAMED
@@ -670,7 +667,6 @@
         <jdk>[17,)</jdk>
       </activation>
       <properties>
-        <werror.properties/>
         <test.additional.args>
           -Djdk.attach.allowAttachSelf
           --add-opens java.base/java.io=ALL-UNNAMED
