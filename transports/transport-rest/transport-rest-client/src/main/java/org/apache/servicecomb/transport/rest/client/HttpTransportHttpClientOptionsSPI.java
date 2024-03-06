@@ -125,6 +125,11 @@ public class HttpTransportHttpClientOptionsSPI implements HttpClientOptionsSPI {
   }
 
   @Override
+  public boolean enableLogActivity() {
+    return TransportClientConfig.enableLogActivity();
+  }
+
+  @Override
   public int getHttp2MultiplexingLimit() {
     return HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT;
   }

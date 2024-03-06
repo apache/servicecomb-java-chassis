@@ -80,6 +80,11 @@ public final class TransportClientConfig {
         .getIntProperty("servicecomb.rest.client.connection.keepAliveTimeoutInSeconds", DEFAULT_KEEP_ALIVE_TIME_OUT);
   }
 
+  public static boolean enableLogActivity() {
+    return LegacyPropertyFactory
+        .getBooleanProperty("servicecomb.rest.client.enableLogActivity", false);
+  }
+
   public static int getHttp2ConnectionKeepAliveTimeoutInSeconds() {
     return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds",

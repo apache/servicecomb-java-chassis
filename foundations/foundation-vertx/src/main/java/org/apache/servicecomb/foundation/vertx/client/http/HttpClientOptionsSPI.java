@@ -74,6 +74,8 @@ public interface HttpClientOptionsSPI {
 
   int getKeepAliveTimeout();
 
+  boolean enableLogActivity();
+
   /***************** http 2 settings ****************************/
   int getHttp2MultiplexingLimit();
 
@@ -108,6 +110,7 @@ public interface HttpClientOptionsSPI {
     httpClientOptions.setMaxPoolSize(spi.getMaxPoolSize());
     httpClientOptions.setKeepAlive(spi.isKeepAlive());
     httpClientOptions.setMaxHeaderSize(spi.getMaxHeaderSize());
+    httpClientOptions.setLogActivity(spi.enableLogActivity());
 
     if (spi.isProxyEnable()) {
       ProxyOptions proxy = new ProxyOptions();
