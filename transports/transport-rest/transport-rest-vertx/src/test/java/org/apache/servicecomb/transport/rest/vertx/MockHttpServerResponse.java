@@ -26,6 +26,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.net.HostAndPort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -313,6 +314,11 @@ class MockHttpServerResponse implements HttpServerResponse {
   @Override
   public HttpServerResponse push(HttpMethod method, String host, String path, MultiMap headers,
       Handler<AsyncResult<HttpServerResponse>> handler) {
+    return null;
+  }
+
+  @Override
+  public Future<HttpServerResponse> push(HttpMethod httpMethod, HostAndPort hostAndPort, String s, MultiMap multiMap) {
     return null;
   }
 
