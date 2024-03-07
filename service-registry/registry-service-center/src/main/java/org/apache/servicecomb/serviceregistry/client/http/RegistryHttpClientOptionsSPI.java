@@ -138,6 +138,11 @@ public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
   }
 
   @Override
+  public boolean enableLogActivity() {
+    return false;
+  }
+
+  @Override
   public int getHttp2MultiplexingLimit() {
     return HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT;
   }
