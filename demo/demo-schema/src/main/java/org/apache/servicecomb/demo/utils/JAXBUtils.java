@@ -20,9 +20,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -32,6 +29,10 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.InputSource;
 
 import com.fasterxml.jackson.databind.JavaType;
+
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 public class JAXBUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(JAXBUtils.class);

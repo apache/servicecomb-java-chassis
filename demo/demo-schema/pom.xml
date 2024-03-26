@@ -37,10 +37,6 @@
       <artifactId>foundation-test-scaffolding</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
