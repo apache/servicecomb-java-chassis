@@ -19,16 +19,17 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.ParameterizedTypeUtil;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayParameterTypeProcessor;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.inject.util.Types;
 
 public class MultipartFileListProcessor extends PartArrayParameterTypeProcessor {
   @Override
   public JavaType getProcessType() {
-    return TypeFactory.defaultInstance().constructType(Types.newParameterizedType(List.class, MultipartFile.class));
+    return TypeFactory.defaultInstance().constructType(
+        ParameterizedTypeUtil.make(List.class, MultipartFile.class));
   }
 }

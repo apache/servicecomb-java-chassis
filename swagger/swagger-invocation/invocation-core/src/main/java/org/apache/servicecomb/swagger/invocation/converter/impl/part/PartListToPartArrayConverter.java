@@ -19,16 +19,15 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import jakarta.servlet.http.Part;
-
+import org.apache.servicecomb.foundation.common.ParameterizedTypeUtil;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
-import com.google.inject.util.Types;
+import jakarta.servlet.http.Part;
 
 public class PartListToPartArrayConverter implements Converter {
   @Override
   public Type getSrcType() {
-    return Types.newParameterizedType(List.class, Part.class);
+    return ParameterizedTypeUtil.make(List.class, Part.class);
   }
 
   @Override

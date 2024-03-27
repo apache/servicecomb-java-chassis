@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.ParameterizedTypeUtil;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
@@ -33,7 +34,6 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.inject.util.Types;
 
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.media.MediaType;
@@ -131,7 +131,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
   }
 
   public static class PartProcessor extends AbstractParamProcessor {
-    private static final Type partListType = Types.newParameterizedType(List.class, Part.class);
+    private static final Type partListType = ParameterizedTypeUtil.make(List.class, Part.class);
 
     // key is target type
     private static final Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(
@@ -178,7 +178,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator<RequestB
 
     private void initRepeatedConverter(Type genericParamType) {
       if (genericParamType instanceof JavaType) {
-        genericParamType = Types.newParameterizedType(((JavaType) genericParamType).getRawClass(),
+        genericParamType = ParameterizedTypeUtil.make(((JavaType) genericParamType).getRawClass(),
             ((JavaType) genericParamType).getContentType());
       }
       converter = partsToTargetConverters.get(genericParamType);

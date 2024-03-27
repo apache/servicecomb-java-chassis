@@ -18,15 +18,16 @@ package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.ParameterizedTypeUtil;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.google.inject.util.Types;
 
 import jakarta.servlet.http.Part;
 
 public class PartListParameterTypeProcessor extends PartArrayParameterTypeProcessor {
   @Override
   public JavaType getProcessType() {
-    return TypeFactory.defaultInstance().constructType(Types.newParameterizedType(List.class, Part.class));
+    return TypeFactory.defaultInstance().constructType(ParameterizedTypeUtil.make(List.class, Part.class));
   }
 }
