@@ -17,14 +17,14 @@
 
 package org.apache.servicecomb.provider.pojo.schema;
 
-import javax.inject.Inject;
-
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public class PojoProducerMeta extends ProducerMeta implements InitializingBean {
-  @Inject
+  @Autowired
   protected PojoProducers pojoProducers;
 
   private String implementation;

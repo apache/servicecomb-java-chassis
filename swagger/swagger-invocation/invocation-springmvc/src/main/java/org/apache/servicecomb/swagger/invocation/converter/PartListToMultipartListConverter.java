@@ -20,21 +20,20 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.servlet.http.Part;
-
+import org.apache.servicecomb.foundation.common.ParameterizedTypeUtil;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.inject.util.Types;
+import jakarta.servlet.http.Part;
 
 public class PartListToMultipartListConverter implements Converter {
   @Override
   public Type getSrcType() {
-    return Types.newParameterizedType(List.class, Part.class);
+    return ParameterizedTypeUtil.make(List.class, Part.class);
   }
 
   @Override
   public Type getTargetType() {
-    return Types.newParameterizedType(List.class, MultipartFile.class);
+    return ParameterizedTypeUtil.make(List.class, MultipartFile.class);
   }
 
   @Override
