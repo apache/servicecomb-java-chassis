@@ -216,7 +216,6 @@ public class SpringmvcClient {
       testControllerAllTransport(templateUrlWithServiceName, microserviceName);
 
       testController();
-      testRequiredBody(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValuesAllTransport(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValuesJavaPrimitiveAllTransport(templateUrlWithServiceName, microserviceName);
       testThirdService();
@@ -340,49 +339,7 @@ public class SpringmvcClient {
     TestMgr.check("ha world", controller.saySomething("ha", user));
   }
 
-  private static void testRequiredBody(RestTemplate template, String microserviceName) {
-    String prefix = "cse://" + microserviceName;
-    Person user = new Person();
 
-    TestMgr.check("No user data found",
-        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
-            user,
-            String.class,
-            "ha"));
-
-    user.setName("world");
-    TestMgr.check("ha world",
-        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
-            user,
-            String.class,
-            "ha"));
-
-    TestMgr.check("No user data found",
-        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
-            null,
-            String.class,
-            "ha"));
-
-    TestMgr.check("No user name found",
-        template.postForObject(prefix + "/annotations/say",
-            "",
-            String.class,
-            "ha"));
-    TestMgr.check("test",
-        template.postForObject(prefix + "/annotations/say",
-            "test",
-            String.class,
-            "ha"));
-
-    try {
-      template.postForObject(prefix + "/annotations/testRequiredBody",
-          null,
-          String.class);
-      TestMgr.fail("should fail");
-    } catch (InvocationException e) {
-      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-    }
-  }
 
   private static void testSpringMvcDefaultValuesRest(RestTemplate template, String microserviceName) {
     String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";

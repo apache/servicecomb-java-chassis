@@ -34,7 +34,7 @@ import jakarta.ws.rs.core.MediaType;
 
 @RestSchema(schemaId = "annotations")
 @RequestMapping(path = "/springmvc/annotations", produces = MediaType.APPLICATION_JSON)
-public class AnnotationsTest {
+public class AnnotationsSchema {
   @GetMapping(path = "/add")
   public int add(@RequestParam(name = "a", defaultValue = "10") int a,
       @RequestParam(name = "b", defaultValue = "10") int b) {
@@ -77,5 +77,10 @@ public class AnnotationsTest {
       return "Should not happen";
     }
     return user.getName();
+  }
+
+  @RequestMapping(path = "/testRegExpPath/{path: .+}", method = RequestMethod.GET)
+  public String testRegExpPath(@RequestParam("name") String name) {
+    return name;
   }
 }
