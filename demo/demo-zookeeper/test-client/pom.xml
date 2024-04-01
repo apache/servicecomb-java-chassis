@@ -85,7 +85,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.zk.connectString=zookeeper:8848
+                          -Dservicecomb.registry.zk.connectString=zookeeper:2181
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/zookeeper-provider-${project.version}.jar</JAR_PATH>
                       </env>
@@ -113,7 +113,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.zk.connectString=zookeeper:8848
+                          -Dservicecomb.registry.zk.connectString=zookeeper:2181
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/zookeeper-consumer-${project.version}.jar</JAR_PATH>
                       </env>
@@ -141,7 +141,7 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.zk.connectString=zookeeper:8848
+                          -Dservicecomb.registry.zk.connectString=zookeeper:2181
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/zookeeper-gateway-${project.version}.jar</JAR_PATH>
                       </env>
