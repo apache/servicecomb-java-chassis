@@ -16,26 +16,40 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
+    <artifactId>service-registry-parent</artifactId>
     <version>3.1.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>service-registry-parent</artifactId>
-  <name>Java Chassis::Service Registry</name>
-  <packaging>pom</packaging>
+  <artifactId>registry-zookeeper</artifactId>
+  <name>Java Chassis::Service Registry::Zookeeper</name>
 
-  <modules>
-    <module>registry-local</module>
-    <module>registry-service-center</module>
-    <module>registry-lightweight</module>
-    <module>registry-zero-config</module>
-    <module>registry-nacos</module>
-    <module>registry-zookeeper</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-x-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.curator</groupId>
+      <artifactId>curator-framework</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-registry</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-core</artifactId>
+    </dependency>
+  </dependencies>
+
 </project>
