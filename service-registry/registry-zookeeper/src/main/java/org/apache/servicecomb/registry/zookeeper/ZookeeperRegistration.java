@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.registry.zookeeper;
 
-import java.lang.management.ManagementFactory;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -100,7 +100,7 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   @Override
   public void run() {
     client = CuratorFrameworkFactory.newClient(zookeeperRegistryProperties.getConnectString(),
-        zookeeperRegistryProperties.getSessionTimeoutMills(), zookeeperRegistryProperties.getConnectionTimeoutMills(),
+        zookeeperRegistryProperties.getSessionTimeoutMillis(), zookeeperRegistryProperties.getConnectionTimeoutMillis(),
         new ExponentialBackoffRetry(1000, 3));
     client.start();
     JsonInstanceSerializer<ZookeeperInstance> serializer =
@@ -164,6 +164,6 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   }
 
   private static String buildInstanceId() {
-    return System.currentTimeMillis() + "-" + ManagementFactory.getRuntimeMXBean().getPid();
+    return UUID.randomUUID().toString();
   }
 }

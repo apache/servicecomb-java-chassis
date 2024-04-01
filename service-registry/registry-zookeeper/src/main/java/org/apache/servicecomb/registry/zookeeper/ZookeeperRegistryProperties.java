@@ -23,9 +23,9 @@ public class ZookeeperRegistryProperties {
 
   private String connectString = "zookeeper://127.0.0.1:2181";
 
-  private int connectionTimeoutMills = 1000;
+  private int connectionTimeoutMillis = 1000;
 
-  private int sessionTimeoutMills = 60000;
+  private int sessionTimeoutMillis = 60000;
 
   private boolean enableSwaggerRegistration = false;
 
@@ -53,20 +53,20 @@ public class ZookeeperRegistryProperties {
     this.connectString = connectString;
   }
 
-  public int getConnectionTimeoutMills() {
-    return connectionTimeoutMills;
+  public int getConnectionTimeoutMillis() {
+    return connectionTimeoutMillis;
   }
 
-  public void setConnectionTimeoutMills(int connectionTimeoutMills) {
-    this.connectionTimeoutMills = connectionTimeoutMills;
+  public void setConnectionTimeoutMillis(int connectionTimeoutMillis) {
+    this.connectionTimeoutMillis = connectionTimeoutMillis;
   }
 
-  public int getSessionTimeoutMills() {
-    return sessionTimeoutMills;
+  public int getSessionTimeoutMillis() {
+    return sessionTimeoutMillis;
   }
 
-  public void setSessionTimeoutMills(int sessionTimeoutMills) {
-    this.sessionTimeoutMills = sessionTimeoutMills;
+  public void setSessionTimeoutMillis(int sessionTimeoutMillis) {
+    this.sessionTimeoutMillis = sessionTimeoutMillis;
   }
 
   public boolean isEnableSwaggerRegistration() {

@@ -27,6 +27,8 @@ servicecomb:
     zk:
       enabled: true
       connectString: 127.0.0.1:2181
+  zk:
+    connectString: 127.0.0.1:2181
 
   rest:
     address: 0.0.0.0:9094

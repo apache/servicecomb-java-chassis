@@ -16,11 +16,11 @@
  */
 package org.apache.servicecomb.localregistry;
 
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
@@ -58,8 +58,11 @@ public class LocalRegistrationInstance implements RegistrationInstance {
 
     this.properties.putAll(BootStrapProperties.readServiceProperties(environment));
 
-    this.instanceId = System.currentTimeMillis() + "-" +
-        ManagementFactory.getRuntimeMXBean().getPid();
+    this.instanceId = buildInstanceId();
+  }
+
+  private static String buildInstanceId() {
+    return UUID.randomUUID().toString();
   }
 
   @Override

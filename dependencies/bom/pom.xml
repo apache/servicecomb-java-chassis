@@ -111,6 +111,11 @@
         <artifactId>config-nacos</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-zookeeper</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- ServiceComb： edge -->
       <dependency>

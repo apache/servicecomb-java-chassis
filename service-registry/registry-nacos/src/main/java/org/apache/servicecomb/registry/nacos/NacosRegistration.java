@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.registry.nacos;
 
-import java.lang.management.ManagementFactory;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.core.Endpoint;
@@ -159,6 +159,6 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   }
 
   private static String buildInstanceId() {
-    return System.currentTimeMillis() + "-" + ManagementFactory.getRuntimeMXBean().getPid();
+    return UUID.randomUUID().toString();
   }
 }

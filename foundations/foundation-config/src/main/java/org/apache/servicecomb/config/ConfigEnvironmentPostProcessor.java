@@ -25,8 +25,6 @@ import org.apache.servicecomb.config.file.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.context.annotation.Conditional;
@@ -40,8 +38,6 @@ import org.springframework.core.env.MutablePropertySources;
  * Initialize configuration.
  */
 public class ConfigEnvironmentPostProcessor implements EnvironmentPostProcessor {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigEnvironmentPostProcessor.class);
-
   public static final String MICROSERVICE_PROPERTY_SOURCE_NAME = "microservice.yaml";
 
   public static final String MAPPING_PROPERTY_SOURCE_NAME = "mapping.yaml";
@@ -135,14 +131,11 @@ public class ConfigEnvironmentPostProcessor implements EnvironmentPostProcessor 
     if (!(environment instanceof ConfigurableEnvironment)) {
       return;
     }
-    try {
-      for (DynamicPropertiesSource dynamicPropertiesSource :
-          SPIServiceUtils.getOrLoadSortedService(DynamicPropertiesSource.class)) {
-        ((ConfigurableEnvironment) environment).getPropertySources()
-            .addFirst(dynamicPropertiesSource.create(environment));
-      }
-    } catch (Exception e) {
-      LOGGER.warn("set up dynamic property source to spring failed.", e);
+
+    for (DynamicPropertiesSource dynamicPropertiesSource :
+        SPIServiceUtils.getOrLoadSortedService(DynamicPropertiesSource.class)) {
+      ((ConfigurableEnvironment) environment).getPropertySources()
+          .addFirst(dynamicPropertiesSource.create(environment));
     }
   }
 }
