@@ -79,9 +79,10 @@ public class ProviderController implements InitializingBean {
     client.create().creatingParentsIfNeeded().
         forPath(path + "/config.properties", "key1=1\nkey2=2".getBytes(StandardCharsets.UTF_8));
 
-    path = String.format(ZookeeperClient.PATH_SERVICE, env,
+    path = String.format(ZookeeperClient.PATH_VERSION, env,
         BootStrapProperties.readApplication(environment),
-        BootStrapProperties.readServiceName(environment));
+        BootStrapProperties.readServiceName(environment),
+        BootStrapProperties.readServiceVersion(environment));
     if (client.checkExists().forPath(path + "/config.properties") != null) {
       client.delete().forPath(path + "/config.properties");
     }

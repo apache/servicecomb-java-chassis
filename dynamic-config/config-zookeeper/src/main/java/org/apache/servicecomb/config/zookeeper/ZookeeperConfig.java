@@ -21,11 +21,11 @@ import org.springframework.core.env.Environment;
 public class ZookeeperConfig {
   public static final String ZOOKEEPER_DEFAULT_ENVIRONMENT = "production";
 
-  public static final String PROPERTY_CONNECT_STRING = "servicecomb.zk.connect-string";
+  public static final String PROPERTY_CONNECT_STRING = "servicecomb.config.zk.connect-string";
 
-  public static final String PROPERTY_SESSION_TIMEOUT = "servicecomb.zk.session-timeout-millis";
+  public static final String PROPERTY_SESSION_TIMEOUT = "servicecomb.config.zk.session-timeout-millis";
 
-  public static final String PROPERTY_CONNECTION_TIMEOUT = "servicecomb.zk.connection-timeout-mills";
+  public static final String PROPERTY_CONNECTION_TIMEOUT = "servicecomb.config.zk.connection-timeout-mills";
 
   private final Environment environment;
 
