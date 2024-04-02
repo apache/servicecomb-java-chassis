@@ -16,11 +16,15 @@
  */
 package org.apache.servicecomb.registry.zookeeper;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -37,12 +41,36 @@ import org.apache.curator.x.discovery.details.ServiceCacheListener;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.Discovery;
+import org.apache.zookeeper.server.auth.DigestLoginModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance> {
+  static class ZookeeperSASLConfig extends Configuration {
+    AppConfigurationEntry entry;
+
+    public ZookeeperSASLConfig(String username,
+        String password) {
+      Map<String, String> options = new HashMap<>();
+      options.put("username", username);
+      options.put("password", password);
+      this.entry = new AppConfigurationEntry(
+          DigestLoginModule.class.getName(),
+          AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+          options
+      );
+    }
+
+    @Override
+    public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
+      AppConfigurationEntry[] array = new AppConfigurationEntry[1];
+      array[0] = entry;
+      return array;
+    }
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperDiscovery.class);
 
   private final Map<String, ServiceCache<ZookeeperInstance>> serviceDiscoveries =
@@ -145,9 +173,23 @@ public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance>
 
   @Override
   public void run() {
-    client = CuratorFrameworkFactory.newClient(zookeeperRegistryProperties.getConnectString(),
-        zookeeperRegistryProperties.getSessionTimeoutMillis(), zookeeperRegistryProperties.getConnectionTimeoutMillis(),
-        new ExponentialBackoffRetry(1000, 3));
+    CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
+        .connectString(zookeeperRegistryProperties.getConnectString())
+        .sessionTimeoutMs(zookeeperRegistryProperties.getSessionTimeoutMillis())
+        .retryPolicy(new ExponentialBackoffRetry(1000, 3));
+    String authSchema = zookeeperRegistryProperties.getAuthenticationSchema();
+    if (StringUtils.isNotEmpty(authSchema)) {
+      if (!"digest".equals(authSchema)) {
+        throw new IllegalStateException("Not supported schema now. " + authSchema);
+      }
+      if (zookeeperRegistryProperties.getAuthenticationInfo() == null) {
+        throw new IllegalStateException("Auth info can not be empty. ");
+      }
+
+      String[] authInfo = zookeeperRegistryProperties.getAuthenticationInfo().split(":");
+      Configuration.setConfiguration(new ZookeeperSASLConfig(authInfo[0], authInfo[1]));
+    }
+    client = builder.build();
     client.start();
   }
 

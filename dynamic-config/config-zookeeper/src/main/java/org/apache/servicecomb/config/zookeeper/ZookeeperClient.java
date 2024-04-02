@@ -24,6 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -31,6 +34,7 @@ import org.apache.curator.framework.recipes.cache.CuratorCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.zookeeper.ZookeeperDynamicPropertiesSource.UpdateHandler;
+import org.apache.zookeeper.server.auth.DigestLoginModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
@@ -38,6 +42,29 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 
 public class ZookeeperClient {
+  static class ZookeeperSASLConfig extends Configuration {
+    AppConfigurationEntry entry;
+
+    public ZookeeperSASLConfig(String username,
+        String password) {
+      Map<String, String> options = new HashMap<>();
+      options.put("username", username);
+      options.put("password", password);
+      this.entry = new AppConfigurationEntry(
+          DigestLoginModule.class.getName(),
+          AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+          options
+      );
+    }
+
+    @Override
+    public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
+      AppConfigurationEntry[] array = new AppConfigurationEntry[1];
+      array[0] = entry;
+      return array;
+    }
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperClient.class);
 
   public static final String PATH_ENVIRONMENT = "/servicecomb/config/environment/%s";
@@ -70,6 +97,7 @@ public class ZookeeperClient {
 
   private Map<String, Object> allLast = new HashMap<>();
 
+
   public ZookeeperClient(UpdateHandler updateHandler, Environment environment) {
     this.updateHandler = updateHandler;
     this.zookeeperConfig = new ZookeeperConfig(environment);
@@ -77,9 +105,23 @@ public class ZookeeperClient {
   }
 
   public void refreshZookeeperConfig() throws Exception {
-    CuratorFramework client = CuratorFrameworkFactory.newClient(zookeeperConfig.getConnectString(),
-        zookeeperConfig.getSessionTimeoutMillis(), zookeeperConfig.getConnectionTimeoutMillis(),
-        new ExponentialBackoffRetry(1000, 3));
+    CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
+        .connectString(zookeeperConfig.getConnectString())
+        .sessionTimeoutMs(zookeeperConfig.getSessionTimeoutMillis())
+        .retryPolicy(new ExponentialBackoffRetry(1000, 3));
+    String authSchema = zookeeperConfig.getAuthSchema();
+    if (StringUtils.isNotEmpty(authSchema)) {
+      if (!"digest".equals(authSchema)) {
+        throw new IllegalStateException("Not supported schema now. " + authSchema);
+      }
+      if (zookeeperConfig.getAuthInfo() == null) {
+        throw new IllegalStateException("Auth info can not be empty. ");
+      }
+
+      String[] authInfo = zookeeperConfig.getAuthInfo().split(":");
+      Configuration.setConfiguration(new ZookeeperSASLConfig(authInfo[0], authInfo[1]));
+    }
+    CuratorFramework client = builder.build();
     client.start();
 
     String env = BootStrapProperties.readServiceEnvironment(environment);

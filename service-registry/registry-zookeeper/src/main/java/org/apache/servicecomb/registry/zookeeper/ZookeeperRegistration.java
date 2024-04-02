@@ -16,7 +16,12 @@
  */
 package org.apache.servicecomb.registry.zookeeper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+
+import javax.security.auth.login.AppConfigurationEntry;
+import javax.security.auth.login.Configuration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.CuratorFramework;
@@ -32,10 +37,34 @@ import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
+import org.apache.zookeeper.server.auth.DigestLoginModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 public class ZookeeperRegistration implements Registration<ZookeeperRegistrationInstance> {
+  static class ZookeeperSASLConfig extends Configuration {
+    AppConfigurationEntry entry;
+
+    public ZookeeperSASLConfig(String username,
+        String password) {
+      Map<String, String> options = new HashMap<>();
+      options.put("username", username);
+      options.put("password", password);
+      this.entry = new AppConfigurationEntry(
+          DigestLoginModule.class.getName(),
+          AppConfigurationEntry.LoginModuleControlFlag.REQUIRED,
+          options
+      );
+    }
+
+    @Override
+    public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
+      AppConfigurationEntry[] array = new AppConfigurationEntry[1];
+      array[0] = entry;
+      return array;
+    }
+  }
+
   private Environment environment;
 
   private ZookeeperRegistryProperties zookeeperRegistryProperties;
@@ -99,9 +128,23 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   @Override
   public void run() {
-    client = CuratorFrameworkFactory.newClient(zookeeperRegistryProperties.getConnectString(),
-        zookeeperRegistryProperties.getSessionTimeoutMillis(), zookeeperRegistryProperties.getConnectionTimeoutMillis(),
-        new ExponentialBackoffRetry(1000, 3));
+    CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder()
+        .connectString(zookeeperRegistryProperties.getConnectString())
+        .sessionTimeoutMs(zookeeperRegistryProperties.getSessionTimeoutMillis())
+        .retryPolicy(new ExponentialBackoffRetry(1000, 3));
+    String authSchema = zookeeperRegistryProperties.getAuthenticationSchema();
+    if (StringUtils.isNotEmpty(authSchema)) {
+      if (!"digest".equals(authSchema)) {
+        throw new IllegalStateException("Not supported schema now. " + authSchema);
+      }
+      if (zookeeperRegistryProperties.getAuthenticationInfo() == null) {
+        throw new IllegalStateException("Auth info can not be empty. ");
+      }
+
+      String[] authInfo = zookeeperRegistryProperties.getAuthenticationInfo().split(":");
+      Configuration.setConfiguration(new ZookeeperDiscovery.ZookeeperSASLConfig(authInfo[0], authInfo[1]));
+    }
+    client = builder.build();
     client.start();
     JsonInstanceSerializer<ZookeeperInstance> serializer =
         new JsonInstanceSerializer<>(ZookeeperInstance.class);
