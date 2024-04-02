@@ -61,7 +61,7 @@ public class Self implements InitializingBean, BootListener {
         microservice.getVersion()));
 
     instance = microservice.getInstance()
-        .instanceId(UUID.randomUUID().toString())
+        .instanceId(buildInstanceId())
         .serviceId(microservice.getServiceId());
 
     microserviceInfo
@@ -70,6 +70,10 @@ public class Self implements InitializingBean, BootListener {
         .setInstance(instance);
 
     return this;
+  }
+
+  private static String buildInstanceId() {
+    return UUID.randomUUID().toString();
   }
 
   @Override

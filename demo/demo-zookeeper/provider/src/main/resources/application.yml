@@ -25,7 +25,9 @@ servicecomb:
       group: green
   registry:
     zk:
-      enabled: true
+      connectString: 127.0.0.1:2181
+  config:
+    zk:
       connectString: 127.0.0.1:2181
 
   rest:

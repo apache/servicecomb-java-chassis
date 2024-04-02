@@ -146,7 +146,7 @@ public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance>
   @Override
   public void run() {
     client = CuratorFrameworkFactory.newClient(zookeeperRegistryProperties.getConnectString(),
-        zookeeperRegistryProperties.getSessionTimeoutMills(), zookeeperRegistryProperties.getConnectionTimeoutMills(),
+        zookeeperRegistryProperties.getSessionTimeoutMillis(), zookeeperRegistryProperties.getConnectionTimeoutMillis(),
         new ExponentialBackoffRetry(1000, 3));
     client.start();
   }
