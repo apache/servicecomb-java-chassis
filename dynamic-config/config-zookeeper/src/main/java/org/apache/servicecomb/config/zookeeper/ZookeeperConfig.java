@@ -27,6 +27,10 @@ public class ZookeeperConfig {
 
   public static final String PROPERTY_CONNECTION_TIMEOUT = "servicecomb.config.zk.connection-timeout-mills";
 
+  public static final String PROPERTY_AUTH_SCHEMA = "servicecomb.config.zk.authentication-schema";
+
+  public static final String PROPERTY_AUTH_INFO = "servicecomb.config.zk.authentication-info";
+
   private final Environment environment;
 
   public ZookeeperConfig(Environment environment) {
@@ -43,5 +47,13 @@ public class ZookeeperConfig {
 
   public int getConnectionTimeoutMillis() {
     return environment.getProperty(PROPERTY_CONNECTION_TIMEOUT, int.class, 1000);
+  }
+
+  public String getAuthSchema() {
+    return environment.getProperty(PROPERTY_AUTH_SCHEMA);
+  }
+
+  public String getAuthInfo() {
+    return environment.getProperty(PROPERTY_AUTH_INFO);
   }
 }

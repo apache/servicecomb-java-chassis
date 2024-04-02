@@ -23,6 +23,10 @@ public class ZookeeperRegistryProperties {
 
   private String connectString = "zookeeper://127.0.0.1:2181";
 
+  private String authenticationSchema;
+
+  private String authenticationInfo;
+
   private int connectionTimeoutMillis = 1000;
 
   private int sessionTimeoutMillis = 60000;
@@ -75,5 +79,21 @@ public class ZookeeperRegistryProperties {
 
   public void setEnableSwaggerRegistration(boolean enableSwaggerRegistration) {
     this.enableSwaggerRegistration = enableSwaggerRegistration;
+  }
+
+  public String getAuthenticationSchema() {
+    return authenticationSchema;
+  }
+
+  public void setAuthenticationSchema(String authenticationSchema) {
+    this.authenticationSchema = authenticationSchema;
+  }
+
+  public String getAuthenticationInfo() {
+    return authenticationInfo;
+  }
+
+  public void setAuthenticationInfo(String authenticationInfo) {
+    this.authenticationInfo = authenticationInfo;
   }
 }
