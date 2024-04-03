@@ -66,6 +66,8 @@
     <log4j2.version>2.23.1</log4j2.version>
     <maven-model.version>3.9.6</maven-model.version>
     <micrometer.version>1.12.4</micrometer.version>
+    <mockito.version>5.7.0</mockito.version>
+    <mockito-inline.version>5.1.1</mockito-inline.version>
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>2.3.1</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
@@ -83,7 +85,6 @@
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>2.2</snakeyaml.version>
     <spring.version>6.0.9</spring.version>
-    <spring-boot.version>3.0.7</spring-boot.version>
     <swagger.version>2.2.21</swagger.version>
     <vertx.version>4.4.8</vertx.version>
     <zipkin.version>3.1.1</zipkin.version>
@@ -101,6 +102,20 @@
         <version>${jackson.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-bom</artifactId>
+        <version>${mockito.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-inline</artifactId>
+        <version>${mockito-inline.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>
