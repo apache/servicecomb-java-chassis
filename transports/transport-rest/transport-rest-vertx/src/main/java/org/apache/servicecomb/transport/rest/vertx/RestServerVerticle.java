@@ -136,8 +136,9 @@ public class RestServerVerticle extends AbstractVerticle {
             return;
           }
           HttpServerResponse response = ctx.response();
-          if (ctx.failure() instanceof InvocationException exception) {
+          if (ctx.failure() instanceof InvocationException) {
             // ServiceComb defined exception
+            InvocationException exception = (InvocationException) ctx.failure();
             response.setStatusCode(exception.getStatusCode());
             response.setStatusMessage(exception.getReasonPhrase());
             response.end(exception.getErrorData().toString());
