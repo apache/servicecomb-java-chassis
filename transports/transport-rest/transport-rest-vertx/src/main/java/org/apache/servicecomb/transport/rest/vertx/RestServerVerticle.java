@@ -67,14 +67,12 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private static final String SSL_KEY = "rest.provider";
 
-  private Endpoint endpoint;
-
   private URIEndpointObject endpointObject;
 
   @Override
   public void init(Vertx vertx, Context context) {
     super.init(vertx, context);
-    this.endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
+    Endpoint endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
     this.endpointObject = (URIEndpointObject) endpoint.getAddress();
   }
 
@@ -137,9 +135,8 @@ public class RestServerVerticle extends AbstractVerticle {
             return;
           }
           HttpServerResponse response = ctx.response();
-          if (ctx.failure() instanceof InvocationException) {
+          if (ctx.failure() instanceof InvocationException exception) {
             // ServiceComb defined exception
-            InvocationException exception = (InvocationException) ctx.failure();
             response.setStatusCode(exception.getStatusCode());
             response.setStatusMessage(exception.getReasonPhrase());
             response.end(exception.getErrorData().toString());
@@ -270,8 +267,6 @@ public class RestServerVerticle extends AbstractVerticle {
       serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
           .setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize())
           .setIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
-          .setReadIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
-          .setWriteIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
           .setInitialSettings(new Http2Settings().setPushEnabled(TransportConfig.getPushEnabled())
               .setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams())
               .setHeaderTableSize(TransportConfig.getHttp2HeaderTableSize())
@@ -281,8 +276,6 @@ public class RestServerVerticle extends AbstractVerticle {
           );
     } else {
       serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
-      serverOptions.setReadIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
-      serverOptions.setWriteIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =
