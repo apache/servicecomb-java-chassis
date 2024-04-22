@@ -21,7 +21,7 @@ public class ZookeeperRegistryProperties {
 
   private boolean ephemeral = true;
 
-  private String connectString = "zookeeper://127.0.0.1:2181";
+  private String connectString = "127.0.0.1:2181";
 
   private String authenticationSchema;
 

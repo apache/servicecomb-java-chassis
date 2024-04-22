@@ -38,7 +38,7 @@ public class ZookeeperConfig {
   }
 
   public String getConnectString() {
-    return environment.getProperty(PROPERTY_CONNECT_STRING);
+    return environment.getProperty(PROPERTY_CONNECT_STRING, "127.0.0.1:2181");
   }
 
   public int getSessionTimeoutMillis() {
