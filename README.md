@@ -6,8 +6,8 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 
 | Release Train  | Latest Version | Compiled JDK Version | Tested JDK Version | Open API | Notes                    |
 |----------------|----------------|----------------------|--------------------|----------|--------------------------|
-| Java Chassis 3 | 3.0.1          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
-| Java Chassis 2 | 2.8.14         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
+| Java Chassis 3 | 3.1.0          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
+| Java Chassis 2 | 2.8.16         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
 | Java Chassis 1 | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
 
 >>>NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not 
@@ -15,63 +15,52 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 
 >>>NOTICE: Java Chassis 1 reached its end of support now after it's first release from 2018. 
 
-# Why use Java Chassis
+# Quick Start
 
-- **High performance**
-
-  The transport capability of Java Chassis is based on [Vert.x](https://vertx.io), which enables Java Chassis to process
-  massive requests with relatively less hardware resources, and support [reactive develop style](https://www.reactivemanifesto.org).
-
-- **Native support for OpenAPI**
-
-  Java Chassis describes the APIs of the microservices via [Swagger](https://swagger.io) natively, to help
-  developers to design microservices that comply to [OpenAPI standard](https://swagger.io/specification/v3/).
-
-- **Flexible develop style**
-
-  Java Chassis allows developers to develop their microservice APIs in `SpringMVC`/`JAX-RS`/`Transparent RPC` styles,
-  and to send the request in `RPC`/`RestTemplate` styles. And there are three kind of build-in transport mode:
-  `Rest over Vertx`/`Rest over Servlet`/`Highway`. All of these features can be combined and replaced easily,
-  because they are decoupled and all based on the Swagger schema, which can provide high flexibility.
-
-- **Out-of-box microservice governance features**
-
-  Java Chassis provides a lot of features for microservice governance and monitor.
-
-# Quick Start (Spring MVC)
-
-Provider service:
+* Define API
 ```java
-@RestSchema(schemaId = "ProviderController")
-@RequestMapping(path = "/")
-public class ProviderController {
+@RequestMapping(path = "/provider")
+public interface ProviderService {
   @GetMapping("/sayHello")
-  public String sayHello(@RequestParam("name") String name) {
+  String sayHello(@RequestParam("name") String name);
+}
+```
+
+* Provider service
+```java
+@RestSchema(schemaId = "ProviderController", schemaInterface = ProviderService.class)
+public class ProviderController implements ProviderService {
+  @Override
+  public String sayHello(String name) {
     return "Hello " + name;
   }
 }
 ```
 
-Consumer service:
-
-Declare Provider service interface to match the Provider method signature. (Method name, return type, parameter name, parameter type)
+* Consumer service
 ```java
-public interface ProviderService {
-  String sayHello(String name);
+@Configuration
+public class ProviderServiceConfiguration {
+  @Bean
+  public ProviderService providerService() {
+    return Invoker.createProxy("provider", "ProviderController", ProviderService.class);
+  }
 }
 ```
 
 Invoke Provider service with RPC
 ```java
-@RestSchema(schemaId = "ConsumerController")
-@RequestMapping(path = "/")
-public class ConsumerController {
-  @RpcReference(schemaId = "ProviderController", microserviceName = "provider")
+@RestSchema(schemaId = "ConsumerController", schemaInterface = ConsumerService.class)
+public class ConsumerController implements ConsumerService {
   private ProviderService providerService;
 
-  // consumer service which delegate the implementation to provider service.
-  @GetMapping("/sayHello")
-  public String sayHello(@RequestParam("name") String name) {
+  @Autowired
+  public void setProviderService(ProviderService providerService) {
+    this.providerService = providerService;
+  }
+
+  @Override
+  public String sayHello(String name) {
     return providerService.sayHello(name);
   }
 }
@@ -83,7 +72,7 @@ Try out this example [here](https://servicecomb.apache.org/references/java-chass
 
 Project documentation is available on the [ServiceComb Java Chassis Developer Guide][java-chassis-developer-guide].
 
-[java-chassis-developer-guide]: https://servicecomb.apache.org/references/java-chassis/en_US/
+[java-chassis-developer-guide]: https://servicecomb.apache.org/references/java-chassis/zh_CN/
 
 # Building
 
