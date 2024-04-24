@@ -2,9 +2,11 @@
 
 Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的JAVA SDK。它包含如下特性：
 
-* 多种开发风格，REST(JAX-RS、Spring MVC）和RPC
-* 多种通信协议, HTTP over Vert.x、Http Over Servlet、Highway等
-* 统一一致的服务提供者、服务消费者处理链，以及基于契约的开箱即用的服务治理能力
+* 基于Open API的契约优先(API First)开发模式，满足开发过程可管理、开发规范可验证要求。
+* 多种开发风格，REST(JAX-RS、Spring MVC）和RPC等，高效支持遗留系统迁移和新系统开发场景。
+* 多种通信协议, HTTP over Vert.x、Http Over Servlet、Highway等，满足不同场景对于性能、韧性的需求。
+* 统一一致的服务提供者、服务消费者处理链，易于扩展新功能。
+* 提供服务发现、配置管理、熔断、限流、灰度发布等开箱即用的服务治理能力。
 
 开发者可以通过[设计选型参考][design]了解更多特性和设计原理。
 
@@ -14,68 +16,64 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 | 版本火车           | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
 |----------------|--------|------------|-------------------|----------|-----------------|
-| Java Chassis 3 | 3.0.1  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
-| Java Chassis 2 | 2.8.14 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
+| Java Chassis 3 | 3.1.0  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
+| Java Chassis 2 | 2.8.16 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
 | Java Chassis 1 | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
 
 >>>NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2、Java Chassis 1不能与Java Chassis 3共存互访. 升级Java Chassis 3, 需要将相关的消费者、提供者和边缘服务同时升级.
 
 >>>NOTICE: Java Chassis 1 第一个版本于2018发布，已经停止更新.
 
-# 为什么使用Java Chassis
+# 快速开始
 
-- **高性能**
-
-  Java Chassis 网络层基于 [Vert.x](https://vertx.io) 实现, 支持开发者使用[响应式编程](https://www.reactivemanifesto.org), 开发者在使用熟悉的REST风格设计业务接口的时候，也能够获取到非常高性能的吞吐量。同时还提供了Highway协议，满足更高性能场景的要求。
-
-- **原生支持OpenAPI**
-
-  Java Chassis 的接口开发、服务治理都基于 [Swagger](https://swagger.io) ，并通过接口语义检查，使得接口定义符合 [OpenAPI 规范](https://swagger.io/specification/v3/). 
-
-- **灵活的开发方式**
-
-  开发者可以使用 `SpringMVC`/`JAX-RS`/`Transparent RPC` 任意一种方式定义服务端接口, 并使用`RPC`/`RestTemplate` 等方式访问这些接口. 得益于Java Chassis的通信层与开发方式分离的设计，开发者可以在 `Rest over Vertx`/`Rest over Servlet`/`Highway`等通信模式下自由切换.
-
-- **开箱即用的服务治理能力**
-
-  Java Chassis 提供了大量开箱即用的服务治理能力，包括服务发现、熔断容错、负载均衡、流量控制等。
-
-
-# 快速开始 (Spring MVC)
-
-定义提供者。
+* 定义服务契约
 
 ```java
-@RestSchema(schemaId = "ProviderController")
-@RequestMapping(path = "/")
-public class ProviderController {
+@RequestMapping(path = "/provider")
+public interface ProviderService {
   @GetMapping("/sayHello")
-  public String sayHello(@RequestParam("name") String name) {
+  String sayHello(@RequestParam("name") String name);
+}
+```
+
+* 定义提供者
+
+```java
+@RestSchema(schemaId = "ProviderController", schemaInterface = ProviderService.class)
+public class ProviderController implements ProviderService {
+  @Override
+  public String sayHello(String name) {
     return "Hello " + name;
   }
 }
 ```
 
-定义消费者。首先定义一个接口，与需要访问的提供者的方法拥有一样的签名(方法名、返回值类型、参数名称和参数类型)。
+* 定义消费者
 
 ```java
-public interface ProviderService {
-  String sayHello(String name);
+@Configuration
+public class ProviderServiceConfiguration {
+  @Bean
+  public ProviderService providerService() {
+    return Invoker.createProxy("provider", "ProviderController", ProviderService.class);
+  }
 }
 ```
 
 使用RPC方式访问提供者。 
 
 ```java
-@RestSchema(schemaId = "ConsumerController")
-@RequestMapping(path = "/")
-public class ConsumerController {
-  @RpcReference(schemaId = "ProviderController", microserviceName = "provider")
+@RestSchema(schemaId = "ConsumerController", schemaInterface = ConsumerService.class)
+public class ConsumerController implements ConsumerService {
   private ProviderService providerService;
 
-  // consumer service which delegate the implementation to provider service.
-  @GetMapping("/sayHello")
-  public String sayHello(@RequestParam("name") String name) {
+  @Autowired
+  public void setProviderService(ProviderService providerService) {
+    this.providerService = providerService;
+  }
+
+  @Override
+  public String sayHello(String name) {
     return providerService.sayHello(name);
   }
 }
