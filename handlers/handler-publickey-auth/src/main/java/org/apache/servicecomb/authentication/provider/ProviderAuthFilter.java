@@ -33,7 +33,7 @@ import org.springframework.core.env.Environment;
 import jakarta.ws.rs.core.Response.Status;
 
 public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter {
-  private static final String KEY_API_WHITE_LIST = "servicecomb.publicKey.accessControl.pathWhiteList";
+  private static final String KEY_API_WHITE_LIST = "servicecomb.publicKey.accessControl.excludePathPatterns";
 
   private ProviderTokenManager authenticationTokenManager;
 
