@@ -18,7 +18,6 @@ package org.apache.servicecomb.authentication.provider;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.AbstractFilter;
@@ -33,8 +32,6 @@ import org.springframework.core.env.Environment;
 import jakarta.ws.rs.core.Response.Status;
 
 public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter {
-  private static final String KEY_API_WHITE_LIST = "servicecomb.publicKey.accessControl.excludePathPatterns";
-
   private ProviderTokenManager authenticationTokenManager;
 
   private Environment env;
@@ -57,7 +54,7 @@ public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    if (checkPathWhitelist(invocation.getRequestEx().getServletPath())) {
+    if (PathCheckUtils.isNotRequiredAuth(invocation.getOperationMeta().getOperationPath(), env)) {
       return nextNode.onFilter(invocation);
     }
     String token = invocation.getContext(CoreConst.AUTH_TOKEN);
@@ -66,35 +63,5 @@ public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter
     }
     return CompletableFuture.failedFuture(
         new InvocationException(Status.UNAUTHORIZED, "public key authorization failed."));
-  }
-
-  private boolean checkPathWhitelist(String path) {
-    String apiWhiteList = env.getProperty(KEY_API_WHITE_LIST, "");
-    if (StringUtils.isEmpty(apiWhiteList)) {
-      return false;
-    }
-    for (String whiteUri : apiWhiteList.split(",")) {
-      if (!whiteUri.isEmpty() && isPatternMatch(path, whiteUri)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  public static boolean isPatternMatch(String value, String pattern) {
-    if (pattern.startsWith("*") || pattern.startsWith("/*")) {
-      int index = 0;
-      for (int i = 0; i < pattern.length(); i++) {
-        if (pattern.charAt(i) != '*' && pattern.charAt(i) != '/') {
-          break;
-        }
-        index++;
-      }
-      return value.endsWith(pattern.substring(index));
-    }
-    if (pattern.endsWith("*")) {
-      return value.startsWith(pattern.substring(0, pattern.length() - 1));
-    }
-    return value.equals(pattern);
   }
 }
