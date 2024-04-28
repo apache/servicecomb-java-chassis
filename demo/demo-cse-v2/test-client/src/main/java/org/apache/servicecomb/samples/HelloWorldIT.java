@@ -30,22 +30,11 @@ public class HelloWorldIT implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
     testHelloWorld();
-    testAuthIncludePath();
   }
 
   private void testHelloWorld() {
     String result = template
         .getForObject(Config.GATEWAY_URL + "/sayHello?name=World", String.class);
     TestMgr.check("Hello World", result);
-  }
-
-  private void testAuthIncludePath() {
-    String result = "";
-    try {
-      result = template.getForObject(Config.GATEWAY_URL + "/authIncludePath", String.class);
-    } catch (Exception e) {
-      result = "failed";
-    }
-    TestMgr.check("failed", result);
   }
 }

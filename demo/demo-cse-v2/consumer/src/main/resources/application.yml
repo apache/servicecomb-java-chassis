@@ -36,7 +36,3 @@ servicecomb:
   rest:
     address: 0.0.0.0:9092  # should be same with server.port to use web container
 
-  publicKey:
-    accessControl:
-      enabled: true
-      excludePathPatterns: '/*'

@@ -19,6 +19,4 @@ package org.apache.servicecomb.samples;
 
 public interface ProviderService {
   String sayHello(String name);
-
-  String authIncludePath();
 }
