@@ -85,7 +85,7 @@ public class PathCheckUtils {
         }
         index--;
       }
-      return value.startsWith(pattern.substring(0, index));
+      return value.startsWith(pattern.substring(0, index + 1));
     }
     return value.equals(pattern);
   }
