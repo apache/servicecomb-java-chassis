@@ -46,6 +46,7 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.TransportContext;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,13 +125,19 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
     responseEx.setStatus(response.getStatusCode());
     copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
-    if (download) {
+    boolean failed = response.getResult() instanceof InvocationException;
+
+    if (!failed && download) {
       return CompletableFuture.completedFuture(response);
     }
 
     responseEx.setContentType(produceProcessor.getName());
     try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
-      produceProcessor.encodeResponse(output, response.getResult());
+      if (failed) {
+        produceProcessor.encodeResponse(output, ((InvocationException) response.getResult()).getErrorData());
+      } else {
+        produceProcessor.encodeResponse(output, response.getResult());
+      }
 
       responseEx.setBodyBuffer(output.getBuffer());
 

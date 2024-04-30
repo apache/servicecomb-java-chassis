@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import jakarta.servlet.http.Part;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.part.FilePart;
@@ -34,6 +32,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.Part;
 
 @RestSchema(schemaId = "DownloadSchema")
 @RequestMapping(path = "/download", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -93,18 +93,45 @@ public class DownloadSchema {
   }
 
   @GetMapping(path = "/setContentTypeByResponseEntity")
-  public ResponseEntity<Part> setContentTypeByResponseEntity(@RequestParam("content") String content, @RequestParam("contentType") String contentType) throws IOException {
+  public ResponseEntity<Part> setContentTypeByResponseEntity(@RequestParam("content") String content,
+      @RequestParam("contentType") String contentType) throws IOException {
     File file = createTempFile(content);
 
     return ResponseEntity
-            .ok()
-            .header(HttpHeaders.CONTENT_TYPE, contentType)
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
-            .body(new FilePart(null, file));
+        .ok()
+        .header(HttpHeaders.CONTENT_TYPE, contentType)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
+        .body(new FilePart(null, file));
   }
 
   @GetMapping(path = "/assertLastFileDeleted")
   public boolean assertLastFileDeleted() {
     return lastFile.exists();
+  }
+
+  @GetMapping(path = "/testResponseOKExceptionDownload")
+  public ResponseEntity<Part> testResponseOKExceptionDownload(
+      @RequestParam("exception") boolean exception,
+      @RequestParam("content") String content,
+      @RequestParam("contentType") String contentType) throws IOException {
+    if (exception) {
+      throw new ResponseOKException();
+    }
+
+    File file = createTempFile(content);
+
+    return ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_TYPE, contentType)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=tempFileEntity.txt")
+        .body(new FilePart(null, file));
+  }
+
+  @GetMapping(path = "/testResponseOKExceptionBean")
+  public boolean testResponseOKExceptionBean(@RequestParam("exception") boolean exception) {
+    if (exception) {
+      throw new ResponseOKException();
+    }
+    return true;
   }
 }

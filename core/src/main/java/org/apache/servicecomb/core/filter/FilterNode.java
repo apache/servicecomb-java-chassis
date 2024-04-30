@@ -70,15 +70,6 @@ public class FilterNode {
 
     String stage = invocation.getInvocationStageTrace().recordStageBegin(this.filter.getNameWithOrder());
     return AsyncUtils.tryCatchSupplierFuture(() -> filter.onFilter(invocation, nextNode)
-            .whenComplete((r, e) -> invocation.getInvocationStageTrace().recordStageEnd(stage)))
-        .thenApply(this::rethrowExceptionInResponse);
-  }
-
-  private Response rethrowExceptionInResponse(Response response) {
-    if (response.isFailed() && response.getResult() instanceof Throwable) {
-      throw AsyncUtils.rethrow(response.getResult());
-    }
-
-    return response;
+        .whenComplete((r, e) -> invocation.getInvocationStageTrace().recordStageEnd(stage)));
   }
 }
