@@ -88,7 +88,7 @@
     <swagger.version>2.2.21</swagger.version>
     <vertx.version>4.4.8</vertx.version>
     <zipkin.version>3.1.1</zipkin.version>
-    <zipkin-reporter.version>2.17.1</zipkin-reporter.version>
+    <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
