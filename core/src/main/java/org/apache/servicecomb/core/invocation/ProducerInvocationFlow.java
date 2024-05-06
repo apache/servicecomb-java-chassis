@@ -19,13 +19,15 @@ package org.apache.servicecomb.core.invocation;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public abstract class ProducerInvocationFlow {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerInvocationFlow.class);
@@ -66,56 +68,36 @@ public abstract class ProducerInvocationFlow {
     if (invocation.isEdge()) {
       invocation.getMicroserviceMeta().getEdgeFilterChain()
           .onFilter(invocation)
-          .whenComplete((response, Throwable) -> sendResponse(invocation, response))
-          .whenComplete((response, Throwable) -> finishInvocation(invocation, response, Throwable));
+          .whenComplete((response, throwable) -> {
+            if (throwable != null) {
+              // Server codec operates on Response. So the filter chain result should be Response and
+              // will never throw exception.
+              LOGGER.error("Maybe a fatal bug that should be addressed.", throwable);
+              response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
+                  new CommonExceptionData("Internal error, check logs for details.")));
+            }
+            sendResponse(invocation, response);
+            finishInvocation(invocation, response);
+          });
       return;
     }
     invocation.getMicroserviceMeta().getProviderFilterChain()
         .onFilter(invocation)
-        .whenComplete((response, Throwable) -> sendResponse(invocation, response))
-        .whenComplete((response, Throwable) -> finishInvocation(invocation, response, Throwable));
+        .whenComplete((response, throwable) -> {
+          if (throwable != null) {
+            // Server codec operates on Response. So the filter chain result should be Response and
+            // will never throw exception.
+            LOGGER.error("Maybe a fatal bug that should be addressed.", throwable);
+            response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
+                new CommonExceptionData("Internal error, check logs for details.")));
+          }
+          sendResponse(invocation, response);
+          finishInvocation(invocation, response);
+        });
   }
 
-  private void finishInvocation(Invocation invocation, Response response, Throwable throwable) {
+  private void finishInvocation(Invocation invocation, Response response) {
     invocation.onFinish(response);
-
-    tryLogException(invocation, throwable);
-  }
-
-  private void tryLogException(Invocation invocation, Throwable throwable) {
-    if (throwable == null) {
-      return;
-    }
-
-    throwable = Exceptions.unwrap(throwable);
-    if (requestEx == null) {
-      logException(invocation, throwable);
-      return;
-    }
-
-    logException(invocation, requestEx, throwable);
-  }
-
-  private void logException(Invocation invocation, Throwable throwable) {
-    if (Exceptions.isPrintInvocationStackTrace()) {
-      LOGGER.error("Failed to finish invocation, operation:{}.", invocation.getMicroserviceQualifiedName(), throwable);
-      return;
-    }
-
-    LOGGER.error("Failed to finish invocation, operation:{}, message={}.", invocation.getMicroserviceQualifiedName(),
-        ExceptionUtils.getExceptionMessageWithoutTrace(throwable));
-  }
-
-  private void logException(Invocation invocation, HttpServletRequestEx requestEx, Throwable throwable) {
-    if (Exceptions.isPrintInvocationStackTrace()) {
-      LOGGER.error("Failed to finish invocation, operation:{}, request uri:{}.",
-          invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(), throwable);
-      return;
-    }
-
-    LOGGER.error("Failed to finish invocation, operation:{}, request uri:{}, message={}.",
-        invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(),
-        ExceptionUtils.getExceptionMessageWithoutTrace(throwable));
   }
 
   protected abstract Invocation sendCreateInvocationException(Throwable throwable);

@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 
 import io.vertx.core.buffer.Buffer;
@@ -92,8 +93,15 @@ public class HighwayServerCodecFilter extends AbstractFilter implements Provider
     ResponseRootSerializer bodySchema = operationProtobuf.findResponseRootSerializer(response.getStatusCode());
 
     try {
-      Buffer respBuffer = HighwayCodec.encodeResponse(
-          msgId, header, bodySchema, response.getResult());
+      boolean failed = response.getResult() instanceof InvocationException;
+      Buffer respBuffer;
+      if (failed) {
+        respBuffer = HighwayCodec.encodeResponse(
+            msgId, header, bodySchema, ((InvocationException) response.getResult()).getErrorData());
+      } else {
+        respBuffer = HighwayCodec.encodeResponse(
+            msgId, header, bodySchema, response.getResult());
+      }
       transportContext.setResponseBuffer(respBuffer);
 
       invocation.onEncodeResponseFinish();

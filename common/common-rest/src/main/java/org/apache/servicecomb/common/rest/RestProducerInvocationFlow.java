@@ -29,6 +29,7 @@ import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +61,8 @@ public class RestProducerInvocationFlow extends ProducerInvocationFlow {
   @Override
   protected void sendResponse(Invocation invocation, Response response) {
     invocation.getInvocationStageTrace().startProviderSendResponse();
-    if (isDownloadFileResponseType(invocation, response)) {
+    boolean failed = response.getResult() instanceof InvocationException;
+    if (!failed && isDownloadFileResponseType(invocation, response)) {
       responseEx.sendPart(PartUtils.getSinglePart(null, response.getResult()))
           .whenComplete((r, e) -> flushResponse(invocation));
       return;

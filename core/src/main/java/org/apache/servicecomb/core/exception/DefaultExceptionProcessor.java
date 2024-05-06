@@ -191,8 +191,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
     if (invocation != null) {
       logProducerException(invocation, invocationException);
     }
-    return Response.status(invocationException.getStatus())
-        .entity(invocationException.getErrorData());
+    return Response.createFail(invocationException);
   }
 
   @Override

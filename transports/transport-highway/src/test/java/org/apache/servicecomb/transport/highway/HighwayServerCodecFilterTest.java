@@ -38,6 +38,7 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.junit.After;
@@ -145,7 +146,7 @@ public class HighwayServerCodecFilterTest {
     Response response = codecFilter.onFilter(invocation, nextNode).get();
 
     assertThat(response.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-    assertThat(Json.encode(response.getResult()))
+    assertThat(Json.encode(((InvocationException) response.getResult()).getErrorData()))
         .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"Unexpected "
             + "exception when processing null. encode request failed\"}");
   }
