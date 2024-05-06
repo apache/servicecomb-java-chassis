@@ -17,16 +17,20 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
+import java.net.URI;
+import java.util.Collections;
+
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.Collections;
 
 @Component
 public class TestDownloadSchema implements CategorizedTestCase {
@@ -36,6 +40,45 @@ public class TestDownloadSchema implements CategorizedTestCase {
     testDownloadFileNotDeleted();
     testDownloadFileWithNull();
     testSetContentTypeByResponseEntity();
+    testResponseOKException();
+  }
+
+  private void testResponseOKException() {
+    MicroserviceInstances instances =
+        DiscoveryManager.INSTANCE.
+            findServiceInstances("springmvctest", "springmvc", DefinitionConst.VERSION_RULE_ALL);
+    String endpoint = instances.getInstancesResponse().getInstances().get(0).getEndpoints().stream()
+        .filter(item -> item.startsWith("rest")).findFirst().get();
+    URI endpointItem = URI.create(endpoint);
+    RestTemplate template = new RestTemplate();
+
+    // This is for compatible usage. For best practise, any status code
+    // should have only one type of response.
+    ResponseEntity<ResponseOKData> resultFail = template.getForEntity(
+        "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
+            + "/api/download/testResponseOKExceptionBean?exception=true", ResponseOKData.class);
+    TestMgr.check(200, resultFail.getStatusCode().value());
+    TestMgr.check("code-005", resultFail.getBody().getErrorCode());
+    TestMgr.check("error-005", resultFail.getBody().getErrorMessage());
+    ResponseEntity<Boolean> resultOK = template.getForEntity(
+        "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
+            + "/api/download/testResponseOKExceptionBean?exception=false", boolean.class);
+    TestMgr.check(true, resultOK.getBody());
+
+    resultFail = template.getForEntity(
+        "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
+            + "/api/download/testResponseOKExceptionDownload?exception=true&content=ddd&contentType=plain/text",
+        ResponseOKData.class);
+    TestMgr.check(200, resultFail.getStatusCode().value());
+    TestMgr.check("code-005", resultFail.getBody().getErrorCode());
+    TestMgr.check("error-005", resultFail.getBody().getErrorMessage());
+
+    ResponseEntity<String> resultPartOK = template.getForEntity(
+        "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
+            + "/api/download/testResponseOKExceptionDownload?exception=false&content=ddd&contentType=plain/text",
+        String.class);
+    TestMgr.check(200, resultPartOK.getStatusCode().value());
+    TestMgr.check("ddd", resultPartOK.getBody());
   }
 
   private void testDownloadFileAndDeleted() throws Exception {
@@ -78,8 +121,9 @@ public class TestDownloadSchema implements CategorizedTestCase {
   private void testSetContentTypeByResponseEntity() throws Exception {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     ResponseEntity<ReadStreamPart> responseEntity = restTemplate
-            .getForEntity("servicecomb://springmvc/download/setContentTypeByResponseEntity?content=hello&contentType=customType",
-                    ReadStreamPart.class);
+        .getForEntity(
+            "servicecomb://springmvc/download/setContentTypeByResponseEntity?content=hello&contentType=customType",
+            ReadStreamPart.class);
     String hello = responseEntity.getBody().saveAsString().get();
     TestMgr.check(responseEntity.getHeaders().get(HttpHeaders.CONTENT_TYPE), Collections.singletonList("customType"));
     TestMgr.check(hello, "hello");

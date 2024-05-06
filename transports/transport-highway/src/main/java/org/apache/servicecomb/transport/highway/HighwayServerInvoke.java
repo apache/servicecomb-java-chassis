@@ -142,13 +142,16 @@ public class HighwayServerInvoke {
     header.fromMultiMap(response.getHeaders());
 
     ResponseRootSerializer bodySchema = operationProtobuf.findResponseRootSerializer(response.getStatusCode());
-    Object body = response.getResult();
-    if (response.isFailed()) {
-      body = ((InvocationException) body).getErrorData();
-    }
+    boolean failed = response.getResult() instanceof InvocationException;
 
     try {
-      Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body);
+      Buffer respBuffer;
+      if (failed) {
+        respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema,
+            ((InvocationException) response.getResult()).getErrorData());
+      } else {
+        respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, response.getResult());
+      }
       invocation.getInvocationStageTrace().finishServerFiltersResponse();
       connection.write(respBuffer.getByteBuf());
     } catch (Exception e) {

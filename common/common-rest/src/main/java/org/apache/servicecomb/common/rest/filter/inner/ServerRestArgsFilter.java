@@ -69,20 +69,20 @@ public class ServerRestArgsFilter implements HttpServerFilter {
     Response response = (Response) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
     ProduceProcessor produceProcessor =
         (ProduceProcessor) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR);
-    Object body = response.getResult();
-    if (response.isFailed()) {
-      body = ((InvocationException) body).getErrorData();
-    }
-
-    if (null != invocation && isDownloadFileResponseType(invocation, response)) {
-      return responseEx.sendPart(PartUtils.getSinglePart(null, body));
+    boolean failed = response.getResult() instanceof InvocationException;
+    if (!failed && isDownloadFileResponseType(invocation, response)) {
+      return responseEx.sendPart(PartUtils.getSinglePart(null, response.getResult()));
     }
 
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
 
     CompletableFuture<Void> future = new CompletableFuture<>();
     try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
-      produceProcessor.encodeResponse(output, body);
+      if (failed) {
+        produceProcessor.encodeResponse(output, ((InvocationException) response.getResult()).getErrorData());
+      } else {
+        produceProcessor.encodeResponse(output, response.getResult());
+      }
 
       responseEx.setBodyBuffer(output.getBuffer());
       future.complete(null);
