@@ -32,6 +32,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 @Component
 public class TestDownloadSchema implements CategorizedTestCase {
   @Override
@@ -44,9 +46,20 @@ public class TestDownloadSchema implements CategorizedTestCase {
   }
 
   private void testResponseOKException() {
+    String prefix;
+    String app;
+    if (DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.test.vert.transport", true).get()) {
+      prefix = "/api/download/";
+      app = "springmvctest";
+    } else {
+      prefix = "/download/";
+      app = "springmvcboottest";
+    }
+
     MicroserviceInstances instances =
         DiscoveryManager.INSTANCE.
-            findServiceInstances("springmvctest", "springmvc", DefinitionConst.VERSION_RULE_ALL);
+            findServiceInstances(app, "springmvc", DefinitionConst.VERSION_RULE_ALL);
     String endpoint = instances.getInstancesResponse().getInstances().get(0).getEndpoints().stream()
         .filter(item -> item.startsWith("rest")).findFirst().get();
     URI endpointItem = URI.create(endpoint);
@@ -56,18 +69,18 @@ public class TestDownloadSchema implements CategorizedTestCase {
     // should have only one type of response.
     ResponseEntity<ResponseOKData> resultFail = template.getForEntity(
         "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
-            + "/api/download/testResponseOKExceptionBean?exception=true", ResponseOKData.class);
+            + prefix + "testResponseOKExceptionBean?exception=true", ResponseOKData.class);
     TestMgr.check(200, resultFail.getStatusCode().value());
     TestMgr.check("code-005", resultFail.getBody().getErrorCode());
     TestMgr.check("error-005", resultFail.getBody().getErrorMessage());
     ResponseEntity<Boolean> resultOK = template.getForEntity(
         "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
-            + "/api/download/testResponseOKExceptionBean?exception=false", boolean.class);
+            + prefix + "testResponseOKExceptionBean?exception=false", boolean.class);
     TestMgr.check(true, resultOK.getBody());
 
     resultFail = template.getForEntity(
         "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
-            + "/api/download/testResponseOKExceptionDownload?exception=true&content=ddd&contentType=plain/text",
+            + prefix + "testResponseOKExceptionDownload?exception=true&content=ddd&contentType=plain/text",
         ResponseOKData.class);
     TestMgr.check(200, resultFail.getStatusCode().value());
     TestMgr.check("code-005", resultFail.getBody().getErrorCode());
@@ -75,7 +88,7 @@ public class TestDownloadSchema implements CategorizedTestCase {
 
     ResponseEntity<String> resultPartOK = template.getForEntity(
         "http://" + endpointItem.getHost() + ":" + endpointItem.getPort()
-            + "/api/download/testResponseOKExceptionDownload?exception=false&content=ddd&contentType=plain/text",
+            + prefix + "testResponseOKExceptionDownload?exception=false&content=ddd&contentType=plain/text",
         String.class);
     TestMgr.check(200, resultPartOK.getStatusCode().value());
     TestMgr.check("ddd", resultPartOK.getBody());
