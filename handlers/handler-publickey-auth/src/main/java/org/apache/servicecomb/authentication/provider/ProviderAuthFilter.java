@@ -27,15 +27,19 @@ import org.apache.servicecomb.core.filter.ProviderFilter;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 
 import jakarta.ws.rs.core.Response.Status;
 
 public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter {
   private ProviderTokenManager authenticationTokenManager;
 
+  private Environment env;
+
   @Autowired
-  public void setProviderTokenManager(ProviderTokenManager providerTokenManager) {
+  public void setProviderTokenManager(ProviderTokenManager providerTokenManager, Environment env) {
     this.authenticationTokenManager = providerTokenManager;
+    this.env = env;
   }
 
   @Override
@@ -50,6 +54,9 @@ public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    if (PathCheckUtils.isNotRequiredAuth(invocation.getOperationMeta().getOperationPath(), env)) {
+      return nextNode.onFilter(invocation);
+    }
     String token = invocation.getContext(CoreConst.AUTH_TOKEN);
     if (null != token && authenticationTokenManager.valid(token)) {
       return nextNode.onFilter(invocation);

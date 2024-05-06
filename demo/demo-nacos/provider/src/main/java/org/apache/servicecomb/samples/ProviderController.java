@@ -30,4 +30,9 @@ public class ProviderController {
   public String sayHello(@RequestParam("name") String name) {
     return "Hello " + name;
   }
+
+  @GetMapping("/authIncludePath")
+  public String authIncludePath() {
+    return "success.";
+  }
 }

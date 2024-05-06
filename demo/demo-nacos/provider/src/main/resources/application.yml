@@ -31,3 +31,12 @@ servicecomb:
   rest:
     address: 0.0.0.0:9094
 
+  publicKey:
+    accessControl:
+      enabled: true
+      includePathPatterns: '/authIncludePath'
+      black:
+        authPath:
+          category: property
+          propertyName: serviceName
+          rule: consumer*
