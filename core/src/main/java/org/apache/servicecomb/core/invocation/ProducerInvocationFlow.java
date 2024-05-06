@@ -22,8 +22,12 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public abstract class ProducerInvocationFlow {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerInvocationFlow.class);
@@ -69,7 +73,8 @@ public abstract class ProducerInvocationFlow {
               // Server codec operates on Response. So the filter chain result should be Response and
               // will never throw exception.
               LOGGER.error("Maybe a fatal bug that should be addressed.", throwable);
-              return;
+              response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
+                  new CommonExceptionData("Internal error, check logs for details.")));
             }
             sendResponse(invocation, response);
             finishInvocation(invocation, response);
@@ -83,7 +88,8 @@ public abstract class ProducerInvocationFlow {
             // Server codec operates on Response. So the filter chain result should be Response and
             // will never throw exception.
             LOGGER.error("Maybe a fatal bug that should be addressed.", throwable);
-            return;
+            response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
+                new CommonExceptionData("Internal error, check logs for details.")));
           }
           sendResponse(invocation, response);
           finishInvocation(invocation, response);
