@@ -20,9 +20,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 
 import jakarta.ws.rs.core.Response.StatusType;
@@ -47,9 +44,6 @@ public final class ExceptionFactory {
 
   public static final String CONSUMER_INNER_REASON_PHRASE = "Unexpected consumer error, please check logs for details";
 
-  private static final ExceptionToProducerResponseConverters exceptionToProducerResponseConverters
-      = SPIServiceUtils.getPriorityHighestService(ExceptionToProducerResponseConverters.class);
-
   public static final StatusType CONSUMER_INNER_STATUS =
       new HttpStatus(CONSUMER_INNER_STATUS_CODE, CONSUMER_INNER_REASON_PHRASE);
 
@@ -58,7 +52,7 @@ public final class ExceptionFactory {
 
   public static InvocationException create(StatusType status,
       Object exceptionOrErrorData) {
-    if (InvocationException.class.isInstance(exceptionOrErrorData)) {
+    if (exceptionOrErrorData instanceof InvocationException) {
       return (InvocationException) exceptionOrErrorData;
     }
 
@@ -124,10 +118,6 @@ public final class ExceptionFactory {
 
     CommonExceptionData data = new CommonExceptionData(errorMsg);
     return doCreate(statusCode, reasonPhrase, data, e);
-  }
-
-  public static Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e) {
-    return exceptionToProducerResponseConverters.convertExceptionToResponse(swaggerInvocation, e);
   }
 
   public static Throwable unwrapIncludeInvocationException(Throwable throwable) {
