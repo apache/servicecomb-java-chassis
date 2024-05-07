@@ -75,7 +75,7 @@ public class ZookeeperClient {
 
   public static final String PATH_VERSION = "/servicecomb/config/version/%s/%s/%s/%s";
 
-  public static final String PATH_TAG = "/servicecomb/config/tag/%s/%s/%s/%s";
+  public static final String PATH_TAG = "/servicecomb/config/tag/%s/%s/%s/%s/%s";
 
   private final UpdateHandler updateHandler;
 
@@ -138,10 +138,14 @@ public class ZookeeperClient {
   }
 
   private void addTagConfig(String env, CuratorFramework client) throws Exception {
+    if (StringUtils.isEmpty(zookeeperConfig.getInstanceTag())) {
+      return;
+    }
     String path = String.format(PATH_TAG, env,
         BootStrapProperties.readApplication(environment),
         BootStrapProperties.readServiceName(environment),
-        BootStrapProperties.readServiceVersion(environment));
+        BootStrapProperties.readServiceVersion(environment),
+        zookeeperConfig.getInstanceTag());
     CuratorCache cache = CuratorCache.builder(client, path).build();
     cache.listenable().addListener((type, oldData, newData) -> {
       try {
