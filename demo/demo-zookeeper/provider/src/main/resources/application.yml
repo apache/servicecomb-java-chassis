@@ -29,6 +29,7 @@ servicecomb:
   config:
     zk:
       connectString: 127.0.0.1:2181
+      instance-tag: config-demo
 
   rest:
     address: 0.0.0.0:9094

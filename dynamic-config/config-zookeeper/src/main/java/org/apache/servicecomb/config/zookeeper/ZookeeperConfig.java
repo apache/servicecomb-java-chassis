@@ -31,6 +31,8 @@ public class ZookeeperConfig {
 
   public static final String PROPERTY_AUTH_INFO = "servicecomb.config.zk.authentication-info";
 
+  public static final String PROPERTY_INSTANCE_TAG = "servicecomb.config.zk.instance-tag";
+
   private final Environment environment;
 
   public ZookeeperConfig(Environment environment) {
@@ -55,5 +57,9 @@ public class ZookeeperConfig {
 
   public String getAuthInfo() {
     return environment.getProperty(PROPERTY_AUTH_INFO);
+  }
+
+  public String getInstanceTag() {
+    return environment.getProperty(PROPERTY_INSTANCE_TAG);
   }
 }

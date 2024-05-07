@@ -40,6 +40,9 @@ public class HelloWorldIT implements CategorizedTestCase {
     result = template
         .getForObject(Config.GATEWAY_URL + "/getConfig?key=key2", String.class);
     TestMgr.check("3", result);
+    result = template
+        .getForObject(Config.GATEWAY_URL + "/getConfig?key=key3", String.class);
+    TestMgr.check("5", result);
   }
 
   private void testHelloWorld() {
