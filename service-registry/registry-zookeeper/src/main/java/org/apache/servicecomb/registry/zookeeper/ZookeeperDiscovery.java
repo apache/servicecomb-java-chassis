@@ -73,7 +73,7 @@ public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance>
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperDiscovery.class);
 
-  private final Map<String, ServiceCache<ZookeeperInstance>> serviceDiscoveries =
+  private final Map<String, Map<String, ServiceCache<ZookeeperInstance>>> serviceDiscoveries =
       new ConcurrentHashMapEx<>();
 
   private Environment environment;
@@ -112,7 +112,8 @@ public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance>
   @Override
   public List<ZookeeperDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     try {
-      ServiceCache<ZookeeperInstance> discovery = serviceDiscoveries.computeIfAbsent(application, app -> {
+      ServiceCache<ZookeeperInstance> discovery = serviceDiscoveries.computeIfAbsent(application, app ->
+          new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, name -> {
         JsonInstanceSerializer<ZookeeperInstance> serializer =
             new JsonInstanceSerializer<>(ZookeeperInstance.class);
         ServiceDiscovery<ZookeeperInstance> dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
