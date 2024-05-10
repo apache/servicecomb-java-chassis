@@ -29,12 +29,12 @@ public class NonSwaggerInvocation extends Invocation {
 
   @Override
   public String getSchemaId() {
-    throw new UnsupportedOperationException();
+    return "third-schema";
   }
 
   @Override
   public String getOperationName() {
-    throw new UnsupportedOperationException();
+    return "third-operation";
   }
 
   @Override
