@@ -41,22 +41,15 @@ public class TestExtensionsManager {
 
   @Test
   public void testRuleName() {
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest1.strategy.name"))
-        .thenReturn("RoundRobin");
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest2.strategy.name"))
-        .thenReturn("Random");
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.mytest3.strategy.name"))
-        .thenReturn("WeightedResponse");
-
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleNameExtentionsFactory());
     ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);
 
     Assertions.assertEquals(RoundRobinRuleExt.class.getName(),
-        extensionsManager.createLoadBalancerRule("mytest1").getClass().getName());
+        extensionsManager.createLoadBalancerRule("RoundRobin").getClass().getName());
     Assertions.assertEquals(RandomRuleExt.class.getName(),
-        extensionsManager.createLoadBalancerRule("mytest2").getClass().getName());
+        extensionsManager.createLoadBalancerRule("Random").getClass().getName());
     Assertions.assertEquals(WeightedResponseTimeRuleExt.class.getName(),
-        extensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
+        extensionsManager.createLoadBalancerRule("WeightedResponse").getClass().getName());
   }
 }

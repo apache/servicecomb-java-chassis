@@ -92,10 +92,14 @@ public class DiscoveryTree {
   }
 
   private void log() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("DiscoveryFilters(name, enabled, order, group):");
     for (DiscoveryFilter filter : filters) {
-      LOGGER.info("DiscoveryFilter {}, enabled {}, order {}.",
-          filter.getClass().getName(), filter.enabled(), filter.getOrder());
+      sb.append("(").append(filter.getClass().getName()).append(",")
+          .append(filter.enabled()).append(",").append(filter.getOrder()).append(",")
+          .append(filter.isGroupingFilter()).append(")");
     }
+    LOGGER.info(sb.toString());
   }
 
   boolean isMatch(VersionedCache existing, VersionedCache inputCache) {
@@ -181,7 +185,7 @@ public class DiscoveryTree {
         }
 
         // no rerun support, go on even result is empty
-        // because maybe some filter use other mechanism to create a instance(eg:domain name)
+        // because maybe some filter use other mechanism to create an instance(eg:domain name)
       }
 
       parent = child;

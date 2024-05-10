@@ -18,11 +18,12 @@ package org.apache.servicecomb.loadbalance;
 
 import java.net.URI;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -35,6 +36,8 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.governance.RetryContext;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.loadbalance.Configuration.RuleType;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -45,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.Subscribe;
 
 import io.github.resilience4j.core.metrics.Metrics.Outcome;
 import jakarta.ws.rs.core.Response.Status;
@@ -70,8 +74,6 @@ public class LoadBalanceFilter extends AbstractFilter implements ConsumerFilter,
 
   private final ExtensionsManager extensionsManager;
 
-  private String strategy = null;
-
   private final SCBEngine scbEngine;
 
   // set endpoint in invocation.localContext
@@ -88,6 +90,22 @@ public class LoadBalanceFilter extends AbstractFilter implements ConsumerFilter,
             boolean.class, false);
     this.extensionsManager = extensionsManager;
     this.discoveryTree = discoveryTree;
+    EventManager.register(this);
+  }
+
+  @Subscribe
+  @SuppressWarnings("unused")
+  public void onConfigurationChangedEvent(ConfigurationChangedEvent event) {
+    Set<String> changedKeys = event.getChanged();
+    for (String key : changedKeys) {
+      if (key.startsWith(Configuration.ROOT)) {
+        synchronized (lock) {
+          clearLoadBalancer();
+        }
+        LOGGER.info("clear load balance rule for configuration changed, {}", key);
+        break;
+      }
+    }
   }
 
   private void preCheck(SCBEngine scbEngine) {
@@ -131,15 +149,6 @@ public class LoadBalanceFilter extends AbstractFilter implements ConsumerFilter,
     }
 
     invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, true);
-
-    String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
-    if (!Objects.equals(strategy, this.strategy)) {
-      //配置变化，需要重新生成所有的lb实例
-      synchronized (lock) {
-        clearLoadBalancer();
-      }
-    }
-    this.strategy = strategy;
 
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
 
@@ -268,12 +277,22 @@ public class LoadBalanceFilter extends AbstractFilter implements ConsumerFilter,
         invocation.getMicroserviceName());
     invocation.addLocalContext(CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
 
-    return loadBalancerMap
-        .computeIfAbsent(serversVersionedCache.name(), name -> createLoadBalancer(invocation.getMicroserviceName()));
+    RuleType ruleType = Configuration.INSTANCE.getRuleStrategyName(invocation);
+    String cacheKey;
+    if (ruleType.getType() == RuleType.TYPE_SCHEMA) {
+      cacheKey = invocation.getAppId() + "-" +
+          invocation.getMicroserviceName() + "-" + invocation.getSchemaId();
+    } else {
+      cacheKey = invocation.getAppId() + "-" +
+          invocation.getMicroserviceName() + "-" + invocation.getSchemaId() + "-" + invocation.getOperationName();
+    }
+    return loadBalancerMap.computeIfAbsent(cacheKey,
+        key -> createLoadBalancer(ruleType, key, invocation.getMicroserviceName()));
   }
 
-  private LoadBalancer createLoadBalancer(String microserviceName) {
-    RuleExt rule = extensionsManager.createLoadBalancerRule(microserviceName);
+  private LoadBalancer createLoadBalancer(RuleType ruleType, String cacheKey, String microserviceName) {
+    RuleExt rule = extensionsManager.createLoadBalancerRule(ruleType.getValue());
+    LOGGER.info("Using load balance rule {} for microservice {}.", rule.getClass().getName(), cacheKey);
     return new LoadBalancer(rule, microserviceName);
   }
 }
