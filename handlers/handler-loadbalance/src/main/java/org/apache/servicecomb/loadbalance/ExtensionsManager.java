@@ -18,26 +18,19 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class ExtensionsManager {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionsManager.class);
-
   private final List<ExtensionsFactory> extensionsFactories;
 
   public ExtensionsManager(List<ExtensionsFactory> extensionsFactories) {
     this.extensionsFactories = extensionsFactories;
   }
 
-  public RuleExt createLoadBalancerRule(String microservice) {
+  public RuleExt createLoadBalancerRule(String ruleStrategyName) {
     RuleExt rule = null;
 
     for (ExtensionsFactory factory : extensionsFactories) {
-      if (factory.isSupport(Configuration.RULE_STRATEGY_NAME,
-          Configuration.INSTANCE.getRuleStrategyName(microservice))) {
-        rule = factory.createLoadBalancerRule(
-            Configuration.INSTANCE.getRuleStrategyName(microservice));
+      if (factory.isSupport(Configuration.RULE_STRATEGY_NAME, ruleStrategyName)) {
+        rule = factory.createLoadBalancerRule(ruleStrategyName);
         break;
       }
     }
@@ -46,7 +39,6 @@ public class ExtensionsManager {
       rule = new RoundRobinRuleExt();
     }
 
-    LOGGER.info("Using load balance rule {} for microservice {}.", rule.getClass().getName(), microservice);
     return rule;
   }
 }

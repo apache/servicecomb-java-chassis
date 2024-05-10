@@ -25,8 +25,4 @@ public interface ExtensionsFactory {
   default RuleExt createLoadBalancerRule(String ruleName) {
     return null;
   }
-
-  default ServerListFilterExt createServerListFilter(String key, String value, Object... args) {
-    return null;
-  }
 }
