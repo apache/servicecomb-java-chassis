@@ -29,9 +29,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -51,6 +54,12 @@ public class ThirdSvc {
             @Header(name = "h2", schema = @Schema(implementation = String.class))})
     @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
     ResponseEntity<Date> responseEntity(@RequestAttribute("date") Date date);
+
+    @GetMapping(value = "/getAuthorization", produces = {"application/json"})
+    String getAuthorization(
+        @RequestHeader(value = "test") String test,
+        @RequestParam(value = "param") String param,
+        @RequestHeader("Authorization") String authorization);
   }
 
   @Bean
