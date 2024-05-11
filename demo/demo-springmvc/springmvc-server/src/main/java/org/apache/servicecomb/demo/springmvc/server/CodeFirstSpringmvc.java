@@ -148,6 +148,15 @@ public class CodeFirstSpringmvc {
     return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
 
+  @GetMapping(value = "/getAuthorization", produces = {"application/json"})
+  public String getAuthorization(
+      @RequestHeader(value = "test") String test,
+      @RequestParam(value = "param") String param,
+      @Parameter(description = "Authorization header", required = true, in = ParameterIn.HEADER,
+          name = "Authorization") @RequestHeader("Authorization") String authorization) {
+    return test + param + authorization;
+  }
+
   @ApiResponse(responseCode = "200", content = @Content(schema = @Schema(implementation = Date.class))
       , description = "",
       headers = {@Header(name = "h1", schema = @Schema(implementation = String.class)),

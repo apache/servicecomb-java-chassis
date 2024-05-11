@@ -97,7 +97,8 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
 
   @Override
   protected ArgumentMapper createKnownParameterMapper(int providerParamIdx, String invocationArgumentName) {
-    return new ConsumerArgumentSame(invocationArgumentName, invocationArgumentName);
+    return new ConsumerArgumentSame(this.providerMethod.getParameters()[providerParamIdx].getName(),
+        invocationArgumentName);
   }
 
   @Override
