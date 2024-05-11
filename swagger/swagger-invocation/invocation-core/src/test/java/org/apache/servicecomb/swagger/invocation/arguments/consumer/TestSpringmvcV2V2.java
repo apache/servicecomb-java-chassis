@@ -30,10 +30,10 @@ import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddBodyV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.SpringmvcAddWrapperV2;
 import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV2;
-
-import io.swagger.v3.oas.models.OpenAPI;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import io.swagger.v3.oas.models.OpenAPI;
 
 @SuppressWarnings("unchecked")
 public class TestSpringmvcV2V2 {
@@ -48,7 +48,7 @@ public class TestSpringmvcV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("x-z", 3);
+    arguments.put("z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
@@ -70,7 +70,7 @@ public class TestSpringmvcV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("x-z", 3);
+    arguments.put("z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
