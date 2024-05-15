@@ -8,15 +8,13 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 * 统一一致的服务提供者、服务消费者处理链，易于扩展新功能。
 * 提供服务发现、配置管理、熔断、限流、灰度发布等开箱即用的服务治理能力。
 
-开发者可以通过[设计选型参考][design]了解更多特性和设计原理。
+可以通过[设计选型参考](https://servicecomb.apache.org/references/java-chassis/zh_CN/start/design.html) 了解更多特性和设计原理。
 
-[design]: https://servicecomb.apache.org/references/java-chassis/zh_CN/start/design.html
-
-# releases
+# 发布版本
 
 | 版本火车           | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
 |----------------|--------|------------|-------------------|----------|-----------------|
-| Java Chassis 3 | 3.1.0  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
+| Java Chassis 3 | 3.1.1  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
 | Java Chassis 2 | 2.8.16 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
 | Java Chassis 1 | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
 
@@ -87,7 +85,7 @@ public class ConsumerController implements ConsumerService {
 
 [java-chassis-developer-guide]:  https://servicecomb.apache.org/references/java-chassis/zh_CN/
 
-# 编译Java Chassis
+# 编译 Java Chassis
 
 开发者可以通过MAVEN仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 17版本，并预先安装maven。 
 
