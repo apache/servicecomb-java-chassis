@@ -14,47 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.tracing.zipkin;
 
-import org.apache.servicecomb.core.Invocation;
 
-import brave.http.HttpServerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class HttpServeRequestWrapper extends HttpServerRequest implements InvocationAware {
-  private final Invocation invocation;
+import brave.handler.MutableSpan;
+import brave.handler.SpanHandler;
+import brave.propagation.TraceContext;
 
-  HttpServeRequestWrapper(Invocation invocation) {
-    this.invocation = invocation;
+public class LogSpanHandler extends SpanHandler {
+  private static final Logger LOGGER = LoggerFactory.getLogger("scb-trace");
+
+  public boolean end(TraceContext context, MutableSpan span, Cause cause) {
+    if (!LOGGER.isInfoEnabled()) {
+      return false;
+    } else {
+      LOGGER.info(span.toString());
+      return true;
+    }
   }
 
-  @Override
-  public String method() {
-    return invocation.getOperationMeta().getHttpMethod();
-  }
-
-  @Override
-  public String path() {
-    return TracingConfiguration.createRequestPath(invocation);
-  }
-
-  @Override
-  public String url() {
-    return invocation.getEndpoint().getEndpoint();
-  }
-
-  @Override
-  public String header(String key) {
-    return invocation.getContext(key);
-  }
-
-  @Override
-  public Object unwrap() {
-    return invocation;
-  }
-
-  @Override
-  public Invocation getInvocation() {
-    return invocation;
+  public String toString() {
+    return "LogSpanHandler{name=scb-trace}";
   }
 }

@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+
 import brave.Span;
 import brave.Tracer;
 import brave.Tracer.SpanInScope;
@@ -45,7 +48,14 @@ class ZipkinTracingAdviser {
   }
 
   private Span createSpan(String spanName, String path) {
-    Span currentSpan = tracer.currentSpan();
+    InvocationContext context = ContextUtils.getInvocationContext();
+    Span currentSpan = null;
+    if (context != null) {
+      currentSpan = context.getLocalContext(ZipkinTracingFilter.CONTEXT_TRACE_SPAN);
+    }
+    if (currentSpan == null) {
+      currentSpan = tracer.currentSpan();
+    }
     if (currentSpan != null) {
       return tracer.newChild(currentSpan.context()).name(spanName).tag(CALL_PATH, path).start();
     }

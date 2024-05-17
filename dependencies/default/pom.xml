@@ -34,7 +34,7 @@
     <activation.version>1.2.2</activation.version>
     <assertj.version>3.25.3</assertj.version>
     <awaitility.version>4.2.1</awaitility.version>
-    <brave.version>5.17.0</brave.version>
+    <brave.version>6.0.3</brave.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-io.version>2.15.1</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
@@ -87,8 +87,8 @@
     <spring.version>6.0.9</spring.version>
     <swagger.version>2.2.21</swagger.version>
     <vertx.version>4.4.8</vertx.version>
-    <zipkin.version>3.1.1</zipkin.version>
-    <zipkin-reporter.version>2.17.1</zipkin-reporter.version>
+    <zipkin.version>3.3.0</zipkin.version>
+    <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -303,48 +303,15 @@
 
       <dependency>
         <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave</artifactId>
+        <artifactId>brave-bom</artifactId>
         <version>${brave.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave-context-slf4j</artifactId>
-        <version>${brave.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave-instrumentation-jaxrs2</artifactId>
-        <version>${brave.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave-instrumentation-servlet</artifactId>
-        <version>${brave.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave-instrumentation-spring-web</artifactId>
-        <version>${brave.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave-instrumentation-spring-webmvc</artifactId>
-        <version>${brave.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave-spring-beans</artifactId>
-        <version>${brave.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>
         <groupId>io.zipkin.reporter2</groupId>
-        <artifactId>zipkin-reporter</artifactId>
-        <version>${zipkin-reporter.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.zipkin.reporter2</groupId>
-        <artifactId>zipkin-sender-okhttp3</artifactId>
+        <artifactId>zipkin-reporter-bom</artifactId>
         <version>${zipkin-reporter.version}</version>
       </dependency>
 

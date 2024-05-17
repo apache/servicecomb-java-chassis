@@ -17,43 +17,23 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import brave.http.HttpServerRequest;
-import brave.http.HttpServerResponse;
-import brave.internal.Nullable;
-
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-class HttpServerResponseWrapper extends HttpServerResponse {
-  @Nullable
-  private Response response;
+import brave.http.HttpServerRequest;
+import brave.http.HttpServerResponse;
 
-  @Nullable
-  private Throwable error;
+class HttpServerResponseWrapper extends HttpServerResponse implements InvocationAware {
+  private final Response response;
 
-  @Nullable
-  private HttpServerRequest request;
+  private final HttpServerRequest request;
 
-  HttpServerResponseWrapper() {
-  }
+  private final Invocation invocation;
 
-  HttpServerResponseWrapper(Response response, Throwable error) {
+  HttpServerResponseWrapper(Invocation invocation, Response response, HttpServeRequestWrapper request) {
     this.response = response;
-    this.error = error;
-  }
-
-  HttpServerResponseWrapper response(Response response) {
-    this.response = response;
-    return this;
-  }
-
-  HttpServerResponseWrapper request(HttpServerRequest request) {
     this.request = request;
-    return this;
-  }
-
-  HttpServerResponseWrapper error(Throwable error) {
-    this.error = error;
-    return this;
+    this.invocation = invocation;
   }
 
   @Override
@@ -73,6 +53,11 @@ class HttpServerResponseWrapper extends HttpServerResponse {
 
   @Override
   public Throwable error() {
-    return error;
+    return response.isFailed() ? response.getResult() : null;
+  }
+
+  @Override
+  public Invocation getInvocation() {
+    return invocation;
   }
 }

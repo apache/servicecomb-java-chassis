@@ -14,47 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.tracing.zipkin;
 
 import org.apache.servicecomb.core.Invocation;
 
-import brave.http.HttpServerRequest;
+import brave.SpanCustomizer;
+import brave.http.HttpRequest;
+import brave.http.HttpRequestParser;
+import brave.http.HttpTags;
+import brave.propagation.TraceContext;
 
-class HttpServeRequestWrapper extends HttpServerRequest implements InvocationAware {
-  private final Invocation invocation;
-
-  HttpServeRequestWrapper(Invocation invocation) {
-    this.invocation = invocation;
-  }
-
+public record CustomHttpRequestParser(boolean client) implements HttpRequestParser {
   @Override
-  public String method() {
-    return invocation.getOperationMeta().getHttpMethod();
-  }
-
-  @Override
-  public String path() {
-    return TracingConfiguration.createRequestPath(invocation);
-  }
-
-  @Override
-  public String url() {
-    return invocation.getEndpoint().getEndpoint();
-  }
-
-  @Override
-  public String header(String key) {
-    return invocation.getContext(key);
-  }
-
-  @Override
-  public Object unwrap() {
-    return invocation;
-  }
-
-  @Override
-  public Invocation getInvocation() {
-    return invocation;
+  public void parse(HttpRequest req, TraceContext context, SpanCustomizer span) {
+    Invocation invocation = ((InvocationAware) req).getInvocation();
+    span.name(invocation.getInvocationQualifiedName());
+    HttpTags.METHOD.tag(req, context, span);
+    HttpTags.PATH.tag(req, context, span);
   }
 }

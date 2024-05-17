@@ -14,47 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.tracing.zipkin;
 
 import org.apache.servicecomb.core.Invocation;
 
-import brave.http.HttpServerRequest;
-
-class HttpServeRequestWrapper extends HttpServerRequest implements InvocationAware {
-  private final Invocation invocation;
-
-  HttpServeRequestWrapper(Invocation invocation) {
-    this.invocation = invocation;
-  }
-
-  @Override
-  public String method() {
-    return invocation.getOperationMeta().getHttpMethod();
-  }
-
-  @Override
-  public String path() {
-    return TracingConfiguration.createRequestPath(invocation);
-  }
-
-  @Override
-  public String url() {
-    return invocation.getEndpoint().getEndpoint();
-  }
-
-  @Override
-  public String header(String key) {
-    return invocation.getContext(key);
-  }
-
-  @Override
-  public Object unwrap() {
-    return invocation;
-  }
-
-  @Override
-  public Invocation getInvocation() {
-    return invocation;
-  }
+public interface InvocationAware {
+  Invocation getInvocation();
 }

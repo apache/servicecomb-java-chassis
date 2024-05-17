@@ -34,6 +34,7 @@ import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,64 +55,80 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 
 @Configuration
 @ConditionalOnProperty(value = TracingConfiguration.TRACING_ENABLED,
-    havingValue = "true")
+    havingValue = "true", matchIfMissing = true)
 public class TracingConfiguration {
-  public static final String TRACING_PREFIX = "servicecomb.tracing.zipkin";
-
-  public static final String TRACING_WORK_WITH_THIRDPARTY = "servicecomb.tracing.workWithThirdParty";
+  public static final String TRACING_PREFIX = "servicecomb.tracing";
 
   public static final String TRACING_ENABLED = TRACING_PREFIX + ".enabled";
 
-  private String apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
+  public static final String TRACING_REPORTER_LOG_ENABLED = TRACING_PREFIX + ".reporter.log.enabled";
 
-  @Bean
-  Sender sender(DynamicProperties dynamicProperties) {
-    apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
-        CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
-    // use default value if the user set value is invalid
-    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) != 0) {
-      apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
+  public static final String TRACING_REPORTER_ZIPKIN_ENABLED = TRACING_PREFIX + ".reporter.zipkin.enabled";
+
+  @Configuration
+  @ConditionalOnProperty(value = TracingConfiguration.TRACING_REPORTER_ZIPKIN_ENABLED,
+      havingValue = "true")
+  static class ZipkinReporterConfiguration {
+    @Bean
+    Sender okHttpSender(DynamicProperties dynamicProperties) {
+      String apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
+          CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
+      // use default value if the user set value is invalid
+      if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) != 0) {
+        apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
+      }
+
+      String path = MessageFormat.format(CONFIG_TRACING_COLLECTOR_PATH, apiVersion);
+      return OkHttpSender.create(
+          dynamicProperties.getStringProperty(
+                  CONFIG_TRACING_COLLECTOR_ADDRESS,
+                  DEFAULT_TRACING_COLLECTOR_ADDRESS)
+              .trim()
+              .replaceAll("/+$", "")
+              .concat(path));
     }
 
-    String path = MessageFormat.format(CONFIG_TRACING_COLLECTOR_PATH, apiVersion);
-    return OkHttpSender.create(
-        dynamicProperties.getStringProperty(
-                CONFIG_TRACING_COLLECTOR_ADDRESS,
-                DEFAULT_TRACING_COLLECTOR_ADDRESS)
-            .trim()
-            .replaceAll("/+$", "")
-            .concat(path));
-  }
+    @Bean
+    Reporter<Span> zipkinReporter(DynamicProperties dynamicProperties, Sender sender) {
+      String apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
+          CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
+      if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0) {
+        return AsyncReporter.builder(sender).build(SpanBytesEncoder.JSON_V1);
+      }
 
-  @Bean
-  Reporter<Span> zipkinReporter(Sender sender) {
-    if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0) {
-      return AsyncReporter.builder(sender).build(SpanBytesEncoder.JSON_V1);
+      return AsyncReporter.builder(sender).build();
     }
-
-    return AsyncReporter.builder(sender).build();
-  }
-
-
-  @Bean
-  Tracing tracing(Sender sender, DynamicProperties dynamicProperties,
-      CurrentTraceContext currentTraceContext, Environment environment) {
-    return Tracing.newBuilder()
-        .localServiceName(BootStrapProperties.readServiceName(environment))
-        .currentTraceContext(currentTraceContext) // puts trace IDs into logs
-        .addSpanHandler(AsyncZipkinSpanHandler.create(sender))
-        .build();
   }
 
   @Bean
   CurrentTraceContext currentTraceContext() {
-    return ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(MDCScopeDecorator.newBuilder().build())
+    return ThreadLocalCurrentTraceContext.newBuilder()
+        .addScopeDecorator(MDCScopeDecorator.newBuilder().build())
         .build();
   }
 
   @Bean
+  Tracing tracing(@Autowired(required = false) Sender sender,
+      CurrentTraceContext currentTraceContext, Environment environment, DynamicProperties dynamicProperties) {
+    Tracing.Builder builder = Tracing.newBuilder()
+        .localServiceName(BootStrapProperties.readServiceName(environment))
+        .currentTraceContext(currentTraceContext); // puts trace IDs into logs
+    if (dynamicProperties.getBooleanProperty(TRACING_REPORTER_LOG_ENABLED, true)) {
+      builder.addSpanHandler(new LogSpanHandler());
+    }
+    if (dynamicProperties.getBooleanProperty(TRACING_REPORTER_ZIPKIN_ENABLED, false)) {
+      builder.addSpanHandler(AsyncZipkinSpanHandler.create(sender));
+    }
+    return builder.build();
+  }
+
+  @Bean
   HttpTracing httpTracing(Tracing tracing) {
-    return HttpTracing.create(tracing);
+    return HttpTracing.newBuilder(tracing)
+        .clientRequestParser(new CustomHttpRequestParser(true))
+        .clientResponseParser(new CustomHttpResponseParser(true))
+        .serverRequestParser(new CustomHttpRequestParser(false))
+        .serverResponseParser(new CustomHttpResponseParser(false)).build();
   }
 
   @Bean
@@ -119,13 +136,17 @@ public class TracingConfiguration {
     return new ZipkinTracingFilter();
   }
 
-  public static String createRequestPath(Invocation invocation) throws Exception {
+  public static String createRequestPath(Invocation invocation) {
     URIEndpointObject address = (URIEndpointObject) invocation.getEndpoint().getAddress();
     String urlPrefix = address.getFirst(DefinitionConst.URL_PREFIX);
     RestOperationMeta swaggerRestOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     String path = (String) invocation.getHandlerContext().get(RestConst.REST_CLIENT_REQUEST_PATH);
     if (path == null) {
-      path = swaggerRestOperation.getPathBuilder().createRequestPath(invocation.getSwaggerArguments());
+      try {
+        path = swaggerRestOperation.getPathBuilder().createRequestPath(invocation.getSwaggerArguments());
+      } catch (Exception e) {
+        path = invocation.getOperationMeta().getOperationPath();
+      }
     }
 
     if (StringUtils.isEmpty(urlPrefix) || path.startsWith(urlPrefix)) {

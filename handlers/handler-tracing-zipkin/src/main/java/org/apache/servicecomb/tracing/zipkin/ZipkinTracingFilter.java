@@ -17,51 +17,74 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import static org.apache.servicecomb.swagger.invocation.InvocationType.PROVIDER;
-
-import java.util.concurrent.CompletableFuture;
-
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.core.filter.AbstractFilter;
-import org.apache.servicecomb.core.filter.ConsumerFilter;
-import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.core.filter.ProviderFilter;
-import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.event.InvocationStartEvent;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.eventbus.Subscribe;
+
 import brave.Span;
-import brave.Tracer.SpanInScope;
+import brave.http.HttpClientHandler;
+import brave.http.HttpClientRequest;
+import brave.http.HttpClientResponse;
+import brave.http.HttpServerHandler;
+import brave.http.HttpServerRequest;
+import brave.http.HttpServerResponse;
 import brave.http.HttpTracing;
 
-public class ZipkinTracingFilter extends AbstractFilter implements ConsumerFilter, ProviderFilter {
-  public static final String NAME = "zipkin";
+public class ZipkinTracingFilter {
+  public static final String CONTEXT_TRACE_REQUEST = "x-trace-request";
+
+  public static final String CONTEXT_TRACE_HANDLER = "x-trace-handler";
+
+  public static final String CONTEXT_TRACE_SPAN = "x-trace-span";
 
   @Autowired
   private HttpTracing httpTracing;
 
-  @Override
-  public String getName() {
-    return NAME;
+  public ZipkinTracingFilter() {
+    EventManager.register(this);
   }
 
-  @SuppressWarnings({"try", "unused"})
-  @Override
-  public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    ZipkinTracingDelegate tracing = collectTracing(invocation);
+  @Subscribe
+  public void onInvocationStartEvent(InvocationStartEvent event) {
+    Invocation invocation = event.getInvocation();
 
-    Span span = tracing.createSpan(invocation);
-    try (SpanInScope scope = tracing.tracer().tracer().withSpanInScope(span)) {
-      return nextNode.onFilter(invocation)
-          .whenComplete((response, exception) -> tracing.onResponse(span, response, Exceptions.unwrap(exception)));
+    if (invocation.isProducer()) {
+      HttpServerHandler<HttpServerRequest, HttpServerResponse> handler = HttpServerHandler.create(httpTracing);
+      HttpServeRequestWrapper request = new HttpServeRequestWrapper(invocation);
+      Span span = handler.handleReceive(request);
+      invocation.addLocalContext(CONTEXT_TRACE_SPAN, span);
+      invocation.addLocalContext(CONTEXT_TRACE_HANDLER, handler);
+      invocation.addLocalContext(CONTEXT_TRACE_REQUEST, request);
+    } else {
+      Span parentSpan = invocation.getLocalContext(CONTEXT_TRACE_SPAN);
+      HttpClientHandler<HttpClientRequest, HttpClientResponse> handler = HttpClientHandler.create(httpTracing);
+      HttpClientRequestWrapper request = new HttpClientRequestWrapper(invocation);
+      Span span = handler.handleSendWithParent(request, parentSpan == null ? null : parentSpan.context());
+      invocation.addLocalContext(CONTEXT_TRACE_HANDLER, handler);
+      invocation.addLocalContext(CONTEXT_TRACE_REQUEST, request);
+      invocation.addLocalContext(CONTEXT_TRACE_SPAN, span);
     }
   }
 
-  private ZipkinTracingDelegate collectTracing(Invocation invocation) {
-    if (PROVIDER.equals(invocation.getInvocationType())) {
-      return new ZipkinProviderDelegate(httpTracing);
+  @Subscribe
+  public void onInvocationFinishEvent(InvocationFinishEvent event) {
+    Invocation invocation = event.getInvocation();
+    if (invocation.isProducer()) {
+      HttpServerHandler<HttpServerRequest, HttpServerResponse> handler
+          = invocation.getLocalContext(CONTEXT_TRACE_HANDLER);
+      Span span = invocation.getLocalContext(CONTEXT_TRACE_SPAN);
+      handler.handleSend(new HttpServerResponseWrapper(invocation, event.getResponse(),
+          invocation.getLocalContext(CONTEXT_TRACE_REQUEST)), span);
+    } else {
+      HttpClientHandler<HttpClientRequest, HttpClientResponse> handler
+          = invocation.getLocalContext(CONTEXT_TRACE_HANDLER);
+      Span span = invocation.getLocalContext(CONTEXT_TRACE_SPAN);
+      handler.handleReceive(new HttpClientResponseWrapper(invocation, event.getResponse(),
+          invocation.getLocalContext(CONTEXT_TRACE_REQUEST)), span);
     }
-
-    return new ZipkinConsumerDelegate(httpTracing);
   }
 }
