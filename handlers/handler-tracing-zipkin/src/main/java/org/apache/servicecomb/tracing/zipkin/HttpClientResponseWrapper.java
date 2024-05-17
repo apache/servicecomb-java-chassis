@@ -17,43 +17,23 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import brave.http.HttpClientRequest;
-import brave.http.HttpClientResponse;
-import brave.internal.Nullable;
-
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-class HttpClientResponseWrapper extends HttpClientResponse {
-  @Nullable
-  HttpClientRequest request;
+import brave.http.HttpClientRequest;
+import brave.http.HttpClientResponse;
 
-  @Nullable
-  Response response;
+class HttpClientResponseWrapper extends HttpClientResponse implements InvocationAware {
+  final HttpClientRequest request;
 
-  @Nullable
-  Throwable error;
+  final Response response;
 
-  HttpClientResponseWrapper() {
-  }
+  final Invocation invocation;
 
-  HttpClientResponseWrapper(@Nullable Response response, @Nullable Throwable error) {
+  HttpClientResponseWrapper(Invocation invocation, Response response, HttpClientRequestWrapper request) {
     this.response = response;
-    this.error = error;
-  }
-
-  HttpClientResponseWrapper response(Response response) {
-    this.response = response;
-    return this;
-  }
-
-  HttpClientResponseWrapper throwable(Throwable error) {
-    this.error = error;
-    return this;
-  }
-
-  HttpClientResponseWrapper request(HttpClientRequest request) {
     this.request = request;
-    return this;
+    this.invocation = invocation;
   }
 
   @Override
@@ -73,6 +53,11 @@ class HttpClientResponseWrapper extends HttpClientResponse {
 
   @Override
   public Throwable error() {
-    return error;
+    return response.isFailed() ? response.getResult() : null;
+  }
+
+  @Override
+  public Invocation getInvocation() {
+    return null;
   }
 }

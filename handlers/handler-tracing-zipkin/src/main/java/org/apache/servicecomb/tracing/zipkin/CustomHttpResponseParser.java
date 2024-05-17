@@ -14,22 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.tracing.zipkin;
 
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.Response;
+import brave.SpanCustomizer;
+import brave.Tags;
+import brave.http.HttpResponse;
+import brave.http.HttpResponseParser;
+import brave.http.HttpTags;
+import brave.propagation.TraceContext;
 
-import brave.Span;
-import brave.Tracing;
-
-interface ZipkinTracingDelegate {
-
-  Tracing tracer();
-
-  Span createSpan(Invocation invocation);
-
-  void onResponse(Span span, Response response, Throwable error);
-
-  String name();
+public record CustomHttpResponseParser(boolean client) implements HttpResponseParser {
+  @Override
+  public void parse(HttpResponse response, TraceContext context, SpanCustomizer span) {
+    HttpTags.STATUS_CODE.tag(response, context, span);
+    if (response.error() != null) {
+      span.tag(Tags.ERROR.key(), response.error().getMessage());
+    }
+    if (client) {
+      span.tag(HttpTags.ROUTE.key(), response.route());
+    }
+  }
 }

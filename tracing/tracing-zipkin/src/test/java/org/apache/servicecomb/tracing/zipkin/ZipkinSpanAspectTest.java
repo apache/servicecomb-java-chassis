@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
@@ -123,7 +124,8 @@ public class ZipkinSpanAspectTest {
     }
 
     @Bean
-    Tracing tracing(Queue<Span> spans) {
+    @Primary
+    Tracing zipkinTracing(Queue<Span> spans) {
       return Tracing.newBuilder()
           .currentTraceContext(
               ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(StrictScopeDecorator.create()).build())

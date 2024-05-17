@@ -17,30 +17,16 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
+import org.apache.servicecomb.core.Invocation;
+
 import brave.http.HttpClientRequest;
 
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-class HttpClientRequestWrapper extends HttpClientRequest {
-  private static final Logger LOG = LoggerFactory.getLogger(HttpClientRequestWrapper.class);
-
-  private Invocation invocation;
-
-  HttpClientRequestWrapper() {
-  }
+class HttpClientRequestWrapper extends HttpClientRequest implements InvocationAware {
+  private final Invocation invocation;
 
   HttpClientRequestWrapper(Invocation invocation) {
     this.invocation = invocation;
   }
-
-  HttpClientRequestWrapper invocation(Invocation invocation) {
-    this.invocation = invocation;
-    return this;
-  }
-
 
   @Override
   public void header(String name, String value) {
@@ -53,15 +39,13 @@ class HttpClientRequestWrapper extends HttpClientRequest {
   }
 
   @Override
+  public String route() {
+    return invocation.getEndpoint().getEndpoint();
+  }
+
+  @Override
   public String path() {
-    if (LegacyPropertyFactory.getBooleanProperty(TracingConfiguration.TRACING_WORK_WITH_THIRDPARTY, false)) {
-      try {
-        return TracingConfiguration.createRequestPath(invocation);
-      } catch (Exception e) {
-        LOG.warn("generate rest path failed: {}", e.getMessage());
-      }
-    }
-    return invocation.getOperationMeta().getOperationPath();
+    return TracingConfiguration.createRequestPath(invocation);
   }
 
   @Override
@@ -71,11 +55,16 @@ class HttpClientRequestWrapper extends HttpClientRequest {
 
   @Override
   public String header(String name) {
-    return invocation.getContext().get(name);
+    return invocation.getContext(name);
   }
 
   @Override
   public Object unwrap() {
+    return invocation;
+  }
+
+  @Override
+  public Invocation getInvocation() {
     return invocation;
   }
 }
