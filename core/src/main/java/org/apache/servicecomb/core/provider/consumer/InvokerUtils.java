@@ -37,7 +37,6 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -187,9 +186,6 @@ public final class InvokerUtils {
     return invocation.getMicroserviceMeta().getConsumerFilterChain()
         .onFilter(invocation)
         .exceptionally(throwable -> toConsumerResponse(invocation, throwable))
-        .whenComplete((response, throwable) -> {
-          ContextUtils.setInvocationContext(invocation.getParentContext());
-          invocation.onFinish(response);
-        });
+        .whenComplete((response, throwable) -> invocation.onFinish(response));
   }
 }

@@ -58,6 +58,6 @@ class HttpClientResponseWrapper extends HttpClientResponse implements Invocation
 
   @Override
   public Invocation getInvocation() {
-    return null;
+    return invocation;
   }
 }

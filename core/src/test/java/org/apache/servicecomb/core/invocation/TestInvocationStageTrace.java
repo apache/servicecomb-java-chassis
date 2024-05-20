@@ -137,7 +137,7 @@ public class TestInvocationStageTrace {
   public void edge() {
     invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, args);
     stageTrace = new InvocationStageTrace(invocation);
-    invocation.setEdge(true);
+    invocation.setEdge();
 
     stageTrace.startCreateInvocation(1);
     nanoTime = 2;

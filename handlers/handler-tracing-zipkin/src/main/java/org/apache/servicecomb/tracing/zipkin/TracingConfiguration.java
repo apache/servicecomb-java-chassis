@@ -125,10 +125,10 @@ public class TracingConfiguration {
   @Bean
   HttpTracing httpTracing(Tracing tracing) {
     return HttpTracing.newBuilder(tracing)
-        .clientRequestParser(new CustomHttpRequestParser(true))
-        .clientResponseParser(new CustomHttpResponseParser(true))
-        .serverRequestParser(new CustomHttpRequestParser(false))
-        .serverResponseParser(new CustomHttpResponseParser(false)).build();
+        .clientRequestParser(new CustomHttpRequestParser())
+        .clientResponseParser(new CustomHttpResponseParser())
+        .serverRequestParser(new CustomHttpRequestParser())
+        .serverResponseParser(new CustomHttpResponseParser()).build();
   }
 
   @Bean

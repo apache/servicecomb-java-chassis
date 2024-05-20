@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.tracing.zipkin;
 
+import org.apache.servicecomb.core.Invocation;
+
 import brave.SpanCustomizer;
 import brave.Tags;
 import brave.http.HttpResponse;
@@ -23,14 +25,15 @@ import brave.http.HttpResponseParser;
 import brave.http.HttpTags;
 import brave.propagation.TraceContext;
 
-public record CustomHttpResponseParser(boolean client) implements HttpResponseParser {
+public record CustomHttpResponseParser() implements HttpResponseParser {
   @Override
   public void parse(HttpResponse response, TraceContext context, SpanCustomizer span) {
+    Invocation invocation = ((InvocationAware) response).getInvocation();
     HttpTags.STATUS_CODE.tag(response, context, span);
     if (response.error() != null) {
       span.tag(Tags.ERROR.key(), response.error().getMessage());
     }
-    if (client) {
+    if (!invocation.isProducer()) { // client or edge
       span.tag(HttpTags.ROUTE.key(), response.route());
     }
   }

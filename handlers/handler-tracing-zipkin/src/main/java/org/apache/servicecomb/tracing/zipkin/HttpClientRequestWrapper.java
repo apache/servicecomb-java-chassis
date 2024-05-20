@@ -50,7 +50,7 @@ class HttpClientRequestWrapper extends HttpClientRequest implements InvocationAw
 
   @Override
   public String url() {
-    return invocation.getEndpoint().getEndpoint();
+    return invocation.getInvocationQualifiedName();
   }
 
   @Override

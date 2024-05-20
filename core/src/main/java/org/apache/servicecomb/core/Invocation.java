@@ -92,10 +92,6 @@ public class Invocation extends SwaggerInvocation {
 
   private boolean finished;
 
-  // not extend InvocationType
-  // because isEdge() only affect to apm/metrics output, no need to change so many logic
-  private boolean edge;
-
   private long invocationId;
 
   private TraceIdLogger traceIdLogger;
@@ -399,11 +395,11 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public boolean isEdge() {
-    return edge;
+    return InvocationType.EDGE.equals(invocationType);
   }
 
-  public void setEdge(boolean edge) {
-    this.edge = edge;
+  public void setEdge() {
+    this.invocationType = InvocationType.EDGE;
   }
 
   public long getInvocationId() {
