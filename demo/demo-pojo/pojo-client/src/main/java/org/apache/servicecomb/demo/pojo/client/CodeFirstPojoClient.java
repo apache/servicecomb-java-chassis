@@ -107,7 +107,9 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
           .thenCompose(result -> {
             TestMgr.check("someone sayhi, context k: v", result);
 
-            TestMgr.check(true, context == ContextUtils.getInvocationContext());
+            // new call need set invocation context implicitly or will not
+            // inherit parent context
+            ContextUtils.setInvocationContext(context);
 
             return ((CodeFirstPojoClientIntf) codeFirst).sayHiAsync("someone 1");
           })
