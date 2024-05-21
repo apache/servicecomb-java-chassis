@@ -18,6 +18,7 @@ package org.apache.servicecomb.swagger.invocation.validator;
 
 import java.util.Set;
 
+import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
@@ -25,26 +26,33 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
-import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
-public class ParameterValidator implements ProducerInvokeExtension {
+public class ParameterValidator implements ProducerInvokeExtension, ApplicationContextAware {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidator.class);
 
   private static final String PARAM_VALIDATION_ENABLED = "servicecomb.rest.parameter.validation.enabled";
 
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
+
+  public static final String HIBERNATE_VALIDATE_PREFIX = "hibernate.validator";
+
+  private ApplicationContext applicationContext;
 
   private final DynamicBooleanProperty paramValidationEnabled = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
@@ -59,19 +67,17 @@ public class ParameterValidator implements ProducerInvokeExtension {
   private static ExecutableValidator executableValidator;
 
   @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
+  }
+
+  @Override
   public <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
       Object[] args)
       throws ConstraintViolationException {
     if (paramValidationEnabled.get()) {
       if (null == executableValidator) {
-        ValidatorFactory factory =
-            Validation.byDefaultProvider()
-                .configure()
-                .parameterNameProvider(new DefaultParameterNameProvider())
-                .messageInterpolator(messageInterpolator())
-                .addProperty(HibernateValidatorConfiguration.FAIL_FAST, buildHibernateFailFastProperty())
-                .buildValidatorFactory();
-        executableValidator = factory.getValidator().forExecutables();
+        executableValidator = createValidatorFactory().getValidator().forExecutables();
       }
       Set<ConstraintViolation<Object>> violations =
           executableValidator.validateParameters(producerOperation.getProducerInstance(),
@@ -85,10 +91,18 @@ public class ParameterValidator implements ProducerInvokeExtension {
     }
   }
 
-  private String buildHibernateFailFastProperty() {
-    return DynamicPropertyFactory.getInstance()
-        .getStringProperty(HibernateValidatorConfiguration.FAIL_FAST, "false")
-        .get();
+  private ValidatorFactory createValidatorFactory() {
+    Configuration<?> validatorConfiguration = Validation.byDefaultProvider()
+        .configure()
+        .parameterNameProvider(new DefaultParameterNameProvider())
+        .messageInterpolator(messageInterpolator());
+    Set<String> keys = ConfigUtil.propertiesWithPrefix(applicationContext.getEnvironment(), HIBERNATE_VALIDATE_PREFIX);
+    if (!keys.isEmpty()) {
+      for (String key : keys) {
+        validatorConfiguration.addProperty(key, applicationContext.getEnvironment().getProperty(key));
+      }
+    }
+    return validatorConfiguration.buildValidatorFactory();
   }
 
   private AbstractMessageInterpolator messageInterpolator() {
