@@ -28,8 +28,11 @@ import javax.validation.groups.Default;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
+import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public class ParameterValidator implements ProducerInvokeExtension {
 
@@ -47,6 +50,7 @@ public class ParameterValidator implements ProducerInvokeExtension {
           Validation.byDefaultProvider()
               .configure()
               .parameterNameProvider(new DefaultParameterNameProvider())
+              .addProperty(HibernateValidatorConfiguration.FAIL_FAST, buildHibernateFailFastProperty())
               .buildValidatorFactory();
       executableValidator = factory.getValidator().forExecutables();
     }
@@ -59,6 +63,12 @@ public class ParameterValidator implements ProducerInvokeExtension {
       LOGGER.warn("Parameter validation failed : " + violations.toString());
       throw new ConstraintViolationException(violations);
     }
+  }
+
+  private String buildHibernateFailFastProperty() {
+    return DynamicPropertyFactory.getInstance()
+        .getStringProperty(HibernateValidatorConfiguration.FAIL_FAST, "false")
+        .get();
   }
 
   @Override
