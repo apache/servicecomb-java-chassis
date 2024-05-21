@@ -37,6 +37,7 @@ import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.env.Environment;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -118,7 +119,7 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
   }
 
   private String buildHibernateFailFastProperty() {
-    return LegacyPropertyFactory.getStringProperty(HibernateValidatorConfiguration.FAIL_FAST, "false");
+    return environment.getProperty(HibernateValidatorConfiguration.FAIL_FAST, "false");
   }
 
   protected AbstractMessageInterpolator messageInterpolator() {
