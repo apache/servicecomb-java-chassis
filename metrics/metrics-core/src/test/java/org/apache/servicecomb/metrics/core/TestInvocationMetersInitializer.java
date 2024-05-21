@@ -182,7 +182,7 @@ public class TestInvocationMetersInitializer {
   @Test
   public void edgeInvocation() {
     InvocationFinishEvent event = Mockito.mock(InvocationFinishEvent.class);
-    Mockito.when(invocation.isConsumer()).thenReturn(true);
+    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.EDGE);
     Mockito.when(invocation.isEdge()).thenReturn(true);
     Mockito.when(invocation.getRealTransportName()).thenReturn(CoreConst.RESTFUL);
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("m.s.o");

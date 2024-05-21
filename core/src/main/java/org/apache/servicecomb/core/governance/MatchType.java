@@ -35,7 +35,7 @@ public final class MatchType {
     @Override
     public String apiPath() {
       if (MatchType.REST.equalsIgnoreCase(invocation.getOperationMeta().getConfig().getGovernanceMatchType())) {
-        if (invocation.isConsumer()) {
+        if (!invocation.isProducer()) {
           return concatAbsolutePath(SwaggerUtils.getBasePath(invocation.getSchemaMeta().getSwagger()),
               invocation.getOperationMeta().getOperationPath());
         }
@@ -45,7 +45,7 @@ public final class MatchType {
         }
       }
 
-      if (invocation.isConsumer()) {
+      if (!invocation.isProducer()) {
         return invocation.getOperationMeta().getMicroserviceQualifiedName();
       }
       return invocation.getOperationMeta().getSchemaQualifiedName();
@@ -85,7 +85,7 @@ public final class MatchType {
 
     @Override
     public String instanceId() {
-      if (invocation.isConsumer()) {
+      if (!invocation.isProducer()) {
         if (invocation.getEndpoint() != null && invocation.getEndpoint().getMicroserviceInstance() != null) {
           return invocation.getEndpoint().getMicroserviceInstance().getInstanceId();
         }
@@ -95,7 +95,7 @@ public final class MatchType {
 
     @Override
     public String serviceName() {
-      if (invocation.isConsumer()) {
+      if (!invocation.isProducer()) {
         return invocation.getMicroserviceName();
       }
       return null;
