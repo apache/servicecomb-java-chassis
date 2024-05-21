@@ -84,8 +84,8 @@ public class ParameterValidator implements ProducerInvokeExtension {
     Map<String, String> properties =
         ConfigUtil.stringPropertiesWithPrefix(LegacyPropertyFactory.getEnvironment(), HIBERNATE_VALIDATE_PREFIX);
     if (!properties.isEmpty()) {
-      for (String key : properties.keySet()) {
-        validatorConfiguration.addProperty(key, properties.get(key));
+      for (Map.Entry<String, String> entry : properties.entrySet()) {
+        validatorConfiguration.addProperty(entry.getKey(), entry.getValue());
       }
     }
     return validatorConfiguration.buildValidatorFactory();

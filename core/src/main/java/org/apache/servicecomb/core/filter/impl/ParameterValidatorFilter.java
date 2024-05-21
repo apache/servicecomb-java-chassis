@@ -118,8 +118,8 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
         .messageInterpolator(messageInterpolator());
     Map<String, String> properties = ConfigUtil.stringPropertiesWithPrefix(environment, HIBERNATE_VALIDATE_PREFIX);
     if (!properties.isEmpty()) {
-      for (String key : properties.keySet()) {
-        validatorConfiguration.addProperty(key, properties.get(key));
+      for (Map.Entry<String, String> entry : properties.entrySet()) {
+        validatorConfiguration.addProperty(entry.getKey(), entry.getValue());
       }
     }
     return validatorConfiguration.buildValidatorFactory();
