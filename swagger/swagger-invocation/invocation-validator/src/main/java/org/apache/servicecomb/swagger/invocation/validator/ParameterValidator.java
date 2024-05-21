@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.invocation.validator;
 
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.Configuration;
@@ -26,7 +27,6 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
@@ -35,14 +35,11 @@ import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
-public class ParameterValidator implements ProducerInvokeExtension, ApplicationContextAware {
+public class ParameterValidator implements ProducerInvokeExtension {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidator.class);
 
@@ -51,8 +48,6 @@ public class ParameterValidator implements ProducerInvokeExtension, ApplicationC
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
   public static final String HIBERNATE_VALIDATE_PREFIX = "hibernate.validator";
-
-  private ApplicationContext applicationContext;
 
   private final DynamicBooleanProperty paramValidationEnabled = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
@@ -65,11 +60,6 @@ public class ParameterValidator implements ProducerInvokeExtension, ApplicationC
   }
 
   private static ExecutableValidator executableValidator;
-
-  @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    this.applicationContext = applicationContext;
-  }
 
   @Override
   public <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
@@ -96,10 +86,10 @@ public class ParameterValidator implements ProducerInvokeExtension, ApplicationC
         .configure()
         .parameterNameProvider(new DefaultParameterNameProvider())
         .messageInterpolator(messageInterpolator());
-    Set<String> keys = ConfigUtil.propertiesWithPrefix(applicationContext.getEnvironment(), HIBERNATE_VALIDATE_PREFIX);
-    if (!keys.isEmpty()) {
-      for (String key : keys) {
-        validatorConfiguration.addProperty(key, applicationContext.getEnvironment().getProperty(key));
+    Map<String, String> configs = ConfigurationPropertyUtils.getPropertiesWithPrefix(HIBERNATE_VALIDATE_PREFIX);
+    if (!configs.isEmpty()) {
+      for (String key : configs.keySet()) {
+        validatorConfiguration.addProperty(HIBERNATE_VALIDATE_PREFIX + "." + key, configs.get(key));
       }
     }
     return validatorConfiguration.buildValidatorFactory();
