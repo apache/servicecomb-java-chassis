@@ -88,8 +88,8 @@ public class ParameterValidator implements ProducerInvokeExtension {
         .messageInterpolator(messageInterpolator());
     Map<String, String> configs = ConfigurationPropertyUtils.getPropertiesWithPrefix(HIBERNATE_VALIDATE_PREFIX);
     if (!configs.isEmpty()) {
-      for (String key : configs.keySet()) {
-        validatorConfiguration.addProperty(HIBERNATE_VALIDATE_PREFIX + "." + key, configs.get(key));
+      for (Map.Entry<String, String> entry : configs.entrySet()) {
+        validatorConfiguration.addProperty(HIBERNATE_VALIDATE_PREFIX + "." + entry.getKey(), entry.getValue());
       }
     }
     return validatorConfiguration.buildValidatorFactory();
