@@ -118,18 +118,18 @@ public class TestSchemaMetaCodec {
 
   private Invocation mockInvocation(String operation, InvocationType invocationType) {
     OperationMeta operationMeta;
-    boolean isConsumer;
+    boolean isProvider;
     Invocation invocation = Mockito.mock(Invocation.class);
     InvocationRuntimeType invocationRuntimeType;
 
     if (InvocationType.CONSUMER == invocationType) {
       operationMeta = consumerSchemaMeta.getOperations().get(operation);
-      isConsumer = true;
+      isProvider = false;
       Mockito.when(invocation.getSchemaMeta()).thenReturn(consumerSchemaMeta);
       invocationRuntimeType = operationMeta.buildBaseConsumerRuntimeType();
     } else {
       operationMeta = providerSchemaMeta.getOperations().get(operation);
-      isConsumer = false;
+      isProvider = true;
       Mockito.when(invocation.getSchemaMeta()).thenReturn(providerSchemaMeta);
       invocationRuntimeType = operationMeta.buildBaseProviderRuntimeType();
     }
@@ -143,7 +143,7 @@ public class TestSchemaMetaCodec {
     Mockito.when(invocation.getInvocationType()).thenReturn(invocationType);
     Mockito.when(invocation.getMicroserviceMeta()).thenReturn(microserviceMeta);
 
-    Mockito.when(invocation.isConsumer()).thenReturn(isConsumer);
+    Mockito.when(invocation.isProducer()).thenReturn(isProvider);
     return invocation;
   }
 

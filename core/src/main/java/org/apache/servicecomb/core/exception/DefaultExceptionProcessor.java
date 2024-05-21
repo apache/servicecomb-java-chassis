@@ -61,7 +61,7 @@ public class DefaultExceptionProcessor implements ExceptionProcessor {
       .map(converter -> (ExceptionConverter<Throwable>) converter)
       .collect(Collectors.toList());
 
-  @InjectProperty(keys = "print-stack-trace", defaultValue = "false")
+  @InjectProperty(keys = "print-stack-trace", defaultValue = "true")
   protected boolean printStackTrace;
 
   @InjectProperty(keys = "print-rate-limit", defaultValue = "false")

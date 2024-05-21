@@ -41,11 +41,21 @@ public class ZipkinTracingFilter {
 
   public static final String CONTEXT_TRACE_SPAN = "x-trace-span";
 
-  @Autowired
+  public static final String CONTEXT_TRACE_EDGE_REQUEST = "x-trace-edge-request";
+
+  public static final String CONTEXT_TRACE_EDGE_HANDLER = "x-trace-edge-handler";
+
+  public static final String CONTEXT_TRACE_EDGE_SPAN = "x-trace-edge-span";
+
   private HttpTracing httpTracing;
 
   public ZipkinTracingFilter() {
     EventManager.register(this);
+  }
+
+  @Autowired
+  public void setHttpTracing(HttpTracing httpTracing) {
+    this.httpTracing = httpTracing;
   }
 
   @Subscribe
@@ -59,7 +69,7 @@ public class ZipkinTracingFilter {
       invocation.addLocalContext(CONTEXT_TRACE_SPAN, span);
       invocation.addLocalContext(CONTEXT_TRACE_HANDLER, handler);
       invocation.addLocalContext(CONTEXT_TRACE_REQUEST, request);
-    } else {
+    } else if (invocation.isConsumer()) {
       Span parentSpan = invocation.getLocalContext(CONTEXT_TRACE_SPAN);
       HttpClientHandler<HttpClientRequest, HttpClientResponse> handler = HttpClientHandler.create(httpTracing);
       HttpClientRequestWrapper request = new HttpClientRequestWrapper(invocation);
@@ -67,6 +77,22 @@ public class ZipkinTracingFilter {
       invocation.addLocalContext(CONTEXT_TRACE_HANDLER, handler);
       invocation.addLocalContext(CONTEXT_TRACE_REQUEST, request);
       invocation.addLocalContext(CONTEXT_TRACE_SPAN, span);
+    } else {
+      // edge as server
+      HttpServerHandler<HttpServerRequest, HttpServerResponse> serverHandler = HttpServerHandler.create(httpTracing);
+      HttpServeRequestWrapper serverRequest = new HttpServeRequestWrapper(invocation);
+      Span serverSpan = serverHandler.handleReceive(serverRequest);
+      invocation.addLocalContext(CONTEXT_TRACE_EDGE_SPAN, serverSpan);
+      invocation.addLocalContext(CONTEXT_TRACE_EDGE_HANDLER, serverHandler);
+      invocation.addLocalContext(CONTEXT_TRACE_EDGE_REQUEST, serverRequest);
+
+      // edge as client
+      HttpClientHandler<HttpClientRequest, HttpClientResponse> clientHandler = HttpClientHandler.create(httpTracing);
+      HttpClientRequestWrapper clientRequest = new HttpClientRequestWrapper(invocation);
+      Span clientSpan = clientHandler.handleSendWithParent(clientRequest, serverSpan.context());
+      invocation.addLocalContext(CONTEXT_TRACE_HANDLER, clientHandler);
+      invocation.addLocalContext(CONTEXT_TRACE_REQUEST, clientRequest);
+      invocation.addLocalContext(CONTEXT_TRACE_SPAN, clientSpan);
     }
   }
 
@@ -79,12 +105,25 @@ public class ZipkinTracingFilter {
       Span span = invocation.getLocalContext(CONTEXT_TRACE_SPAN);
       handler.handleSend(new HttpServerResponseWrapper(invocation, event.getResponse(),
           invocation.getLocalContext(CONTEXT_TRACE_REQUEST)), span);
-    } else {
+    } else if (invocation.isConsumer()) {
       HttpClientHandler<HttpClientRequest, HttpClientResponse> handler
           = invocation.getLocalContext(CONTEXT_TRACE_HANDLER);
       Span span = invocation.getLocalContext(CONTEXT_TRACE_SPAN);
       handler.handleReceive(new HttpClientResponseWrapper(invocation, event.getResponse(),
           invocation.getLocalContext(CONTEXT_TRACE_REQUEST)), span);
+    } else {
+      // edge as client
+      HttpClientHandler<HttpClientRequest, HttpClientResponse> clientHandler
+          = invocation.getLocalContext(CONTEXT_TRACE_HANDLER);
+      Span clientSpan = invocation.getLocalContext(CONTEXT_TRACE_SPAN);
+      clientHandler.handleReceive(new HttpClientResponseWrapper(invocation, event.getResponse(),
+          invocation.getLocalContext(CONTEXT_TRACE_REQUEST)), clientSpan);
+      // edge as server
+      HttpServerHandler<HttpServerRequest, HttpServerResponse> serverHandler
+          = invocation.getLocalContext(CONTEXT_TRACE_EDGE_HANDLER);
+      Span serverSpan = invocation.getLocalContext(CONTEXT_TRACE_EDGE_SPAN);
+      serverHandler.handleSend(new HttpServerResponseWrapper(invocation, event.getResponse(),
+          invocation.getLocalContext(CONTEXT_TRACE_EDGE_REQUEST)), serverSpan);
     }
   }
 }

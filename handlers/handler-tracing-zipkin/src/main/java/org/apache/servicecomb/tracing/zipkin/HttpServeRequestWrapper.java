@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 
 import brave.http.HttpServerRequest;
@@ -40,12 +41,21 @@ class HttpServeRequestWrapper extends HttpServerRequest implements InvocationAwa
 
   @Override
   public String url() {
-    return invocation.getEndpoint().getEndpoint();
+    return invocation.getInvocationQualifiedName();
   }
 
   @Override
-  public String header(String key) {
-    return invocation.getContext(key);
+  public String route() {
+    return invocation.getRequestEx() != null ? invocation.getRequestEx().getRemoteAddr() : null;
+  }
+
+  @Override
+  public String header(String name) {
+    String result = invocation.getContext(name);
+    if (StringUtils.isEmpty(result) && invocation.getRequestEx() != null) {
+      result = invocation.getRequestEx().getHeader(name);
+    }
+    return result;
   }
 
   @Override

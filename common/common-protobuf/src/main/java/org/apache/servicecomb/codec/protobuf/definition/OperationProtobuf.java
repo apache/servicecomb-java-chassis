@@ -117,7 +117,7 @@ public class OperationProtobuf {
     ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(invocation.getSchemaMeta());
     Message requestMessage = mapper.getRequestMessage(invocation.getOperationMeta().getOperationId());
 
-    if (!invocation.isConsumer()) {
+    if (invocation.isProducer()) {
       initProducerRequestCodec(invocation, requestMessage, mapper);
     } else {
       initConsumerRequestCodec(invocation, requestMessage, mapper);
@@ -167,7 +167,7 @@ public class OperationProtobuf {
     Message responseMessage = mapper.getResponseMessage(invocation.getOperationMeta().getOperationId());
 
     JavaType responseType = invocation.findResponseType(Status.OK.getStatusCode());
-    if (!invocation.isConsumer()) {
+    if (invocation.isProducer()) {
       initProviderResponseCode(responseMessage, mapper, responseType);
     } else {
       initConsumerResponseCode(responseMessage, mapper, responseType);

@@ -66,7 +66,7 @@ public class SlowInvocationLogger {
       return;
     }
 
-    if (!invocation.isConsumer()) {
+    if (invocation.isProducer()) {
       logSlowProvider(invocation, event.getResponse(), operationConfig);
       return;
     }

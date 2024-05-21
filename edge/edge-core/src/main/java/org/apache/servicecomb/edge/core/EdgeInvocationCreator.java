@@ -84,7 +84,7 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
         restOperationMeta.getOperationMeta().buildBaseConsumerRuntimeType(),
         null);
     invocation.setSync(false);
-    invocation.setEdge(true);
+    invocation.setEdge();
     invocation.addLocalContext(EDGE_INVOCATION_CONTEXT, Vertx.currentContext());
 
     return invocation;

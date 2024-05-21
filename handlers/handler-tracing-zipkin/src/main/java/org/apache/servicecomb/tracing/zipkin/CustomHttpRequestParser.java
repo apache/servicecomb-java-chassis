@@ -24,12 +24,15 @@ import brave.http.HttpRequestParser;
 import brave.http.HttpTags;
 import brave.propagation.TraceContext;
 
-public record CustomHttpRequestParser(boolean client) implements HttpRequestParser {
+public record CustomHttpRequestParser() implements HttpRequestParser {
   @Override
   public void parse(HttpRequest req, TraceContext context, SpanCustomizer span) {
     Invocation invocation = ((InvocationAware) req).getInvocation();
     span.name(invocation.getInvocationQualifiedName());
     HttpTags.METHOD.tag(req, context, span);
     HttpTags.PATH.tag(req, context, span);
+    if (!invocation.isConsumer()) { // server or edge
+      HttpTags.ROUTE.tag(req, context, span);
+    }
   }
 }

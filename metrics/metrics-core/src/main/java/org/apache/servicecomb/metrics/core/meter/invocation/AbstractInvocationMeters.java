@@ -46,13 +46,7 @@ public abstract class AbstractInvocationMeters {
   protected AbstractInvocationMeter getOrCreateMeters(Invocation invocation, Response response) {
     // build string key is faster than use Id to locate timer directly
     StringBuilder keyBuilder = new StringBuilder(maxKeyLen);
-    String invocationName;
-    //check edge
-    if (invocation.isConsumer() && invocation.isEdge()) {
-      invocationName = MeterInvocationConst.EDGE_INVOCATION_NAME;
-    } else {
-      invocationName = invocation.getInvocationType().name();
-    }
+    String invocationName = invocation.getInvocationType().name();
 
     keyBuilder
         .append(invocationName)

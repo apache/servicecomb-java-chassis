@@ -50,11 +50,10 @@ public class InvocationMetersInitializer implements MetricsInitializer {
 
   protected AbstractInvocationMeters findInvocationMeters(Invocation invocation) {
     if (invocation.isConsumer()) {
-      if (invocation.isEdge()) {
-        return edgeMeters.getInvocationMeters();
-      } else {
-        return consumerMeters.getInvocationMeters();
-      }
+      return consumerMeters.getInvocationMeters();
+    }
+    if (invocation.isEdge()) {
+      return edgeMeters.getInvocationMeters();
     }
     return producerMeters.getInvocationMeters();
   }

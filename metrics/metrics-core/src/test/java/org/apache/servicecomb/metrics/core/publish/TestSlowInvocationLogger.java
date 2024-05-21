@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import com.google.common.eventbus.EventBus;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Endpoint;
@@ -37,6 +36,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.google.common.eventbus.EventBus;
 
 @ExtendWith(MockitoExtension.class)
 public class TestSlowInvocationLogger {
@@ -109,7 +110,7 @@ public class TestSlowInvocationLogger {
     Endpoint endpoint = Mockito.mock(Endpoint.class);
     Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
     Mockito.when(endpoint.getEndpoint()).thenReturn("rest://1.1.1.1:1234");
-    Mockito.when(invocation.isConsumer()).thenReturn(true);
+    Mockito.when(invocation.isProducer()).thenReturn(false);
     Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
     Mockito.when(operationConfig.isSlowInvocationEnabled()).thenReturn(true);
     Mockito.when(operationConfig.getNanoSlowInvocation()).thenReturn(1L);
@@ -131,7 +132,7 @@ public class TestSlowInvocationLogger {
                 wait            :      0.0ms
                 consumer-decode :      0.0ms
             """,
-            logCollector.getEvent(0).getMessage().getFormattedMessage());
+        logCollector.getEvent(0).getMessage().getFormattedMessage());
   }
 
   @Test
@@ -139,7 +140,6 @@ public class TestSlowInvocationLogger {
     Endpoint endpoint = Mockito.mock(Endpoint.class);
     Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
     Mockito.when(endpoint.getEndpoint()).thenReturn("rest://1.1.1.1:1234");
-    Mockito.when(invocation.isConsumer()).thenReturn(true);
     Mockito.when(invocation.isEdge()).thenReturn(true);
     Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
     Mockito.when(operationConfig.isSlowInvocationEnabled()).thenReturn(true);
@@ -176,7 +176,7 @@ public class TestSlowInvocationLogger {
     Mockito.when(invocation.getRequestEx()).thenReturn(requestEx);
     Mockito.when(requestEx.getRemoteAddr()).thenReturn("1.1.1.1");
     Mockito.when(requestEx.getRemotePort()).thenReturn(1234);
-    Mockito.when(invocation.isConsumer()).thenReturn(false);
+    Mockito.when(invocation.isProducer()).thenReturn(true);
     Mockito.when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(restOperationMeta);
     Mockito.when(operationConfig.isSlowInvocationEnabled()).thenReturn(true);
     Mockito.when(operationConfig.getNanoSlowInvocation()).thenReturn(1L);
