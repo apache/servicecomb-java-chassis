@@ -25,7 +25,6 @@ import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
-import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
