@@ -47,7 +47,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
