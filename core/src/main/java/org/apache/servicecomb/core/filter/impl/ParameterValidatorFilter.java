@@ -17,9 +17,11 @@
 package org.apache.servicecomb.core.filter.impl;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
@@ -29,7 +31,6 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hibernate.validator.HibernateValidator;
-import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import jakarta.validation.Configuration;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
@@ -71,6 +73,8 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 
   public static final String NAME = "validator";
+
+  public static final String HIBERNATE_VALIDATE_PREFIX = "hibernate.validator";
 
   public static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
@@ -108,16 +112,17 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
   }
 
   protected ValidatorFactory createValidatorFactory() {
-    return Validation.byProvider(HibernateValidator.class)
+    Configuration<?> validatorConfiguration = Validation.byProvider(HibernateValidator.class)
         .configure()
         .propertyNodeNameProvider(new JacksonPropertyNodeNameProvider())
-        .messageInterpolator(messageInterpolator())
-        .addProperty(HibernateValidatorConfiguration.FAIL_FAST, buildHibernateFailFastProperty())
-        .buildValidatorFactory();
-  }
-
-  private String buildHibernateFailFastProperty() {
-    return environment.getProperty(HibernateValidatorConfiguration.FAIL_FAST, "false");
+        .messageInterpolator(messageInterpolator());
+    Map<String, String> properties = ConfigUtil.stringPropertiesWithPrefix(environment, HIBERNATE_VALIDATE_PREFIX);
+    if (!properties.isEmpty()) {
+      for (String key : properties.keySet()) {
+        validatorConfiguration.addProperty(key, properties.get(key));
+      }
+    }
+    return validatorConfiguration.buildValidatorFactory();
   }
 
   protected AbstractMessageInterpolator messageInterpolator() {

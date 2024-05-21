@@ -16,19 +16,21 @@
  */
 package org.apache.servicecomb.swagger.invocation.validator;
 
+import java.util.Map;
 import java.util.Set;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
-import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.validation.Configuration;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validation;
@@ -44,6 +46,8 @@ public class ParameterValidator implements ProducerInvokeExtension {
 
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
+  public static final String HIBERNATE_VALIDATE_PREFIX = "hibernate.validator";
+
   private final boolean paramValidationEnabled;
 
   public ParameterValidator() {
@@ -58,14 +62,7 @@ public class ParameterValidator implements ProducerInvokeExtension {
       throws ConstraintViolationException {
     if (paramValidationEnabled) {
       if (null == executableValidator) {
-        ValidatorFactory factory =
-            Validation.byDefaultProvider()
-                .configure()
-                .parameterNameProvider(new DefaultParameterNameProvider())
-                .messageInterpolator(messageInterpolator())
-                .addProperty(HibernateValidatorConfiguration.FAIL_FAST, buildHibernateFailFastProperty())
-                .buildValidatorFactory();
-        executableValidator = factory.getValidator().forExecutables();
+        executableValidator = createValidatorFactory().getValidator().forExecutables();
       }
       Set<ConstraintViolation<Object>> violations =
           executableValidator.validateParameters(producerOperation.getProducerInstance(),
@@ -79,8 +76,19 @@ public class ParameterValidator implements ProducerInvokeExtension {
     }
   }
 
-  private String buildHibernateFailFastProperty() {
-    return LegacyPropertyFactory.getStringProperty(HibernateValidatorConfiguration.FAIL_FAST, "false");
+  private ValidatorFactory createValidatorFactory() {
+    Configuration<?> validatorConfiguration = Validation.byDefaultProvider()
+        .configure()
+        .parameterNameProvider(new DefaultParameterNameProvider())
+        .messageInterpolator(messageInterpolator());
+    Map<String, String> properties =
+        ConfigUtil.stringPropertiesWithPrefix(LegacyPropertyFactory.getEnvironment(), HIBERNATE_VALIDATE_PREFIX);
+    if (!properties.isEmpty()) {
+      for (String key : properties.keySet()) {
+        validatorConfiguration.addProperty(key, properties.get(key));
+      }
+    }
+    return validatorConfiguration.buildValidatorFactory();
   }
 
   private AbstractMessageInterpolator messageInterpolator() {
