@@ -25,10 +25,12 @@ import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
@@ -111,7 +113,12 @@ public class ParameterValidatorFilter extends AbstractFilter implements Provider
         .configure()
         .propertyNodeNameProvider(new JacksonPropertyNodeNameProvider())
         .messageInterpolator(messageInterpolator())
+        .addProperty(HibernateValidatorConfiguration.FAIL_FAST, buildHibernateFailFastProperty())
         .buildValidatorFactory();
+  }
+
+  private String buildHibernateFailFastProperty() {
+    return LegacyPropertyFactory.getStringProperty(HibernateValidatorConfiguration.FAIL_FAST, "false");
   }
 
   protected AbstractMessageInterpolator messageInterpolator() {

@@ -22,6 +22,7 @@ import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
+import org.hibernate.validator.HibernateValidatorConfiguration;
 import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
@@ -62,6 +63,7 @@ public class ParameterValidator implements ProducerInvokeExtension {
                 .configure()
                 .parameterNameProvider(new DefaultParameterNameProvider())
                 .messageInterpolator(messageInterpolator())
+                .addProperty(HibernateValidatorConfiguration.FAIL_FAST, buildHibernateFailFastProperty())
                 .buildValidatorFactory();
         executableValidator = factory.getValidator().forExecutables();
       }
@@ -75,6 +77,10 @@ public class ParameterValidator implements ProducerInvokeExtension {
         throw new ConstraintViolationException(violations);
       }
     }
+  }
+
+  private String buildHibernateFailFastProperty() {
+    return LegacyPropertyFactory.getStringProperty(HibernateValidatorConfiguration.FAIL_FAST, "false");
   }
 
   private AbstractMessageInterpolator messageInterpolator() {
