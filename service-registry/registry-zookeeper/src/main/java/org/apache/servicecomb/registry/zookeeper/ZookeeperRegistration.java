@@ -18,7 +18,6 @@ package org.apache.servicecomb.registry.zookeeper;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
@@ -34,6 +33,7 @@ import org.apache.curator.x.discovery.ServiceInstance;
 import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
+import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
@@ -77,6 +77,8 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   private ServiceInstance<ZookeeperInstance> instance;
 
+  private RegistrationId registrationId;
+
   @Autowired
   @SuppressWarnings("unused")
   public void setEnvironment(Environment environment) {
@@ -87,6 +89,11 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   @SuppressWarnings("unused")
   public void setZookeeperRegistryProperties(ZookeeperRegistryProperties zookeeperRegistryProperties) {
     this.zookeeperRegistryProperties = zookeeperRegistryProperties;
+  }
+
+  @Autowired
+  public void setRegistrationId(RegistrationId registrationId) {
+    this.registrationId = registrationId;
   }
 
   @Autowired
@@ -103,7 +110,7 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     }
     basePath = String.format(ZookeeperConst.ZOOKEEPER_DISCOVERY_ROOT, env);
     ZookeeperInstance zookeeperInstance = new ZookeeperInstance();
-    zookeeperInstance.setInstanceId(buildInstanceId());
+    zookeeperInstance.setInstanceId(registrationId.getInstanceId());
     zookeeperInstance.setEnvironment(env);
     zookeeperInstance.setApplication(BootStrapProperties.readApplication(environment));
     zookeeperInstance.setServiceName(BootStrapProperties.readServiceName(environment));
@@ -204,9 +211,5 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   @Override
   public boolean enabled() {
     return zookeeperRegistryProperties.isEnabled();
-  }
-
-  private static String buildInstanceId() {
-    return UUID.randomUUID().toString();
   }
 }

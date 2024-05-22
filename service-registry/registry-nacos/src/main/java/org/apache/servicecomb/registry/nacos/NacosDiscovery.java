@@ -98,6 +98,16 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
     }
   }
 
+  @Override
+  public List<String> findServices(String application) {
+    try {
+      return namingService.getServicesOfServer(0, Integer.MAX_VALUE, application)
+          .getData();
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
   private List<NacosDiscoveryInstance> convertServiceInstanceList(
       List<Instance> instances, String application, String serviceName) {
     if (CollectionUtils.isEmpty(instances)) {

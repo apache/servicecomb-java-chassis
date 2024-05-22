@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.registry.api.Discovery;
@@ -28,6 +29,7 @@ import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChan
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterDiscovery;
 import org.apache.servicecomb.service.center.client.ServiceCenterDiscovery.SubscriptionKey;
+import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +96,13 @@ public class SCDiscovery implements Discovery<SCDiscoveryInstance> {
     List<MicroserviceInstance> instances = serviceCenterDiscovery.getInstanceCache(subscriptionKey);
 
     return toDiscoveryInstances(instances);
+  }
+
+  @Override
+  public List<String> findServices(String application) {
+    return serviceCenterClient.getMicroserviceList().getServices().stream()
+        .filter(e -> e.getAppId().equals(application)).map(Microservice::getServiceName)
+        .collect(Collectors.toList());
   }
 
   private List<SCDiscoveryInstance> toDiscoveryInstances(List<MicroserviceInstance> instances) {

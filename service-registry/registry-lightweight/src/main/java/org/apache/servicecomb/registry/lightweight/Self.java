@@ -17,9 +17,8 @@
 
 package org.apache.servicecomb.registry.lightweight;
 
-import java.util.UUID;
-
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.lightweight.model.Microservice;
 import org.apache.servicecomb.registry.lightweight.model.MicroserviceFactory;
 import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
@@ -41,9 +40,16 @@ public class Self implements InitializingBean, BootListener {
 
   private Environment environment;
 
+  private RegistrationId registrationId;
+
   @Autowired
   public void setEnvironment(Environment environment) {
     this.environment = environment;
+  }
+
+  @Autowired
+  public void setRegistrationId(RegistrationId registrationId) {
+    this.registrationId = registrationId;
   }
 
   @Override
@@ -61,7 +67,7 @@ public class Self implements InitializingBean, BootListener {
         microservice.getVersion()));
 
     instance = microservice.getInstance()
-        .instanceId(buildInstanceId())
+        .instanceId(registrationId.getInstanceId())
         .serviceId(microservice.getServiceId());
 
     microserviceInfo
@@ -70,10 +76,6 @@ public class Self implements InitializingBean, BootListener {
         .setInstance(instance);
 
     return this;
-  }
-
-  private static String buildInstanceId() {
-    return UUID.randomUUID().toString();
   }
 
   @Override

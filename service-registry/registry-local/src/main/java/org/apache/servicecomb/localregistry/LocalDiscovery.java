@@ -63,6 +63,11 @@ public class LocalDiscovery implements Discovery<LocalDiscoveryInstance> {
   }
 
   @Override
+  public List<String> findServices(String application) {
+    return this.localRegistryStore.findServices(application);
+  }
+
+  @Override
   public void setInstanceChangedListener(InstanceChangedListener<LocalDiscoveryInstance> instanceChangedListener) {
 
   }

@@ -56,6 +56,14 @@ public interface Discovery<D extends DiscoveryInstance> extends SPIEnabled, SPIO
   List<D> findServiceInstances(String application, String serviceName);
 
   /**
+   * Find all services of this application.
+   *
+   * @param application application
+   * @return all services match the criteria.
+   */
+  List<String> findServices(String application);
+
+  /**
    * Discovery can call InstanceChangedListener when instance get changed.
    */
   void setInstanceChangedListener(InstanceChangedListener<D> instanceChangedListener);
