@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.test.scaffolding.time.MockTicker;
+import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.lightweight.model.Microservice;
 import org.apache.servicecomb.registry.lightweight.store.InstanceStore;
@@ -80,8 +81,9 @@ public class StoreServiceTest {
       protected RegisterRequest createRegisterRequest() {
         return new MockRegisterRequest();
       }
-    }
-        .init(environment)
+    };
+    self.setRegistrationId(new RegistrationId());
+    self.init(environment)
         .addSchema("schema-1", "s1")
         .addEndpoint("rest://1.1.1.1:80");
 

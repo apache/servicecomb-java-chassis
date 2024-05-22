@@ -21,8 +21,10 @@ import static org.apache.servicecomb.zeroconfig.ZeroConfigConst.ORDER;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.registry.lightweight.AbstractLightweightDiscovery;
+import org.apache.servicecomb.registry.lightweight.model.Microservice;
 import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstance;
 import org.apache.servicecomb.registry.lightweight.model.MicroserviceInstances;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,5 +75,12 @@ public class ZeroConfigDiscovery extends AbstractLightweightDiscovery<ZeroConfig
       result.add(new ZeroConfigDiscoveryInstance(store.getMicroservice(instance.getServiceId()).get(), instance));
     }
     return result;
+  }
+
+  @Override
+  public List<String> findServices(String application) {
+    List<Microservice> microservices = store.getAllMicroservices();
+    return microservices.stream().filter(e -> e.getAppId().equals(application))
+        .map(Microservice::getServiceName).collect(Collectors.toList());
   }
 }

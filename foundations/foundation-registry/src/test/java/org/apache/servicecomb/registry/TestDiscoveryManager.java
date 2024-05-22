@@ -113,6 +113,11 @@ public class TestDiscoveryManager {
     }
 
     @Override
+    public List<String> findServices(String application) {
+      return null;
+    }
+
+    @Override
     public void setInstanceChangedListener(InstanceChangedListener<MyDiscoveryInstance> instanceChangedListener) {
 
     }

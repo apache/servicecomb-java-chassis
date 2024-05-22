@@ -66,4 +66,9 @@ public class RegistryConfiguration {
   public MicroserviceInstanceCache microserviceInstanceCache(DiscoveryManager discoveryManager) {
     return new MicroserviceInstanceCache(discoveryManager);
   }
+
+  @Bean
+  public RegistrationId registrationId() {
+    return new RegistrationId();
+  }
 }

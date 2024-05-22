@@ -76,6 +76,9 @@ public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance>
   private final Map<String, Map<String, ServiceCache<ZookeeperInstance>>> serviceDiscoveries =
       new ConcurrentHashMapEx<>();
 
+  private final Map<String, ServiceDiscovery<ZookeeperInstance>> serviceNameDiscoveries =
+      new ConcurrentHashMapEx<>();
+
   private Environment environment;
 
   private ZookeeperRegistryProperties zookeeperRegistryProperties;
@@ -147,6 +150,31 @@ public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance>
       });
       List<ServiceInstance<ZookeeperInstance>> instances = discovery.getInstances();
       return toDiscoveryInstances(instances);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  @Override
+  public List<String> findServices(String application) {
+    try {
+      ServiceDiscovery<ZookeeperInstance> discovery = serviceNameDiscoveries.computeIfAbsent(application, app ->
+      {
+        JsonInstanceSerializer<ZookeeperInstance> serializer =
+            new JsonInstanceSerializer<>(ZookeeperInstance.class);
+        ServiceDiscovery<ZookeeperInstance> dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
+            .client(client)
+            .basePath(basePath + "/" + application)
+            .serializer(serializer)
+            .build();
+        try {
+          dis.start();
+        } catch (Exception e) {
+          throw new IllegalStateException(e);
+        }
+        return dis;
+      });
+      return discovery.queryForNames().stream().toList();
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }

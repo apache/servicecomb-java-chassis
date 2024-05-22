@@ -19,12 +19,12 @@ package org.apache.servicecomb.registry.nacos;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,8 +52,8 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Autowired
   public NacosRegistration(DataCenterProperties dataCenterProperties, NacosDiscoveryProperties nacosDiscoveryProperties,
-      Environment environment) {
-    this.instanceId = buildInstanceId();
+      Environment environment, RegistrationId registrationId) {
+    this.instanceId = registrationId.getInstanceId();
     this.dataCenterProperties = dataCenterProperties;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
     this.environment = environment;
@@ -156,9 +156,5 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   @Override
   public boolean enabled() {
     return nacosDiscoveryProperties.isEnabled();
-  }
-
-  private static String buildInstanceId() {
-    return UUID.randomUUID().toString();
   }
 }
