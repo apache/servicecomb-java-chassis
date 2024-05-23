@@ -93,6 +93,10 @@ public class DiscoveryManager implements LifeCycle {
     });
   }
 
+  public Discovery<? extends DiscoveryInstance> getPrimaryDiscovery() {
+    return this.discoveryList.get(0);
+  }
+
   private void doTask() {
     // doTask can not throw exception or will mute all tasks.
     try {

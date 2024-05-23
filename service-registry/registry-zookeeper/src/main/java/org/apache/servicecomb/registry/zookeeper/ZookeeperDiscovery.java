@@ -158,22 +158,22 @@ public class ZookeeperDiscovery implements Discovery<ZookeeperDiscoveryInstance>
   @Override
   public List<String> findServices(String application) {
     try {
-      ServiceDiscovery<ZookeeperInstance> discovery = serviceNameDiscoveries.computeIfAbsent(application, app ->
-      {
-        JsonInstanceSerializer<ZookeeperInstance> serializer =
-            new JsonInstanceSerializer<>(ZookeeperInstance.class);
-        ServiceDiscovery<ZookeeperInstance> dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
-            .client(client)
-            .basePath(basePath + "/" + application)
-            .serializer(serializer)
-            .build();
-        try {
-          dis.start();
-        } catch (Exception e) {
-          throw new IllegalStateException(e);
-        }
-        return dis;
-      });
+      ServiceDiscovery<ZookeeperInstance> discovery = serviceNameDiscoveries
+          .computeIfAbsent(application, app -> {
+            JsonInstanceSerializer<ZookeeperInstance> serializer =
+                new JsonInstanceSerializer<>(ZookeeperInstance.class);
+            ServiceDiscovery<ZookeeperInstance> dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
+                .client(client)
+                .basePath(basePath + "/" + application)
+                .serializer(serializer)
+                .build();
+            try {
+              dis.start();
+            } catch (Exception e) {
+              throw new IllegalStateException(e);
+            }
+            return dis;
+          });
       return discovery.queryForNames().stream().toList();
     } catch (Exception e) {
       throw new IllegalStateException(e);
