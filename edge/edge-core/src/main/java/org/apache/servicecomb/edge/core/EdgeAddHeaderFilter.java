@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
+import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.EdgeFilter;
@@ -41,15 +42,11 @@ public class EdgeAddHeaderFilter extends AbstractFilter implements EdgeFilter {
 
   private static final String PREFIX = "servicecomb.edge.filter.addHeader";
 
-  private static final String KEY_ENABLED = PREFIX + ".enabled";
-
   private static final String KEY_HEADERS = PREFIX + ".allowedHeaders";
 
   private final Environment environment;
 
   private List<String> publicHeaders = new ArrayList<>();
-
-  private boolean enabled = false;
 
   public EdgeAddHeaderFilter(Environment environment) {
     this.environment = environment;
@@ -69,12 +66,11 @@ public class EdgeAddHeaderFilter extends AbstractFilter implements EdgeFilter {
   }
 
   private void init() {
-    enabled = environment.getProperty(KEY_ENABLED, boolean.class, true);
-    String publicHeaderStr = environment.getProperty(KEY_HEADERS, "");
-    String[] split = publicHeaderStr.split(",");
-    if (split.length > 0) {
-      publicHeaders = Arrays.asList(split);
+    String publicHeaderStr = environment.getProperty(KEY_HEADERS);
+    if (StringUtils.isEmpty(publicHeaderStr)) {
+      return;
     }
+    publicHeaders = Arrays.asList(publicHeaderStr.split(","));
   }
 
   @Override
@@ -84,12 +80,12 @@ public class EdgeAddHeaderFilter extends AbstractFilter implements EdgeFilter {
 
   @Override
   public boolean enabledForTransport(String transport) {
-    return enabled;
+    return CoreConst.RESTFUL.equals(transport);
   }
 
   @Override
   public int getOrder() {
-    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1991;
+    return Filter.CONSUMER_LOAD_BALANCE_ORDER + 1995;
   }
 
   @Override
