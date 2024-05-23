@@ -74,6 +74,10 @@ public class RegistrationManager {
     return registration.get().getMicroserviceInstance().getServiceId();
   }
 
+  public Registration<? extends RegistrationInstance> getPrimaryRegistration() {
+    return registrationList.get(0);
+  }
+
   public void updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
     registrationList
         .forEach(registration -> registration.updateMicroserviceInstanceStatus(status));

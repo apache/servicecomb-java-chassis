@@ -148,4 +148,11 @@ public class LocalRegistryStore {
     }
     return instances;
   }
+
+  public List<String> findServices(String application) {
+    if (microserviceInstanceMap.get(application) == null) {
+      return Collections.emptyList();
+    }
+    return microserviceInstanceMap.get(application).keySet().stream().toList();
+  }
 }

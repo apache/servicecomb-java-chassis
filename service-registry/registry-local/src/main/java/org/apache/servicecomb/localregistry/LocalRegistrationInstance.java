@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.core.provider.LocalOpenAPIRegistry;
+import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
@@ -47,7 +47,9 @@ public class LocalRegistrationInstance implements RegistrationInstance {
 
   public LocalRegistrationInstance(
       Environment environment,
-      DataCenterProperties dataCenterProperties, LocalOpenAPIRegistry localOpenAPIRegistry) {
+      DataCenterProperties dataCenterProperties,
+      LocalOpenAPIRegistry localOpenAPIRegistry,
+      RegistrationId registrationId) {
     this.environment = environment;
     this.localOpenAPIRegistry = localOpenAPIRegistry;
 
@@ -58,11 +60,7 @@ public class LocalRegistrationInstance implements RegistrationInstance {
 
     this.properties.putAll(BootStrapProperties.readServiceProperties(environment));
 
-    this.instanceId = buildInstanceId();
-  }
-
-  private static String buildInstanceId() {
-    return UUID.randomUUID().toString();
+    this.instanceId = registrationId.getInstanceId();
   }
 
   @Override
