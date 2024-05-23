@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
@@ -70,7 +69,7 @@ public class EdgeAddHeaderFilter extends AbstractFilter implements EdgeFilter {
   }
 
   private void init() {
-    enabled = environment.getProperty(KEY_ENABLED, boolean.class, false);
+    enabled = environment.getProperty(KEY_ENABLED, boolean.class, true);
     String publicHeaderStr = environment.getProperty(KEY_HEADERS, "");
     String[] split = publicHeaderStr.split(",");
     if (split.length > 0) {
@@ -95,19 +94,19 @@ public class EdgeAddHeaderFilter extends AbstractFilter implements EdgeFilter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    RestClientTransportContext transportContext = invocation.getTransportContext();
-    return CompletableFuture.completedFuture(null)
-        .thenAccept(v -> addHeaders(invocation, transportContext.getHttpClientRequest()::putHeader))
-        .thenCompose(v -> nextNode.onFilter(invocation));
-  }
+    if (publicHeaders.isEmpty()) {
+      return nextNode.onFilter(invocation);
+    }
 
-  public void addHeaders(Invocation invocation, BiConsumer<String, String> headerAdder) {
+    RestClientTransportContext transportContext = invocation.getTransportContext();
     HttpServletRequestEx oldRequest = invocation.getRequestEx();
     publicHeaders.forEach(key -> {
       String value = oldRequest.getHeader(key);
       if (StringUtils.isNotEmpty(value)) {
-        headerAdder.accept(key, value);
+        transportContext.getHttpClientRequest().putHeader(key, value);
       }
     });
+
+    return nextNode.onFilter(invocation);
   }
 }

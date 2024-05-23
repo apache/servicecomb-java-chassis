@@ -19,7 +19,12 @@ package org.apache.servicecomb.samples;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
@@ -49,5 +54,15 @@ public class HelloWorldIT implements CategorizedTestCase {
     String result = template
         .getForObject(Config.GATEWAY_URL + "/sayHello?name=World", String.class);
     TestMgr.check("Hello World", result);
+
+    // test trace id added
+    MultiValueMap<String, String> headers = new HttpHeaders();
+    headers.add("X-B3-TraceId", "81de2eb7691c2bbb");
+    HttpEntity<Object> entity = new HttpEntity(headers);
+    ResponseEntity<String> response =
+        template.exchange(Config.GATEWAY_URL + "/sayHello?name=World", HttpMethod.GET, entity, String.class);
+    TestMgr.check(1, response.getHeaders().get("X-B3-TraceId").size());
+    TestMgr.check("81de2eb7691c2bbb", response.getHeaders().getFirst("X-B3-TraceId"));
+    TestMgr.check("Hello World", response.getBody());
   }
 }
