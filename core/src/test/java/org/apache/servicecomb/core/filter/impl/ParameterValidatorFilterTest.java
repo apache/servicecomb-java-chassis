@@ -44,6 +44,10 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.context.ApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -96,6 +100,12 @@ public class ParameterValidatorFilterTest {
 
   @BeforeClass
   public static void beforeClass() throws Exception {
+    ApplicationContext applicationContext = Mockito.mock(ApplicationContext.class);
+    ConfigurableEnvironment environment = Mockito.mock(ConfigurableEnvironment.class);
+    MutablePropertySources sources = new MutablePropertySources();
+    Mockito.when(applicationContext.getEnvironment()).thenReturn(environment);
+    Mockito.when(environment.getPropertySources()).thenReturn(sources);
+    filter.setApplicationContext(applicationContext);
     filter.afterPropertiesSet();
   }
 
