@@ -42,7 +42,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -96,14 +97,16 @@ public class ParameterValidatorFilterTest {
   @Mocked
   SwaggerProducerOperation operation;
 
-  Environment environment;
+  ConfigurableEnvironment environment;
 
   @Before
   public void setUp() throws Exception {
-    environment = Mockito.mock(Environment.class);
+    environment = Mockito.mock(ConfigurableEnvironment.class);
     SCBEngine engine = SCBBootstrap.createSCBEngineForTest(environment);
+    MutablePropertySources sources = new MutablePropertySources();
 
     Mockito.when(environment.getProperty(ENABLE_EL, boolean.class, false)).thenReturn(false);
+    Mockito.when(environment.getPropertySources()).thenReturn(sources);
     filter.setEnvironment(environment);
     filter.afterPropertiesSet();
     engine.setEnvironment(environment);
