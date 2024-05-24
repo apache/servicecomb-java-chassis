@@ -18,13 +18,10 @@ package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
-import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
 public class SwaggerProducerOperation {
@@ -46,9 +43,6 @@ public class SwaggerProducerOperation {
   private ProducerArgumentsMapper argumentsMapper;
 
   private ProducerResponseMapper responseMapper;
-
-  private final List<ProducerInvokeExtension> producerInvokeExtenstionList =
-      SPIServiceUtils.getSortedService(ProducerInvokeExtension.class);
 
   public String getOperationId() {
     return swaggerOperation.getOperationId();
@@ -109,10 +103,6 @@ public class SwaggerProducerOperation {
 
   public void setResponseMapper(ProducerResponseMapper responseMapper) {
     this.responseMapper = responseMapper;
-  }
-
-  public List<ProducerInvokeExtension> getProducerInvokeExtenstionList() {
-    return this.producerInvokeExtenstionList;
   }
 
   public Type getSwaggerParameterType(String name) {
