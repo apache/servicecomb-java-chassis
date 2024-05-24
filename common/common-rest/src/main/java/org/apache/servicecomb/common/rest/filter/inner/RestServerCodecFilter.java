@@ -116,14 +116,14 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
     HttpServletResponseEx responseEx = transportContext.getResponseEx();
     boolean download = isDownloadFileResponseType(invocation, response);
 
-    return encodeResponse(response, download, produceProcessor, responseEx)
+    return encodeResponse(invocation, response, download, produceProcessor, responseEx)
         .whenComplete((r, e) -> invocation.onEncodeResponseFinish());
   }
 
-  public static CompletableFuture<Response> encodeResponse(Response response, boolean download,
+  public static CompletableFuture<Response> encodeResponse(Invocation invocation, Response response, boolean download,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
     responseEx.setStatus(response.getStatusCode());
-    copyHeadersToHttpResponse(response.getHeaders(), responseEx);
+    copyHeadersToHttpResponse(invocation, response.getHeaders(), responseEx);
 
     boolean failed = response.getResult() instanceof InvocationException;
 
@@ -167,15 +167,18 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
         invocation.findResponseType(response.getStatusCode()).getRawClass());
   }
 
-  public static void copyHeadersToHttpResponse(MultiMap headers, HttpServletResponseEx responseEx) {
-    if (headers == null) {
-      return;
+  public static void copyHeadersToHttpResponse(Invocation invocation, MultiMap headers,
+      HttpServletResponseEx responseEx) {
+    if (headers != null) {
+      headers.remove(CONTENT_LENGTH);
+      headers.remove(TRANSFER_ENCODING);
+      for (Entry<String, String> entry : headers.entries()) {
+        responseEx.addHeader(entry.getKey(), entry.getValue());
+      }
     }
 
-    headers.remove(CONTENT_LENGTH);
-    headers.remove(TRANSFER_ENCODING);
-    for (Entry<String, String> entry : headers.entries()) {
-      responseEx.addHeader(entry.getKey(), entry.getValue());
+    if (invocation != null && responseEx.getHeader(CoreConst.TRACE_ID_NAME) == null) {
+      responseEx.addHeader(CoreConst.TRACE_ID_NAME, invocation.getTraceId());
     }
   }
 }

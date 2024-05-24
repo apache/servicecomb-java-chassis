@@ -30,6 +30,11 @@ servicecomb:
     server:
       compression: true
 
+  edge:
+    filter:
+      addHeader:
+        allowedHeaders: X-B3-TraceId
+
   invocation:
     exception:
       print-stack-trace: true

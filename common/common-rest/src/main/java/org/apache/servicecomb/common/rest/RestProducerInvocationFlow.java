@@ -48,7 +48,7 @@ public class RestProducerInvocationFlow extends ProducerInvocationFlow {
   protected Invocation sendCreateInvocationException(Throwable throwable) {
     try {
       Response response = Exceptions.toProducerResponse(null, throwable);
-      RestServerCodecFilter.encodeResponse(response, false, DEFAULT_PRODUCE_PROCESSOR, responseEx);
+      RestServerCodecFilter.encodeResponse(null, response, false, DEFAULT_PRODUCE_PROCESSOR, responseEx);
     } catch (Throwable e) {
       LOGGER.error("Failed to send response when prepare invocation failed, request uri:{}",
           requestEx.getRequestURI(), e);
