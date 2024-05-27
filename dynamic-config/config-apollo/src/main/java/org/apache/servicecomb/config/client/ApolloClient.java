@@ -40,7 +40,7 @@ public class ApolloClient {
 
   private static final ApolloConfig APOLLO_CONFIG = ApolloConfig.INSTANCE;
 
-    private final String namespace = APOLLO_CONFIG.getNamespace();
+  private final String namespace = APOLLO_CONFIG.getNamespace();
 
   private final UpdateHandler updateHandler;
   private final ObjectMapper objectMapper;
