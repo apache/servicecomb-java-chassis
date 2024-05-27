@@ -103,6 +103,12 @@ public final class TransportClientConfig {
         .get();
   }
 
+  public static boolean enableLogActivity() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.client.enableLogActivity", false)
+        .get();
+  }
+
   public static int getHttp2ConnectionKeepAliveTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty("servicecomb.rest.client.http2.connection.keepAliveTimeoutInSeconds",

@@ -49,7 +49,7 @@ public class TestCseXmlWebApplicationContext {
   public void testGetConfigLocationsEmpty() {
     String[] result = context.getConfigLocations();
     MatcherAssert.assertThat(result,
-        Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE));
+        Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE));
   }
 
   @Test
@@ -57,7 +57,7 @@ public class TestCseXmlWebApplicationContext {
     context.setDefaultBeanResource(null);
     String[] result = context.getConfigLocations();
     MatcherAssert.assertThat(result,
-        Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE));
+        Matchers.arrayContaining(BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE));
   }
 
   @Test
@@ -71,7 +71,7 @@ public class TestCseXmlWebApplicationContext {
 
     String[] result = context.getConfigLocations();
     MatcherAssert.assertThat(result, Matchers
-        .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
+        .arrayContaining(BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
   }
 
   @Test
@@ -84,7 +84,7 @@ public class TestCseXmlWebApplicationContext {
     };
     String[] result = context.getConfigLocations();
     MatcherAssert.assertThat(result, Matchers
-        .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
+        .arrayContaining(BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
   }
 
   @Test
@@ -97,7 +97,7 @@ public class TestCseXmlWebApplicationContext {
     };
     String[] result = context.getConfigLocations();
     MatcherAssert.assertThat(result, Matchers
-        .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
+        .arrayContaining(BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b"));
   }
 
   @Test
@@ -110,7 +110,7 @@ public class TestCseXmlWebApplicationContext {
     };
     String[] result = context.getConfigLocations();
     MatcherAssert.assertThat(result, Matchers
-        .arrayContaining(BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b", "c"));
+        .arrayContaining(BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE, "a", "b", "c"));
   }
 
   @Test

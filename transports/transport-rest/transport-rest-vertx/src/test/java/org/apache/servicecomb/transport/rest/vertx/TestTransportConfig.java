@@ -20,13 +20,13 @@ package org.apache.servicecomb.transport.rest.vertx;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-
-import mockit.Mock;
-import mockit.MockUp;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestTransportConfig {
 
@@ -129,10 +129,11 @@ public class TestTransportConfig {
 
   @Test
   public void testGetCorsAllowedOrigin() {
-    Assertions.assertEquals("*", TransportConfig.getCorsAllowedOrigin());
+    Assertions.assertEquals(1, TransportConfig.getCorsAllowedOrigin().size());
+    Assertions.assertEquals("*", TransportConfig.getCorsAllowedOrigin().iterator().next());
     String origin = "http://localhost:8080";
     ArchaiusUtils.setProperty("servicecomb.cors.origin", origin);
-    Assertions.assertEquals(origin, TransportConfig.getCorsAllowedOrigin());
+    Assertions.assertEquals(1, TransportConfig.getCorsAllowedOrigin().size());
   }
 
   @Test

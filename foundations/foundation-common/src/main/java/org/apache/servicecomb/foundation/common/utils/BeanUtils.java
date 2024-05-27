@@ -36,12 +36,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public final class BeanUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
 
-  public static final String DEFAULT_BEAN_CORE_RESOURCE = "classpath*:META-INF/spring/scb-core-bean.xml";
-
   public static final String DEFAULT_BEAN_NORMAL_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
 
-  public static final String[] DEFAULT_BEAN_RESOURCE = new String[] {DEFAULT_BEAN_CORE_RESOURCE
-      , DEFAULT_BEAN_NORMAL_RESOURCE};
+  public static final String[] DEFAULT_BEAN_RESOURCE = new String[] {DEFAULT_BEAN_NORMAL_RESOURCE};
 
   public static final String SCB_SCAN_PACKAGE = "scb-scan-package";
 
@@ -61,6 +58,14 @@ public final class BeanUtils {
 
     Set<String> locationSet = new LinkedHashSet<>();
     addBeanLocation(locationSet, DEFAULT_BEAN_RESOURCE);
+    addBeanLocation(locationSet, configLocations);
+    context = new ClassPathXmlApplicationContext(locationSet.toArray(new String[0]));
+  }
+
+  public static void initWithoutDefault(String... configLocations) {
+    prepareServiceCombScanPackage();
+
+    Set<String> locationSet = new LinkedHashSet<>();
     addBeanLocation(locationSet, configLocations);
     context = new ClassPathXmlApplicationContext(locationSet.toArray(new String[0]));
   }

@@ -14,21 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.springboot2.starter;
+package org.apache.servicecomb.demo.springmvc.server;
 
-import javax.inject.Inject;
-
-import org.apache.servicecomb.core.SCBApplicationListener;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
-
-@Configuration
-@ImportResource({BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE})
-class ServiceCombSpringConfiguration {
-  @Inject
-  public void setCseApplicationListener(SCBApplicationListener applicationListener) {
-    applicationListener.setInitEventClass(ApplicationReadyEvent.class);
-  }
+public class ResponseOKException extends RuntimeException {
 }

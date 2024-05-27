@@ -44,6 +44,9 @@ public class KVDoc {
 
   private String status;
 
+  @JsonAlias("update_time")
+  private long updateTime;
+
   public String getStatus() {
     return status;
   }
@@ -114,5 +117,13 @@ public class KVDoc {
 
   public String getValueType() {
     return valueType;
+  }
+
+  public long getUpdateTime() {
+    return updateTime;
+  }
+
+  public void setUpdateTime(long updateTime) {
+    this.updateTime = updateTime;
   }
 }

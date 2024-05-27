@@ -16,8 +16,10 @@
  */
 package org.apache.servicecomb.swagger.invocation.validator;
 
+import java.util.Map;
 import java.util.Set;
 
+import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
@@ -45,6 +47,8 @@ public class ParameterValidator implements ProducerInvokeExtension {
 
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
+  public static final String HIBERNATE_VALIDATE_PREFIX = "hibernate.validator";
+
   private final DynamicBooleanProperty paramValidationEnabled = DynamicPropertyFactory.getInstance()
       .getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
 
@@ -63,13 +67,7 @@ public class ParameterValidator implements ProducerInvokeExtension {
       throws ConstraintViolationException {
     if (paramValidationEnabled.get()) {
       if (null == executableValidator) {
-        ValidatorFactory factory =
-            Validation.byDefaultProvider()
-                .configure()
-                .parameterNameProvider(new DefaultParameterNameProvider())
-                .messageInterpolator(messageInterpolator())
-                .buildValidatorFactory();
-        executableValidator = factory.getValidator().forExecutables();
+        executableValidator = createValidatorFactory().getValidator().forExecutables();
       }
       Set<ConstraintViolation<Object>> violations =
           executableValidator.validateParameters(producerOperation.getProducerInstance(),
@@ -81,6 +79,20 @@ public class ParameterValidator implements ProducerInvokeExtension {
         throw new ConstraintViolationException(violations);
       }
     }
+  }
+
+  private ValidatorFactory createValidatorFactory() {
+    Configuration<?> validatorConfiguration = Validation.byDefaultProvider()
+        .configure()
+        .parameterNameProvider(new DefaultParameterNameProvider())
+        .messageInterpolator(messageInterpolator());
+    Map<String, String> configs = ConfigurationPropertyUtils.getPropertiesWithPrefix(HIBERNATE_VALIDATE_PREFIX);
+    if (!configs.isEmpty()) {
+      for (Map.Entry<String, String> entry : configs.entrySet()) {
+        validatorConfiguration.addProperty(HIBERNATE_VALIDATE_PREFIX + "." + entry.getKey(), entry.getValue());
+      }
+    }
+    return validatorConfiguration.buildValidatorFactory();
   }
 
   private AbstractMessageInterpolator messageInterpolator() {

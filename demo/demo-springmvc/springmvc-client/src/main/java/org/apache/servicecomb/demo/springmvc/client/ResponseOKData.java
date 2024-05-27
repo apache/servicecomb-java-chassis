@@ -14,21 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.springboot2.starter;
+package org.apache.servicecomb.demo.springmvc.client;
 
-import javax.inject.Inject;
+public class ResponseOKData {
+  private String errorCode;
 
-import org.apache.servicecomb.core.SCBApplicationListener;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
+  private String errorMessage;
 
-@Configuration
-@ImportResource({BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE})
-class ServiceCombSpringConfiguration {
-  @Inject
-  public void setCseApplicationListener(SCBApplicationListener applicationListener) {
-    applicationListener.setInitEventClass(ApplicationReadyEvent.class);
+  public ResponseOKData() {
+
+  }
+
+  public ResponseOKData(String errorCode, String errorMessage) {
+    this.errorCode = errorCode;
+    this.errorMessage = errorMessage;
+  }
+
+  public String getErrorCode() {
+    return errorCode;
+  }
+
+  public void setErrorCode(String errorCode) {
+    this.errorCode = errorCode;
+  }
+
+  public String getErrorMessage() {
+    return errorMessage;
+  }
+
+  public void setErrorMessage(String errorMessage) {
+    this.errorMessage = errorMessage;
   }
 }

@@ -46,8 +46,8 @@ public class GovernanceConfiguration {
   }
 
   public static long getWithDuration(String microservice) {
-    final long defaultValue = 0;
-    String duration = getStringProperty("0", ROOT + microservice + "." + WITH_DURATION,
+    final long defaultValue = 1;
+    String duration = getStringProperty("1", ROOT + microservice + "." + WITH_DURATION,
             ROOT + WITH_DURATION);
     try {
       long result = Long.parseLong(duration);

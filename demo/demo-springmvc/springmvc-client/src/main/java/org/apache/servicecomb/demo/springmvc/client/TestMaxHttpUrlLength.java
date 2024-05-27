@@ -22,7 +22,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestOperations;
 
 import com.google.common.base.Strings;
 import com.netflix.config.DynamicPropertyFactory;
@@ -37,14 +37,15 @@ public class TestMaxHttpUrlLength implements CategorizedTestCase {
   }
 
   private void testUrlNotLongerThan4096() {
-    RestTemplate restTemplate = RestTemplateBuilder.create();
-
-    String q = Strings.repeat("q", 4096 - "GET /api/springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
+    RestOperations restTemplate = RestTemplateBuilder.create();
+    // \r doesn't count for url length Since netty 4.1.88.Final See https://github.com/netty/netty/pull/12321
+    String q = Strings.repeat("q",
+        4096 + 1 - "GET /api/springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
     TestMgr.check("hi " + q + " [" + q + "]",
         restTemplate.getForObject("cse://springmvc/springmvc/controller/sayhi?name=" + q,
             String.class));
 
-    q = Strings.repeat("q", 4096 + 1 - "GET /api/springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
+    q = Strings.repeat("q", 4096 + 2 - "GET /api/springmvc/controller/sayhi?name=".length() - " HTTP/1.1\r".length());
     try {
       restTemplate.getForObject("cse://springmvc/springmvc/controller/sayhi?name=" + q,
           String.class);

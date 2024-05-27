@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import javax.annotation.Nonnull;
+import javax.validation.Configuration;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validation;
@@ -28,6 +29,7 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProducerFilter;
@@ -40,20 +42,27 @@ import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator
 import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 @Component
-public class ParameterValidatorFilter implements ProducerFilter, InitializingBean {
+public class ParameterValidatorFilter implements ProducerFilter, ApplicationContextAware, InitializingBean {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
 
   public static final String NAME = "validator";
 
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
+  public static final String HIBERNATE_VALIDATE_PREFIX = "hibernate.validator";
+
   protected ExecutableValidator validator;
+
+  private ApplicationContext applicationContext;
 
   @Nonnull
   @Override
@@ -67,12 +76,23 @@ public class ParameterValidatorFilter implements ProducerFilter, InitializingBea
         .getValidator().forExecutables();
   }
 
-  protected ValidatorFactory createValidatorFactory() {
-    return Validation.byProvider(HibernateValidator.class)
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    this.applicationContext = applicationContext;
+  }
+
+  private ValidatorFactory createValidatorFactory() {
+    Configuration<?> validatorConfiguration = Validation.byProvider(HibernateValidator.class)
         .configure()
         .propertyNodeNameProvider(new JacksonPropertyNodeNameProvider())
-        .messageInterpolator(messageInterpolator())
-        .buildValidatorFactory();
+        .messageInterpolator(messageInterpolator());
+    Set<String> keys = ConfigUtil.propertiesWithPrefix(applicationContext.getEnvironment(), HIBERNATE_VALIDATE_PREFIX);
+    if (!keys.isEmpty()) {
+      for (String key : keys) {
+        validatorConfiguration.addProperty(key, applicationContext.getEnvironment().getProperty(key));
+      }
+    }
+    return validatorConfiguration.buildValidatorFactory();
   }
 
   protected AbstractMessageInterpolator messageInterpolator() {
