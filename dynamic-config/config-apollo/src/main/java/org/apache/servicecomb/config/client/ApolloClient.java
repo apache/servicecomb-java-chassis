@@ -25,13 +25,12 @@ import com.ctrip.framework.apollo.enums.PropertyChangeType;
 import com.ctrip.framework.apollo.model.ConfigChange;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.annotations.VisibleForTesting;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.servicecomb.config.client.ConfigurationAction.*;
 
@@ -40,8 +39,6 @@ public class ApolloClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ApolloClient.class);
 
   private static final ApolloConfig APOLLO_CONFIG = ApolloConfig.INSTANCE;
-
-  private static final Map<String, Object> originalConfigMap = new ConcurrentHashMap<>();
 
   private final String namespace = APOLLO_CONFIG.getNamespace();
 
@@ -54,65 +51,82 @@ public class ApolloClient {
     this.objectMapper = new ObjectMapper();
   }
 
-  @VisibleForTesting
-  static Map<String, Object> getOriginalConfigMap() {
-    return originalConfigMap;
-  }
-
   public void refreshApolloConfig() {
     String namespaces = namespace!=null?namespace:"application";
     List<String> namespaceList = Arrays.asList(namespaces.split(","));
+    Map<String, Object> initialConfig = new LinkedHashMap<>();
     for (String ns : namespaceList) {
       ConfigFileFormat format =determineFileFormat(ns);
       if (format == ConfigFileFormat.YAML||format == ConfigFileFormat.Properties ||format == ConfigFileFormat.YML){
         Config config =  ConfigService.getConfig(ns);
-        this.refreshConfig(config);
+        initialConfig.putAll(this.analysisConfig(config));
         config.addChangeListener(changeEvent -> {
           LOGGER.info("Changes for namespace {}" , changeEvent.getNamespace());
-          this.refreshConfig(config);
+          Map<String, Object> configMap = new HashMap<>();
           for (String key : changeEvent.changedKeys()) {
             ConfigChange change = changeEvent.getChange(key);
             String propertyName = change.getPropertyName();
             String oldValue = change.getOldValue();
-            String newValue = change.getOldValue();
+            String newValue = change.getNewValue();
             PropertyChangeType changeType = change.getChangeType();
             LOGGER.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", propertyName, oldValue, newValue, changeType);
+            configMap.clear();
+            configMap.put(propertyName,newValue);
+            switch (changeType){
+              case ADDED :
+                updateHandler.handle(CREATE, configMap);
+                break;
+              case MODIFIED :
+                updateHandler.handle(SET, configMap);
+                break;
+              case DELETED :
+                configMap.clear();
+                configMap.put(propertyName,oldValue);
+                updateHandler.handle(DELETE, configMap);
+                break;
+            }
           }
         });
       }else {
-        ConfigFile configFile = ConfigService.getConfigFile(ns, format);
-        this.refreshConfigForJSON(format, configFile.getContent());
+        String namespace = StringUtils.removeEndIgnoreCase(ns,"."+format.getValue());
+        ConfigFile configFile = ConfigService.getConfigFile(namespace,format);
+        initialConfig.putAll(this.analysisConfigFile(format, configFile.getContent()));
         configFile.addChangeListener(changeEvent -> {
           LOGGER.info("Changes for namespace {}" , changeEvent.getNamespace());
           PropertyChangeType changeType = changeEvent.getChangeType();
           String newValue = changeEvent.getNewValue();
           String oldValue = changeEvent.getOldValue();
           LOGGER.info("Found change - oldValue: {}, newValue: {}, changeType: {}", oldValue, newValue, changeType);
-          this.refreshConfigForJSON(format, newValue);
+          Map<String, Object> newConfigMap = this.analysisConfigFile(format, newValue);
+          Map<String, Object> oldConfigMap = this.analysisConfigFile(format, oldValue);
+          updateHandler.handle(DELETE, oldConfigMap);
+          updateHandler.handle(CREATE, newConfigMap);
         });
       }
     }
+    this.initConfigItems(initialConfig);
+    initialConfig = null;
   }
 
-  private void refreshConfigForJSON(ConfigFileFormat format, String newValue) {
-    Map<String, Object> newConfig = new HashMap<>();
+  private Map<String, Object> analysisConfigFile(ConfigFileFormat format, String newValue) {
+    Map<String, Object> newConfig = new LinkedHashMap<>();
     if(format ==ConfigFileFormat.JSON){
       Map<String, Object> jsonMap = this.parseJsonToFirstLevel(newValue);
       if(jsonMap == null){
         LOGGER.error("JSON configuration parsing error, do not change the configuration");
-        return;
+      }else{
+        newConfig.putAll(jsonMap);
       }
-      newConfig.putAll(jsonMap);
     }else {
       newConfig.put("content", newValue);
     }
-    this.refreshConfigItems(newConfig);
+    return newConfig;
   }
 
-  private void refreshConfig(Config config) {
+  private Map<String, Object> analysisConfig(Config config) {
     Map<String, Object> newConfig = new LinkedHashMap<>();
     config.getPropertyNames().forEach(key ->newConfig.put(key, config.getProperty(key,null)));
-    this.refreshConfigItems(newConfig);
+    return newConfig;
   }
 
 
@@ -142,39 +156,8 @@ public class ApolloClient {
     return resultMap;
   }
 
-  private void refreshConfigItems(Map<String, Object> map) {
-    this.compareChangedConfig(originalConfigMap, map);
-    originalConfigMap.clear();
-    originalConfigMap.putAll(map);
-  }
-
-  void compareChangedConfig(Map<String, Object> before, Map<String, Object> after) {
-    Map<String, Object> itemsCreated = new HashMap<>();
-    Map<String, Object> itemsDeleted = new HashMap<>();
-    Map<String, Object> itemsModified = new HashMap<>();
-    if (before == null || before.isEmpty()) {
-      updateHandler.handle(CREATE, after);
-      return;
-    }
-    if (after == null || after.isEmpty()) {
-      updateHandler.handle(DELETE, before);
-      return;
-    }
-    after.forEach((itemKey, itemValue) -> {
-      if (!before.containsKey(itemKey)) {
-        itemsCreated.put(itemKey, itemValue);
-      } else if (!itemValue.equals(before.get(itemKey))) {
-        itemsModified.put(itemKey, itemValue);
-      }
-    });
-    for (String itemKey : before.keySet()) {
-      if (!after.containsKey(itemKey)) {
-        itemsDeleted.put(itemKey, "");
-      }
-    }
-    updateHandler.handle(CREATE, itemsCreated);
-    updateHandler.handle(SET, itemsModified);
-    updateHandler.handle(DELETE, itemsDeleted);
+  private void initConfigItems(Map<String, Object> initialConfig) {
+    updateHandler.handle(CREATE, initialConfig);
   }
 }
 
