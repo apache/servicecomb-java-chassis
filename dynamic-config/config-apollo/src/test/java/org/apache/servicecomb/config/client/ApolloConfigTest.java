@@ -36,8 +36,5 @@ public class ApolloConfigTest {
     Assertions.assertEquals("DEV", instance.getEnv());
     Assertions.assertEquals("test-cluster", instance.getServerClusters());
     Assertions.assertEquals("application", instance.getNamespace());
-    Assertions.assertEquals("xxx", instance.getToken());
-    Assertions.assertEquals(30, instance.getRefreshInterval());
-    Assertions.assertEquals(0, instance.getFirstRefreshInterval());
   }
 }

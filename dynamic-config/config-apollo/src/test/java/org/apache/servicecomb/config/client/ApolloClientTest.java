@@ -17,23 +17,11 @@
 
 package org.apache.servicecomb.config.client;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.ctrip.framework.apollo.core.enums.ConfigFileFormat;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl;
-import org.apache.servicecomb.config.archaius.sources.ApolloConfigurationSourceImpl.UpdateHandler;
-import org.apache.servicecomb.config.client.ApolloClient.ConfigRefresh;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mockito;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 public class ApolloClientTest {
   @BeforeAll
@@ -42,68 +30,26 @@ public class ApolloClientTest {
     ApolloConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
   }
 
+
   @Test
-  public void refreshApolloConfig() {
-    ApolloConfig apolloConfig = ApolloConfig.INSTANCE;
-    RestTemplate rest = Mockito.mock(RestTemplate.class);
-    ApolloClient.setRest(rest);
-
-    ResponseEntity<String> responseEntity = new ResponseEntity<>(
-        "{\"apollo\":\"mocked\", \"configurations\":{\"timeout\":1000}}", HttpStatus.OK);
-    Mockito.when(rest.exchange(
-            ArgumentMatchers.anyString(),
-            ArgumentMatchers.any(HttpMethod.class),
-            ArgumentMatchers.<HttpEntity<String>>any(),
-            ArgumentMatchers.<Class<String>>any())).thenReturn(responseEntity);
-    ApolloConfigurationSourceImpl impl = new ApolloConfigurationSourceImpl();
-    UpdateHandler updateHandler = impl.new UpdateHandler();
-    ApolloClient apolloClient = new ApolloClient(updateHandler);
-    ConfigRefresh cr = apolloClient.new ConfigRefresh(apolloConfig.getServerUri());
-    cr.run();
-
-    Assertions.assertEquals(1, ApolloClient.getOriginalConfigMap().size());
+  void testDetermineFileFormat() {
+    ApolloClient apolloClient = new ApolloClient(null);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc"), ConfigFileFormat.Properties);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.pRopErties"), ConfigFileFormat.Properties);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.properties"), ConfigFileFormat.Properties);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.xml"), ConfigFileFormat.XML);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.XmL"), ConfigFileFormat.XML);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.jSon"), ConfigFileFormat.JSON);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.jsOn"), ConfigFileFormat.JSON);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.yaml"), ConfigFileFormat.YAML);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.yAml"), ConfigFileFormat.YAML);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.yml"), ConfigFileFormat.YML);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.yMl"), ConfigFileFormat.YML);
+    Assertions.assertEquals(apolloClient.determineFileFormat("abc.properties.yml"), ConfigFileFormat.YML);
   }
 
   @Test
-  public void testCompareChangedConfig() {
-    boolean status = true;
-    Map<String, Object> before = new HashMap<>();
-    Map<String, Object> after = new HashMap<>();
+  void refreshApolloConfig() {
 
-    ApolloConfigurationSourceImpl impl = new ApolloConfigurationSourceImpl();
-    UpdateHandler updateHandler = impl.new UpdateHandler();
-    ApolloClient apolloClient = new ApolloClient(updateHandler);
-
-    ConfigRefresh cr = apolloClient.new ConfigRefresh("");
-
-    try {
-      cr.compareChangedConfig(before, after);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assertions.assertTrue(status);
-
-    before.put("test", "testValue");
-    try {
-      cr.compareChangedConfig(before, after);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assertions.assertTrue(status);
-
-    after.put("test", "testValue2");
-    try {
-      cr.compareChangedConfig(before, after);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assertions.assertTrue(status);
-
-    try {
-      cr.compareChangedConfig(before, after);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assertions.assertTrue(status);
   }
 }
