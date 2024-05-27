@@ -74,7 +74,7 @@ public class ApolloClient {
             ConfigChange change = changeEvent.getChange(key);
             String propertyName = change.getPropertyName();
             String oldValue = change.getOldValue();
-            String newValue = change.getOldValue();
+            String newValue = change.getNewValue();
             PropertyChangeType changeType = change.getChangeType();
             LOGGER.info("Found change - key: {}, oldValue: {}, newValue: {}, changeType: {}", propertyName, oldValue, newValue, changeType);
           }
