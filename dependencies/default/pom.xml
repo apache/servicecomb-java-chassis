@@ -67,7 +67,7 @@
     <maven-model.version>3.9.6</maven-model.version>
     <micrometer.version>1.12.4</micrometer.version>
     <mockito.version>5.7.0</mockito.version>
-    <mockito-inline.version>5.1.1</mockito-inline.version>
+    <mockito-inline.version>5.2.0</mockito-inline.version>
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>2.3.1</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
