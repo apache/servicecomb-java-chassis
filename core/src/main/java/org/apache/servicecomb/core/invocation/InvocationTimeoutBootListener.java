@@ -33,8 +33,8 @@ import org.springframework.core.env.Environment;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-@SuppressWarnings({"UnstableApiUsage", "unused"})
-public class InvocationTimeoutBootListener {
+@SuppressWarnings({"unused"})
+public final class InvocationTimeoutBootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvocationTimeoutBootListener.class);
 
   public static final String PREFIX = "servicecomb.invocation.timeout.check";

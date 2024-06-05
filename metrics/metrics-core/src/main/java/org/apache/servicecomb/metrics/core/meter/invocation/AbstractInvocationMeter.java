@@ -24,6 +24,8 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.micrometer.core.instrument.DistributionSummary;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -31,6 +33,8 @@ import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
 
 public abstract class AbstractInvocationMeter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractInvocationMeter.class);
+
   // total time distribution
   private final DistributionSummary totalSummary;
 
@@ -46,11 +50,12 @@ public abstract class AbstractInvocationMeter {
       MetricsBootstrapConfig metricsBootstrapConfig) {
     this.metricsBootstrapConfig = metricsBootstrapConfig;
 
-    if (!StringUtils.isEmpty(metricsBootstrapConfig.getLatencyDistribution())) {
+    double[] sla = toSla(metricsBootstrapConfig.getLatencyDistribution());
+    if (sla != null) {
       totalSummary = DistributionSummary.builder(name)
           .tags(tags.and(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_DISTRIBUTION))
           .distributionStatisticExpiry(Duration.ofMillis(metricsBootstrapConfig.getMsPollInterval()))
-          .serviceLevelObjectives(toSla(metricsBootstrapConfig.getLatencyDistribution())).register(meterRegistry);
+          .serviceLevelObjectives(sla).register(meterRegistry);
     } else {
       totalSummary = null;
     }
@@ -60,7 +65,10 @@ public abstract class AbstractInvocationMeter {
         , MeterInvocationConst.TAG_STAGE, InvocationStageTrace.STAGE_PREPARE)).register(meterRegistry);
   }
 
-  protected static double[] toSla(String config) {
+  private static double[] toSla(String config) {
+    if (StringUtils.isEmpty(config)) {
+      return null;
+    }
     config = config.trim() + "," + LatencyDistributionConfig.MAX_LATENCY;
     String[] array = config.split("\\s*,+\\s*");
     double[] result = new double[array.length];
@@ -69,8 +77,8 @@ public abstract class AbstractInvocationMeter {
       long msMin = Long.parseLong(array[idx]);
       long msMax = Long.parseLong(array[idx + 1]);
       if (msMin >= msMax) {
-        String msg = String.format("invalid latency scope, min=%s, max=%s.", array[idx], array[idx + 1]);
-        throw new IllegalStateException(msg);
+        LOGGER.error("invalid latency scope, min={}, max={}.", array[idx], array[idx + 1]);
+        return null;
       }
 
       result[idx] = msMin;

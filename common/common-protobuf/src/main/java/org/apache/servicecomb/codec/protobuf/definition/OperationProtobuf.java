@@ -33,8 +33,7 @@ import io.protostuff.compiler.model.Message;
 import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.core.Response.Status.Family;
 
-@SuppressWarnings("rawtypes")
-public class OperationProtobuf {
+public final class OperationProtobuf {
   private RequestRootSerializer requestRootSerializer;
 
   private RequestRootDeserializer<Object> requestRootDeserializer;
