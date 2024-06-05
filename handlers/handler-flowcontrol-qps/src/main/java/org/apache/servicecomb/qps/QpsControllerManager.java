@@ -36,7 +36,7 @@ import org.springframework.core.env.Environment;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.Subscribe;
 
-public class QpsControllerManager {
+public final class QpsControllerManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(QpsControllerManager.class);
 
   public static final String SEPARATOR = ".";

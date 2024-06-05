@@ -96,7 +96,7 @@ public class HelloWorldIT implements CategorizedTestCase {
     }
 
     double ratio = oldCount / (float) (oldCount + newCount);
-    TestMgr.check(ratio > 0.1 && ratio < 0.3, true);
+    TestMgr.check(Math.abs(ratio - 0.2) <= 0.1, true);
   }
 
   private void testHelloWorldNoHeader() {
@@ -117,6 +117,6 @@ public class HelloWorldIT implements CategorizedTestCase {
     }
 
     double ratio = oldCount / (float) (oldCount + newCount);
-    TestMgr.check(ratio == 0.5, true);
+    TestMgr.check(Double.compare(ratio, 0.5) == 0, true);
   }
 }

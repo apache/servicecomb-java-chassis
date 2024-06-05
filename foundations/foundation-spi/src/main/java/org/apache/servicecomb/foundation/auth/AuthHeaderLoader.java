@@ -29,6 +29,10 @@ public class AuthHeaderLoader {
 
   private static final AuthHeaderLoader INSTANCE = new AuthHeaderLoader();
 
+  private AuthHeaderLoader() {
+
+  }
+
   public static AuthHeaderLoader getInstance() {
     return INSTANCE;
   }

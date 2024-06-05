@@ -30,7 +30,7 @@ import org.springframework.core.env.Environment;
  *   or register to PriorityPropertyManager manually
  * @param <T>
  */
-public class PriorityProperty<T> {
+public final class PriorityProperty<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(PriorityProperty.class);
 
   private final PriorityPropertyType<T> propertyType;
@@ -89,32 +89,32 @@ public class PriorityProperty<T> {
   }
 
   @SuppressWarnings("unchecked")
-  protected T readInt(DynamicProperty property) {
+  private T readInt(DynamicProperty property) {
     return (T) property.getInteger();
   }
 
   @SuppressWarnings("unchecked")
-  protected T readLong(DynamicProperty property) {
+  private T readLong(DynamicProperty property) {
     return (T) property.getLong();
   }
 
   @SuppressWarnings("unchecked")
-  protected T readString(DynamicProperty property) {
+  private T readString(DynamicProperty property) {
     return (T) property.getString();
   }
 
   @SuppressWarnings("unchecked")
-  protected T readBoolean(DynamicProperty property) {
+  private T readBoolean(DynamicProperty property) {
     return (T) property.getBoolean();
   }
 
   @SuppressWarnings("unchecked")
-  protected T readDouble(DynamicProperty property) {
+  private T readDouble(DynamicProperty property) {
     return (T) property.getDouble();
   }
 
   @SuppressWarnings("unchecked")
-  protected T readFloat(DynamicProperty property) {
+  private T readFloat(DynamicProperty property) {
     return (T) property.getFloat();
   }
 

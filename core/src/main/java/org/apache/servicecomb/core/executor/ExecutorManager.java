@@ -26,7 +26,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-public class ExecutorManager {
+public final class ExecutorManager {
   public static final String KEY_EXECUTORS_PREFIX = "servicecomb.executors.Provider.";
 
   public static final String KEY_EXECUTORS_DEFAULT = "servicecomb.executors.default";
@@ -111,7 +111,7 @@ public class ExecutorManager {
     return findExecutorById(EXECUTOR_DEFAULT);
   }
 
-  protected Executor findByKey(String configKey) {
+  private Executor findByKey(String configKey) {
     String id = environment.getProperty(configKey);
     if (id == null) {
       return null;
