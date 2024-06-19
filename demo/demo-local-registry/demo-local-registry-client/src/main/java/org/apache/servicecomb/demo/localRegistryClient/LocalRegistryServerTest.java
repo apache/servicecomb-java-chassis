@@ -33,6 +33,10 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstService;
 
+  @RpcReference(microserviceName = "demo-local-registry-cross:demo-local-registry-server-cross",
+      schemaId = "CodeFirstEndpoint")
+  private CodeFirstService codeFirstServiceCross;
+
   @RpcReference(microserviceName = "demo-local-registry-server-bean", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstServiceBean;
 
@@ -62,6 +66,7 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
 
   private void testCodeFirstGetName() {
     TestMgr.check("2", codeFirstService.getName("2"));
+    TestMgr.check("2", codeFirstServiceCross.getName("2"));
     TestMgr.check("2", codeFirstServiceBean.getName("2"));
     TestMgr.check("2", codeFirstServiceBean2.getName("2"));
   }
@@ -70,6 +75,10 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
     RestTemplate template = RestTemplateBuilder.create();
     TestMgr.check("2", template
         .getForObject("cse://demo-local-registry-server/register/url/prefix/getName?name=2",
+            String.class));
+    TestMgr.check("2", template
+        .getForObject(
+            "cse://demo-local-registry-cross:demo-local-registry-server-cross/register/url/prefix/getName?name=2",
             String.class));
     TestMgr.check("2", template
         .getForObject("cse://demo-local-registry-server-bean/register/url/prefix/getName?name=2",
