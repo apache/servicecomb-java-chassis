@@ -188,7 +188,7 @@ public class MicroserviceVersions {
 
   protected MicroserviceInstances findServiceInstances() {
     return DiscoveryManager.INSTANCE.findServiceInstances(appId,
-        microserviceName,
+        shortName,
         DefinitionConst.VERSION_RULE_ALL,
         revision);
   }
