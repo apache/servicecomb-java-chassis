@@ -46,6 +46,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>config-zookeeper</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.reactivex.rxjava3</groupId>
+      <artifactId>rxjava</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

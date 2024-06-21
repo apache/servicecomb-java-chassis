@@ -77,8 +77,10 @@
     <protobuf.version>3.23.4</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
     <protostuff-parser.version>2.2.27</protostuff-parser.version>
+    <reactive-streams.version>1.0.4</reactive-streams.version>
     <resilience4j.versioin>1.7.0</resilience4j.versioin>
     <ribbon.version>2.7.18</ribbon.version>
+    <rxjava.version>3.1.8</rxjava.version>
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
     <servlet-api.version>6.0.0</servlet-api.version>
@@ -283,6 +285,17 @@
         <groupId>io.swagger.core.v3</groupId>
         <artifactId>swagger-core-jakarta</artifactId>
         <version>${swagger.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.reactivex.rxjava3</groupId>
+        <artifactId>rxjava</artifactId>
+        <version>${rxjava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.reactivestreams</groupId>
+        <artifactId>reactive-streams</artifactId>
+        <version>${reactive-streams.version}</version>
       </dependency>
 
       <dependency>
