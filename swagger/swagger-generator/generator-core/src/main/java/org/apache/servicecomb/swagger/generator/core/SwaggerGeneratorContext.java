@@ -30,7 +30,8 @@ import jakarta.ws.rs.core.MediaType;
 public class SwaggerGeneratorContext {
   protected static final List<String> SUPPORTED_CONTENT_TYPE
       = Arrays.asList(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN,
-      MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_FORM_URLENCODED);
+      MediaType.MULTIPART_FORM_DATA, MediaType.APPLICATION_FORM_URLENCODED,
+      MediaType.SERVER_SENT_EVENTS);
 
   protected static final List<String> SUPPORTED_BODY_CONTENT_TYPE
       = Arrays.asList(MediaType.APPLICATION_JSON, SwaggerConst.PROTOBUF_TYPE, MediaType.TEXT_PLAIN);
