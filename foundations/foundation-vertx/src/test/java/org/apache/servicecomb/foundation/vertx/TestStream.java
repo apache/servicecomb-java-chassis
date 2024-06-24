@@ -22,8 +22,7 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import io.netty.buffer.ByteBuf;
-import io.vertx.core.buffer.impl.VertxByteBufAllocator;
+import io.vertx.core.buffer.Buffer;
 
 public class TestStream {
 
@@ -31,16 +30,21 @@ public class TestStream {
 
   @Test
   public void testBufferInputStream() {
-    ByteBuf obuf = VertxByteBufAllocator.DEFAULT.heapBuffer(DIRECT_BUFFER_SIZE, Integer.MAX_VALUE);
-    obuf.writeBytes(("testss").getBytes());
+    Buffer obuf = Buffer.buffer(DIRECT_BUFFER_SIZE);
+    obuf.appendBytes(("testss").getBytes());
     @SuppressWarnings("resource")
     BufferInputStream oBufferInputStream = new BufferInputStream(obuf);
-    Assertions.assertNotEquals(1234, oBufferInputStream.skip(0));
-    Assertions.assertNotEquals(obuf.readByte(), oBufferInputStream.readByte());
-    Assertions.assertEquals(obuf.readByte() + 1, oBufferInputStream.read());
-    Assertions.assertEquals(obuf.readBoolean(), oBufferInputStream.readBoolean());
-    Assertions.assertEquals(obuf.readerIndex(), oBufferInputStream.getIndex());
-    Assertions.assertEquals(obuf.readableBytes(), oBufferInputStream.available());
+
+    byte test = oBufferInputStream.readByte();
+    Assertions.assertEquals((byte) 't', test);
+    Assertions.assertEquals((byte) 'e', oBufferInputStream.read());
+
+    Assertions.assertEquals(2, oBufferInputStream.skip(2));
+    Assertions.assertEquals((byte) 's', oBufferInputStream.read());
+    Assertions.assertTrue(oBufferInputStream.readBoolean());
+
+    Assertions.assertEquals(6, oBufferInputStream.getIndex());
+    Assertions.assertEquals(0, oBufferInputStream.available());
   }
 
   @Test
@@ -53,9 +57,9 @@ public class TestStream {
     Assertions.assertTrue((1 < oBufferOutputStream.length()));
 
     @SuppressWarnings("resource")
-    BufferInputStream oBufferInputStream = new BufferInputStream(oBufferOutputStream.getByteBuf());
+    BufferInputStream oBufferInputStream = new BufferInputStream(oBufferOutputStream.getBuffer());
     Assertions.assertEquals("test", oBufferInputStream.readString());
     Assertions.assertEquals(1, oBufferInputStream.readByte());
-    Assertions.assertEquals(true, oBufferInputStream.readBoolean());
+    Assertions.assertTrue(oBufferInputStream.readBoolean());
   }
 }

@@ -268,7 +268,7 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     if (context.body().buffer() == null) {
       return null;
     }
-    inputStream = new BufferInputStream(context.body().buffer().getByteBuf());
+    inputStream = new BufferInputStream(context.body().buffer());
     return inputStream;
   }
 

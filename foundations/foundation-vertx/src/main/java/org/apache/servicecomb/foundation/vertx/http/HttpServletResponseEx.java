@@ -17,13 +17,15 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.concurrent.CompletableFuture;
 
+import io.vertx.core.http.HttpHeaders;
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.Response.StatusType;
-
-import io.vertx.core.http.HttpHeaders;
 
 public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSupport {
   StatusType getStatusType();
@@ -36,5 +38,15 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
 
   default void setChunked(boolean chunked) {
     setHeader(HttpHeaders.TRANSFER_ENCODING.toString(), HttpHeaders.CHUNKED.toString());
+  }
+
+  @Override
+  default ServletOutputStream getOutputStream() throws IOException {
+    throw new IOException("Not allowed");
+  }
+
+  @Override
+  default PrintWriter getWriter() throws IOException {
+    throw new IOException("Not allowed");
   }
 }

@@ -72,7 +72,7 @@ public interface ProduceProcessor {
       return null;
     }
 
-    try (BufferInputStream input = new BufferInputStream(buffer.getByteBuf())) {
+    try (BufferInputStream input = new BufferInputStream(buffer)) {
       return doDecodeResponse(input, type);
     }
   }
