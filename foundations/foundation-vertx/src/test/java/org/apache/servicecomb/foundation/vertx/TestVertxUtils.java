@@ -131,11 +131,12 @@ public class TestVertxUtils {
   @Test
   public void testgetBytesFastBufferInputStream() throws IOException {
     byte[] bytes = new byte[] {1};
-    ByteBuf byteBuf = Unpooled.wrappedBuffer(bytes);
+    Buffer byteBuf = Buffer.buffer(bytes);
 
     try (BufferInputStream inputStream = new BufferInputStream(byteBuf)) {
       byte[] result = VertxUtils.getBytesFast(inputStream);
-      Assertions.assertSame(bytes, result);
+      Assertions.assertEquals(bytes.length, result.length);
+      Assertions.assertEquals(bytes[0], result[0]);
     }
   }
 

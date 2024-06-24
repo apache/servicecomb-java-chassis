@@ -41,8 +41,6 @@ import org.springframework.core.env.Environment;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.parameters.RequestBody;
@@ -66,7 +64,7 @@ public class TestBodyProcessor {
 
   ParamValueProcessor processor;
 
-  final ByteBuf inputBodyByteBuf = Unpooled.buffer();
+  final Buffer inputBodyByteBuf = Buffer.buffer();
 
   final BufferInputStream inputStream = new BufferInputStream(inputBodyByteBuf);
 
@@ -142,7 +140,7 @@ public class TestBodyProcessor {
   @Test
   public void testGetValueTextPlain() throws Exception {
     setupGetValue(String.class);
-    inputBodyByteBuf.writeCharSequence("abc", StandardCharsets.UTF_8);
+    inputBodyByteBuf.appendString("abc", StandardCharsets.UTF_8.toString());
 
     Mockito.when(request.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
 
@@ -152,7 +150,7 @@ public class TestBodyProcessor {
   @Test
   public void testGetValueContextTypeJson() throws Exception {
     setupGetValue(Integer.class);
-    inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
+    inputBodyByteBuf.appendString("\"1\"", StandardCharsets.UTF_8.toString());
 
     Mockito.when(request.getContentType()).thenReturn(MediaType.APPLICATION_JSON);
 
@@ -162,7 +160,7 @@ public class TestBodyProcessor {
   @Test
   public void testGetValueDefaultJson() throws Exception {
     setupGetValue(Integer.class);
-    inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
+    inputBodyByteBuf.appendString("\"1\"", StandardCharsets.UTF_8.toString());
 
     Assertions.assertEquals(1, processor.getValue(request));
   }
@@ -220,7 +218,7 @@ public class TestBodyProcessor {
   public void testGetValueRawJson() throws Exception {
     createRawJsonProcessor();
     initInputStream();
-    inputBodyByteBuf.writeCharSequence("\"1\"", StandardCharsets.UTF_8);
+    inputBodyByteBuf.appendString("\"1\"", StandardCharsets.UTF_8.toString());
 
     Assertions.assertEquals("\"1\"", processor.getValue(request));
   }

@@ -50,8 +50,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
+import io.vertx.core.buffer.Buffer;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.HttpHeaders;
 
@@ -132,7 +132,7 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
     }
 
     responseEx.setContentType(produceProcessor.getName());
-    try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
+    try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
       if (failed) {
         produceProcessor.encodeResponse(output, ((InvocationException) response.getResult()).getErrorData());
       } else {
@@ -144,7 +144,7 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
       return CompletableFuture.completedFuture(response);
     } catch (Throwable e) {
       LOGGER.error("internal service error must be fixed.", e);
-      try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
+      try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
         responseEx.setStatus(500);
         produceProcessor.encodeResponse(output, new CommonExceptionData("500", "Internal Server Error"));
         responseEx.setBodyBuffer(output.getBuffer());

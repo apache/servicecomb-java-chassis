@@ -38,8 +38,6 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 
 import com.google.common.annotations.VisibleForTesting;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.vertx.core.buffer.Buffer;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -77,9 +75,9 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
     if (this.inputStream == null) {
       if (cacheRequest) {
         byte[] inputBytes = IOUtils.toByteArray(getRequest().getInputStream());
-        ByteBuf byteBuf = Unpooled.wrappedBuffer(inputBytes);
+        Buffer byteBuf = Buffer.buffer(inputBytes);
         this.inputStream = new BufferInputStream(byteBuf);
-        setBodyBuffer(Buffer.buffer(Unpooled.wrappedBuffer(byteBuf)));
+        setBodyBuffer(byteBuf);
       } else {
         this.inputStream = getRequest().getInputStream();
       }

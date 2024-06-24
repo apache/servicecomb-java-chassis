@@ -20,57 +20,69 @@ package org.apache.servicecomb.foundation.vertx.stream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import io.netty.buffer.ByteBuf;
+import io.vertx.core.buffer.Buffer;
 import jakarta.servlet.ReadListener;
 import jakarta.servlet.ServletInputStream;
 
 public class BufferInputStream extends ServletInputStream {
-  private final ByteBuf byteBuf;
+  private int readIndex = 0;
 
-  public BufferInputStream(ByteBuf buffer) {
+  private final Buffer byteBuf;
+
+  public BufferInputStream(Buffer buffer) {
     this.byteBuf = buffer;
   }
 
   @Override
   public long skip(long len) {
     int skipLen = Math.min((int) len, available());
-    byteBuf.skipBytes(skipLen);
+    this.readIndex += skipLen;
     return skipLen;
   }
 
   public byte readByte() {
-    return byteBuf.readByte();
+    int index = readIndex;
+    readIndex = index + 1;
+    return byteBuf.getByte(index);
   }
 
   @Override
   public int read() {
-    return byteBuf.readUnsignedByte();
+    return this.readByte() & 255;
   }
 
   public boolean readBoolean() {
-    return byteBuf.readBoolean();
+    return this.readByte() != 0;
   }
 
   public short readShort() {
-    return byteBuf.readShort();
+    int index = readIndex;
+    readIndex = index + 2;
+    return byteBuf.getShort(index);
   }
 
   public int readInt() {
-    return byteBuf.readInt();
+    int index = readIndex;
+    readIndex = index + 4;
+    return byteBuf.getInt(index);
   }
 
   public long readLong() {
-    return byteBuf.readLong();
+    int index = readIndex;
+    readIndex = index + 8;
+    return byteBuf.getLong(index);
   }
 
   public int getIndex() {
-    return byteBuf.readerIndex();
+    return readIndex;
   }
 
   public String readString() {
     int length = readInt();
     byte[] bytes = new byte[length];
-    byteBuf.readBytes(bytes);
+    int index = readIndex;
+    readIndex = index + length;
+    byteBuf.getBytes(index, readIndex, bytes);
     return new String(bytes, StandardCharsets.UTF_8);
   }
 
@@ -94,32 +106,35 @@ public class BufferInputStream extends ServletInputStream {
       len = avail;
     }
 
-    byteBuf.readBytes(b, off, len);
+    int index = readIndex;
+    readIndex = index + len;
+
+    byteBuf.getBytes(index, readIndex, b);
     return len;
   }
 
   @Override
   public int available() {
-    return byteBuf.readableBytes();
+    return byteBuf.length() - readIndex;
   }
 
   @Override
   public void close() {
-    byteBuf.release();
+    // nothing to do
   }
 
   @Override
   public void reset() throws IOException {
-    byteBuf.resetReaderIndex();
+    readIndex = 0;
   }
 
-  public ByteBuf getByteBuf() {
+  public Buffer getByteBuf() {
     return byteBuf;
   }
 
   @Override
   public boolean isFinished() {
-    return !byteBuf.isReadable();
+    return byteBuf.length() > readIndex;
   }
 
   @Override

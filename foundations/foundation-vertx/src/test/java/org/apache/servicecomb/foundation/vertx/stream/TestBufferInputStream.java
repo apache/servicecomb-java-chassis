@@ -29,8 +29,7 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+import io.vertx.core.buffer.Buffer;
 
 public class TestBufferInputStream {
 
@@ -38,7 +37,7 @@ public class TestBufferInputStream {
 
   @Before
   public void setUp() throws Exception {
-    ByteBuf buffer = Mockito.mock(ByteBuf.class);
+    Buffer buffer = Mockito.mock(Buffer.class);
     instance = new BufferInputStream(buffer);
   }
 
@@ -60,8 +59,8 @@ public class TestBufferInputStream {
     gzipOutputStream.write(text.getBytes());
     gzipOutputStream.close();
 
-    ByteBuf buffer = Unpooled.buffer();
-    buffer.writeBytes(out.toByteArray());
+    Buffer buffer = Buffer.buffer();
+    buffer.appendBytes(out.toByteArray());
     out.close();
     BufferInputStream bufferInputStream = new BufferInputStream(buffer);
     GZIPInputStream gzipInputStream = new GZIPInputStream(bufferInputStream);

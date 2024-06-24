@@ -153,8 +153,9 @@ public final class VertxUtils {
   }
 
   public static byte[] getBytesFast(Buffer buffer) {
-    ByteBuf byteBuf = buffer.getByteBuf();
-    return getBytesFast(byteBuf);
+    byte[] arr = new byte[buffer.length()];
+    buffer.getBytes(arr, 0);
+    return arr;
   }
 
   public static byte[] getBytesFast(ByteBuf byteBuf) {

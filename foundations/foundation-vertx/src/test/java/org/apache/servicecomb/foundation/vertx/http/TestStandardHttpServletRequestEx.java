@@ -117,7 +117,7 @@ public class TestStandardHttpServletRequestEx {
     inherited.put("p1", v1);
 
     Buffer buffer = Buffer.buffer("p1=v1-3;p2=v2");
-    BufferInputStream inputStream = new BufferInputStream(buffer.getByteBuf());
+    BufferInputStream inputStream = new BufferInputStream(buffer);
     new Expectations() {
       {
         request.getParameterMap();
