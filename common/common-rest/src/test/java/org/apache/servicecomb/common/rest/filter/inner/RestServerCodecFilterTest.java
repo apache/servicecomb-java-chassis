@@ -23,6 +23,7 @@ import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.apache.servicecomb.core.SCBEngine.CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC;
 import static org.apache.servicecomb.core.SCBEngine.DEFAULT_TURN_DOWN_STATUS_WAIT_SEC;
 
+import java.io.ByteArrayInputStream;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -41,6 +42,7 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
+import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -88,6 +90,8 @@ public class RestServerCodecFilterTest {
 
   final MultiMap headers = MultiMap.caseInsensitiveMultiMap();
 
+  final Part part = new InputStreamPart("ok", new ByteArrayInputStream(new byte[] {1, 2}));
+
   final FilterNode nextNode = new FilterNode(new AbstractFilter() {
     @Override
     public String getName() {
@@ -96,7 +100,7 @@ public class RestServerCodecFilterTest {
 
     @Override
     public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-      Response response = Response.ok("ok");
+      Response response = Response.ok(part);
       response.setHeaders(headers);
       return CompletableFuture.completedFuture(response);
     }
@@ -125,6 +129,7 @@ public class RestServerCodecFilterTest {
     Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     Mockito.when(operationMeta.buildBaseProviderRuntimeType()).thenReturn(invocationRuntimeType);
     invocation = Mockito.spy(InvocationFactory.forProvider(endpoint, operationMeta, null));
+    Mockito.when(responseEx.sendPart(part)).thenReturn(CompletableFuture.completedFuture(null));
   }
 
   private void mockDecodeRequestFail() {
