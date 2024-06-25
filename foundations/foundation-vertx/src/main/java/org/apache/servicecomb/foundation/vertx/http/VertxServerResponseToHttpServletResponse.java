@@ -26,6 +26,7 @@ import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -48,6 +49,11 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   @Override
   public void setContentType(String type) {
     serverResponse.headers().set(HttpHeaders.CONTENT_TYPE, type);
+  }
+
+  @Override
+  public void setContentLength(int len) {
+    serverResponse.headers().set(HttpHeaders.CONTENT_LENGTH, String.valueOf(len));
   }
 
 
@@ -100,7 +106,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   @Override
-  public void flushBuffer() {
+  public void endResponse() {
     if (context == Vertx.currentContext()) {
       internalFlushBuffer();
       return;
@@ -110,12 +116,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   public void internalFlushBuffer() {
-    if (bodyBuffer == null) {
-      serverResponse.end();
-      return;
-    }
-
-    serverResponse.end(bodyBuffer);
+    serverResponse.end();
   }
 
   @Override
@@ -125,6 +126,19 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
       return CompletableFuture.completedFuture(null);
     }
     return new PumpFromPart(context, part).toWriteStream(serverResponse, null);
+  }
+
+  @Override
+  public CompletableFuture<Void> sendBuffer(Buffer buffer) {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    serverResponse.write(buffer).onComplete(result -> {
+      if (result.failed()) {
+        future.completeExceptionally(result.cause());
+      } else {
+        future.complete(null);
+      }
+    });
+    return future;
   }
 
   @Override

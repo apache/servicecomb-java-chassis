@@ -82,11 +82,7 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
   }
 
   @Override
-  public void flushBuffer() throws IOException {
-    byte[] bytes = getBodyBytes();
-    if (bytes != null) {
-      getOutputStream().write(bytes, 0, getBodyBytesLength());
-    }
+  public void endResponse() throws IOException {
     super.flushBuffer();
   }
 
@@ -120,5 +116,17 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
     // if context is null, then will switch to sync logic
     Context context = Vertx.currentContext();
     return new PumpFromPart(context, part).toOutputStream(outputStream, false);
+  }
+
+  @Override
+  public CompletableFuture<Void> sendBuffer(Buffer buffer) {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    try {
+      getOutputStream().write(buffer.getBytes(), 0, buffer.length());
+      future.complete(null);
+    } catch (IOException e) {
+      future.completeExceptionally(e);
+    }
+    return future;
   }
 }

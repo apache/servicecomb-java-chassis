@@ -25,6 +25,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import io.vertx.core.buffer.Buffer;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.Part;
@@ -85,6 +86,11 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
 
   @Override
   public void flushBuffer() throws IOException {
+    throw new Error("not supported method");
+  }
+
+  @Override
+  public void endResponse() throws IOException {
     throw new Error("not supported method");
   }
 
@@ -220,6 +226,11 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
 
   @Override
   public CompletableFuture<Void> sendPart(Part body) {
+    throw new Error("not supported method");
+  }
+
+  @Override
+  public CompletableFuture<Void> sendBuffer(Buffer buffer) {
     throw new Error("not supported method");
   }
 }

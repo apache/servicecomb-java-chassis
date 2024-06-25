@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter.isDownloadFileResponseType;
-
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
@@ -25,11 +23,9 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.core.invocation.ProducerInvocationFlow;
-import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,32 +44,26 @@ public class RestProducerInvocationFlow extends ProducerInvocationFlow {
   protected Invocation sendCreateInvocationException(Throwable throwable) {
     try {
       Response response = Exceptions.toProducerResponse(null, throwable);
-      RestServerCodecFilter.encodeResponse(null, response, false, DEFAULT_PRODUCE_PROCESSOR, responseEx);
+      RestServerCodecFilter.encodeResponse(null, response, DEFAULT_PRODUCE_PROCESSOR, responseEx);
     } catch (Throwable e) {
       LOGGER.error("Failed to send response when prepare invocation failed, request uri:{}",
           requestEx.getRequestURI(), e);
     }
 
-    flushResponse(null);
+    endResponse(null);
     return null;
   }
 
   @Override
-  protected void sendResponse(Invocation invocation, Response response) {
+  protected void endResponse(Invocation invocation, Response response) {
     invocation.getInvocationStageTrace().startProviderSendResponse();
-    boolean failed = response.getResult() instanceof InvocationException;
-    if (!failed && isDownloadFileResponseType(invocation, response)) {
-      responseEx.sendPart(PartUtils.getSinglePart(null, response.getResult()))
-          .whenComplete((r, e) -> flushResponse(invocation));
-      return;
-    }
 
-    flushResponse(invocation);
+    endResponse(invocation);
   }
 
-  private void flushResponse(Invocation invocation) {
+  private void endResponse(Invocation invocation) {
     try {
-      responseEx.flushBuffer();
+      responseEx.endResponse();
     } catch (Throwable flushException) {
       LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
           invocation == null ? "NA" :

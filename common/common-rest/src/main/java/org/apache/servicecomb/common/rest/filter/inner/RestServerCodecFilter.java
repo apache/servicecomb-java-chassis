@@ -39,14 +39,16 @@ import org.apache.servicecomb.core.filter.EdgeFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
-import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
+import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.TransportContext;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,54 +108,121 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
 
   protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
     invocation.onEncodeResponseStart(response);
-
     HttpTransportContext transportContext = invocation.getTransportContext();
-
+    HttpServletResponseEx responseEx = transportContext.getResponseEx();
     // TODO: response support JsonView
     ProduceProcessor produceProcessor = ProduceProcessorManager.INSTANCE
         .createProduceProcessor(invocation.getOperationMeta(), response.getStatusCode(),
             invocation.getRequestEx().getHeader(HttpHeaders.ACCEPT), null);
-    HttpServletResponseEx responseEx = transportContext.getResponseEx();
-    boolean download = isDownloadFileResponseType(invocation, response);
 
-    return encodeResponse(invocation, response, download, produceProcessor, responseEx)
+    return encodeResponse(invocation, response, produceProcessor, responseEx)
         .whenComplete((r, e) -> invocation.onEncodeResponseFinish());
   }
 
-  public static CompletableFuture<Response> encodeResponse(Invocation invocation, Response response, boolean download,
+  private static boolean isFailedResponse(Response response) {
+    return response.getResult() instanceof InvocationException;
+  }
+
+  private static CompletableFuture<Response> writePart(
+      HttpServletResponseEx responseEx, Object data, Response response) {
+    CompletableFuture<Response> result = new CompletableFuture<>();
+    responseEx.sendPart(PartUtils.getSinglePart(null, data))
+        .whenComplete((r, e) -> {
+          if (e != null) {
+            result.completeExceptionally(e);
+            return;
+          }
+          result.complete(response);
+        });
+    return result;
+  }
+
+  private static CompletableFuture<Response> writeResponse(
+      HttpServletResponseEx responseEx, ProduceProcessor produceProcessor, Object data, Response response,
+      boolean commit) {
+    try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
+      produceProcessor.encodeResponse(output, data);
+
+      CompletableFuture<Response> result = new CompletableFuture<>();
+      responseEx.setBodyBuffer(output.getBuffer()); // For extensions usage
+      if (commit) {
+        responseEx.setContentLength(output.getBuffer().length());
+      }
+      responseEx.sendBuffer(output.getBuffer()).whenComplete((v, e) -> {
+        if (e != null) {
+          result.completeExceptionally(e);
+          return;
+        }
+        result.complete(response);
+      });
+      return result;
+    } catch (Throwable e) {
+      LOGGER.error("internal service error must be fixed.", e);
+      responseEx.setStatus(500);
+      return CompletableFuture.failedFuture(e);
+    }
+  }
+
+  public static CompletableFuture<Response> encodeResponse(Invocation invocation, Response response,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
     responseEx.setStatus(response.getStatusCode());
     copyHeadersToHttpResponse(invocation, response.getHeaders(), responseEx);
 
-    boolean failed = response.getResult() instanceof InvocationException;
+    if (isFailedResponse(response)) {
+      responseEx.setContentType(produceProcessor.getName());
+      return writeResponse(responseEx, produceProcessor, ((InvocationException) response.getResult()).getErrorData(),
+          response, true);
+    }
 
-    if (!failed && download) {
-      return CompletableFuture.completedFuture(response);
+    if (isDownloadFileResponseType(invocation, response)) {
+      return writePart(responseEx, response.getResult(), response);
+    }
+
+    if (isServerSendEvent(response)) {
+      responseEx.setContentType(produceProcessor.getName());
+      writeServerSendEvent(response, produceProcessor, responseEx);
     }
 
     responseEx.setContentType(produceProcessor.getName());
-    try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
-      if (failed) {
-        produceProcessor.encodeResponse(output, ((InvocationException) response.getResult()).getErrorData());
-      } else {
-        produceProcessor.encodeResponse(output, response.getResult());
+    return writeResponse(responseEx, produceProcessor, response.getResult(), response, true);
+  }
+
+  private static void writeServerSendEvent(Response response, ProduceProcessor produceProcessor,
+      HttpServletResponseEx responseEx) {
+    responseEx.setChunked(true);
+    CompletableFuture<Response> result = new CompletableFuture<>();
+    Publisher<?> publisher = response.getResult();
+    publisher.subscribe(new Subscriber<Object>() {
+      Subscription subscription;
+
+      @Override
+      public void onSubscribe(Subscription s) {
+        s.request(1);
+        subscription = s;
       }
 
-      responseEx.setBodyBuffer(output.getBuffer());
-
-      return CompletableFuture.completedFuture(response);
-    } catch (Throwable e) {
-      LOGGER.error("internal service error must be fixed.", e);
-      try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
-        responseEx.setStatus(500);
-        produceProcessor.encodeResponse(output, new CommonExceptionData("500", "Internal Server Error"));
-        responseEx.setBodyBuffer(output.getBuffer());
-        return CompletableFuture.completedFuture(response);
-      } catch (Throwable e1) {
-        // we have no idea how to do, no response given to client.
-        return AsyncUtils.completeExceptionally(e);
+      @Override
+      public void onNext(Object o) {
+        writeResponse(responseEx, produceProcessor, o, response, false).whenComplete((r, e) -> {
+          if (e != null) {
+            subscription.cancel();
+            result.completeExceptionally(e);
+            return;
+          }
+          subscription.request(1);
+        });
       }
-    }
+
+      @Override
+      public void onError(Throwable t) {
+        result.completeExceptionally(t);
+      }
+
+      @Override
+      public void onComplete() {
+        result.complete(response);
+      }
+    });
   }
 
   /**
@@ -165,6 +234,10 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
   public static boolean isDownloadFileResponseType(Invocation invocation, Response response) {
     return Part.class.isAssignableFrom(
         invocation.findResponseType(response.getStatusCode()).getRawClass());
+  }
+
+  public static boolean isServerSendEvent(Response response) {
+    return response.getResult() instanceof Publisher<?>;
   }
 
   public static void copyHeadersToHttpResponse(Invocation invocation, MultiMap headers,

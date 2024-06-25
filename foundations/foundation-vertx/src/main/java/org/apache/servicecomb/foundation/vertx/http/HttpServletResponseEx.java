@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.concurrent.CompletableFuture;
 
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpHeaders;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,9 +37,13 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
 
   CompletableFuture<Void> sendPart(Part body);
 
+  CompletableFuture<Void> sendBuffer(Buffer buffer);
+
   default void setChunked(boolean chunked) {
     setHeader(HttpHeaders.TRANSFER_ENCODING.toString(), HttpHeaders.CHUNKED.toString());
   }
+
+  void endResponse() throws IOException;
 
   @Override
   default ServletOutputStream getOutputStream() throws IOException {

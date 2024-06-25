@@ -50,7 +50,7 @@ public class ProducerInvocationFlowTest {
     }
 
     @Override
-    protected void sendResponse(Invocation invocation, Response response) {
+    protected void endResponse(Invocation invocation, Response response) {
       sendInvocation = invocation;
     }
   }

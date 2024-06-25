@@ -103,7 +103,7 @@ public class TestStandardHttpServletResponseEx {
     Buffer body = Buffer.buffer().appendString("body");
     responseEx.setBodyBuffer(body);
     responseEx.flushBuffer();
-    Assertions.assertEquals("body", buffer.toString());
+    Assertions.assertEquals(0, buffer.length());
   }
 
   @Test
