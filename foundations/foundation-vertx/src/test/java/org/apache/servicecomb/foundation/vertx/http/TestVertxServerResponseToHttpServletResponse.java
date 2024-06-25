@@ -248,7 +248,7 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void flushBuffer_sameContext() throws IOException {
-    response.flushBuffer();
+    response.endResponse();
 
     Assertions.assertFalse(runOnContextInvoked);
   }
@@ -261,7 +261,7 @@ public class TestVertxServerResponseToHttpServletResponse {
         result = null;
       }
     };
-    response.flushBuffer();
+    response.endResponse();
 
     Assertions.assertTrue(runOnContextInvoked);
   }
@@ -278,7 +278,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     response.setBodyBuffer(Buffer.buffer());
     response.internalFlushBuffer();
 
-    Assertions.assertTrue(flushWithBody);
+    Assertions.assertFalse(flushWithBody);
   }
 
   @Test
