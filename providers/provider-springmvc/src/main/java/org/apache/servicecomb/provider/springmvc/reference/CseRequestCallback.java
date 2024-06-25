@@ -26,13 +26,13 @@ import org.springframework.web.client.RequestCallback;
 public class CseRequestCallback implements RequestCallback {
   private final Object requestBody;
 
-  private final RequestCallback orgCallback;
+  private final RequestCallback targetCallback;
 
   private final Type responseType;
 
-  public CseRequestCallback(Object requestBody, RequestCallback orgCallback, Type responseType) {
+  public CseRequestCallback(Object requestBody, RequestCallback targetCallback, Type responseType) {
     this.requestBody = requestBody;
-    this.orgCallback = orgCallback;
+    this.targetCallback = targetCallback;
     this.responseType = responseType;
   }
 
@@ -41,7 +41,7 @@ public class CseRequestCallback implements RequestCallback {
    */
   @Override
   public void doWithRequest(ClientHttpRequest request) throws IOException {
-    orgCallback.doWithRequest(request);
+    targetCallback.doWithRequest(request);
     CseClientHttpRequest req = (CseClientHttpRequest) request;
     req.setResponseType(overrideResponseType());
 

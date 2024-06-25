@@ -127,7 +127,14 @@ paths:
           description: check the handler is effective
           schema:
             type: string
-
+  /testResponseModel:
+    get:
+      operationId: testResponseModel
+      responses:
+        "200":
+          description: testResponseModel
+          schema:
+            $ref: '#/definitions/Person'
 definitions:
   Person:
     type: object
