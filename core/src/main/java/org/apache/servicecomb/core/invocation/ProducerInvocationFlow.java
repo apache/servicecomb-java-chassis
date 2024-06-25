@@ -76,7 +76,7 @@ public abstract class ProducerInvocationFlow {
               response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
                   new CommonExceptionData("Internal error, check logs for details.")));
             }
-            sendResponse(invocation, response);
+            endResponse(invocation, response);
             finishInvocation(invocation, response);
           });
       return;
@@ -91,7 +91,7 @@ public abstract class ProducerInvocationFlow {
             response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
                 new CommonExceptionData("Internal error, check logs for details.")));
           }
-          sendResponse(invocation, response);
+          endResponse(invocation, response);
           finishInvocation(invocation, response);
         });
   }
@@ -102,5 +102,5 @@ public abstract class ProducerInvocationFlow {
 
   protected abstract Invocation sendCreateInvocationException(Throwable throwable);
 
-  protected abstract void sendResponse(Invocation invocation, Response response);
+  protected abstract void endResponse(Invocation invocation, Response response);
 }

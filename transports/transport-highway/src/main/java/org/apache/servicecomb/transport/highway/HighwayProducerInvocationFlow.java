@@ -56,7 +56,7 @@ public class HighwayProducerInvocationFlow extends ProducerInvocationFlow {
   }
 
   @Override
-  protected void sendResponse(Invocation invocation, Response response) {
+  protected void endResponse(Invocation invocation, Response response) {
     HighwayTransportContext transportContext = invocation.getTransportContext();
     connection.write(transportContext.getResponseBuffer());
   }
