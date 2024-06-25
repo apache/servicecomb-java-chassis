@@ -18,6 +18,8 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.demo.controller.Person;
+import org.apache.servicecomb.demo.controller.PersonAlias;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -32,6 +34,16 @@ public class TestControllerImpl implements CategorizedTestCase {
 
   public void testRestTransport() throws Exception {
     testQueryParamSpecial();
+    testResponseModel();
+  }
+
+  private void testResponseModel() {
+    Person person = restTemplate.getForObject(SERVER + "/springmvc/controller/testResponseModel", Person.class);
+    TestMgr.check("jack", person.getName());
+
+    PersonAlias personAlias = restTemplate.getForObject(SERVER + "/springmvc/controller/testResponseModel",
+        PersonAlias.class);
+    TestMgr.check("jack", personAlias.getName());
   }
 
   private void testQueryParamSpecial() {

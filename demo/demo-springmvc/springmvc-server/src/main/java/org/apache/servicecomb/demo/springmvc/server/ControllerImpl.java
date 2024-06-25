@@ -83,4 +83,11 @@ public class ControllerImpl {
   public String sayHello1(@RequestParam("name") String name) {
     return "Hello " + name + "," + ContextUtils.getInvocationContext().getContext("k");
   }
+
+  @RequestMapping(path = "/testResponseModel", method = RequestMethod.GET)
+  public Person testResponseModel() {
+    Person person = new Person();
+    person.setName("jack");
+    return person;
+  }
 }
