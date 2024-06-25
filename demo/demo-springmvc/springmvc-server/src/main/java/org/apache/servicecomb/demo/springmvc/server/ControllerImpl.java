@@ -19,11 +19,6 @@ package org.apache.servicecomb.demo.springmvc.server;
 
 import java.util.Arrays;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.Min;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -36,6 +31,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Min;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 // This class tests "contract first", the controller.yaml will override annotations defined in class.
 
@@ -82,5 +82,12 @@ public class ControllerImpl {
   @RequestMapping(path = "/sayHello1", method = RequestMethod.GET)
   public String sayHello1(@RequestParam("name") String name) {
     return "Hello " + name + "," + ContextUtils.getInvocationContext().getContext("k");
+  }
+
+  @RequestMapping(path = "/testResponseModel", method = RequestMethod.GET)
+  public Person testResponseModel() {
+    Person person = new Person();
+    person.setName("jack");
+    return person;
   }
 }

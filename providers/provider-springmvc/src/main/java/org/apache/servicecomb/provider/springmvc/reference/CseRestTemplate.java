@@ -171,6 +171,13 @@ public class CseRestTemplate extends AcceptableRestTemplate {
   }
 
   @Override
+  public <T> RequestCallback acceptHeaderRequestCallback(Class<T> responseType) {
+    RequestCallback callback = super.acceptHeaderRequestCallback(responseType);
+    CseRequestCallback cseCallback = new CseRequestCallback(null, callback, responseType);
+    return cseCallback;
+  }
+
+  @Override
   public boolean isAcceptable(String uri) {
     return uri.startsWith(RestConst.URI_PREFIX) || uri.startsWith(RestConst.URI_PREFIX_NEW);
   }
