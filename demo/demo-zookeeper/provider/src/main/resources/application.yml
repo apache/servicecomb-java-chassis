@@ -34,3 +34,9 @@ servicecomb:
   rest:
     address: 0.0.0.0:9094
 
+  cors:
+    enabled: true
+    origin: "*"
+    allowCredentials: false
+    allowedMethod: "*"
+    maxAge: 3600
