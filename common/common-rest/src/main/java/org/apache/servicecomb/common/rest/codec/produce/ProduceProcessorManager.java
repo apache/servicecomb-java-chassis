@@ -156,7 +156,7 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
     }
 
     if (actualAccept == null) {
-      LOGGER.warn("Operation do not support accept type {}/{}", accept, actualAccept);
+      LOGGER.warn("Operation {} do not support accept type {}", operationMeta.getSchemaQualifiedName(), accept);
       return findDefaultProcessor();
     }
     if (MediaType.APPLICATION_JSON.equals(actualAccept)) {
