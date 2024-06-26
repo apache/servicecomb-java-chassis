@@ -120,32 +120,43 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
 
   public ProduceProcessor createProduceProcessor(OperationMeta operationMeta,
       int statusCode, String accept, Class<?> serialViewClass) {
+    // If no produces defined, using default processor
     ApiResponses responses = operationMeta.getSwaggerOperation().getResponses();
     ApiResponse response = responses.get(String.valueOf(statusCode));
     if (response == null || response.getContent() == null ||
         response.getContent().size() == 0) {
       return findDefaultProcessor();
     }
-    String actualAccept = accept;
+
+    // check intersection of `Accept` and `Produces`
+    if (accept == null) {
+      if (response.getContent().get(defaultResponseEncoding()) != null) {
+        accept = defaultResponseEncoding();
+      } else {
+        accept = response.getContent().keySet().iterator().next();
+      }
+    }
+
+    String actualAccept = null;
+    for (String item : accept.split(",")) {
+      ContentType contentType = ContentType.parse(item);
+      if (MediaType.WILDCARD.equals(contentType.getMimeType()) ||
+          MediaType.MEDIA_TYPE_WILDCARD.equals(contentType.getMimeType())) {
+        if (response.getContent().get(defaultResponseEncoding()) != null) {
+          actualAccept = defaultResponseEncoding();
+        } else {
+          actualAccept = response.getContent().keySet().iterator().next();
+        }
+        break;
+      }
+      if (response.getContent().get(contentType.getMimeType()) != null) {
+        actualAccept = contentType.getMimeType();
+        break;
+      }
+    }
+
     if (actualAccept == null) {
-      if (response.getContent().get(defaultResponseEncoding()) != null) {
-        actualAccept = defaultResponseEncoding();
-      } else {
-        actualAccept = response.getContent().keySet().iterator().next();
-      }
-    }
-    ContentType contentType = ContentType.parse(actualAccept);
-    actualAccept = contentType.getMimeType();
-    if (MediaType.WILDCARD.equals(contentType.getMimeType()) ||
-        MediaType.MEDIA_TYPE_WILDCARD.equals(contentType.getMimeType())) {
-      if (response.getContent().get(defaultResponseEncoding()) != null) {
-        actualAccept = defaultResponseEncoding();
-      } else {
-        actualAccept = response.getContent().keySet().iterator().next();
-      }
-    }
-    if (response.getContent().get(actualAccept) == null) {
-      LOGGER.warn("Operation do not support accept type {}/{}", accept, actualAccept);
+      LOGGER.warn("Operation {} do not support accept type {}", operationMeta.getSchemaQualifiedName(), accept);
       return findDefaultProcessor();
     }
     if (MediaType.APPLICATION_JSON.equals(actualAccept)) {
@@ -154,6 +165,9 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
     if (SwaggerConst.PROTOBUF_TYPE.equals(actualAccept)) {
       return new ProduceProtoBufferProcessor(operationMeta,
           operationMeta.getSchemaMeta().getSwagger(), response.getContent().get(actualAccept).getSchema());
+    }
+    if (MediaType.SERVER_SENT_EVENTS.equals(actualAccept)) {
+      return new ProduceEventStreamProcessor();
     }
     // text plain
     return findPlainProcessorByViewClass(serialViewClass);

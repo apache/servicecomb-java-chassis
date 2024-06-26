@@ -180,14 +180,14 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
 
     if (isServerSendEvent(response)) {
       responseEx.setContentType(produceProcessor.getName());
-      writeServerSendEvent(response, produceProcessor, responseEx);
+      return writeServerSendEvent(response, produceProcessor, responseEx);
     }
 
     responseEx.setContentType(produceProcessor.getName());
     return writeResponse(responseEx, produceProcessor, response.getResult(), response, true);
   }
 
-  private static void writeServerSendEvent(Response response, ProduceProcessor produceProcessor,
+  private static CompletableFuture<Response> writeServerSendEvent(Response response, ProduceProcessor produceProcessor,
       HttpServletResponseEx responseEx) {
     responseEx.setChunked(true);
     CompletableFuture<Response> result = new CompletableFuture<>();
@@ -223,6 +223,7 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
         result.complete(response);
       }
     });
+    return result;
   }
 
   /**

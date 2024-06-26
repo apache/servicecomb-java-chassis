@@ -17,6 +17,8 @@
 package org.apache.servicecomb.samples;
 
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.reactivestreams.Publisher;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -67,7 +69,7 @@ public class ReactiveStreamController {
 
   @GetMapping("/sseModel")
   public Publisher<Model> sseModel() {
-    return Flowable.fromArray(new Model("a", 1), new Model("b", 2),
-        new Model("c", 3));
+    return Flowable.intervalRange(0, 5, 0, 3, TimeUnit.SECONDS)
+        .map(item -> new Model("jack", item.intValue()));
   }
 }
