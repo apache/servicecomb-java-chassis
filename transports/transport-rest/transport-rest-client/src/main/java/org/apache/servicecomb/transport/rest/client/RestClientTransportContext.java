@@ -58,6 +58,10 @@ public class RestClientTransportContext implements VertxTransportContext {
     return restOperationMeta.isDownloadFile();
   }
 
+  public boolean isServerSendEvents() {
+    return restOperationMeta.isServerSendEvents();
+  }
+
   @Override
   public Context getVertxContext() {
     return vertxContext;
