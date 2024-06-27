@@ -17,18 +17,24 @@
 package org.apache.servicecomb.samples;
 
 
-import java.util.concurrent.TimeUnit;
-
+import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.reactivestreams.Publisher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import io.reactivex.rxjava3.core.Flowable;
-
 @RestSchema(schemaId = "ReactiveStreamController")
 @RequestMapping(path = "/")
-public class ReactiveStreamController {
+public class ConsumerReactiveStreamController {
+  interface ProviderReactiveStreamController {
+    Publisher<String> sseString();
+
+    Publisher<Model> sseModel();
+  }
+
+  @RpcReference(microserviceName = "provider", schemaId = "ReactiveStreamController")
+  ProviderReactiveStreamController controller;
+
   public static class Model {
     private String name;
 
@@ -64,12 +70,11 @@ public class ReactiveStreamController {
 
   @GetMapping("/sseString")
   public Publisher<String> sseString() {
-    return Flowable.fromArray("a", "b", "c");
+    return controller.sseString();
   }
 
   @GetMapping("/sseModel")
   public Publisher<Model> sseModel() {
-    return Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
-        .map(item -> new Model("jack", item.intValue()));
+    return controller.sseModel();
   }
 }

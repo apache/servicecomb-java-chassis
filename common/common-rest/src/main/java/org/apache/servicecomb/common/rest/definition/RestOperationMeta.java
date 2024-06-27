@@ -39,6 +39,7 @@ import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.parameters.Parameter;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import jakarta.ws.rs.core.MediaType;
 
 @SuppressWarnings("rawtypes")
 public class RestOperationMeta {
@@ -50,6 +51,8 @@ public class RestOperationMeta {
 
   // make sure if response is file
   protected boolean downloadFile;
+
+  protected boolean serverSendEvents;
 
   protected List<RestParam> paramList = new ArrayList<>();
 
@@ -72,6 +75,7 @@ public class RestOperationMeta {
     Operation operation = operationMeta.getSwaggerOperation();
 
     this.downloadFile = checkDownloadFileFlag();
+    this.serverSendEvents = checkServerSendEvents();
 
     if (operation.getParameters() != null) {
       for (int swaggerParameterIdx = 0; swaggerParameterIdx < operation.getParameters().size(); swaggerParameterIdx++) {
@@ -122,6 +126,20 @@ public class RestOperationMeta {
 
   public boolean isDownloadFile() {
     return downloadFile;
+  }
+
+  public boolean isServerSendEvents() {
+    return serverSendEvents;
+  }
+
+  private boolean checkServerSendEvents() {
+    ApiResponses responses = operationMeta.getSwaggerOperation().getResponses();
+    if (responses == null) {
+      return false;
+    }
+    ApiResponse response = responses.get(SwaggerConst.SUCCESS_KEY);
+    return response != null && response.getContent() != null
+        && response.getContent().get(MediaType.SERVER_SENT_EVENTS) != null;
   }
 
   private boolean checkDownloadFileFlag() {

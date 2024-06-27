@@ -35,9 +35,11 @@ import com.google.common.collect.Multimap;
 
 import io.vertx.core.Future;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.rxjava3.FlowableHelper;
 import jakarta.servlet.http.Part;
 
 public class RestClientSender {
@@ -62,10 +64,7 @@ public class RestClientSender {
 
   public CompletableFuture<Response> send() {
     invocation.getInvocationStageTrace().startConsumerSendRequest();
-    httpClientRequest.response().compose(response -> processResponse(response).compose(buffer -> {
-      future.complete(createResponse(response, buffer));
-      return Future.succeededFuture();
-    })).onFailure(future::completeExceptionally);
+    httpClientRequest.response().compose(this::processResponse).onFailure(future::completeExceptionally);
 
     CompletableFuture<Response> actualFuture = future.whenComplete(this::afterSend);
     VertxContextExecutor.create(transportContext.getVertxContext()).execute(this::runInVertxContext);
@@ -133,14 +132,38 @@ public class RestClientSender {
         });
   }
 
-  protected Future<Buffer> processResponse(HttpClientResponse httpClientResponse) {
+  protected Future<Object> processResponse(HttpClientResponse httpClientResponse) {
+    Promise<Object> result = Promise.promise();
     transportContext.setHttpClientResponse(httpClientResponse);
 
-    if (HttpStatus.isSuccess(httpClientResponse.statusCode()) && transportContext.isDownloadFile()) {
+    if (!HttpStatus.isSuccess(httpClientResponse.statusCode())) {
+      httpClientResponse.body().compose(buffer -> {
+        future.complete(createResponse(httpClientResponse, buffer));
+        result.complete();
+        return Future.succeededFuture();
+      });
+      return result.future();
+    }
+
+    if (transportContext.isDownloadFile()) {
       ReadStreamPart streamPart = new ReadStreamPart(transportContext.getVertxContext(), httpClientResponse);
       future.complete(createResponse(httpClientResponse, streamPart));
+      result.complete();
+      return result.future();
     }
-    return httpClientResponse.body();
+
+    if (transportContext.isServerSendEvents()) {
+      future.complete(createResponse(httpClientResponse, FlowableHelper.toFlowable(httpClientResponse)));
+      result.complete();
+      return result.future();
+    }
+
+    httpClientResponse.body().compose(buffer -> {
+      future.complete(createResponse(httpClientResponse, buffer));
+      result.complete();
+      return Future.succeededFuture();
+    });
+    return result.future();
   }
 
   protected Response createResponse(HttpClientResponse httpClientResponse, Object result) {

@@ -21,6 +21,7 @@ import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
 import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
 import static org.apache.servicecomb.core.exception.Exceptions.toProducerResponse;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -152,6 +153,13 @@ public class RestServerCodecFilter extends AbstractFilter implements ProviderFil
         if (e != null) {
           result.completeExceptionally(e);
           return;
+        }
+        if (!commit) {
+          try {
+            responseEx.flushBuffer();
+          } catch (IOException ex) {
+            LOGGER.warn("Failed to flush buffer for Server Send Events", ex);
+          }
         }
         result.complete(response);
       });

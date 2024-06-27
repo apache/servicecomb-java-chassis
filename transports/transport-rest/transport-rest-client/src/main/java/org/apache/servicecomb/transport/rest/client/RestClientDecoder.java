@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 
+import io.reactivex.rxjava3.core.Flowable;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -40,24 +41,30 @@ public class RestClientDecoder {
   public Response decode(Invocation invocation, Response response) {
     invocation.getInvocationStageTrace().startConsumerDecodeResponse();
     if (response.getResult() instanceof Buffer) {
-      Object result = extractBody(invocation, response);
-      response.entity(result);
+      Object result = extractBody(invocation, response, response.getResult());
+      response.setResult(result);
 
       if (response.isFailed()) {
         throw Exceptions.create(response.getStatus(), response.getResult());
       }
     }
 
+    if (response.getResult() instanceof Flowable<?>) {
+      Flowable<Buffer> flowable = response.getResult();
+      Flowable<Object> encoded = flowable.map(buffer -> extractBody(invocation, response, buffer));
+      response.setResult(encoded);
+    }
+
     invocation.getInvocationStageTrace().finishConsumerDecodeResponse();
     return response;
   }
 
-  protected Object extractBody(Invocation invocation, Response response) {
+  protected Object extractBody(Invocation invocation, Response response, Buffer buffer) {
     ProduceProcessor produceProcessor = safeFindProduceProcessor(invocation, response);
     JavaType responseType = invocation.findResponseType(response.getStatusCode());
 
     try {
-      return produceProcessor.decodeResponse((Buffer) response.getResult(), responseType);
+      return produceProcessor.decodeResponse(buffer, responseType);
     } catch (Exception e) {
       throw createDecodeException(invocation, response, e);
     }

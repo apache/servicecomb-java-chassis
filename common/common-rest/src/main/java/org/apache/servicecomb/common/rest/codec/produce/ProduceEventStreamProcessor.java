@@ -51,6 +51,12 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
 
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
+    String buffer = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+    for (String line : buffer.split("\n")) {
+      if (line.startsWith("data: ")) {
+        return RestObjectMapperFactory.getRestObjectMapper().readValue(line.substring(5), type);
+      }
+    }
     return null;
   }
 }
