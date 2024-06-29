@@ -78,7 +78,7 @@ paths:
       - name: q
         in: query
         schema:
-          $ref: '#/components/schemas/AggregatedParam'
+          $ref: "#/components/schemas/AggregatedParam"
       responses:
         "200":
           description: response of 200
@@ -89,7 +89,7 @@ paths:
       - name: h
         in: header
         schema:
-          $ref: '#/components/schemas/AggregatedParam'
+          $ref: "#/components/schemas/AggregatedParam"
       responses:
         "200":
           description: response of 200
@@ -188,13 +188,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DynamicStatusModel'
+              $ref: "#/components/schemas/DynamicStatusModel"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/DynamicStatusModel'
+              $ref: "#/components/schemas/DynamicStatusModel"
           text/plain:
             schema:
-              $ref: '#/components/schemas/DynamicStatusModel'
+              $ref: "#/components/schemas/DynamicStatusModel"
         x-name: model
       responses:
         "200":
@@ -233,13 +233,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         x-name: srcUser
       responses:
         "200":
@@ -340,13 +340,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JdkStatusModel'
+              $ref: "#/components/schemas/JdkStatusModel"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/JdkStatusModel'
+              $ref: "#/components/schemas/JdkStatusModel"
           text/plain:
             schema:
-              $ref: '#/components/schemas/JdkStatusModel'
+              $ref: "#/components/schemas/JdkStatusModel"
         x-name: model
       responses:
         "200":
@@ -458,7 +458,7 @@ paths:
         schema:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
       responses:
         "200":
           description: response of 200
@@ -550,7 +550,7 @@ components:
         friends:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
       x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User
     JdkStatusModel:
       type: object

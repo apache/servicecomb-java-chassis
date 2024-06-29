@@ -70,13 +70,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         required: true
         x-name: user
       responses:
@@ -365,10 +365,10 @@ paths:
         content:
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         required: true
         x-name: srcUser
       responses:
@@ -404,10 +404,10 @@ paths:
         content:
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         required: true
         x-name: srcUser
       responses:
@@ -443,10 +443,10 @@ paths:
         content:
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         required: true
         x-name: srcUser
       responses:
@@ -482,10 +482,10 @@ paths:
         content:
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         required: true
         x-name: srcUser
       responses:
@@ -521,10 +521,10 @@ paths:
         content:
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         required: true
         x-name: srcUser
       responses:
@@ -560,10 +560,10 @@ paths:
         content:
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         required: true
         x-name: srcUser
       responses:
@@ -586,5 +586,5 @@ components:
         friends:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
       x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User
