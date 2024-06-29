@@ -33,7 +33,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.decorators.Decorators;
 import io.github.resilience4j.decorators.Decorators.DecorateCheckedSupplier;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.micrometer.prometheusmetrics.PrometheusMeterRegistry;
 
 @SpringBootTest
 @ContextConfiguration(classes = {GovernanceCommonConfiguration.class, MockConfiguration.class})
@@ -115,24 +115,24 @@ public class InstanceIsolationTest {
   private void assertMetricsNotFinish() {
     String result = ((PrometheusMeterRegistry) meterRegistry).scrape();
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"open\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"open\"} 1.0"));
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\"} 1.0"));
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",} 1.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\"} 1"));
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",} 4.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\"} 4"));
   }
 
   private void assertMetricsFinish() {
     String result = ((PrometheusMeterRegistry) meterRegistry).scrape();
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"closed\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",state=\"closed\"} 1.0"));
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\",} 1.0"));
+        "servicecomb_instanceIsolation_state{name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",state=\"closed\"} 1.0"));
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\",} 3.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance01\"} 3"));
     Assertions.assertTrue(result.contains(
-        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\",} 6.0"));
+        "servicecomb_instanceIsolation_calls_seconds_count{kind=\"successful\",name=\"servicecomb.instanceIsolation.demo-allOperation.service01.instance02\"} 6"));
   }
 }
