@@ -16,20 +16,36 @@
  */
 package io.vertx.core.impl;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import io.netty.channel.EventLoop;
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.ThreadingModel;
+import io.vertx.core.json.JsonObject;
+import io.vertx.core.spi.tracing.VertxTracer;
 
-public class SyncContext extends EventLoopContext {
+/**
+ * This class is created to make vertx unit test easier
+ */
+public class SyncContext extends ContextBase implements ContextInternal {
   protected VertxInternal owner;
 
+  protected Executor executor = Executors.newSingleThreadExecutor();
+
   public SyncContext() {
-    this(null);
+    this(0);
   }
 
-  public SyncContext(VertxInternal vertx) {
-    super(vertx, null, null, null, null, null, null);
+  public SyncContext(int localsLength) {
+    super(localsLength);
   }
 
   @Override
@@ -37,14 +53,75 @@ public class SyncContext extends EventLoopContext {
     return owner;
   }
 
+  @Override
+  public Context exceptionHandler(@Nullable Handler<Throwable> handler) {
+    return null;
+  }
+
+  @Override
+  public @Nullable Handler<Throwable> exceptionHandler() {
+    return null;
+  }
+
+  @Override
+  public boolean inThread() {
+    return false;
+  }
+
+  @Override
+  public <T> void emit(T t, Handler<T> handler) {
+
+  }
+
+  @Override
+  public void execute(Runnable runnable) {
+
+  }
+
+  @Override
+  public <T> void execute(T t, Handler<T> handler) {
+
+  }
+
+  @Override
+  public void reportException(Throwable throwable) {
+
+  }
+
+  @Override
+  public ConcurrentMap<Object, Object> contextData() {
+    return null;
+  }
+
+  @Override
+  public ClassLoader classLoader() {
+    return null;
+  }
+
+  @Override
+  public WorkerPool workerPool() {
+    return null;
+  }
+
+  @Override
+  public VertxTracer tracer() {
+    return null;
+  }
+
+  @Override
+  public ContextInternal duplicate() {
+    return null;
+  }
+
+  @Override
+  public CloseFuture closeFuture() {
+    return null;
+  }
+
   public void setOwner(VertxInternal owner) {
     this.owner = owner;
   }
 
-  @Override
-  protected void runOnContext(ContextInternal ctx, Handler<Void> action) {
-    action.handle(null);
-  }
 
   public static <T> void syncExecuteBlocking(Handler<Promise<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> asyncResultHandler) {
@@ -70,7 +147,6 @@ public class SyncContext extends EventLoopContext {
       return res.future();
     }
 
-    res.complete();
     return res.future();
   }
 
@@ -80,8 +156,78 @@ public class SyncContext extends EventLoopContext {
   }
 
   @Override
+  public <T> Future<T> executeBlockingInternal(Callable<T> callable) {
+    return null;
+  }
+
+  @Override
+  public <T> Future<T> executeBlockingInternal(Handler<Promise<T>> handler, boolean b) {
+    return null;
+  }
+
+  @Override
+  public <T> Future<T> executeBlockingInternal(Callable<T> callable, boolean b) {
+    return null;
+  }
+
+  @Override
+  public Deployment getDeployment() {
+    return null;
+  }
+
+  @Override
+  public Executor executor() {
+    return executor;
+  }
+
+  @Override
+  public EventLoop nettyEventLoop() {
+    return null;
+  }
+
+  @Override
+  public <T> Future<T> executeBlocking(Handler<Promise<T>> handler, TaskQueue taskQueue) {
+    return null;
+  }
+
+  @Override
+  public <T> Future<T> executeBlocking(Callable<T> callable, TaskQueue taskQueue) {
+    return null;
+  }
+
+  @Override
   public <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler, boolean ordered,
       Handler<AsyncResult<T>> asyncResultHandler) {
     syncExecuteBlocking(blockingCodeHandler, asyncResultHandler);
+  }
+
+  @Override
+  public <T> Future<@Nullable T> executeBlocking(Callable<T> callable, boolean b) {
+    return null;
+  }
+
+  @Override
+  public <T> Future<@Nullable T> executeBlocking(Handler<Promise<T>> handler, boolean b) {
+    return null;
+  }
+
+  @Override
+  public @Nullable JsonObject config() {
+    return null;
+  }
+
+  @Override
+  public boolean isEventLoopContext() {
+    return false;
+  }
+
+  @Override
+  public boolean isWorkerContext() {
+    return false;
+  }
+
+  @Override
+  public ThreadingModel threadingModel() {
+    return null;
   }
 }

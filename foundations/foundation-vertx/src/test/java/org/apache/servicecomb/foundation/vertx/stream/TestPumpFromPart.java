@@ -28,18 +28,23 @@ import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream.ReadResult;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.Context;
 import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.impl.SyncContext;
+import io.vertx.core.impl.VertxInternal;
 import jakarta.servlet.http.Part;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestPumpFromPart {
+  static Vertx vertx = Vertx.vertx();
+
   String src = RandomStringUtils.random(100, true, true);
 
   boolean inputStreamClosed;
@@ -60,7 +65,12 @@ public class TestPumpFromPart {
 
   IOException error = new IOException();
 
-  Context context = new SyncContext();
+  SyncContext context = new SyncContext();
+
+  @Before
+  public void setup() throws IOException {
+    context.setOwner((VertxInternal) vertx);
+  }
 
   private void run(Context context, boolean closeOutput) throws Throwable {
     inputStream.reset();

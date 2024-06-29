@@ -111,7 +111,7 @@ public final class VertxTLSBuilder {
     tcpClientOptions.setSsl(true);
 
     if (sslOption.getEngine().equalsIgnoreCase("openssl")) {
-      tcpClientOptions.setOpenSslEngineOptions(new OpenSSLEngineOptions());
+      tcpClientOptions.setSslEngineOptions(new OpenSSLEngineOptions());
     }
     String fullKeyStore = sslCustom.getFullPath(sslOption.getKeyStore());
     if (isFileExists(fullKeyStore)) {
@@ -119,12 +119,12 @@ public final class VertxTLSBuilder {
         PfxOptions keyPfxOptions = new PfxOptions();
         keyPfxOptions.setPath(fullKeyStore);
         keyPfxOptions.setPassword(new String(sslCustom.decode(sslOption.getKeyStoreValue().toCharArray())));
-        tcpClientOptions.setPfxKeyCertOptions(keyPfxOptions);
+        tcpClientOptions.setKeyCertOptions(keyPfxOptions);
       } else if (STORE_JKS.equalsIgnoreCase(sslOption.getKeyStoreType())) {
         JksOptions keyJksOptions = new JksOptions();
         keyJksOptions.setPath(fullKeyStore);
         keyJksOptions.setPassword(new String(sslCustom.decode(sslOption.getKeyStoreValue().toCharArray())));
-        tcpClientOptions.setKeyStoreOptions(keyJksOptions);
+        tcpClientOptions.setKeyCertOptions(keyJksOptions);
       } else {
         throw new IllegalArgumentException("invalid key store type.");
       }
@@ -138,13 +138,13 @@ public final class VertxTLSBuilder {
         trustPfxOptions.setPath(fullTrustStore);
         trustPfxOptions
             .setPassword(new String(sslCustom.decode(sslOption.getTrustStoreValue().toCharArray())));
-        tcpClientOptions.setPfxTrustOptions(trustPfxOptions);
+        tcpClientOptions.setTrustOptions(trustPfxOptions);
       } else if (STORE_JKS.equalsIgnoreCase(sslOption.getTrustStoreType())) {
         JksOptions trustJksOptions = new JksOptions();
         trustJksOptions.setPath(fullTrustStore);
         trustJksOptions
             .setPassword(new String(sslCustom.decode(sslOption.getTrustStoreValue().toCharArray())));
-        tcpClientOptions.setTrustStoreOptions(trustJksOptions);
+        tcpClientOptions.setTrustOptions(trustJksOptions);
       } else {
         throw new IllegalArgumentException("invalid trust store type.");
       }

@@ -17,15 +17,16 @@
 
 package io.vertx.ext.web.impl;
 
-import io.vertx.ext.web.RequestBody;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
-
-import io.vertx.core.http.impl.HttpServerRequestInternal;
-import io.vertx.ext.web.AllowForwardHeaders;
-import io.vertx.ext.web.RoutingContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import io.vertx.core.http.impl.HttpServerRequestInternal;
+import io.vertx.core.net.HostAndPort;
+import io.vertx.ext.web.AllowForwardHeaders;
+import io.vertx.ext.web.RequestBody;
+import io.vertx.ext.web.RoutingContext;
 
 // HttpServerRequestWrapper is a package visible class, so put this test in package io.vertx.ext.web.impl
 public class TestHttpServerRequestUtils {
@@ -36,6 +37,7 @@ public class TestHttpServerRequestUtils {
     HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request, AllowForwardHeaders.NONE);
     Mockito.when(request.scheme()).thenReturn("http");
     Mockito.when(context.request()).thenReturn(wrapper);
+    Mockito.when(request.authority()).thenReturn(HostAndPort.create("localhost", 8080));
     RequestBody requestBody = Mockito.mock(RequestBody.class);
     Mockito.when(context.body()).thenReturn(requestBody);
 

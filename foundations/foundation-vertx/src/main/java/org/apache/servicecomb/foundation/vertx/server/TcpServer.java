@@ -21,7 +21,6 @@ import java.net.InetSocketAddress;
 
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -80,7 +79,7 @@ public class TcpServer {
       connection.init(netSocket);
     });
     netServer.exceptionHandler(
-        e -> LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e)));
+        e -> LOGGER.error("Unexpected error in server.", e));
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();
     netServer.listen(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
       if (ar.succeeded()) {
