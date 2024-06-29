@@ -75,6 +75,11 @@ public class HighwayClient {
     }
     SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
     VertxTLSBuilder.buildClientOptionsBase(sslOption, sslCustom, tcpClientConfig);
+    if (!sslOption.isCheckCNHost()) {
+      tcpClientConfig.setHostnameVerificationAlgorithm("");
+    } else {
+      tcpClientConfig.setHostnameVerificationAlgorithm("HTTPS");
+    }
 
     return tcpClientConfig;
   }
