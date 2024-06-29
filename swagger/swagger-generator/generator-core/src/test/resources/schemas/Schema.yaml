@@ -30,13 +30,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ignoreRequestBody'
+              $ref: "#/components/schemas/ignoreRequestBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/ignoreRequestBody'
+              $ref: "#/components/schemas/ignoreRequestBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/ignoreRequestBody'
+              $ref: "#/components/schemas/ignoreRequestBody"
         x-name: ignoreRequestBody
       responses:
         "200":
@@ -48,13 +48,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/nestedListStringBody'
+              $ref: "#/components/schemas/nestedListStringBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/nestedListStringBody'
+              $ref: "#/components/schemas/nestedListStringBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/nestedListStringBody'
+              $ref: "#/components/schemas/nestedListStringBody"
         x-name: nestedListStringBody
       responses:
         "200":
@@ -88,13 +88,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AllType'
+              $ref: "#/components/schemas/AllType"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/AllType'
+              $ref: "#/components/schemas/AllType"
           text/plain:
             schema:
-              $ref: '#/components/schemas/AllType'
+              $ref: "#/components/schemas/AllType"
         x-name: obj
       responses:
         "200":
@@ -132,13 +132,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testArrayBody'
+              $ref: "#/components/schemas/testArrayBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testArrayBody'
+              $ref: "#/components/schemas/testArrayBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testArrayBody'
+              $ref: "#/components/schemas/testArrayBody"
         x-name: testArrayBody
       responses:
         "200":
@@ -150,13 +150,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testBooleanBody'
+              $ref: "#/components/schemas/testBooleanBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testBooleanBody'
+              $ref: "#/components/schemas/testBooleanBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testBooleanBody'
+              $ref: "#/components/schemas/testBooleanBody"
         x-name: testBooleanBody
       responses:
         "200":
@@ -168,13 +168,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testByteBody'
+              $ref: "#/components/schemas/testByteBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testByteBody'
+              $ref: "#/components/schemas/testByteBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testByteBody'
+              $ref: "#/components/schemas/testByteBody"
         x-name: testByteBody
       responses:
         "200":
@@ -186,13 +186,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testBytesBody'
+              $ref: "#/components/schemas/testBytesBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testBytesBody'
+              $ref: "#/components/schemas/testBytesBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testBytesBody'
+              $ref: "#/components/schemas/testBytesBody"
         x-name: testBytesBody
       responses:
         "200":
@@ -204,13 +204,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testCharBody'
+              $ref: "#/components/schemas/testCharBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testCharBody'
+              $ref: "#/components/schemas/testCharBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testCharBody'
+              $ref: "#/components/schemas/testCharBody"
         x-name: testCharBody
       responses:
         "200":
@@ -273,13 +273,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testDoubleBody'
+              $ref: "#/components/schemas/testDoubleBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testDoubleBody'
+              $ref: "#/components/schemas/testDoubleBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testDoubleBody'
+              $ref: "#/components/schemas/testDoubleBody"
         x-name: testDoubleBody
       responses:
         "200":
@@ -291,13 +291,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testEnumBody'
+              $ref: "#/components/schemas/testEnumBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testEnumBody'
+              $ref: "#/components/schemas/testEnumBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testEnumBody'
+              $ref: "#/components/schemas/testEnumBody"
         x-name: testEnumBody
       responses:
         "200":
@@ -309,13 +309,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testFloatBody'
+              $ref: "#/components/schemas/testFloatBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testFloatBody'
+              $ref: "#/components/schemas/testFloatBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testFloatBody'
+              $ref: "#/components/schemas/testFloatBody"
         x-name: testFloatBody
       responses:
         "200":
@@ -327,13 +327,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testIntegerBody'
+              $ref: "#/components/schemas/testIntegerBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testIntegerBody'
+              $ref: "#/components/schemas/testIntegerBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testIntegerBody'
+              $ref: "#/components/schemas/testIntegerBody"
         x-name: testIntegerBody
       responses:
         "200":
@@ -345,13 +345,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testListBody'
+              $ref: "#/components/schemas/testListBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testListBody'
+              $ref: "#/components/schemas/testListBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testListBody'
+              $ref: "#/components/schemas/testListBody"
         x-name: testListBody
       responses:
         "200":
@@ -363,13 +363,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testLongBody'
+              $ref: "#/components/schemas/testLongBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testLongBody'
+              $ref: "#/components/schemas/testLongBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testLongBody'
+              $ref: "#/components/schemas/testLongBody"
         x-name: testLongBody
       responses:
         "200":
@@ -381,13 +381,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testMapBody'
+              $ref: "#/components/schemas/testMapBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testMapBody'
+              $ref: "#/components/schemas/testMapBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testMapBody'
+              $ref: "#/components/schemas/testMapBody"
         x-name: testMapBody
       responses:
         "200":
@@ -399,13 +399,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testMapListBody'
+              $ref: "#/components/schemas/testMapListBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testMapListBody'
+              $ref: "#/components/schemas/testMapListBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testMapListBody'
+              $ref: "#/components/schemas/testMapListBody"
         x-name: testMapListBody
       responses:
         "200":
@@ -417,13 +417,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testMultiParamBody'
+              $ref: "#/components/schemas/testMultiParamBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testMultiParamBody'
+              $ref: "#/components/schemas/testMultiParamBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testMultiParamBody'
+              $ref: "#/components/schemas/testMultiParamBody"
         x-name: testMultiParamBody
       responses:
         "200":
@@ -451,13 +451,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
           text/plain:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         x-name: user
       responses:
         "200":
@@ -469,13 +469,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testOneEnumBody'
+              $ref: "#/components/schemas/testOneEnumBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testOneEnumBody'
+              $ref: "#/components/schemas/testOneEnumBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testOneEnumBody'
+              $ref: "#/components/schemas/testOneEnumBody"
         x-name: testOneEnumBody
       responses:
         "200":
@@ -516,13 +516,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testSetBody'
+              $ref: "#/components/schemas/testSetBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testSetBody'
+              $ref: "#/components/schemas/testSetBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testSetBody'
+              $ref: "#/components/schemas/testSetBody"
         x-name: testSetBody
       responses:
         "200":
@@ -534,13 +534,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testShortBody'
+              $ref: "#/components/schemas/testShortBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testShortBody'
+              $ref: "#/components/schemas/testShortBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testShortBody'
+              $ref: "#/components/schemas/testShortBody"
         x-name: testShortBody
       responses:
         "200":
@@ -552,13 +552,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testStringBody'
+              $ref: "#/components/schemas/testStringBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testStringBody'
+              $ref: "#/components/schemas/testStringBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testStringBody'
+              $ref: "#/components/schemas/testStringBody"
         x-name: testStringBody
       responses:
         "200":
@@ -570,13 +570,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testbooleanBody'
+              $ref: "#/components/schemas/testbooleanBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testbooleanBody'
+              $ref: "#/components/schemas/testbooleanBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testbooleanBody'
+              $ref: "#/components/schemas/testbooleanBody"
         x-name: testbooleanBody
       responses:
         "200":
@@ -588,13 +588,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testbyteBody'
+              $ref: "#/components/schemas/testbyteBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testbyteBody'
+              $ref: "#/components/schemas/testbyteBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testbyteBody'
+              $ref: "#/components/schemas/testbyteBody"
         x-name: testbyteBody
       responses:
         "200":
@@ -606,13 +606,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testbytesBody'
+              $ref: "#/components/schemas/testbytesBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testbytesBody'
+              $ref: "#/components/schemas/testbytesBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testbytesBody'
+              $ref: "#/components/schemas/testbytesBody"
         x-name: testbytesBody
       responses:
         "200":
@@ -624,13 +624,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testcharBody'
+              $ref: "#/components/schemas/testcharBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testcharBody'
+              $ref: "#/components/schemas/testcharBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testcharBody'
+              $ref: "#/components/schemas/testcharBody"
         x-name: testcharBody
       responses:
         "200":
@@ -642,13 +642,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testdoubleBody'
+              $ref: "#/components/schemas/testdoubleBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testdoubleBody'
+              $ref: "#/components/schemas/testdoubleBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testdoubleBody'
+              $ref: "#/components/schemas/testdoubleBody"
         x-name: testdoubleBody
       responses:
         "200":
@@ -660,13 +660,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testfloatBody'
+              $ref: "#/components/schemas/testfloatBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testfloatBody'
+              $ref: "#/components/schemas/testfloatBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testfloatBody'
+              $ref: "#/components/schemas/testfloatBody"
         x-name: testfloatBody
       responses:
         "200":
@@ -678,13 +678,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testintBody'
+              $ref: "#/components/schemas/testintBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testintBody'
+              $ref: "#/components/schemas/testintBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testintBody'
+              $ref: "#/components/schemas/testintBody"
         x-name: testintBody
       responses:
         "200":
@@ -696,13 +696,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testlongBody'
+              $ref: "#/components/schemas/testlongBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testlongBody'
+              $ref: "#/components/schemas/testlongBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testlongBody'
+              $ref: "#/components/schemas/testlongBody"
         x-name: testlongBody
       responses:
         "200":
@@ -714,13 +714,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testshortBody'
+              $ref: "#/components/schemas/testshortBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testshortBody'
+              $ref: "#/components/schemas/testshortBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testshortBody'
+              $ref: "#/components/schemas/testshortBody"
         x-name: testshortBody
       responses:
         "200":
@@ -732,13 +732,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/wrapToBodyWithDescBody'
+              $ref: "#/components/schemas/wrapToBodyWithDescBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/wrapToBodyWithDescBody'
+              $ref: "#/components/schemas/wrapToBodyWithDescBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/wrapToBodyWithDescBody'
+              $ref: "#/components/schemas/wrapToBodyWithDescBody"
         x-name: wrapToBodyWithDescBody
       responses:
         "200":
@@ -766,7 +766,7 @@ components:
         list:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
       x-java-class: org.apache.servicecomb.swagger.generator.core.schema.AllType
     User:
       type: object
@@ -776,7 +776,7 @@ components:
         friends:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
       x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User
     testArrayBody:
       type: object
@@ -846,7 +846,7 @@ components:
         value:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
     testLongBody:
       type: object
       properties:
@@ -859,7 +859,7 @@ components:
         value:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
     testMapListBody:
       type: object
       properties:
@@ -868,12 +868,12 @@ components:
           additionalProperties:
             type: array
             items:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
     testMultiParamBody:
       type: object
       properties:
         obj:
-          $ref: '#/components/schemas/AllType'
+          $ref: "#/components/schemas/AllType"
         bValue:
           type: boolean
         byteValue:
@@ -919,11 +919,11 @@ components:
         list:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
         map:
           type: object
           additionalProperties:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
     testOneEnumBody:
       type: object
       properties:

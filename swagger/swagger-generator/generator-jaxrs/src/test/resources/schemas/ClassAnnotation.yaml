@@ -30,7 +30,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/User'
+              $ref: "#/components/schemas/User"
         x-name: user
       responses:
         "200":
@@ -38,10 +38,10 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
             text/plain:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: "#/components/schemas/User"
   /testForm:
     post:
       operationId: testForm
@@ -115,5 +115,5 @@ components:
         friends:
           type: array
           items:
-            $ref: '#/components/schemas/User'
+            $ref: "#/components/schemas/User"
       x-java-class: org.apache.servicecomb.foundation.test.scaffolding.model.User

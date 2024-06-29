@@ -44,7 +44,7 @@ public class TestTwoSameNameModels {
               content:
                 application/json:
                   schema:
-                    $ref: '#/components/schemas/GenericSameModel'
+                    $ref: "#/components/schemas/GenericSameModel"
               required: true
               x-name: param
             responses:
@@ -53,7 +53,7 @@ public class TestTwoSameNameModels {
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/GenericSameModel'
+                      $ref: "#/components/schemas/GenericSameModel"
         /same:
           post:
             operationId: service
@@ -61,7 +61,7 @@ public class TestTwoSameNameModels {
               content:
                 application/json:
                   schema:
-                    $ref: '#/components/schemas/SameModel'
+                    $ref: "#/components/schemas/SameModel"
               required: true
               x-name: param
             responses:
@@ -70,14 +70,14 @@ public class TestTwoSameNameModels {
                 content:
                   application/json:
                     schema:
-                      $ref: '#/components/schemas/SameModel'
+                      $ref: "#/components/schemas/SameModel"
       components:
         schemas:
           GenericSameModel:
             type: object
             properties:
               data:
-                $ref: '#/components/schemas/SameModel'
+                $ref: "#/components/schemas/SameModel"
             x-java-class: org.apache.servicecomb.swagger.generator.springmvc.model.Generic<org.apache.servicecomb.swagger.generator.springmvc.model.same1.SameModel>
           SameModel:
             type: object

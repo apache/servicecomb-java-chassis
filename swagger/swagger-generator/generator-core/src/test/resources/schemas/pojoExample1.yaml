@@ -30,13 +30,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/testMultiParameterBody'
+              $ref: "#/components/schemas/testMultiParameterBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/testMultiParameterBody'
+              $ref: "#/components/schemas/testMultiParameterBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/testMultiParameterBody'
+              $ref: "#/components/schemas/testMultiParameterBody"
         x-name: testMultiParameterBody
       responses:
         "200":
@@ -44,13 +44,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XXX'
+                $ref: "#/components/schemas/XXX"
             application/protobuf:
               schema:
-                $ref: '#/components/schemas/XXX'
+                $ref: "#/components/schemas/XXX"
             text/plain:
               schema:
-                $ref: '#/components/schemas/XXX'
+                $ref: "#/components/schemas/XXX"
   /testOneParameter:
     post:
       operationId: testOneParameter
@@ -58,13 +58,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/XXX'
+              $ref: "#/components/schemas/XXX"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/XXX'
+              $ref: "#/components/schemas/XXX"
           text/plain:
             schema:
-              $ref: '#/components/schemas/XXX'
+              $ref: "#/components/schemas/XXX"
         x-name: testType1
       responses:
         "200":
@@ -72,13 +72,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/XXX'
+                $ref: "#/components/schemas/XXX"
             application/protobuf:
               schema:
-                $ref: '#/components/schemas/XXX'
+                $ref: "#/components/schemas/XXX"
             text/plain:
               schema:
-                $ref: '#/components/schemas/XXX'
+                $ref: "#/components/schemas/XXX"
 components:
   schemas:
     XXX:
@@ -92,6 +92,6 @@ components:
       type: object
       properties:
         testType1:
-          $ref: '#/components/schemas/XXX'
+          $ref: "#/components/schemas/XXX"
         testString:
           type: string

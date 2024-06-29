@@ -31,13 +31,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/differentNameBody'
+              $ref: "#/components/schemas/differentNameBody"
           application/protobuf:
             schema:
-              $ref: '#/components/schemas/differentNameBody'
+              $ref: "#/components/schemas/differentNameBody"
           text/plain:
             schema:
-              $ref: '#/components/schemas/differentNameBody'
+              $ref: "#/components/schemas/differentNameBody"
         x-name: differentNameBody
       responses:
         "200":

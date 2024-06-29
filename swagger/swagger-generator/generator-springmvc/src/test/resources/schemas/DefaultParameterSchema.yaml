@@ -138,7 +138,7 @@ paths:
         schema:
           type: array
           items:
-            $ref: '#/components/schemas/TestParam'
+            $ref: "#/components/schemas/TestParam"
       - name: stringMap
         in: query
         schema:
