@@ -83,7 +83,7 @@
     <rxjava.version>3.1.8</rxjava.version>
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
-    <servlet-api.version>6.0.0</servlet-api.version>
+    <servlet-api.version>6.1.0</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>2.2</snakeyaml.version>
     <spring.version>6.0.9</spring.version>
