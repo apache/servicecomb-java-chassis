@@ -89,7 +89,7 @@
     <spring.version>6.0.9</spring.version>
     <swagger.version>2.2.22</swagger.version>
     <vertx.version>4.5.8</vertx.version>
-    <zipkin.version>3.3.0</zipkin.version>
+    <zipkin.version>3.4.0</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
