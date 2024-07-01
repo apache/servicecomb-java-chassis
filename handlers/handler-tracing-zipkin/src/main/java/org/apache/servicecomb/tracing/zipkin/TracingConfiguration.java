@@ -46,10 +46,11 @@ import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import zipkin2.Span;
-import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Reporter;
 import zipkin2.reporter.Sender;
+import zipkin2.reporter.SpanBytesEncoder;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
@@ -70,7 +71,7 @@ public class TracingConfiguration {
       havingValue = "true")
   static class ZipkinReporterConfiguration {
     @Bean
-    Sender okHttpSender(DynamicProperties dynamicProperties) {
+    BytesMessageSender okHttpSender(DynamicProperties dynamicProperties) {
       String apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
           CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
       // use default value if the user set value is invalid
@@ -89,7 +90,7 @@ public class TracingConfiguration {
     }
 
     @Bean
-    Reporter<Span> zipkinReporter(DynamicProperties dynamicProperties, Sender sender) {
+    Reporter<Span> zipkinReporter(DynamicProperties dynamicProperties, BytesMessageSender sender) {
       String apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
           CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
       if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0) {
