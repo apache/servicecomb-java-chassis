@@ -146,11 +146,6 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   }
 
   @Override
-  public String getMethodValue() {
-    return method.name();
-  }
-
-  @Override
   public URI getURI() {
     return uri;
   }
