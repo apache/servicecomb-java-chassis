@@ -18,16 +18,13 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
-import java.util.Collections;
-import java.util.Enumeration;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.common.rest.codec.header.HeaderCodec;
+import org.apache.servicecomb.common.rest.codec.header.HeaderCodecsUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -35,12 +32,11 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.v3.oas.models.media.ArraySchema;
 import io.swagger.v3.oas.models.parameters.HeaderParameter;
 import io.swagger.v3.oas.models.parameters.Parameter;
+import io.swagger.v3.oas.models.parameters.Parameter.StyleEnum;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response.Status;
 
 public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parameter> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(HeaderProcessorCreator.class);
-
   public static final String PARAMTYPE = "header";
 
   public static class HeaderProcessor extends AbstractParamProcessor {
@@ -48,34 +44,26 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parame
     private final boolean ignoreRequiredCheck = LegacyPropertyFactory
         .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false);
 
-    private final boolean repeatedType;
+    private final HeaderCodec headerCodec;
 
     public HeaderProcessor(HeaderParameter headerParameter, JavaType targetType) {
       super(headerParameter.getName(), targetType, headerParameter.getSchema().getDefault(),
           headerParameter.getRequired() != null && headerParameter.getRequired());
 
-      this.repeatedType = headerParameter.getSchema() instanceof ArraySchema;
+      if ((headerParameter.getSchema() instanceof ArraySchema) && headerParameter.getStyle() == null) {
+        // compatible to default settings
+        this.headerCodec = HeaderCodecsUtils.find(StyleEnum.FORM, true);
+      } else {
+        this.headerCodec = HeaderCodecsUtils.find(headerParameter.getStyle(), headerParameter.getExplode());
+      }
     }
 
     @Override
     public Object getValue(HttpServletRequest request) {
-      if (repeatedType) {
-        Enumeration<String> headerValues = request.getHeaders(paramPath);
-        if (headerValues == null) {
-          //Even if the paramPath does not exist, headerValues won't be null at now
-          return null;
-        }
-        return convertValue(Collections.list(headerValues), targetType);
-      }
-
-      Object value = request.getHeader(paramPath);
-      if (value == null) {
-        value = checkRequiredAndDefaultValue();
-      }
-      return convertValue(value, targetType);
+      return headerCodec.decode(this, request);
     }
 
-    private Object checkRequiredAndDefaultValue() {
+    public Object checkRequiredAndDefaultValue() {
       if (!ignoreRequiredCheck && isRequired()) {
         throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }
@@ -84,13 +72,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator<Parame
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      if (null == arg) {
-        // null header should not be set to clientRequest to avoid NullPointerException in Netty.
-        LOGGER.debug("Header arg is null, will not be set into clientRequest. paramPath = [{}]", paramPath);
-        return;
-      }
-      clientRequest.putHeader(paramPath,
-          RestObjectMapperFactory.getConsumerWriterMapper().convertToString(arg));
+      headerCodec.encode(clientRequest, paramPath, arg);
     }
 
     @Override
