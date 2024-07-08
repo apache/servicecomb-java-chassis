@@ -49,7 +49,7 @@ public class HeaderCodecMulti implements HeaderCodec {
           new CommonExceptionData("Array type of header should be Collection"));
     }
     for (Object item : ((Collection<?>) value)) {
-      clientRequest.putHeader(name,
+      clientRequest.getHeaders().add(name,
           RestObjectMapperFactory.getConsumerWriterMapper().convertToString(item));
     }
   }
