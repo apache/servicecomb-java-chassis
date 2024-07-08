@@ -320,7 +320,7 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   @Override
   public void putHeader(String name, String value) {
-    request.putHeader(name, value);
+    request.headers().add(name, value);
   }
 
   @Override
