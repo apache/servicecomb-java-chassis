@@ -65,6 +65,7 @@ public class TestHeaderProcessor {
 
     if (javaType.isContainerType()) {
       headerParameter.type(ArrayProperty.TYPE);
+      headerParameter.setCollectionFormat("multi");
     }
     return new HeaderProcessor(headerParameter, javaType);
   }
