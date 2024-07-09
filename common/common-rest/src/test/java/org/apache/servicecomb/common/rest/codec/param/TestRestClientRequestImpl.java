@@ -148,9 +148,14 @@ public class TestRestClientRequestImpl {
   }
 
   @Test
-  public void doEndWithUploadForJre8() {
+  public void testDoEndWithUpload() {
     MultiMap headers = HeadersMultiMap.headers();
-    Mockito.when(request.headers()).thenReturn(headers);
+    Mockito.doAnswer(invocation -> {
+      headers.add(HttpHeaders.CONTENT_TYPE,
+          "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
+      return null;
+    }).when(request).putHeader(HttpHeaders.CONTENT_TYPE,
+        "multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000");
 
     UUID uuid = Mockito.mock(UUID.class);
     Mockito.when(uuid.toString()).thenReturn("00000000-0000-0000-0000-000000000000");
