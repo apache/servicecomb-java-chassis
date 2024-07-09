@@ -45,6 +45,16 @@ servicecomb:
               path: "/register/url/prefix/.*"
               microserviceName: demo-zeroconfig-schemadiscovery-registry-client
               versionRule: 0+
+            client-2:
+              prefixSegmentCount: 0
+              path: "/headerList/.*"
+              microserviceName: demo-zeroconfig-schemadiscovery-registry-client
+              versionRule: 0+
+
+  references:
+    transport:
+      demo-zeroconfig-schemadiscovery-registry-client.ClientServerEndpoint.contextMapper: rest
+
   context:
     headerContextMapper: |
       gatewayHeader: context-gateway-header

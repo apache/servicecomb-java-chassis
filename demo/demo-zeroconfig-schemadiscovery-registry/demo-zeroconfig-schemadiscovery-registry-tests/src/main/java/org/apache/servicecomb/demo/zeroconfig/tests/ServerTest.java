@@ -59,7 +59,10 @@ public class ServerTest implements CategorizedTestCase {
     RequestEntity<Void> requestEntity = new RequestEntity<>(headers, HttpMethod.GET,
         new URI("cse://demo-zeroconfig-schemadiscovery-registry-edge/register/url/prefix/contextMapper?clientQuery=v3&"
             + "gatewayQuery=v4"));
+    // test two times to check different transport(only use rest)
     ResponseEntity<String> response = template.exchange(requestEntity, String.class);
+    TestMgr.check(response.getBody(), "success");
+    response = template.exchange(requestEntity, String.class);
     TestMgr.check(response.getBody(), "success");
   }
 
