@@ -25,6 +25,8 @@ public final class CoreConst {
 
   public static final String CSE_CONTEXT = "x-cse-context";
 
+  public static final String TRANSPORT_NAME = "x-transport-name";
+
   public static final String RESTFUL = "rest";
 
   public static final String HIGHWAY = "highway";

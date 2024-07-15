@@ -17,6 +17,8 @@
 package org.apache.servicecomb.samples;
 
 
+import org.apache.servicecomb.core.CoreConst;
+import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.reactivestreams.Publisher;
@@ -69,11 +71,13 @@ public class ConsumerReactiveStreamController {
   }
 
   @GetMapping("/sseString")
+  @Transport(name = CoreConst.RESTFUL)
   public Publisher<String> sseString() {
     return controller.sseString();
   }
 
   @GetMapping("/sseModel")
+  @Transport(name = CoreConst.RESTFUL)
   public Publisher<Model> sseModel() {
     return controller.sseModel();
   }

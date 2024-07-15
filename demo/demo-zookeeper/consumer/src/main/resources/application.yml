@@ -30,5 +30,8 @@ servicecomb:
   rest:
     address: 0.0.0.0:9092
 
+  highway:
+    address: 0.0.0.0:7092
+
 
 

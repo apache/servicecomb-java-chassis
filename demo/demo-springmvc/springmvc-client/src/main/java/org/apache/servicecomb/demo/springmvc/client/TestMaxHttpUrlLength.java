@@ -54,14 +54,4 @@ public class TestMaxHttpUrlLength implements CategorizedTestCase {
       TestMgr.check(REQUEST_URI_TOO_LONG.getStatusCode(), e.getStatusCode());
     }
   }
-
-  @Override
-  public void testHighwayTransport() throws Exception {
-
-  }
-
-  @Override
-  public void testAllTransport() throws Exception {
-
-  }
 }

@@ -121,16 +121,6 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
   private RestOperations restTemplate = RestTemplateBuilder.create();
 
   @Override
-  public void testRestTransport() throws Exception {
-
-  }
-
-  @Override
-  public void testHighwayTransport() throws Exception {
-
-  }
-
-  @Override
   public void testAllTransport() throws Exception {
     testDiffName();
 

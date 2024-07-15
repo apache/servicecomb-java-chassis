@@ -29,6 +29,10 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+
+import jakarta.ws.rs.core.Response.Status;
 
 public class ProviderOperationFilter extends AbstractFilter implements ProviderFilter {
   public static final String NAME = "producer-operation";
@@ -46,6 +50,10 @@ public class ProviderOperationFilter extends AbstractFilter implements ProviderF
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
+    if (!transportAccessAllowed(invocation)) {
+      return CompletableFuture.failedFuture(new InvocationException(Status.UNAUTHORIZED,
+          new CommonExceptionData("transport access not allowed.")));
+    }
     invocation.onBusinessMethodStart();
 
     SwaggerProducerOperation producerOperation = invocation.getOperationMeta().getSwaggerProducerOperation();
@@ -55,6 +63,13 @@ public class ProviderOperationFilter extends AbstractFilter implements ProviderF
     return invoke(invocation, instance, method, args)
         .thenApply(result -> convertResultToResponse(invocation, producerOperation, result))
         .whenComplete((response, throwable) -> processMetrics(invocation));
+  }
+
+  private boolean transportAccessAllowed(Invocation invocation) {
+    if (invocation.getProviderTransportName() == null) {
+      return true;
+    }
+    return invocation.getProviderTransportName().equals(invocation.getTransportName());
   }
 
   @SuppressWarnings("unchecked")

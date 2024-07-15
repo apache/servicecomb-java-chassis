@@ -19,6 +19,8 @@ package org.apache.servicecomb.samples;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.core.CoreConst;
+import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.reactivestreams.Publisher;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,7 @@ import io.reactivex.rxjava3.core.Flowable;
 
 @RestSchema(schemaId = "ReactiveStreamController")
 @RequestMapping(path = "/")
+@Transport(name = CoreConst.RESTFUL)
 public class ReactiveStreamController {
   public static class Model {
     private String name;
