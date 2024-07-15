@@ -50,6 +50,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Operation;
+
 public class TestLoadBalanceFilter2 {
   Environment environment = Mockito.mock(Environment.class);
 
@@ -70,6 +73,12 @@ public class TestLoadBalanceFilter2 {
     InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    Operation operation = Mockito.mock(Operation.class);
+    when(operationMeta.getSwaggerOperation()).thenReturn(operation);
+    when(operation.getExtensions()).thenReturn(null);
+    OpenAPI openAPI = Mockito.mock(OpenAPI.class);
+    when(schemaMeta.getSwagger()).thenReturn(openAPI);
+    when(openAPI.getExtensions()).thenReturn(null);
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
@@ -178,6 +187,12 @@ public class TestLoadBalanceFilter2 {
     InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    Operation operation = Mockito.mock(Operation.class);
+    when(operationMeta.getSwaggerOperation()).thenReturn(operation);
+    when(operation.getExtensions()).thenReturn(null);
+    OpenAPI openAPI = Mockito.mock(OpenAPI.class);
+    when(schemaMeta.getSwagger()).thenReturn(openAPI);
+    when(openAPI.getExtensions()).thenReturn(null);
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
@@ -251,6 +266,12 @@ public class TestLoadBalanceFilter2 {
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
+    Operation operation = Mockito.mock(Operation.class);
+    when(operationMeta.getSwaggerOperation()).thenReturn(operation);
+    when(operation.getExtensions()).thenReturn(null);
+    OpenAPI openAPI = Mockito.mock(OpenAPI.class);
+    when(schemaMeta.getSwagger()).thenReturn(openAPI);
+    when(openAPI.getExtensions()).thenReturn(null);
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getTransport()).thenReturn("rest");
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
