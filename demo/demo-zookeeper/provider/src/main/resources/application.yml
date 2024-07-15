@@ -34,6 +34,9 @@ servicecomb:
   rest:
     address: 0.0.0.0:9094
 
+  highway:
+    address: 0.0.0.0:7094
+
   cors:
     enabled: true
     origin: "*"

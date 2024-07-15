@@ -253,7 +253,22 @@ public class Invocation extends SwaggerInvocation {
     return operationMeta.getOperationId();
   }
 
+  public String getProviderTransportName() {
+    if (operationMeta.getSwaggerOperation().getExtensions() != null &&
+        operationMeta.getSwaggerOperation().getExtensions().get(CoreConst.TRANSPORT_NAME) != null) {
+      return (String) operationMeta.getSwaggerOperation().getExtensions().get(CoreConst.TRANSPORT_NAME);
+    }
+    if (schemaMeta.getSwagger().getExtensions() != null &&
+        schemaMeta.getSwagger().getExtensions().get(CoreConst.TRANSPORT_NAME) != null) {
+      return (String) schemaMeta.getSwagger().getExtensions().get(CoreConst.TRANSPORT_NAME);
+    }
+    return null;
+  }
+
   public String getConfigTransportName() {
+    if (getProviderTransportName() != null) {
+      return getProviderTransportName();
+    }
     return referenceConfig.getTransport();
   }
 

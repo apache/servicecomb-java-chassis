@@ -96,16 +96,6 @@ public class TestDateTimeSchema implements CategorizedTestCase {
   }
 
   @Override
-  public void testRestTransport() throws Exception {
-
-  }
-
-  @Override
-  public void testHighwayTransport() throws Exception {
-
-  }
-
-  @Override
   public void testAllTransport() throws Exception {
     testDateTimeSchema();
     testDateTimeSchemaMulticast();
