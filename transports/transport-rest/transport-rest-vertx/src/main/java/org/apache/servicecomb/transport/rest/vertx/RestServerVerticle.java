@@ -69,11 +69,14 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private URIEndpointObject endpointObject;
 
+  private WebSocketDispatcher webSocketDispatcher;
+
   @Override
   public void init(Vertx vertx, Context context) {
     super.init(vertx, context);
     Endpoint endpoint = (Endpoint) context.config().getValue(AbstractTransport.ENDPOINT_KEY);
     this.endpointObject = (URIEndpointObject) endpoint.getAddress();
+    this.webSocketDispatcher = new WebSocketDispatcher(endpoint);
   }
 
   @Override
@@ -92,7 +95,17 @@ public class RestServerVerticle extends AbstractVerticle {
       initDispatcher(mainRouter);
       mountGlobalRestFailureHandler(mainRouter);
       HttpServer httpServer = createHttpServer();
-      httpServer.requestHandler(mainRouter);
+      httpServer.requestHandler(httpServerRequest -> {
+        if (this.endpointObject.isWebsocketEnabled()) {
+          String path = LegacyPropertyFactory.getStringProperty("servicecomb.rest.server.websocket-prefix");
+          if (httpServerRequest.path().startsWith(path)) {
+            httpServerRequest.toWebSocket().onComplete(w -> webSocketDispatcher.onRequest(w),
+                e -> LOGGER.error("WebSocket error.", e));
+            return;
+          }
+        }
+        mainRouter.handle(httpServerRequest);
+      });
       httpServer.connectionHandler(connection -> {
         DefaultHttpServerMetrics serverMetrics = (DefaultHttpServerMetrics) ((ConnectionBase) connection).metrics();
         DefaultServerEndpointMetric endpointMetric = serverMetrics.getEndpointMetric();

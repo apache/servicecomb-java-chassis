@@ -36,6 +36,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.dns.AddressResolverOptions;
+import io.vertx.core.http.WebSocketClient;
 
 /**
  *  load and manages a set of HttpClient at boot up.
@@ -82,6 +83,11 @@ public class HttpClients {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  public static WebSocketClient createWebSocketClient(HttpClientOptionsSPI option, boolean sslEnabled) {
+    Vertx vertx = getOrCreateVertx(option);
+    return vertx.createWebSocketClient(HttpClientOptionsSPI.createWebSocketClientOptions(option, sslEnabled));
   }
 
   private static Vertx getOrCreateVertx(HttpClientOptionsSPI option) {

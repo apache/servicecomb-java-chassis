@@ -126,7 +126,7 @@ public class ParameterGenerator {
 
   public void generate() {
     this.parameterGeneratorContext.updateConsumes(
-        this.operationGenerator.isForm(), this.operationGenerator.isBinary());
+        this.operationGenerator.isForm(), this.operationGenerator.isBinary(), this.operationGenerator.isWebsocket());
 
     if (this.parameterGeneratorContext.getHttpParameterType() == HttpParameterType.BODY) {
       if (parameterGeneratorContext.getSupportedConsumes().size() == 0) {

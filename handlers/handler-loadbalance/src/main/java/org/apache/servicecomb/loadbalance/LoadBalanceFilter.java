@@ -156,8 +156,11 @@ public class LoadBalanceFilter extends AbstractFilter implements ConsumerFilter,
   }
 
   // user's can invoke a service by supplying target Endpoint.
-  // in this case, we do not using load balancer, and no stats of server calculated, no retrying.
+  // in this case, do not use load balancer, and no stats of server calculated, no retrying.
   private boolean handleSuppliedEndpoint(Invocation invocation) throws Exception {
+    if (invocation.isEdge()) {
+      return false;
+    }
     if (invocation.getEndpoint() != null) {
       return true;
     }

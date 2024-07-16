@@ -28,7 +28,9 @@ servicecomb:
       connectString: 127.0.0.1:2181
 
   rest:
-    address: 0.0.0.0:9092
+    address: 0.0.0.0:9092?websocketEnabled=true
+    server:
+      websocket-prefix: /ws
 
   highway:
     address: 0.0.0.0:7092

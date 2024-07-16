@@ -31,6 +31,8 @@ public final class CoreConst {
 
   public static final String HIGHWAY = "highway";
 
+  public static final String WEBSOCKET = "websocket";
+
   public static final String ANY_TRANSPORT = "";
 
   public static final String VERSION_RULE_LATEST = DefinitionConst.VERSION_RULE_LATEST;

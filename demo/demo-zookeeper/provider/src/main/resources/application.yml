@@ -32,7 +32,9 @@ servicecomb:
       instance-tag: config-demo
 
   rest:
-    address: 0.0.0.0:9094
+    address: 0.0.0.0:9094?websocketEnabled=true
+    server:
+      websocket-prefix: /ws
 
   highway:
     address: 0.0.0.0:7094

@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
+import java.lang.reflect.Type;
 
-public class EdgeBootListener implements BootListener {
+import org.apache.servicecomb.swagger.generator.SwaggerContextRegister;
+
+import io.vertx.core.http.ServerWebSocket;
+
+public class ServerWebSocketContextRegister implements SwaggerContextRegister {
   @Override
-  public void onBootEvent(BootEvent event) {
-    if (!EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
-      return;
-    }
-
-    TransportConfig.setRestServerVerticle(EdgeRestServerVerticle.class);
-    ExecutorManager.setExecutorDefault(ExecutorManager.EXECUTOR_REACTIVE);
+  public Type getContextType() {
+    return ServerWebSocket.class;
   }
 }

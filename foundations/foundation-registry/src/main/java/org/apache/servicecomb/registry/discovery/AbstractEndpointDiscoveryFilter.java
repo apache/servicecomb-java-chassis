@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +28,10 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEndpointDiscoveryFilter.class);
 
   private static final String ALL_TRANSPORT = "";
+
+  private static final String WEBSOCKET_TRANSPORT = "websocket";
+
+  private static final String REST_TRANSPORT = "rest";
 
   @Override
   public boolean isGroupingFilter() {
@@ -48,13 +52,13 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
     for (StatefulDiscoveryInstance instance : instances) {
       for (String endpoint : instance.getEndpoints()) {
         try {
-          URI uri = URI.create(endpoint);
-          String transportName = uri.getScheme();
-          if (!isTransportNameMatch(transportName, expectTransportName)) {
+          URIEndpointObject endpointObject = new URIEndpointObject(endpoint);
+          if (!isTransportNameMatch(endpointObject.getSchema(), expectTransportName,
+              endpointObject.isWebsocketEnabled())) {
             continue;
           }
 
-          Object objEndpoint = createEndpoint(context, transportName, endpoint, instance);
+          Object objEndpoint = createEndpoint(context, expectTransportName, endpoint, instance);
           if (objEndpoint == null) {
             continue;
           }
@@ -71,8 +75,14 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
         .data(endpoints);
   }
 
-  protected boolean isTransportNameMatch(String transportName, String expectTransportName) {
-    return ALL_TRANSPORT.equals(expectTransportName) || transportName.equals(expectTransportName);
+  protected boolean isTransportNameMatch(String transportName, String expectTransportName, boolean isWebSocket) {
+    if (ALL_TRANSPORT.equals(expectTransportName)) {
+      return true;
+    }
+    if (WEBSOCKET_TRANSPORT.equals(expectTransportName)) {
+      return isWebSocket;
+    }
+    return transportName.equals(expectTransportName);
   }
 
   protected abstract String findTransportName(DiscoveryContext context, DiscoveryTreeNode parent);

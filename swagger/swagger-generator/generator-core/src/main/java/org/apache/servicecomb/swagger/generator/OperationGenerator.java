@@ -46,4 +46,10 @@ public interface OperationGenerator {
    * Used to check if one of operation form parameter is binary
    */
   boolean isBinary();
+
+  /**
+   *
+   * Used to check if this operation is websocket
+   */
+  boolean isWebsocket();
 }

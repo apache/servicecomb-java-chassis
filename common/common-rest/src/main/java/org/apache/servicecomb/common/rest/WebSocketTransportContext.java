@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.common.rest;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
+import org.apache.servicecomb.swagger.invocation.context.TransportContext;
 
-public class EdgeBootListener implements BootListener {
-  @Override
-  public void onBootEvent(BootEvent event) {
-    if (!EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
-      return;
-    }
+import io.vertx.core.http.ServerWebSocket;
 
-    TransportConfig.setRestServerVerticle(EdgeRestServerVerticle.class);
-    ExecutorManager.setExecutorDefault(ExecutorManager.EXECUTOR_REACTIVE);
+public class WebSocketTransportContext implements TransportContext {
+  private final ServerWebSocket serverWebSocket;
+
+  public WebSocketTransportContext(ServerWebSocket serverWebSocket) {
+    this.serverWebSocket = serverWebSocket;
+  }
+
+  public ServerWebSocket getServerWebSocket() {
+    return this.serverWebSocket;
   }
 }

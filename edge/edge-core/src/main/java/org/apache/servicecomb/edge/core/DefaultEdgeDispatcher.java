@@ -18,6 +18,7 @@
 package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.common.rest.route.Utils;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
