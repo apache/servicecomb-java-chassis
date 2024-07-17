@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.common.rest.route;
 
 /**
  * Commonly used methods in this package.

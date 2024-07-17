@@ -35,16 +35,23 @@ public class URIEndpointObject extends IpPort {
 
   private static final String PROTOCOL_KEY = "protocol";
 
+  private static final String WEBSOCKET_ENABLED_KEY = "websocketEnabled";
+
   private static final String HTTP2 = "http2";
 
   private final boolean sslEnabled;
 
   private boolean http2Enabled;
 
+  private boolean websocketEnabled;
+
   private final Map<String, List<String>> querys;
+
+  private final String schema;
 
   public URIEndpointObject(String endpoint) {
     URI uri = URI.create(endpoint);
+    schema = uri.getScheme();
     setHostOrIp(uri.getHost());
     if (uri.getPort() < 0) {
       // do not use default port
@@ -53,6 +60,7 @@ public class URIEndpointObject extends IpPort {
     setPort(uri.getPort());
     querys = splitQuery(uri);
     sslEnabled = Boolean.parseBoolean(getFirst(SSL_ENABLED_KEY));
+    websocketEnabled = Boolean.parseBoolean(getFirst(WEBSOCKET_ENABLED_KEY));
     String httpVersion = getFirst(PROTOCOL_KEY);
     if (HTTP2.equals(httpVersion)) {
       http2Enabled = true;
@@ -73,8 +81,16 @@ public class URIEndpointObject extends IpPort {
     return sslEnabled;
   }
 
+  public boolean isWebsocketEnabled() {
+    return websocketEnabled;
+  }
+
   public boolean isHttp2Enabled() {
     return http2Enabled;
+  }
+
+  public String getSchema() {
+    return this.schema;
   }
 
   public List<String> getQuery(String key) {

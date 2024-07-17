@@ -26,7 +26,9 @@ servicecomb:
       connectString: 127.0.0.1:2181
 
   rest:
-    address: 0.0.0.0:9090?sslEnabled=false
+    address: 0.0.0.0:9090?websocketEnabled=true
+    server:
+      websocket-prefix: /ws
 
   http:
     dispatcher:
@@ -40,5 +42,12 @@ servicecomb:
             consumer:
               prefixSegmentCount: 0
               path: "/.*"
+              microserviceName: consumer
+              versionRule: 0.0.0+
+        websocket:
+          mappings:
+            consumer:
+              prefixSegmentCount: 0
+              path: "/ws/.*"
               microserviceName: consumer
               versionRule: 0.0.0+

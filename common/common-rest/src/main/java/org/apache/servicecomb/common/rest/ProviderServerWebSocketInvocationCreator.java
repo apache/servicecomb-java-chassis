@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.common.rest;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
+import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 
-public class EdgeBootListener implements BootListener {
+import io.vertx.core.http.ServerWebSocket;
+
+public class ProviderServerWebSocketInvocationCreator extends ServerWebSocketInvocationCreator {
+  public ProviderServerWebSocketInvocationCreator(MicroserviceMeta microserviceMeta,
+      Endpoint endpoint, ServerWebSocket webSocket) {
+    super(microserviceMeta, endpoint, webSocket);
+  }
+
   @Override
-  public void onBootEvent(BootEvent event) {
-    if (!EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
-      return;
-    }
-
-    TransportConfig.setRestServerVerticle(EdgeRestServerVerticle.class);
-    ExecutorManager.setExecutorDefault(ExecutorManager.EXECUTOR_REACTIVE);
+  protected void initTransportContext(Invocation invocation) {
+    WebSocketTransportContext transportContext = new WebSocketTransportContext(websocket);
+    invocation.setTransportContext(transportContext);
   }
 }

@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.provider.rest.common;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
+import org.apache.servicecomb.common.rest.WebSocketTransportContext;
+import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
 
-public class EdgeBootListener implements BootListener {
+
+public class ProducerServerWebSocketMapper extends AbstractProducerContextArgMapper {
+  public ProducerServerWebSocketMapper(String invocationArgumentName, String swaggerArgumentName) {
+    super(invocationArgumentName, swaggerArgumentName);
+  }
+
   @Override
-  public void onBootEvent(BootEvent event) {
-    if (!EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
-      return;
-    }
-
-    TransportConfig.setRestServerVerticle(EdgeRestServerVerticle.class);
-    ExecutorManager.setExecutorDefault(ExecutorManager.EXECUTOR_REACTIVE);
+  public Object createContextArg(SwaggerInvocation invocation) {
+    WebSocketTransportContext context = invocation.getTransportContext();
+    return context.getServerWebSocket();
   }
 }

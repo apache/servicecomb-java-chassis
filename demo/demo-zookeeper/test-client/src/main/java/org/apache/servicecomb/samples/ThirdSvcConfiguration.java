@@ -19,6 +19,8 @@ package org.apache.servicecomb.samples;
 
 import java.util.List;
 
+import org.apache.servicecomb.core.CoreConst;
+import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.localregistry.RegistryBean;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
 import org.apache.servicecomb.localregistry.RegistryBean.Instances;
@@ -27,10 +29,20 @@ import org.reactivestreams.Publisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import io.vertx.core.http.WebSocket;
 
 @Configuration
 public class ThirdSvcConfiguration {
+  @RequestMapping(path = "/ws")
+  public interface WebsocketClient {
+    @PostMapping("/websocket")
+    @Transport(name = CoreConst.WEBSOCKET)
+    WebSocket websocket();
+  }
+
   @RequestMapping(path = "/")
   public interface ReactiveStreamClient {
     class Model {
@@ -88,11 +100,12 @@ public class ThirdSvcConfiguration {
   public RegistryBean gatewayServiceBean() {
     return new RegistryBean()
         .addSchemaInterface("ReactiveStreamController", ReactiveStreamClient.class)
+        .addSchemaInterface("WebsocketController", WebsocketClient.class)
         .setAppId("demo-zookeeper")
         .setServiceName("gateway")
         .setVersion("0.0.1")
         .setInstances(new Instances().setInstances(List.of(
-            new Instance().setEndpoints(List.of("rest://localhost:9090")))));
+            new Instance().setEndpoints(List.of("rest://localhost:9090?websocketEnabled=true")))));
   }
 
   @Bean("reactiveStreamProvider")
@@ -103,5 +116,10 @@ public class ThirdSvcConfiguration {
   @Bean("reactiveStreamGateway")
   public ReactiveStreamClient reactiveStreamGateway() {
     return Invoker.createProxy("gateway", "ReactiveStreamController", ReactiveStreamClient.class);
+  }
+
+  @Bean
+  public WebsocketClient gatewayWebsocketClient() {
+    return Invoker.createProxy("gateway", "WebsocketController", WebsocketClient.class);
   }
 }

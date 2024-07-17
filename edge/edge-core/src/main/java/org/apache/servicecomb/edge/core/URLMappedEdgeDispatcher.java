@@ -21,16 +21,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.common.rest.route.URLMappedConfigurationItem;
+import org.apache.servicecomb.common.rest.route.URLMappedConfigurationLoader;
+import org.apache.servicecomb.common.rest.route.Utils;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -45,8 +47,6 @@ import io.vertx.ext.web.handler.PlatformHandler;
  * Provide a URL mapping based dispatcher. Users configure witch URL patterns dispatch to a target service.
  */
 public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
-  private static final Logger LOG = LoggerFactory.getLogger(URLMappedEdgeDispatcher.class);
-
   public static final String CONFIGURATION_ITEM = "URLMappedConfigurationItem";
 
   private static final String PATTERN_ANY = "/(.*)";
@@ -64,6 +64,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   private Environment environment;
 
   public URLMappedEdgeDispatcher() {
+    EventManager.register(this);
   }
 
   // though this is an SPI, but add as beans.

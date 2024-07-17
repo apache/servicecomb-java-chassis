@@ -45,6 +45,7 @@ import org.apache.servicecomb.swagger.generator.ParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.ParameterTypeProcessor;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
@@ -341,6 +342,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
       }
     }
     return false;
+  }
+
+  @Override
+  public boolean isWebsocket() {
+    return this.swaggerOperation.getTags() != null &&
+        this.swaggerOperation.getTags().contains(SwaggerConst.TAG_WEBSOCKET);
   }
 
   @Override

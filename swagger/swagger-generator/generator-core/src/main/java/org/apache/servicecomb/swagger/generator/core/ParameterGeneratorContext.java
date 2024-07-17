@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -115,8 +116,14 @@ public class ParameterGeneratorContext extends OperationGeneratorContext {
     this.defaultValue = defaultValue;
   }
 
-  public void updateConsumes(boolean isForm, boolean isBinary) {
+  public void updateConsumes(boolean isForm, boolean isBinary, boolean isWebSocket) {
     List<String> removed = new ArrayList<>();
+    if (isWebSocket) {
+      supportedConsumes.clear();
+      supportedConsumes.add(SwaggerConst.WEBSOCKET_TYPE);
+      return;
+    }
+
     if (httpParameterType == HttpParameterType.BODY) {
       if (isForm) {
         throw new IllegalArgumentException("Both form and body parameter not allowed.");
@@ -127,7 +134,11 @@ public class ParameterGeneratorContext extends OperationGeneratorContext {
         }
         removed.add(media);
       }
-    } else if (httpParameterType == HttpParameterType.FORM) {
+      supportedConsumes.removeAll(removed);
+      return;
+    }
+
+    if (httpParameterType == HttpParameterType.FORM) {
       for (String media : supportedConsumes) {
         if (!SUPPORTED_FORM_CONTENT_TYPE.contains(media)) {
           removed.add(media);
@@ -140,10 +151,11 @@ public class ParameterGeneratorContext extends OperationGeneratorContext {
           removed.add(MediaType.MULTIPART_FORM_DATA);
         }
       }
-    } else {
-      supportedConsumes.clear();
+      supportedConsumes.removeAll(removed);
+      return;
     }
-    supportedConsumes.removeAll(removed);
+
+    supportedConsumes.clear();
   }
 
   public boolean isForm() {

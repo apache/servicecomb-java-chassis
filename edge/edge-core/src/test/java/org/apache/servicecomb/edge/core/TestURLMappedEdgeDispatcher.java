@@ -20,6 +20,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.route.URLMappedConfigurationItem;
 import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.junit.jupiter.api.AfterEach;

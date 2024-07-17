@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.edge.core;
 
+import org.apache.servicecomb.common.rest.route.Utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

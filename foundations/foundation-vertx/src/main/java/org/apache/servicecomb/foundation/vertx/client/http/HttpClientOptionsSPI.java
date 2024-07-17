@@ -22,6 +22,8 @@ import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
+import io.vertx.core.http.WebSocketClientOptions;
+import io.vertx.core.net.ClientOptionsBase;
 import io.vertx.core.net.ProxyOptions;
 
 /**
@@ -97,17 +99,9 @@ public interface HttpClientOptionsSPI {
   /*****************  ssl settings ***************************/
   boolean isSsl();
 
-  static HttpClientOptions createHttpClientOptions(HttpClientOptionsSPI spi) {
-    HttpClientOptions httpClientOptions = new HttpClientOptions();
-
-    httpClientOptions.setProtocolVersion(spi.getHttpVersion());
+  static void buildClientOptionsBase(HttpClientOptionsSPI spi, ClientOptionsBase httpClientOptions) {
     httpClientOptions.setConnectTimeout(spi.getConnectTimeoutInMillis());
     httpClientOptions.setIdleTimeout(spi.getIdleTimeoutInSeconds());
-    httpClientOptions.setTryUseCompression(spi.isTryUseCompression());
-    httpClientOptions.setMaxWaitQueueSize(spi.getMaxWaitQueueSize());
-    httpClientOptions.setMaxPoolSize(spi.getMaxPoolSize());
-    httpClientOptions.setKeepAlive(spi.isKeepAlive());
-    httpClientOptions.setMaxHeaderSize(spi.getMaxHeaderSize());
     httpClientOptions.setLogActivity(spi.enableLogActivity());
 
     if (spi.isProxyEnable()) {
@@ -122,6 +116,21 @@ public interface HttpClientOptionsSPI {
 
     if (spi.getHttpVersion() == HttpVersion.HTTP_2) {
       httpClientOptions.setUseAlpn(spi.isUseAlpn());
+    }
+  }
+
+  static HttpClientOptions createHttpClientOptions(HttpClientOptionsSPI spi) {
+    HttpClientOptions httpClientOptions = new HttpClientOptions();
+    buildClientOptionsBase(spi, httpClientOptions);
+
+    httpClientOptions.setProtocolVersion(spi.getHttpVersion());
+    httpClientOptions.setTryUseCompression(spi.isTryUseCompression());
+    httpClientOptions.setMaxWaitQueueSize(spi.getMaxWaitQueueSize());
+    httpClientOptions.setMaxPoolSize(spi.getMaxPoolSize());
+    httpClientOptions.setKeepAlive(spi.isKeepAlive());
+    httpClientOptions.setMaxHeaderSize(spi.getMaxHeaderSize());
+
+    if (spi.getHttpVersion() == HttpVersion.HTTP_2) {
       httpClientOptions.setHttp2ClearTextUpgrade(false);
       httpClientOptions.setHttp2MultiplexingLimit(spi.getHttp2MultiplexingLimit());
       httpClientOptions.setHttp2MaxPoolSize(spi.getHttp2MaxPoolSize());
@@ -135,5 +144,16 @@ public interface HttpClientOptionsSPI {
     }
 
     return httpClientOptions;
+  }
+
+  static WebSocketClientOptions createWebSocketClientOptions(HttpClientOptionsSPI spi, boolean sslEnabled) {
+    WebSocketClientOptions webSocketClientOptions = new WebSocketClientOptions();
+    buildClientOptionsBase(spi, webSocketClientOptions);
+
+    if (sslEnabled) {
+      VertxTLSBuilder.buildWebSocketClientOptions(spi.getConfigTag(), webSocketClientOptions);
+    }
+
+    return webSocketClientOptions;
   }
 }

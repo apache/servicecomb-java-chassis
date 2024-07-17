@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.swagger.generator.core.processor.parameter.HttpServletRequestContextRegister
+org.apache.servicecomb.swagger.generator.core.processor.parameter.ServerWebSocketContextRegister

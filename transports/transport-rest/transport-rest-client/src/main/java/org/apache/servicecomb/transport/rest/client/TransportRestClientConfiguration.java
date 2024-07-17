@@ -32,6 +32,11 @@ public class TransportRestClientConfiguration {
   }
 
   @Bean
+  public WebSocketClientCodecFilter webSocketClientCodecFilter() {
+    return new WebSocketClientCodecFilter();
+  }
+
+  @Bean
   public RestClientDecoder restClientDecoder() {
     return new RestClientDecoder();
   }

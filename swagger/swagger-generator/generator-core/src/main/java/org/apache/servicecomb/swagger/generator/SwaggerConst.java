@@ -35,6 +35,10 @@ public final class SwaggerConst {
 
   public static final String PROTOBUF_TYPE = "application/protobuf";
 
+  public static final String WEBSOCKET_TYPE = "application/websocket";
+
+  public static final String TAG_WEBSOCKET = "websocket";
+
   public static final String EXT_JAVA_INTF = "x-java-interface";
 
   public static final String EXT_JAVA_CLASS = "x-java-class";

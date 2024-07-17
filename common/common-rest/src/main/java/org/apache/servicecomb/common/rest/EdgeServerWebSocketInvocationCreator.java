@@ -14,42 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.edge.core;
+
+package org.apache.servicecomb.common.rest;
 
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
-import org.apache.servicecomb.core.CoreConst;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 
-import io.vertx.core.Vertx;
-import io.vertx.ext.web.RoutingContext;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.ServerWebSocket;
 
-public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
-  public static final String EDGE_INVOCATION_CONTEXT = "edgeInvocationContext";
-
-  protected final String microserviceName;
-
-  protected final String path;
+public class EdgeServerWebSocketInvocationCreator extends ProviderServerWebSocketInvocationCreator {
+  private final String microserviceName;
 
   protected MicroserviceReferenceConfig microserviceReferenceConfig;
 
-  public EdgeInvocationCreator(RoutingContext routingContext,
-      HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
-      String microserviceName, String path) {
-    // Set endpoint before load balance because edge service will use RESTFUL transport filters.
-    super(routingContext, null,
-        SCBEngine.getInstance().getTransportManager().findTransport(CoreConst.RESTFUL).getEndpoint(),
-        requestEx, responseEx);
+  protected final String path;
 
+  public EdgeServerWebSocketInvocationCreator(String microserviceName, String path,
+      Endpoint endpoint, ServerWebSocket webSocket) {
+    super(null, endpoint, webSocket);
     this.microserviceName = microserviceName;
     this.path = path;
   }
@@ -71,7 +62,7 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
 
   @Override
   protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
-    return servicePathManager.consumerLocateOperation(path, requestEx.getMethod());
+    return servicePathManager.consumerLocateOperation(path, HttpMethod.POST.name());
   }
 
   @Override
@@ -86,7 +77,6 @@ public class EdgeInvocationCreator extends RestVertxProducerInvocationCreator {
     invocation.setSync(false);
     invocation.setEdge();
     invocation.setEndpoint(endpoint); // ensure transport name is correct
-    invocation.addLocalContext(EDGE_INVOCATION_CONTEXT, Vertx.currentContext());
 
     return invocation;
   }

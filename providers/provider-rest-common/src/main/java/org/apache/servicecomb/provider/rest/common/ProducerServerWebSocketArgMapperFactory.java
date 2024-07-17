@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.provider.rest.common;
 
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.transport.rest.vertx.TransportConfig;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerContextArgumentMapperFactory;
 
-public class EdgeBootListener implements BootListener {
+import io.vertx.core.http.ServerWebSocket;
+
+public class ProducerServerWebSocketArgMapperFactory implements ProducerContextArgumentMapperFactory {
+
   @Override
-  public void onBootEvent(BootEvent event) {
-    if (!EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
-      return;
-    }
+  public Class<?> getContextClass() {
+    return ServerWebSocket.class;
+  }
 
-    TransportConfig.setRestServerVerticle(EdgeRestServerVerticle.class);
-    ExecutorManager.setExecutorDefault(ExecutorManager.EXECUTOR_REACTIVE);
+  @Override
+  public ArgumentMapper create(String invocationArgumentName, String swaggerArgumentName) {
+    return new ProducerServerWebSocketMapper(invocationArgumentName, swaggerArgumentName);
   }
 }

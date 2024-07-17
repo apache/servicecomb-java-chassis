@@ -26,6 +26,7 @@ import org.apache.servicecomb.common.rest.codec.query.QueryCodecSsv;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecs;
 import org.apache.servicecomb.common.rest.codec.query.QueryCodecsUtils;
 import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
+import org.apache.servicecomb.common.rest.filter.inner.WebSocketServerCodecFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -59,6 +60,11 @@ public class CommonRestConfiguration {
   @Bean
   public RestServerCodecFilter restServerCodecFilter() {
     return new RestServerCodecFilter();
+  }
+
+  @Bean
+  public WebSocketServerCodecFilter webSocketServerCodecFilter() {
+    return new WebSocketServerCodecFilter();
   }
 
   @Bean

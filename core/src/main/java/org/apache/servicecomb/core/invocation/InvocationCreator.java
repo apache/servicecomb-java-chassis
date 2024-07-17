@@ -20,9 +20,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
 
-/**
- * better to named InvocationFactory, but already be used by old version
- */
 public interface InvocationCreator {
   CompletableFuture<Invocation> createAsync();
 }

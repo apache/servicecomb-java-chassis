@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.provider.rest.common.ProducerHttpRequestArgMapperFactory
+org.apache.servicecomb.provider.rest.common.ProducerServerWebSocketArgMapperFactory
