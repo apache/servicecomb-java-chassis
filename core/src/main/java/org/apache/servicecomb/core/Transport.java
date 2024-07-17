@@ -19,7 +19,6 @@ package org.apache.servicecomb.core;
 
 import org.springframework.core.env.Environment;
 
-// TODO:感觉要拆成显式的client、server才好些
 public interface Transport {
   String getName();
 

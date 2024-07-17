@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.samples;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.servicecomb.core.CoreConst;
 import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
@@ -31,22 +33,24 @@ public class WebsocketController {
   @PostMapping("/websocket")
   @Transport(name = CoreConst.WEBSOCKET)
   public void websocket(ServerWebSocket serverWebsocket) {
+    AtomicInteger receiveCount = new AtomicInteger(0);
     serverWebsocket.writeTextMessage("hello", r -> {
     });
     serverWebsocket.textMessageHandler(s -> {
-      System.out.println("receive message " + s);
+      receiveCount.getAndIncrement();
     });
     serverWebsocket.closeHandler((v) -> System.out.println("closed"));
     new Thread(() -> {
       for (int i = 0; i < 5; i++) {
+        serverWebsocket.writeTextMessage("hello " + i, r -> {
+        });
         try {
-          Thread.sleep(3000);
+          Thread.sleep(500);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
-        serverWebsocket.writeTextMessage("hello " + i, r -> {
-        });
       }
+      serverWebsocket.writeTextMessage("total " + receiveCount.get());
       serverWebsocket.close();
     }).start();
   }

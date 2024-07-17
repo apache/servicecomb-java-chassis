@@ -17,13 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import java.util.List;
-
 import org.apache.servicecomb.core.CoreConst;
-import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.transport.AbstractTransport;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public class WebSocketTransport extends AbstractTransport {
   @Override
@@ -34,17 +29,6 @@ public class WebSocketTransport extends AbstractTransport {
   @Override
   public int getOrder() {
     return -500;
-  }
-
-  @Override
-  public boolean canInit() {
-    List<Transport> transports = SPIServiceUtils.getOrLoadSortedService(Transport.class);
-    for (Transport transport : transports) {
-      if (transport instanceof VertxRestTransport && transport.canInit()) {
-        return ((URIEndpointObject) transport.getEndpoint().getAddress()).isWebsocketEnabled();
-      }
-    }
-    return false;
   }
 
   @Override

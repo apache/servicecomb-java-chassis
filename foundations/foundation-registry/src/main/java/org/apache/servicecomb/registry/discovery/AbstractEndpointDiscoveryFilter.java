@@ -53,12 +53,15 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
       for (String endpoint : instance.getEndpoints()) {
         try {
           URIEndpointObject endpointObject = new URIEndpointObject(endpoint);
-          if (!isTransportNameMatch(endpointObject.getSchema(), expectTransportName,
-              endpointObject.isWebsocketEnabled())) {
+          String transPortName = endpointObject.getSchema();
+          if (endpointObject.isWebsocketEnabled() && WEBSOCKET_TRANSPORT.equals(expectTransportName)) {
+            transPortName = WEBSOCKET_TRANSPORT;
+          }
+          if (!isTransportNameMatch(transPortName, expectTransportName)) {
             continue;
           }
 
-          Object objEndpoint = createEndpoint(context, expectTransportName, endpoint, instance);
+          Object objEndpoint = createEndpoint(context, transPortName, endpoint, instance);
           if (objEndpoint == null) {
             continue;
           }
@@ -75,12 +78,9 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
         .data(endpoints);
   }
 
-  protected boolean isTransportNameMatch(String transportName, String expectTransportName, boolean isWebSocket) {
+  protected boolean isTransportNameMatch(String transportName, String expectTransportName) {
     if (ALL_TRANSPORT.equals(expectTransportName)) {
       return true;
-    }
-    if (WEBSOCKET_TRANSPORT.equals(expectTransportName)) {
-      return isWebSocket;
     }
     return transportName.equals(expectTransportName);
   }
