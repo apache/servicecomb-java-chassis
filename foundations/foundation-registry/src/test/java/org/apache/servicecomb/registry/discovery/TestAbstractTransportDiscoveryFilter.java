@@ -71,17 +71,17 @@ public class TestAbstractTransportDiscoveryFilter {
 
   @Test
   public void isTransportNameMatch_expectAll() {
-    Assertions.assertTrue(filter.isTransportNameMatch("any", "", false));
+    Assertions.assertTrue(filter.isTransportNameMatch("any", ""));
   }
 
   @Test
   public void isTransportNameMatch_equals() {
-    Assertions.assertTrue(filter.isTransportNameMatch("rest", "rest", false));
+    Assertions.assertTrue(filter.isTransportNameMatch("rest", "rest"));
   }
 
   @Test
   public void isTransportNameMatch_notEquals() {
-    Assertions.assertFalse(filter.isTransportNameMatch("rest", "highway", false));
+    Assertions.assertFalse(filter.isTransportNameMatch("rest", "highway"));
   }
 
   @Test
