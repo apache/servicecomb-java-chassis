@@ -39,7 +39,6 @@ import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import io.swagger.annotations.Api;
@@ -58,8 +57,6 @@ import io.swagger.models.Tag;
  * </pre>
  */
 public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
-  protected SwaggerGeneratorFeature swaggerGeneratorFeature = new SwaggerGeneratorFeature();
-
   protected Class<?> cls;
 
   protected Swagger swagger;
@@ -105,41 +102,26 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     this.httpMethod = httpMethod.toLowerCase(Locale.US);
   }
 
-  public SwaggerGeneratorFeature getSwaggerGeneratorFeature() {
-    return swaggerGeneratorFeature;
-  }
-
   public Swagger generate() {
     LOGGER.info("generate schema from [{}]", cls);
     scanClassAnnotation();
 
-    ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = SwaggerGeneratorFeature.getFeatureThreadLocal();
-    featureThreadLocal.set(swaggerGeneratorFeature);
-    try {
-      scanMethods();
-      addOperationsToSwagger();
+    scanMethods();
+    addOperationsToSwagger();
 
-      correctSwagger();
+    correctSwagger();
 
-      return swagger;
-    } finally {
-      featureThreadLocal.remove();
-    }
+    return swagger;
   }
 
   public void scanClassAnnotation() {
-    ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = SwaggerGeneratorFeature.getFeatureThreadLocal();
-    featureThreadLocal.set(swaggerGeneratorFeature);
-    try {
-      for (Annotation annotation : cls.getAnnotations()) {
-        ClassAnnotationProcessor<Annotation> processor = findClassAnnotationProcessor(annotation.annotationType());
-        if (processor == null) {
-          continue;
-        }
-        processor.process(this, annotation);
+
+    for (Annotation annotation : cls.getAnnotations()) {
+      ClassAnnotationProcessor<Annotation> processor = findClassAnnotationProcessor(annotation.annotationType());
+      if (processor == null) {
+        continue;
       }
-    } finally {
-      featureThreadLocal.remove();
+      processor.process(this, annotation);
     }
   }
 
@@ -203,21 +185,9 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   }
 
   protected void setJavaInterface(Info info) {
-    if (!swaggerGeneratorFeature.isExtJavaInterfaceInVendor()) {
-      return;
-    }
-
     if (cls.isInterface()) {
       info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, cls.getName());
-      return;
     }
-
-    if (StringUtils.isEmpty(swaggerGeneratorFeature.getPackageName())) {
-      return;
-    }
-
-    String intfName = swaggerGeneratorFeature.getPackageName() + "." + cls.getSimpleName() + "Intf";
-    info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, intfName);
   }
 
   @Override

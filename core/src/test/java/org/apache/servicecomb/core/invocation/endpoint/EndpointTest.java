@@ -44,9 +44,6 @@ public class EndpointTest {
   @Test
   void should_ignore_endpoint_when_generate_swagger() {
     SwaggerGenerator generator = SwaggerGenerator.create(TestSchema.class);
-    generator.getSwaggerGeneratorFeature()
-        .setExtJavaInterfaceInVendor(false)
-        .setExtJavaClassInVendor(false);
     Swagger swagger = generator.generate();
 
     assertThat(SwaggerUtils.swaggerToString(swagger))
@@ -55,6 +52,7 @@ public class EndpointTest {
             + "info:\n"
             + "  version: \"1.0.0\"\n"
             + "  title: \"swagger definition for org.apache.servicecomb.core.invocation.endpoint.EndpointTest$TestSchema\"\n"
+            + "  x-java-interface: \"org.apache.servicecomb.core.invocation.endpoint.EndpointTest$TestSchema\"\n"
             + "basePath: \"/TestSchema\"\n"
             + "consumes:\n"
             + "- \"application/json\"\n"

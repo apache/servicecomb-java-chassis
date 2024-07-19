@@ -527,7 +527,6 @@ public class TestMicroserviceRegisterTask {
             "info:\n" +
             "  version: \"1.0.0\"\n" +
             "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
             "basePath: \"/clientreqtimeout\"\n" +
             "consumes:\n" +
             "- \"application/json\"\n" +
@@ -569,7 +568,6 @@ public class TestMicroserviceRegisterTask {
             "info:\n" +
             "  version: \"1.0.0\"\n" +
             "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
             "basePath: \"/clientreqtimeout\"\n" +
             "consumes:\n" +
             "- \"application/json\"\n" +
@@ -621,7 +619,6 @@ public class TestMicroserviceRegisterTask {
           "info:\n" +
           "  version: \"1.0.0\"\n" +
           "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-          "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
           "basePath: \"/clientreqtimeout\"\n" +
           "consumes:\n" +
           "- \"application/json\"\n" +
@@ -660,7 +657,6 @@ public class TestMicroserviceRegisterTask {
           "info:\n" +
           "  version: \"1.0.0\"\n" +
           "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-          "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
           "basePath: \"/clientreqtimeout\"\n" +
           "consumes:\n" +
           "- \"application/json\"\n" +
@@ -747,7 +743,6 @@ public class TestMicroserviceRegisterTask {
             "info:\n" +
             "  version: \"1.0.0\"\n" +
             "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
             "basePath: \"/clientreqtimeout\"\n" +
             "consumes:\n" +
             "- \"application/json\"\n" +
@@ -789,7 +784,6 @@ public class TestMicroserviceRegisterTask {
             "info:\n" +
             "  version: \"1.0.0\"\n" +
             "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
             "basePath: \"/clientreqtimeout\"\n" +
             "consumes:\n" +
             "- \"application/json\"\n" +
@@ -866,7 +860,6 @@ public class TestMicroserviceRegisterTask {
             "info:\n" +
             "  version: \"1.0.0\"\n" +
             "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
             "basePath: \"/clientreqtimeout\"\n" +
             "consumes:\n" +
             "- \"application/json\"\n" +
@@ -908,7 +901,6 @@ public class TestMicroserviceRegisterTask {
             "info:\n" +
             "  version: \"1.0.0\"\n" +
             "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
-            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
             "basePath: \"/clientreqtimeout\"\n" +
             "consumes:\n" +
             "- \"application/json\"\n" +

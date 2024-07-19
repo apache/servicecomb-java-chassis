@@ -19,7 +19,6 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "swagger definition for org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher"
-  x-java-interface: "cse.gen.perfTest.perf1.healthEndpoint.HealthCheckerRestPublisherIntf"
 basePath: "/health"
 schemes:
   - "http"

@@ -24,13 +24,13 @@ import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.junit.jupiter.api.Assertions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
-import org.junit.jupiter.api.Assertions;
 
 public final class UnitTestSwaggerUtils {
   private static final ObjectWriter writer = Yaml.pretty();
@@ -71,8 +71,6 @@ public final class UnitTestSwaggerUtils {
   public static SwaggerGenerator testSwagger(String resPath, Class<?> cls, String... methods) {
     SwaggerGenerator generator = SwaggerGenerator.create(cls);
     generator.replaceMethodWhiteList(methods);
-    generator.getSwaggerGeneratorFeature().setPackageName("gen.cse.ms.ut");
-
     Swagger swagger = generator.generate();
     String schema = pretty(swagger);
 

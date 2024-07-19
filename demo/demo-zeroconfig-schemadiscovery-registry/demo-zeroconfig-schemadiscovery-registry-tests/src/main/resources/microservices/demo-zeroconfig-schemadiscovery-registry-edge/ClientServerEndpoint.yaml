@@ -19,7 +19,6 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "swagger definition for org.apache.servicecomb.demo.zeroconfig.client.ClientServerEndpoint"
-  x-java-interface: "gen.swagger.ClientServerEndpointIntf"
 basePath: "/register/url/prefix"
 schemes:
   - "http"
