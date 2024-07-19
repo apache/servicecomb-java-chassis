@@ -36,7 +36,6 @@ import org.apache.servicecomb.config.inject.PlaceholderResolver;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,8 +56,6 @@ import io.swagger.v3.oas.models.servers.Server;
  * </pre>
  */
 public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
-  protected SwaggerGeneratorFeature swaggerGeneratorFeature = new SwaggerGeneratorFeature();
-
   protected SwaggerGeneratorContext swaggerGeneratorContext = new SwaggerGeneratorContext();
 
   protected Class<?> cls;
@@ -103,11 +100,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   }
 
   @Override
-  public SwaggerGeneratorFeature getSwaggerGeneratorFeature() {
-    return swaggerGeneratorFeature;
-  }
-
-  @Override
   public SwaggerGeneratorContext getSwaggerGeneratorContext() {
     return swaggerGeneratorContext;
   }
@@ -116,33 +108,21 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     LOGGER.info("generate schema from [{}]", cls);
     scanClassAnnotation();
 
-    ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = SwaggerGeneratorFeature.getFeatureThreadLocal();
-    featureThreadLocal.set(swaggerGeneratorFeature);
-    try {
-      scanMethods();
-      addOperationsToSwagger();
+    scanMethods();
+    addOperationsToSwagger();
 
-      correctSwagger();
+    correctSwagger();
 
-      return openAPI;
-    } finally {
-      featureThreadLocal.remove();
-    }
+    return openAPI;
   }
 
   public void scanClassAnnotation() {
-    ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = SwaggerGeneratorFeature.getFeatureThreadLocal();
-    featureThreadLocal.set(swaggerGeneratorFeature);
-    try {
-      for (Annotation annotation : cls.getAnnotations()) {
-        ClassAnnotationProcessor<Annotation> processor = findClassAnnotationProcessor(annotation.annotationType());
-        if (processor == null) {
-          continue;
-        }
-        processor.process(this, annotation);
+    for (Annotation annotation : cls.getAnnotations()) {
+      ClassAnnotationProcessor<Annotation> processor = findClassAnnotationProcessor(annotation.annotationType());
+      if (processor == null) {
+        continue;
       }
-    } finally {
-      featureThreadLocal.remove();
+      processor.process(this, annotation);
     }
   }
 

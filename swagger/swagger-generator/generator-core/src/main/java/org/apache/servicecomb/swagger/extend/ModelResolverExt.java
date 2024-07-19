@@ -36,7 +36,6 @@ import org.apache.servicecomb.swagger.extend.property.creator.InputStreamPropert
 import org.apache.servicecomb.swagger.extend.property.creator.PartPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -109,8 +108,7 @@ public class ModelResolverExt extends ModelResolver {
     }
 
     Schema result = super.resolve(propType, context, next);
-    if (SwaggerGeneratorFeature.isLocalExtJavaClassInVendor()
-        && !StringUtils.isEmpty(result.get$ref())) {
+    if (!StringUtils.isEmpty(result.get$ref())) {
       Schema referencedSchema = context.getDefinedModels() != null
           ? context.getDefinedModels().get(SwaggerUtils.getSchemaName(result.get$ref())) : null;
       if (referencedSchema != null) {
