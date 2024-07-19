@@ -71,7 +71,6 @@ public final class UnitTestSwaggerUtils {
   public static SwaggerGenerator testSwagger(String resPath, Class<?> cls, String... methods) {
     SwaggerGenerator generator = SwaggerGenerator.create(cls);
     generator.replaceMethodWhiteList(methods);
-    generator.getSwaggerGeneratorFeature().setPackageName("gen.cse.ms.ut");
 
     OpenAPI swagger = generator.generate();
     String schema = pretty(swagger).trim();

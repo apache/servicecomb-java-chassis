@@ -45,8 +45,6 @@ public interface SwaggerGenerator {
     throw new IllegalStateException("impossible, must be bug. can not generate swagger for " + cls.getName());
   }
 
-  SwaggerGeneratorFeature getSwaggerGeneratorFeature();
-
   SwaggerGeneratorContext getSwaggerGeneratorContext();
 
   /**
