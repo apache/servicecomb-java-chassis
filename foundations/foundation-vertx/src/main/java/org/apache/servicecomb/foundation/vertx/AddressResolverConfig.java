@@ -79,7 +79,7 @@ public class AddressResolverConfig {
             "addressResolver.rdFlag"));
     addressResolverOptions
         .setSearchDomains(getStringListProperty(
-            AddressResolverOptions.DEFAULT_SEACH_DOMAINS,
+            AddressResolverOptions.DEFAULT_SEARCH_DOMAINS,
             "addressResolver." + tag + ".searchDomains",
             "addressResolver.searchDomains"));
     addressResolverOptions

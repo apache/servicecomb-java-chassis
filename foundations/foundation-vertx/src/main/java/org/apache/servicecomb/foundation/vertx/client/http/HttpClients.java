@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.ThreadingModel;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.dns.AddressResolverOptions;
@@ -74,7 +75,7 @@ public class HttpClients {
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientPoolManager,
             option.getInstanceCount())
-        .setWorker(option.isWorker())
+        .setThreadingModel(option.isWorker() ? ThreadingModel.WORKER : ThreadingModel.EVENT_LOOP)
         .setWorkerPoolName(option.getWorkerPoolName())
         .setWorkerPoolSize(option.getWorkerPoolSize());
     try {

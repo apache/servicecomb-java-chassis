@@ -16,6 +16,7 @@
  */
 package io.vertx.core.impl;
 
+import java.io.Serial;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
@@ -35,7 +36,11 @@ import io.vertx.core.spi.tracing.VertxTracer;
 /**
  * This class is created to make vertx unit test easier
  */
+@SuppressWarnings({"rawtypes"})
 public class SyncContext extends ContextBase implements ContextInternal {
+  @Serial
+  private static final long serialVersionUID = -6209656149925076980L;
+
   protected VertxInternal owner;
 
   protected Executor executor = Executors.newSingleThreadExecutor();
@@ -186,6 +191,7 @@ public class SyncContext extends ContextBase implements ContextInternal {
   }
 
   @Override
+  @Deprecated
   public <T> Future<T> executeBlocking(Handler<Promise<T>> handler, TaskQueue taskQueue) {
     return null;
   }
@@ -196,6 +202,7 @@ public class SyncContext extends ContextBase implements ContextInternal {
   }
 
   @Override
+  @Deprecated
   public <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler, boolean ordered,
       Handler<AsyncResult<T>> asyncResultHandler) {
     syncExecuteBlocking(blockingCodeHandler, asyncResultHandler);
@@ -207,6 +214,7 @@ public class SyncContext extends ContextBase implements ContextInternal {
   }
 
   @Override
+  @Deprecated
   public <T> Future<@Nullable T> executeBlocking(Handler<Promise<T>> handler, boolean b) {
     return null;
   }

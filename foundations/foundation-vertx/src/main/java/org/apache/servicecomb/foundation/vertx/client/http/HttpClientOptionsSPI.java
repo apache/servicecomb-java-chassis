@@ -124,7 +124,7 @@ public interface HttpClientOptionsSPI {
     buildClientOptionsBase(spi, httpClientOptions);
 
     httpClientOptions.setProtocolVersion(spi.getHttpVersion());
-    httpClientOptions.setTryUseCompression(spi.isTryUseCompression());
+    httpClientOptions.setDecompressionSupported(spi.isTryUseCompression());
     httpClientOptions.setMaxWaitQueueSize(spi.getMaxWaitQueueSize());
     httpClientOptions.setMaxPoolSize(spi.getMaxPoolSize());
     httpClientOptions.setKeepAlive(spi.isKeepAlive());
