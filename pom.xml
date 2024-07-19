@@ -41,7 +41,6 @@
     <java.version>17</java.version>
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
-    <werror.properties></werror.properties>
     <!-- plugin version start -->
     <!-- sort by alpha -->
     <checkstyle-maven-plugin.version>3.4.0</checkstyle-maven-plugin.version>
@@ -423,13 +422,9 @@
             <target>17</target>
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
+            <!--<failOnWarning>true</failOnWarning>-->
             <compilerArgs>
-              <arg>${werror.properties}</arg>
               <arg>-Xlint:all</arg>
-              <!--not care for jdk8/jdk7 compatible problem-->
-              <arg>-Xlint:-classfile</arg>
-              <!--not care for annotations not processed-->
-              <arg>-Xlint:-processing</arg>
             </compilerArgs>
           </configuration>
         </plugin>

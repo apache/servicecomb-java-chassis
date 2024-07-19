@@ -37,19 +37,19 @@ public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithCo
 
   @Override
   public HttpClientWithContext createClientPool(Context context) {
-    HttpClient httpClient = context.owner().createHttpClient(httpClientOptions);
-    httpClient.connectionHandler(connection -> {
-      LOGGER.debug("http connection connected, local:{}, remote:{}.",
-          connection.localAddress(), connection.remoteAddress());
-      connection.closeHandler(v ->
-          LOGGER.debug("http connection closed, local:{}, remote:{}.",
-              connection.localAddress(), connection.remoteAddress())
-      );
-      connection.exceptionHandler(e ->
-          LOGGER.info("http connection exception, local:{}, remote:{}.",
-              connection.localAddress(), connection.remoteAddress(), e)
-      );
-    });
+    HttpClient httpClient = context.owner().httpClientBuilder().with(httpClientOptions)
+        .withConnectHandler(connection -> {
+          LOGGER.debug("http connection connected, local:{}, remote:{}.",
+              connection.localAddress(), connection.remoteAddress());
+          connection.closeHandler(v ->
+              LOGGER.debug("http connection closed, local:{}, remote:{}.",
+                  connection.localAddress(), connection.remoteAddress())
+          );
+          connection.exceptionHandler(e ->
+              LOGGER.info("http connection exception, local:{}, remote:{}.",
+                  connection.localAddress(), connection.remoteAddress(), e)
+          );
+        }).build();
     return new HttpClientWithContext(httpClient, context);
   }
 }
