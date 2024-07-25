@@ -51,7 +51,7 @@ public class ConverterMgrTest {
   @Test
   public void should_use_Object_when_model_type_is_not_available() {
     Model model = swagger.getDefinitions().get("testEnumBody");
-    assertThat(SwaggerUtils.getClassName(model.getVendorExtensions())).isEqualTo("gen.cse.ms.ut.testEnumBody");
+    assertThat(SwaggerUtils.getClassName(model.getVendorExtensions())).isNull();
     assertThat(ConverterMgr.findJavaType(swagger, model).getRawClass()).isEqualTo(Object.class);
   }
 

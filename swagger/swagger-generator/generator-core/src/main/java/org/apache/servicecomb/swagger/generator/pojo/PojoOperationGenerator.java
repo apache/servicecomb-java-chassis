@@ -29,8 +29,6 @@ import javax.ws.rs.HttpMethod;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
@@ -99,15 +97,6 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
       parameterGenerator.setHttpParameterType(null);
     }
     swagger.addDefinition(simpleRef, bodyModel);
-
-    SwaggerGeneratorFeature feature = swaggerGenerator.getSwaggerGeneratorFeature();
-    // bodyFields.size() > 1 is no reason, just because old version do this......
-    // if not care for this, then can just delete all logic about EXT_JAVA_CLASS/EXT_JAVA_INTF
-    if (feature.isExtJavaClassInVendor()
-        && bodyFields.size() > 1
-        && StringUtils.isNotEmpty(feature.getPackageName())) {
-      bodyModel.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, feature.getPackageName() + "." + simpleRef);
-    }
 
     RefModel refModel = new RefModel();
     refModel.setReference("#/definitions/" + simpleRef);

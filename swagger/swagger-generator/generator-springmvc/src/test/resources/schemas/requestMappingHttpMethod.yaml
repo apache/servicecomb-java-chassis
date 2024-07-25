@@ -20,7 +20,6 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.ClassMethodNoHttpMethod"
-  x-java-interface: "gen.cse.ms.ut.ClassMethodNoHttpMethodIntf"
 basePath: "/c"
 consumes:
 - "application/json"

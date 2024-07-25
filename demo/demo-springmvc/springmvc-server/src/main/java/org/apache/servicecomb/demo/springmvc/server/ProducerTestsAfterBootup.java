@@ -47,7 +47,6 @@ public class ProducerTestsAfterBootup implements BootListener {
       + "info:\n"
       + "  version: \"1.0.0\"\n"
       + "  title: \"swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\"\n"
-      + "  x-java-interface: \"gen.swagger.CodeFirstSpringmvcForSchemaIntf\"\n"
       + "basePath: \"/forScheam\"\n"
       + "consumes:\n"
       + "- \"application/json\"\n"

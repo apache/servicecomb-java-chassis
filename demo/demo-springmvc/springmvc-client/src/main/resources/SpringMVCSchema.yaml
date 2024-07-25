@@ -25,7 +25,6 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "swagger definition for org.apache.servicecomb.demo.springmvc.client.SpringMVCSchema"
-  x-java-interface: "gen.swagger.SpringMVCSchemaIntf"
 basePath: "/springMvcSchema"
 schemes:
   - "http"

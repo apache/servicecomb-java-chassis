@@ -40,7 +40,6 @@ import org.apache.servicecomb.swagger.extend.property.creator.PartPropertyCreato
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.ShortPropertyCreator;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
-import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -109,9 +108,7 @@ public class ModelResolverExt extends ModelResolver {
 
   @VisibleForTesting
   protected void setType(JavaType type, Map<String, Object> vendorExtensions) {
-    if (SwaggerGeneratorFeature.isLocalExtJavaClassInVendor()) {
-      vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, type.toCanonical());
-    }
+    vendorExtensions.put(SwaggerConst.EXT_JAVA_CLASS, type.toCanonical());
   }
 
   private void checkType(JavaType type) {

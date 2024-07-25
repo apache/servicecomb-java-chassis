@@ -20,7 +20,6 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "swagger definition for org.apache.servicecomb.swagger.generator.core.schema.Schema"
-  x-java-interface: "gen.cse.ms.ut.SchemaIntf"
 basePath: "/Schema"
 consumes:
 - "application/json"
@@ -683,7 +682,6 @@ definitions:
         - "YELLOW"
         - "BLUE"
         x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.Color"
-    x-java-class: "gen.cse.ms.ut.testEnumBody"
   testFloatBody:
     type: "object"
     properties:
@@ -781,7 +779,6 @@ definitions:
         type: "object"
         additionalProperties:
           $ref: "#/definitions/User"
-    x-java-class: "gen.cse.ms.ut.testMultiParamBody"
   testOneEnumBody:
     type: "object"
     properties:

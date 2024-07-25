@@ -19,7 +19,6 @@ swagger: "2.0"
 info:
   version: "1.0.0"
   title: "swagger definition for org.apache.servicecomb.demo.registry.ServiceCenterEndpoint"
-  x-java-interface: "gen.swagger.ServiceCenterEndpointIntf"
 basePath: "/v4/default/registry"
 schemes:
   - "http"
