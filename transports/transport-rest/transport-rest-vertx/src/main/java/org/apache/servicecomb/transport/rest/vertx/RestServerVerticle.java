@@ -280,6 +280,7 @@ public class RestServerVerticle extends AbstractVerticle {
       serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
           .setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize())
           .setIdleTimeout(TransportConfig.getHttp2ConnectionIdleTimeoutInSeconds())
+          .setHttp2RstFloodMaxRstFramePerWindow(TransportConfig.getHttp2RstFloodMaxRstFramePerWindow())
           .setInitialSettings(new Http2Settings().setPushEnabled(TransportConfig.getPushEnabled())
               .setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams())
               .setHeaderTableSize(TransportConfig.getHttp2HeaderTableSize())

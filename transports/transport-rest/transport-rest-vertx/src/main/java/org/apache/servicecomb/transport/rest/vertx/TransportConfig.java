@@ -80,8 +80,14 @@ public final class TransportConfig {
 
   public static int getHttp2ConnectionWindowSize() {
     return LegacyPropertyFactory
-        .getIntProperty("servicecomb.rest.server.http2ConnectionWindowSize",
+        .getIntProperty("servicecomb.rest.server.http2.connectionWindowSize",
             HttpServerOptions.DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE);
+  }
+
+  public static int getHttp2RstFloodMaxRstFramePerWindow() {
+    return LegacyPropertyFactory
+        .getIntProperty("servicecomb.rest.server.http2.rstFloodMaxRstFramePerWindow",
+            HttpServerOptions.DEFAULT_HTTP2_RST_FLOOD_MAX_RST_FRAME_PER_WINDOW);
   }
 
   public static int getThreadCount() {
@@ -93,8 +99,7 @@ public final class TransportConfig {
   public static int getConnectionIdleTimeoutInSeconds() {
     return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.server.connection.idleTimeoutInSeconds",
-            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
-        ;
+            DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND);
   }
 
   public static int getHttp2ConnectionIdleTimeoutInSeconds() {
