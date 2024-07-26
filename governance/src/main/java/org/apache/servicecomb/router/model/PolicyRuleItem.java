@@ -153,7 +153,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
         ", weightLess=" + weightLess +
         ", fallback=" + fallback +
         ", fallbackTotal=" + fallbackTotal +
-        ", forceEnabled=" + emptyProtection +
+        ", emptyProtection=" + emptyProtection +
         '}';
   }
 }
