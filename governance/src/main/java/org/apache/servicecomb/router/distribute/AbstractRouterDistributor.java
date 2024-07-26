@@ -17,6 +17,7 @@
 package org.apache.servicecomb.router.distribute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,11 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
     // has weightLess situation and unSetTagInstances has values
     if (invokeRule.isWeightLess() && !unSetTagInstances.isEmpty()) {
       return unSetTagInstances;
+    }
+
+    // weight set 100 but not matched any instance, then return empty when forceEnabled open
+    if (invokeRule.isForceEnabled()) {
+      return Collections.emptyList();
     }
     return list;
   }

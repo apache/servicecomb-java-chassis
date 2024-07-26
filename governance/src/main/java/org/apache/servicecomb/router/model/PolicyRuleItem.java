@@ -46,6 +46,8 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   private Integer fallbackTotal;
 
+  private boolean forceEnabled = false;
+
   public PolicyRuleItem() {
   }
 
@@ -133,6 +135,14 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
     this.fallbackTotal = fallbackTotal;
   }
 
+  public boolean isForceEnabled() {
+    return forceEnabled;
+  }
+
+  public void setForceEnabled(boolean forceEnabled) {
+    this.forceEnabled = forceEnabled;
+  }
+
   @Override
   public String toString() {
     return "PolicyRuleItem{" +
@@ -143,6 +153,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
         ", weightLess=" + weightLess +
         ", fallback=" + fallback +
         ", fallbackTotal=" + fallbackTotal +
+        ", forceEnabled=" + forceEnabled +
         '}';
   }
 }

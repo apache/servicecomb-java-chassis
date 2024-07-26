@@ -75,6 +75,54 @@ servicecomb:
           - weight: 80
             tags:
               version: 0.0.2
+      - precedence: 4
+        forceEnabled: true
+        match:
+          headers:
+            canary:
+              exact: force100
+        route:
+          - weight: 100
+            tags:
+              version: 0.0.3
+      - precedence: 5
+        forceEnabled: true
+        match:
+          headers:
+            canary:
+              exact: forceLess100
+        route:
+          - weight: 50
+            tags:
+              version: 0.0.3
+      - precedence: 6
+        forceEnabled: true
+        match:
+          headers:
+            canary:
+              exact: forceFallback
+        route:
+          - weight: 100
+            tags:
+              version: 0.0.3
+        fallback:
+          - weight: 100
+            tags:
+              version: 0.0.1
+      - precedence: 7
+        forceEnabled: true
+        match:
+          headers:
+            canary:
+              exact: force100-2
+        route:
+          - weight: 50
+            tags:
+              version: 0.0.1
+          - weight: 50
+            tags:
+              version: 0.0.3
+
 
   router:
     type: router

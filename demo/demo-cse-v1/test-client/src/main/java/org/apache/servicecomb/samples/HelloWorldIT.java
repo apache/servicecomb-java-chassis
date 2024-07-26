@@ -38,6 +38,10 @@ public class HelloWorldIT implements CategorizedTestCase {
     testHelloWorldNoHeader();
     testHelloWorld();
     testHelloWorldCanary();
+    testHelloWorldForceWeight100();
+    testHelloWorldForceWeightLess100();
+    testHelloWorldForceWeightFallback();
+    testHelloWorldForceWeight100Two();
   }
 
   private void testHelloWorld() {
@@ -118,5 +122,83 @@ public class HelloWorldIT implements CategorizedTestCase {
 
     double ratio = oldCount / (float) (oldCount + newCount);
     TestMgr.check(Double.compare(ratio, 0.5) == 0, true);
+  }
+
+  private void testHelloWorldForceWeight100() {
+    int failCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "force100");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class).getBody();
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(failCount == 20, true);
+  }
+
+  private void testHelloWorldForceWeightLess100() {
+    int failCount = 0;
+    int succCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "forceLess100");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class).getBody();
+        succCount++;
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(succCount == 20, true);
+  }
+
+  private void testHelloWorldForceWeightFallback() {
+    int failCount = 0;
+    int succCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "forceFallback");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class).getBody();
+        succCount++;
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(succCount == 20, true);
+  }
+
+  private void testHelloWorldForceWeight100Two() {
+    int failCount = 0;
+    int succCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "force100-2");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class).getBody();
+        succCount++;
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(failCount == succCount, true);
   }
 }
