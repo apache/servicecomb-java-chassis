@@ -38,6 +38,10 @@ public class HelloWorldIT implements CategorizedTestCase {
     testHelloWorldNoHeader();
     testHelloWorld();
     testHelloWorldCanary();
+    testHelloWorldEmptyProtectionCloseWeight100();
+    testHelloWorldeEptyProtectionCloseWeightLess100();
+    testHelloWorldEmptyProtectionCloseFallback();
+    testHelloWorldEmptyProtectionCloseWeight100Two();
   }
 
   private void testHelloWorld() {
@@ -118,5 +122,83 @@ public class HelloWorldIT implements CategorizedTestCase {
 
     double ratio = oldCount / (float) (oldCount + newCount);
     TestMgr.check(Double.compare(ratio, 0.5) == 0, true);
+  }
+
+  private void testHelloWorldEmptyProtectionCloseWeight100() {
+    int failCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "emptyProtectionClose100");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class);
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(failCount == 20, true);
+  }
+
+  private void testHelloWorldeEptyProtectionCloseWeightLess100() {
+    int failCount = 0;
+    int succCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "emptyProtectionCloseLess100");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class);
+        succCount++;
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(succCount == 20, true);
+  }
+
+  private void testHelloWorldEmptyProtectionCloseFallback() {
+    int failCount = 0;
+    int succCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "emptyProtectionCloseFallback");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class);
+        succCount++;
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(succCount == 20, true);
+  }
+
+  private void testHelloWorldEmptyProtectionCloseWeight100Two() {
+    int failCount = 0;
+    int succCount = 0;
+
+    for (int i = 0; i < 20; i++) {
+      MultiValueMap<String, String> headers = new HttpHeaders();
+      headers.add("canary", "emptyProtectionClose100-2");
+      HttpEntity<Object> entity = new HttpEntity<>(headers);
+      try {
+        template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
+            entity, String.class);
+        succCount++;
+      } catch (Exception e) {
+        failCount++;
+      }
+    }
+
+    TestMgr.check(failCount == succCount, true);
   }
 }

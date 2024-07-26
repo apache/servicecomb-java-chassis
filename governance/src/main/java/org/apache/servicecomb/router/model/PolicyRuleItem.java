@@ -46,6 +46,8 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   private Integer fallbackTotal;
 
+  private boolean emptyProtection = true;
+
   public PolicyRuleItem() {
   }
 
@@ -133,6 +135,14 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
     this.fallbackTotal = fallbackTotal;
   }
 
+  public boolean isEmptyProtection() {
+    return emptyProtection;
+  }
+
+  public void setEmptyProtection(boolean emptyProtection) {
+    this.emptyProtection = emptyProtection;
+  }
+
   @Override
   public String toString() {
     return "PolicyRuleItem{" +
@@ -143,6 +153,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
         ", weightLess=" + weightLess +
         ", fallback=" + fallback +
         ", fallbackTotal=" + fallbackTotal +
+        ", emptyProtection=" + emptyProtection +
         '}';
   }
 }
