@@ -76,31 +76,31 @@ servicecomb:
             tags:
               version: 0.0.2
       - precedence: 4
-        forceEnabled: true
+        emptyProtection: false
         match:
           headers:
             canary:
-              exact: force100
+              exact: emptyProtectionClose100
         route:
           - weight: 100
             tags:
               version: 0.0.3
       - precedence: 5
-        forceEnabled: true
+        emptyProtection: false
         match:
           headers:
             canary:
-              exact: forceLess100
+              exact: emptyProtectionCloseLess100
         route:
           - weight: 50
             tags:
               version: 0.0.3
       - precedence: 6
-        forceEnabled: true
+        emptyProtection: false
         match:
           headers:
             canary:
-              exact: forceFallback
+              exact: emptyProtectionCloseFallback
         route:
           - weight: 100
             tags:
@@ -110,11 +110,11 @@ servicecomb:
             tags:
               version: 0.0.1
       - precedence: 7
-        forceEnabled: true
+        emptyProtection: false
         match:
           headers:
             canary:
-              exact: force100-2
+              exact: emptyProtectionClose100-2
         route:
           - weight: 50
             tags:

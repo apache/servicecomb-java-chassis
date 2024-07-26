@@ -96,12 +96,12 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
     if (invokeRule.isWeightLess() && !unSetTagInstances.isEmpty()) {
       return unSetTagInstances;
     }
-
-    // weight set 100 but not matched any instance, then return empty when forceEnabled open
-    if (invokeRule.isForceEnabled()) {
-      return Collections.emptyList();
+    if (invokeRule.isEmptyProtection()) {
+      return list;
     }
-    return list;
+    
+    // weight set 100 but not matched any instance, then return empty when emptyProtection close
+    return Collections.emptyList();
   }
 
   @Override

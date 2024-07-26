@@ -46,7 +46,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   private Integer fallbackTotal;
 
-  private boolean forceEnabled = false;
+  private boolean emptyProtection = true;
 
   public PolicyRuleItem() {
   }
@@ -135,12 +135,12 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
     this.fallbackTotal = fallbackTotal;
   }
 
-  public boolean isForceEnabled() {
-    return forceEnabled;
+  public boolean isEmptyProtection() {
+    return emptyProtection;
   }
 
-  public void setForceEnabled(boolean forceEnabled) {
-    this.forceEnabled = forceEnabled;
+  public void setEmptyProtection(boolean emptyProtection) {
+    this.emptyProtection = emptyProtection;
   }
 
   @Override
@@ -153,7 +153,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
         ", weightLess=" + weightLess +
         ", fallback=" + fallback +
         ", fallbackTotal=" + fallbackTotal +
-        ", forceEnabled=" + forceEnabled +
+        ", forceEnabled=" + emptyProtection +
         '}';
   }
 }

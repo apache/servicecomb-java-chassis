@@ -38,10 +38,10 @@ public class HelloWorldIT implements CategorizedTestCase {
     testHelloWorldNoHeader();
     testHelloWorld();
     testHelloWorldCanary();
-    testHelloWorldForceWeight100();
-    testHelloWorldForceWeightLess100();
-    testHelloWorldForceWeightFallback();
-    testHelloWorldForceWeight100Two();
+    testHelloWorldEmptyProtectionCloseWeight100();
+    testHelloWorldeEptyProtectionCloseWeightLess100();
+    testHelloWorldEmptyProtectionCloseFallback();
+    testHelloWorldEmptyProtectionCloseWeight100Two();
   }
 
   private void testHelloWorld() {
@@ -124,12 +124,12 @@ public class HelloWorldIT implements CategorizedTestCase {
     TestMgr.check(Double.compare(ratio, 0.5) == 0, true);
   }
 
-  private void testHelloWorldForceWeight100() {
+  private void testHelloWorldEmptyProtectionCloseWeight100() {
     int failCount = 0;
 
     for (int i = 0; i < 20; i++) {
       MultiValueMap<String, String> headers = new HttpHeaders();
-      headers.add("canary", "force100");
+      headers.add("canary", "emptyProtectionClose100");
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
@@ -142,13 +142,13 @@ public class HelloWorldIT implements CategorizedTestCase {
     TestMgr.check(failCount == 20, true);
   }
 
-  private void testHelloWorldForceWeightLess100() {
+  private void testHelloWorldeEptyProtectionCloseWeightLess100() {
     int failCount = 0;
     int succCount = 0;
 
     for (int i = 0; i < 20; i++) {
       MultiValueMap<String, String> headers = new HttpHeaders();
-      headers.add("canary", "forceLess100");
+      headers.add("canary", "emptyProtectionCloseLess100");
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
@@ -162,13 +162,13 @@ public class HelloWorldIT implements CategorizedTestCase {
     TestMgr.check(succCount == 20, true);
   }
 
-  private void testHelloWorldForceWeightFallback() {
+  private void testHelloWorldEmptyProtectionCloseFallback() {
     int failCount = 0;
     int succCount = 0;
 
     for (int i = 0; i < 20; i++) {
       MultiValueMap<String, String> headers = new HttpHeaders();
-      headers.add("canary", "forceFallback");
+      headers.add("canary", "emptyProtectionCloseFallback");
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
@@ -182,13 +182,13 @@ public class HelloWorldIT implements CategorizedTestCase {
     TestMgr.check(succCount == 20, true);
   }
 
-  private void testHelloWorldForceWeight100Two() {
+  private void testHelloWorldEmptyProtectionCloseWeight100Two() {
     int failCount = 0;
     int succCount = 0;
 
     for (int i = 0; i < 20; i++) {
       MultiValueMap<String, String> headers = new HttpHeaders();
-      headers.add("canary", "force100-2");
+      headers.add("canary", "emptyProtectionClose100-2");
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
