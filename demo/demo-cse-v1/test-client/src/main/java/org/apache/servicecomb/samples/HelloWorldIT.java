@@ -133,7 +133,7 @@ public class HelloWorldIT implements CategorizedTestCase {
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
-            entity, String.class).getBody();
+            entity, String.class);
       } catch (Exception e) {
         failCount++;
       }
@@ -152,7 +152,7 @@ public class HelloWorldIT implements CategorizedTestCase {
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
-            entity, String.class).getBody();
+            entity, String.class);
         succCount++;
       } catch (Exception e) {
         failCount++;
@@ -172,7 +172,7 @@ public class HelloWorldIT implements CategorizedTestCase {
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
-            entity, String.class).getBody();
+            entity, String.class);
         succCount++;
       } catch (Exception e) {
         failCount++;
@@ -192,7 +192,7 @@ public class HelloWorldIT implements CategorizedTestCase {
       HttpEntity<Object> entity = new HttpEntity<>(headers);
       try {
         template.exchange(Config.GATEWAY_URL + "/sayHelloCanary?name=World", HttpMethod.GET,
-            entity, String.class).getBody();
+            entity, String.class);
         succCount++;
       } catch (Exception e) {
         failCount++;
