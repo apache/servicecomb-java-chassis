@@ -42,6 +42,8 @@ public class ConfigurationProblemsCollectorTest implements CategorizedTestCase {
     TestMgr.check(event != null, true);
     TestMgr.check(event.getProblems(), "Configurations warnings:\n" +
         "Configurations with prefix `service_description` is deprecated, "
-        + "use `servicecomb.service` instead. Find keys [service_description.initialStatus]\n");
+        + "use `servicecomb.service` instead. Find keys [service_description.initialStatus]\n"
+        + "Configuration `servicecomb.loadbalance.isolation.*` is removed, use governance instead. "
+        + "See https://servicecomb.apache.org/references/java-chassis/zh_CN/references-handlers/governance-best-practise.html");
   }
 }
