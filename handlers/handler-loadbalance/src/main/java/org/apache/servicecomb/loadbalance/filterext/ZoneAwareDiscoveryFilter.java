@@ -31,6 +31,8 @@ import com.netflix.config.DynamicPropertyFactory;
 public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
   public static final String CONFIG_RATIO = "servicecomb.loadbalance.filter.zoneaware.ratio";
 
+  public static final String CONFIG_RATIO_CEILING = "servicecomb.loadbalance.filter.zoneaware.ratioCeiling";
+
   @Override
   public int getOrder() {
     return ORDER_ZONE_AWARE;
@@ -46,6 +48,11 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
   private int getRatio() {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty(CONFIG_RATIO, 30).get();
+  }
+
+  private int getRatioCeiling() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty(CONFIG_RATIO_CEILING, 70).get();
   }
 
   @Override
@@ -67,14 +74,15 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
     });
 
     int ratio = getRatio();
+    int ratioCeiling = getRatioCeiling();
 
-    if (hasEnoughMembers(servers.size(), instancesRegionAndAZMatch.size(), ratio)) {
+    if (hasEnoughMembers(servers.size(), instancesRegionAndAZMatch.size(), ratio, ratioCeiling)) {
       return instancesRegionAndAZMatch;
     } else {
       instancesAZMatch.addAll(instancesRegionAndAZMatch);
     }
 
-    if (hasEnoughMembers(servers.size(), instancesAZMatch.size(), ratio)) {
+    if (hasEnoughMembers(servers.size(), instancesAZMatch.size(), ratio, ratioCeiling)) {
       return instancesAZMatch;
     } else {
       instancesNoMatch.addAll(instancesAZMatch);
@@ -82,11 +90,12 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
     return instancesNoMatch;
   }
 
-  private boolean hasEnoughMembers(int totalSize, int groupSize, int ratio) {
+  private boolean hasEnoughMembers(int totalSize, int groupSize, int ratio, int ratioCeiling) {
     if (totalSize == 0 || groupSize == 0) {
       return false;
     }
-    return Math.floorDiv(groupSize * 100, totalSize) >= ratio;
+    int actual = Math.floorDiv(groupSize * 100, totalSize);
+    return actual >= ratio && actual <= ratioCeiling;
   }
 
   private boolean regionAndAZMatch(MicroserviceInstance myself, MicroserviceInstance target) {
