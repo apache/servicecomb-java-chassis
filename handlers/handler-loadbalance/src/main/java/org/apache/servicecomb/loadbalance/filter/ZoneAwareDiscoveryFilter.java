@@ -38,6 +38,8 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   public static final String CONFIG_RATIO = "servicecomb.loadbalance.filter.zoneaware.ratio";
 
+  public static final String CONFIG_RATIO_CEILING = "servicecomb.loadbalance.filter.zoneaware.ratioCeiling";
+
   private DataCenterProperties dataCenterProperties;
 
   @Autowired
@@ -60,6 +62,11 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   private int getRatio() {
     return environment.getProperty(CONFIG_RATIO,
         int.class, 30);
+  }
+
+  private int getRatioCeiling() {
+    return environment.getProperty(CONFIG_RATIO_CEILING,
+        int.class, 70);
   }
 
   @Override
@@ -97,8 +104,9 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
     }
 
     int ratio = getRatio();
+    int ratioCeiling = getRatioCeiling();
 
-    if (hasEnoughMembers(instances.size(), instancesRegionAndAZMatch.size(), ratio)) {
+    if (hasEnoughMembers(instances.size(), instancesRegionAndAZMatch.size(), ratio, ratioCeiling)) {
       parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
           .subName(parent, GROUP_PREFIX + groups).data(instancesRegionAndAZMatch));
       groups++;
@@ -106,7 +114,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
       instancesAZMatch.addAll(instancesRegionAndAZMatch);
     }
 
-    if (hasEnoughMembers(instances.size(), instancesAZMatch.size(), ratio)) {
+    if (hasEnoughMembers(instances.size(), instancesAZMatch.size(), ratio, ratioCeiling)) {
       parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()
           .subName(parent, GROUP_PREFIX + groups).data(instancesAZMatch));
       groups++;
@@ -120,11 +128,12 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
     parent.attribute(GROUP_SIZE, groups);
   }
 
-  private boolean hasEnoughMembers(int totalSize, int groupSize, int ratio) {
+  private boolean hasEnoughMembers(int totalSize, int groupSize, int ratio, int ratioCeiling) {
     if (totalSize == 0 || groupSize == 0) {
       return false;
     }
-    return Math.floorDiv(groupSize * 100, totalSize) >= ratio;
+    int actual = Math.floorDiv(groupSize * 100, totalSize);
+    return actual >= ratio && actual <= ratioCeiling;
   }
 
   private boolean regionAndAZMatch(StatefulDiscoveryInstance target) {

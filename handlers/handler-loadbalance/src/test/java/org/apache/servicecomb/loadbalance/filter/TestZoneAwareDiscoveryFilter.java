@@ -45,6 +45,8 @@ public class TestZoneAwareDiscoveryFilter {
   public void test_not_enough_instance() {
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
         int.class, 30)).thenReturn(50);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratioCeiling",
+        int.class, 70)).thenReturn(70);
 
     ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
     filter.setEnvironment(environment);
@@ -107,5 +109,76 @@ public class TestZoneAwareDiscoveryFilter {
     Assertions.assertEquals(2, resultData.size());
     Assertions.assertEquals("regionMatchInstance", resultData.get(0).getInstanceId());
     Assertions.assertEquals("allmatchInstance", resultData.get(1).getInstanceId());
+  }
+
+  @Test
+  public void test_not_enough_instance_both_ceiling_floor() {
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
+        int.class, 30)).thenReturn(40);
+    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratioCeiling",
+        int.class, 70)).thenReturn(60);
+
+    ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
+    filter.setEnvironment(environment);
+
+    // set up data
+    DataCenterProperties myself = new DataCenterProperties();
+    myself.setName("test");
+    myself.setRegion("test-Region");
+    myself.setAvailableZone("test-zone");
+    filter.setDataCenterProperties(myself);
+
+    DiscoveryInstance discoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance allmatchInstance = new StatefulDiscoveryInstance(discoveryInstance);
+    DataCenterInfo info = new DataCenterInfo();
+    info.setName("test");
+    info.setRegion("test-Region");
+    info.setAvailableZone("test-zone");
+    List<String> allMatchEndpoint = new ArrayList<>();
+    allMatchEndpoint.add("rest://localhost:9090");
+    Mockito.when(discoveryInstance.getEndpoints()).thenReturn(allMatchEndpoint);
+    Mockito.when(discoveryInstance.getDataCenterInfo()).thenReturn(info);
+    Mockito.when(discoveryInstance.getInstanceId()).thenReturn("allmatchInstance");
+
+    DiscoveryInstance regionMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance regionMatchInstance = new StatefulDiscoveryInstance(regionMatchDiscoveryInstance);
+    DataCenterInfo regionMatchInfo = new DataCenterInfo();
+    regionMatchInfo.setName("test");
+    regionMatchInfo.setRegion("test-Region");
+    regionMatchInfo.setAvailableZone("test-zone2");
+    List<String> regionMatchEndpoint = new ArrayList<>();
+    regionMatchEndpoint.add("rest://localhost:9091");
+    Mockito.when(regionMatchDiscoveryInstance.getEndpoints()).thenReturn(regionMatchEndpoint);
+    Mockito.when(regionMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(regionMatchInfo);
+    Mockito.when(regionMatchDiscoveryInstance.getInstanceId()).thenReturn("regionMatchInstance");
+
+    DiscoveryInstance noneMatchDiscoveryInstance = Mockito.mock(DiscoveryInstance.class);
+    StatefulDiscoveryInstance noneMatchInstance = new StatefulDiscoveryInstance(noneMatchDiscoveryInstance);
+    DataCenterInfo noneMatchInfo = new DataCenterInfo();
+    noneMatchInfo.setName("test");
+    noneMatchInfo.setRegion("test-Region2");
+    noneMatchInfo.setAvailableZone("test-zone2");
+    List<String> noMatchEndpoint = new ArrayList<>();
+    noMatchEndpoint.add("rest://localhost:9092");
+    Mockito.when(noneMatchDiscoveryInstance.getEndpoints()).thenReturn(noMatchEndpoint);
+    Mockito.when(noneMatchDiscoveryInstance.getDataCenterInfo()).thenReturn(noneMatchInfo);
+    Mockito.when(noneMatchDiscoveryInstance.getInstanceId()).thenReturn("noneMatchInstance");
+
+    // run test
+    List<StatefulDiscoveryInstance> data = Arrays.asList(allmatchInstance, regionMatchInstance, noneMatchInstance);
+    DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
+    DiscoveryContext context = new DiscoveryContext();
+    DiscoveryTreeNode result = filter.discovery(context, parent);
+
+    // check result
+    Integer level = context.getContextParameter(filter.contextParameter());
+    Integer groups = parent.attribute(filter.groupsSizeParameter());
+    List<StatefulDiscoveryInstance> resultData = result.data();
+    Assertions.assertEquals(null, level);
+    Assertions.assertEquals(1, groups);
+    Assertions.assertEquals(3, resultData.size());
+    Assertions.assertEquals("noneMatchInstance", resultData.get(0).getInstanceId());
+    Assertions.assertEquals("regionMatchInstance", resultData.get(1).getInstanceId());
+    Assertions.assertEquals("allmatchInstance", resultData.get(2).getInstanceId());
   }
 }
