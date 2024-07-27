@@ -75,6 +75,54 @@ servicecomb:
           - weight: 80
             tags:
               version: 0.0.2
+      - precedence: 4
+        emptyProtection: false
+        match:
+          headers:
+            canary:
+              exact: emptyProtectionClose100
+        route:
+          - weight: 100
+            tags:
+              version: 0.0.3
+      - precedence: 5
+        emptyProtection: false
+        match:
+          headers:
+            canary:
+              exact: emptyProtectionCloseLess100
+        route:
+          - weight: 50
+            tags:
+              version: 0.0.3
+      - precedence: 6
+        emptyProtection: false
+        match:
+          headers:
+            canary:
+              exact: emptyProtectionCloseFallback
+        route:
+          - weight: 100
+            tags:
+              version: 0.0.3
+        fallback:
+          - weight: 100
+            tags:
+              version: 0.0.1
+      - precedence: 7
+        emptyProtection: false
+        match:
+          headers:
+            canary:
+              exact: emptyProtectionClose100-2
+        route:
+          - weight: 50
+            tags:
+              version: 0.0.1
+          - weight: 50
+            tags:
+              version: 0.0.3
+
 
   router:
     type: router
