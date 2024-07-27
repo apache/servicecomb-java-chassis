@@ -37,12 +37,26 @@ public class ConfigurationProblemsCollector implements BootUpInformationCollecto
     collectCsePrefix(engine.getEnvironment(), result);
     collectServiceDefinition(engine.getEnvironment(), result);
     collectTimeoutConfiguration(engine.getEnvironment(), result);
+    collectIsolationConfiguration(engine.getEnvironment(), result);
     if (result.isEmpty()) {
       return null;
     }
     String warnings = "Configurations warnings:\n" + result;
     EventManager.post(new ConfigurationProblemsAlarmEvent(Type.OPEN, warnings));
     return warnings;
+  }
+
+  private void collectIsolationConfiguration(Environment environment, StringBuilder result) {
+    int percentage = environment.getProperty(
+        "servicecomb.loadbalance.isolation.errorThresholdPercentage", int.class, -1);
+    int continuous = environment.getProperty(
+        "servicecomb.loadbalance.isolation.continuousFailureThreshold", int.class, -1);
+    if (percentage == -1 && continuous == -1) {
+      return;
+    }
+    result.append("Configuration `servicecomb.loadbalance.isolation.*` is removed, use governance instead. "
+        + "See https://servicecomb.apache.org/references/java-chassis/"
+        + "zh_CN/references-handlers/governance-best-practise.html");
   }
 
   private void collectTimeoutConfiguration(Environment environment, StringBuilder result) {
