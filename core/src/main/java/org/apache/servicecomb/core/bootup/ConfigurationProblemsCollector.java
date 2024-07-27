@@ -50,12 +50,19 @@ public class ConfigurationProblemsCollector implements BootUpInformationCollecto
     return warnings;
   }
 
+  // see https://github.com/apache/servicecomb-java-chassis/issues/4024
+  // since 2.8.12
   private void collectIsolationConfiguration(Environment environment, StringBuilder result) {
     int percentage = environment.getProperty(
         "servicecomb.loadbalance.isolation.errorThresholdPercentage", int.class, -1);
     int continuous = environment.getProperty(
         "servicecomb.loadbalance.isolation.continuousFailureThreshold", int.class, -1);
     if (percentage == -1 && continuous == -1) {
+      return;
+    }
+    Boolean enable = environment.getProperty(
+        "servicecomb.loadbalance.filter.isolation.enabled", Boolean.class);
+    if (enable != null) {
       return;
     }
     result.append("Configuration `servicecomb.loadbalance.isolation.*` is deprecated and disabled by default, "
