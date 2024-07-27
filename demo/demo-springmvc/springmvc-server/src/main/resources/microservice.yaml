@@ -86,6 +86,11 @@ servicecomb:
     region: my-Region
     availableZone: my-Zone
   codec.printErrorMessage: true
+
+  # For old testing
+  loadbalance:
+    isolation:
+      errorThresholdPercentage: 20
 #########SSL options
 # open jdk 8 now TLSv1.3 not available
 # ssl.protocols: TLSv1.3

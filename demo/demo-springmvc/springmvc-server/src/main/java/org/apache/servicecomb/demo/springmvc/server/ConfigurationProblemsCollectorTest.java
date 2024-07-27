@@ -45,6 +45,11 @@ public class ConfigurationProblemsCollectorTest implements CategorizedTestCase {
         + "Configurations `APPLICATION_ID` is deprecated, use `servicecomb.service.application` instead.\n"
         + "Configurations with prefix `service_description` is deprecated, "
         + "use `servicecomb.service` instead. Find keys [service_description.name, service_description.paths, "
-        + "service_description.version]\n");
+        + "service_description.version]\n"
+        + "Configuration `servicecomb.loadbalance.isolation.*` is deprecated and disabled by default, "
+        + "use governance instead. "
+        + "See https://servicecomb.apache.org/references/java-chassis/"
+        + "zh_CN/references-handlers/governance-best-practise.html. If you want to enable it, add"
+        + "`servicecomb.loadbalance.filter.isolation.enabled=true` implicitly.");
   }
 }

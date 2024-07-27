@@ -41,12 +41,35 @@ public class ConfigurationProblemsCollector implements BootUpInformationCollecto
     collectCsePrefix(engine.getEnvironment(), result);
     collectServiceDefinition(engine.getEnvironment(), result);
     collectTimeoutConfiguration(engine.getEnvironment(), result);
+    collectIsolationConfiguration(engine.getEnvironment(), result);
     if (result.length() <= 0) {
       return null;
     }
     String warnings = "Configurations warnings:\n" + result;
     EventManager.post(new ConfigurationProblemsAlarmEvent(Type.OPEN, warnings));
     return warnings;
+  }
+
+  // see https://github.com/apache/servicecomb-java-chassis/issues/4024
+  // since 2.8.12
+  private void collectIsolationConfiguration(Environment environment, StringBuilder result) {
+    int percentage = environment.getProperty(
+        "servicecomb.loadbalance.isolation.errorThresholdPercentage", int.class, -1);
+    int continuous = environment.getProperty(
+        "servicecomb.loadbalance.isolation.continuousFailureThreshold", int.class, -1);
+    if (percentage == -1 && continuous == -1) {
+      return;
+    }
+    Boolean enable = environment.getProperty(
+        "servicecomb.loadbalance.filter.isolation.enabled", Boolean.class);
+    if (enable != null) {
+      return;
+    }
+    result.append("Configuration `servicecomb.loadbalance.isolation.*` is deprecated and disabled by default, "
+        + "use governance instead. "
+        + "See https://servicecomb.apache.org/references/java-chassis/"
+        + "zh_CN/references-handlers/governance-best-practise.html. If you want to enable it, add"
+        + "`servicecomb.loadbalance.filter.isolation.enabled=true` implicitly.");
   }
 
   private void collectTimeoutConfiguration(Environment environment, StringBuilder result) {
