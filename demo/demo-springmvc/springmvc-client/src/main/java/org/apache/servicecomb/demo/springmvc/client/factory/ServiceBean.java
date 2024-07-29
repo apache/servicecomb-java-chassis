@@ -14,27 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.provider.pojo;
 
-import org.apache.servicecomb.provider.pojo.reference.RpcReferenceProcessor;
-import org.apache.servicecomb.provider.pojo.schema.PojoProducers;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+package org.apache.servicecomb.demo.springmvc.client.factory;
 
-@Configuration
-public class ProviderPojoConfiguration {
-  @Bean
-  public static RpcReferenceBeanDefinitionRegistry rpcReferenceBeanDefinitionRegistry() {
-    return new RpcReferenceBeanDefinitionRegistry();
+public class ServiceBean {
+  private final String name;
+
+  public ServiceBean(String name) {
+    this.name = name;
   }
 
-  @Bean(RpcReferenceProcessor.BEAN_NAME)
-  public static RpcReferenceProcessor rpcReferenceProcessor() {
-    return new RpcReferenceProcessor();
-  }
-
-  @Bean
-  public static PojoProducers pojoProducers() {
-    return new PojoProducers();
+  public String getName() {
+    return name;
   }
 }

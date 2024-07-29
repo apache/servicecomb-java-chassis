@@ -28,6 +28,8 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringValueResolver;
 
 public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
+  public static final String BEAN_NAME = "rpcReferenceProcessor";
+
   private StringValueResolver resolver;
 
   @Override

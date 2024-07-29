@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProviderRestCommonConfiguration {
   @Bean
-  public RestProducers restProducers() {
+  public static RestProducers restProducers() {
     return new RestProducers();
   }
 }

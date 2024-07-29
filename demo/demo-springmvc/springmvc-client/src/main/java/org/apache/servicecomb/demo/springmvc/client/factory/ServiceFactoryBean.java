@@ -14,27 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.provider.pojo;
 
-import org.apache.servicecomb.provider.pojo.reference.RpcReferenceProcessor;
-import org.apache.servicecomb.provider.pojo.schema.PojoProducers;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+package org.apache.servicecomb.demo.springmvc.client.factory;
 
-@Configuration
-public class ProviderPojoConfiguration {
-  @Bean
-  public static RpcReferenceBeanDefinitionRegistry rpcReferenceBeanDefinitionRegistry() {
-    return new RpcReferenceBeanDefinitionRegistry();
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+@Component("ServiceFactoryBean")
+public class ServiceFactoryBean implements FactoryBean<ServiceBean> {
+
+  ServiceWithReference serviceWithReference;
+
+  @Autowired
+  public ServiceFactoryBean(ServiceWithReference serviceWithReference) {
+    this.serviceWithReference = serviceWithReference;
   }
 
-  @Bean(RpcReferenceProcessor.BEAN_NAME)
-  public static RpcReferenceProcessor rpcReferenceProcessor() {
-    return new RpcReferenceProcessor();
+  @Override
+  public ServiceBean getObject() throws Exception {
+    return new ServiceBean(serviceWithReference.test("a"));
   }
 
-  @Bean
-  public static PojoProducers pojoProducers() {
-    return new PojoProducers();
+  @Override
+  public Class<?> getObjectType() {
+    return ServiceBean.class;
+  }
+
+  @Override
+  public boolean isSingleton() {
+    return true;
   }
 }
