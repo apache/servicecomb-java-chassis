@@ -22,13 +22,17 @@ import java.util.Collections;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class InjectBeanPostProcessor implements BeanPostProcessor {
   private final PriorityPropertyManager priorityPropertyManager;
 
+  @Autowired
+  @Lazy
   public InjectBeanPostProcessor(PriorityPropertyManager priorityPropertyManager) {
     this.priorityPropertyManager = priorityPropertyManager;
   }

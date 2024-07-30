@@ -23,14 +23,15 @@ import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringValueResolver;
 
-@Component
-public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueResolverAware {
-  private StringValueResolver resolver;
+public class RpcReferenceProcessor implements BeanPostProcessor {
+  private final ConfigurableBeanFactory beanFactory;
+
+  public RpcReferenceProcessor(ConfigurableBeanFactory beanFactory) {
+    this.beanFactory = beanFactory;
+  }
 
   @Override
   public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -62,11 +63,6 @@ public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueRe
     handleReferenceField(bean, field, reference);
   }
 
-  @Override
-  public void setEmbeddedValueResolver(StringValueResolver resolver) {
-    this.resolver = resolver;
-  }
-
   private void handleReferenceMethod(Object bean, String beanName, Method method, RpcReference reference)
       throws BeansException {
     try {
@@ -86,7 +82,7 @@ public class RpcReferenceProcessor implements BeanPostProcessor, EmbeddedValueRe
 
   private PojoReferenceMeta createPojoReferenceMeta(RpcReference reference, Class<?> consumerInterface) {
     String microserviceName = reference.microserviceName();
-    microserviceName = resolver.resolveStringValue(microserviceName);
+    microserviceName = beanFactory.resolveEmbeddedValue(microserviceName);
 
     PojoReferenceMeta pojoReference = new PojoReferenceMeta();
     pojoReference.setMicroserviceName(microserviceName);

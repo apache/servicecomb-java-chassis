@@ -28,9 +28,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 
 public class TestRpcReferenceProcessor {
-  RpcReferenceProcessor consumers = new RpcReferenceProcessor();
+  static ConfigurableBeanFactory beanFactory = Mockito.mock(ConfigurableBeanFactory.class);
+
+  RpcReferenceProcessor consumers = new RpcReferenceProcessor(beanFactory);
 
   @BeforeEach
   public void setUp() {
@@ -56,7 +60,7 @@ public class TestRpcReferenceProcessor {
 
     Assertions.assertNull(bean.person);
 
-    consumers.setEmbeddedValueResolver((strVal) -> strVal);
+    Mockito.when(beanFactory.resolveEmbeddedValue("test")).thenReturn("test");
     Assertions.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
     Assertions.assertNotNull(bean.person);
