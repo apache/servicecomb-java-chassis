@@ -35,8 +35,6 @@ public class RpcReferenceBeanDefinitionRegistry implements BeanDefinitionRegistr
 
   @Override
   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-    RpcReferenceProcessor rpcReferenceProcessor = beanFactory.getBean(
-        RpcReferenceProcessor.BEAN_NAME, RpcReferenceProcessor.class);
-    beanFactory.addBeanPostProcessor(rpcReferenceProcessor);
+    beanFactory.addBeanPostProcessor(new RpcReferenceProcessor(beanFactory));
   }
 }
