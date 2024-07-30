@@ -15,25 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc;
+package org.apache.servicecomb.demo.springmvc.client.factory;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = SpringmvcClient.class)
-public class SpringMvcIT {
-  @BeforeEach
-  public void setUp() {
-    TestMgr.errors().clear();
-  }
-
-  @Test
-  public void clientGetsNoError() {
-    SpringmvcClient.run();
-  }
+public interface ServiceWithReference {
+  String test(String name);
 }

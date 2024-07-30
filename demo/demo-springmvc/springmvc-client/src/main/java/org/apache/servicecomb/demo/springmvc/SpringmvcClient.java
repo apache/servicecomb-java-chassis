@@ -66,11 +66,20 @@ public class SpringmvcClient {
 
   private static Controller controller;
 
-  public static void main(String[] args) throws Exception {
-    try {
-      new SpringApplicationBuilder(SpringmvcClient.class).web(WebApplicationType.NONE).run(args);
+  public static void main(String[] args) {
+    new SpringApplicationBuilder(SpringmvcClient.class).web(WebApplicationType.NONE).run(args);
 
-      run();
+    run();
+  }
+
+  private static void changeTransport(String microserviceName, String transport) {
+    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
+    TestMgr.setMsg(microserviceName, transport);
+  }
+
+  public static void run() {
+    try {
+      runImpl();
     } catch (Throwable e) {
       TestMgr.check("success", "failed");
       LOGGER.error("-------------- test failed -------------");
@@ -81,12 +90,7 @@ public class SpringmvcClient {
     LOGGER.info("-------------- last time updated checks(maybe more/less): 1344 -------------");
   }
 
-  private static void changeTransport(String microserviceName, String transport) {
-    InMemoryDynamicPropertiesSource.update("servicecomb.references.transport." + microserviceName, transport);
-    TestMgr.setMsg(microserviceName, transport);
-  }
-
-  public static void run() throws Exception {
+  private static void runImpl() throws Exception {
     testHttpClientsIsOk();
 
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());

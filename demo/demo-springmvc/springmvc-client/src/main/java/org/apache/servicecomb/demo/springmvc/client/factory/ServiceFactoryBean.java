@@ -15,25 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc;
+package org.apache.servicecomb.demo.springmvc.client.factory;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = SpringmvcClient.class)
-public class SpringMvcIT {
-  @BeforeEach
-  public void setUp() {
-    TestMgr.errors().clear();
+@Component("ServiceFactoryBean")
+public class ServiceFactoryBean implements FactoryBean<ServiceBean> {
+
+  ServiceWithReference serviceWithReference;
+
+  @Autowired
+  public ServiceFactoryBean(ServiceWithReference serviceWithReference) {
+    this.serviceWithReference = serviceWithReference;
   }
 
-  @Test
-  public void clientGetsNoError() {
-    SpringmvcClient.run();
+  @Override
+  public ServiceBean getObject() throws Exception {
+    return new ServiceBean(serviceWithReference.test("a"));
+  }
+
+  @Override
+  public Class<?> getObjectType() {
+    return ServiceBean.class;
+  }
+
+  @Override
+  public boolean isSingleton() {
+    return true;
   }
 }

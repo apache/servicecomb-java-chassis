@@ -16,21 +16,19 @@
  */
 package org.apache.servicecomb.provider.pojo;
 
-import org.apache.servicecomb.provider.pojo.reference.RpcReferenceProcessor;
 import org.apache.servicecomb.provider.pojo.schema.PojoProducers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class ProviderPojoConfiguration {
-
   @Bean
-  public RpcReferenceProcessor rpcReferenceProcessor() {
-    return new RpcReferenceProcessor();
+  public static RpcReferenceBeanDefinitionRegistry rpcReferenceBeanDefinitionRegistry() {
+    return new RpcReferenceBeanDefinitionRegistry();
   }
 
   @Bean
-  public PojoProducers pojoProducers() {
+  public static PojoProducers pojoProducers() {
     return new PojoProducers();
   }
 }
