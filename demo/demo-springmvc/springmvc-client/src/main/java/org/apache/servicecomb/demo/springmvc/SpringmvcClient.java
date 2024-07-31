@@ -102,12 +102,20 @@ public class SpringmvcClient {
     String microserviceName = "springmvc";
 
     try {
-      // this test class is intended for retry hanging issue JAV-127
+      // only works in rest, highway does not have name param, because not defined.
       templateUrlWithServiceName.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
       TestMgr.check("true", "false");
     } catch (Exception e) {
       TestMgr.check("true", "true");
     }
+    try {
+      // only works in rest, highway does not have name param, because not defined.
+      templateUrlWithServiceName.getForObject(prefix + "/controller/sayhi?name=throwexception", String.class);
+      TestMgr.check("true", "false");
+    } catch (Exception e) {
+      TestMgr.check("true", "true");
+    }
+
     testHandler(microserviceName);
     CodeFirstRestTemplateSpringmvc codeFirstClient =
         BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);

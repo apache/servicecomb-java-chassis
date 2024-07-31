@@ -19,6 +19,8 @@ package org.apache.servicecomb.demo.springmvc.server;
 
 import java.util.Arrays;
 
+import org.apache.servicecomb.core.CoreConst;
+import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -60,7 +62,7 @@ public class ControllerImpl {
     return prefix + " " + user.getName();
   }
 
-  // Parameters defined in controller.yaml. The code definition do not have any parameters.
+  @Transport(name = CoreConst.RESTFUL)
   @RequestMapping(path = "/sayhi", method = RequestMethod.GET)
   public String sayHi(HttpServletRequest request) throws Exception {
     String addr = request.getRemoteAddr();
