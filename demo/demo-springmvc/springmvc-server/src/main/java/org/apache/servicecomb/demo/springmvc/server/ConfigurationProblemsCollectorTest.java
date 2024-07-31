@@ -40,7 +40,7 @@ public class ConfigurationProblemsCollectorTest implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
     TestMgr.check(event != null, true);
-    TestMgr.check(event.getProblems(), "Configurations warnings:\n"
+    TestMgr.check(event.getProblems(), "[WARN]Configurations warnings:\n"
         + "Configurations with prefix `cse` is deprecated, use `servicecomb` instead. Find keys [cse.test.duplicate1]\n"
         + "Configurations `APPLICATION_ID` is deprecated, use `servicecomb.service.application` instead.\n"
         + "Configurations with prefix `service_description` is deprecated, "
