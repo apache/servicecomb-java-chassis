@@ -24,6 +24,7 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 public class CseUriTemplateHandler extends DefaultUriBuilderFactory {
+  // Must be one of URI unreserved  `ALPHA / DIGIT / "-" / "." / "_" / "~"`
   public static final String APP_SERVICE_SEPARATOR_INTERNAL = "~";
 
   public CseUriTemplateHandler() {
