@@ -18,6 +18,7 @@
 package org.apache.servicecomb.demo.springmvc;
 
 import org.apache.servicecomb.demo.TestMgr;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,5 +36,6 @@ public class SpringMvcIT {
   @Test
   public void clientGetsNoError() {
     SpringmvcClient.run();
+    Assertions.assertTrue(TestMgr.isSuccess());
   }
 }

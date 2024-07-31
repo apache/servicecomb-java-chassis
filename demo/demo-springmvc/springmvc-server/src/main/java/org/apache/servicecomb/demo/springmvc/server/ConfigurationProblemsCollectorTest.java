@@ -40,7 +40,7 @@ public class ConfigurationProblemsCollectorTest implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
     TestMgr.check(event != null, true);
-    TestMgr.check(event.getProblems(), "Configurations warnings:\n" +
+    TestMgr.check(event.getProblems(), "[WARN]Configurations warnings:\n" +
         "Configurations with prefix `service_description` is deprecated, "
         + "use `servicecomb.service` instead. Find keys [service_description.initialStatus]\n"
         + "Configuration `servicecomb.loadbalance.isolation.*` is removed, use governance instead. "
