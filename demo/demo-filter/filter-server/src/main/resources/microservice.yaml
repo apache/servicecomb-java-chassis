@@ -18,7 +18,8 @@
 servicecomb:
   service:
     application: filtertest
-    name: filterServer
+    # test service name with dot
+    name: com.servicecomb.filterServer
     version: 0.0.1
 
   registry:

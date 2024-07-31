@@ -33,16 +33,16 @@ public class TestRetrySchemaFromClient implements CategorizedTestCase {
     CompletableFuture<Boolean> successWhenRetryAsync();
   }
 
-  @RpcReference(microserviceName = "filterClient", schemaId = "RetryClientSchema")
+  @RpcReference(microserviceName = "com.servicecomb.filterClient", schemaId = "RetryClientSchema")
   private RetrySchemaInf retrySchemaInf;
 
   RestOperations restTemplate = RestTemplateBuilder.create();
 
-  private static final String SERVER = "servicecomb://filterClient";
+  private static final String SERVER = "servicecomb://com.servicecomb.filterClient";
 
   @Override
   public String getMicroserviceName() {
-    return "filterClient";
+    return "com.servicecomb.filterClient";
   }
 
   @Override

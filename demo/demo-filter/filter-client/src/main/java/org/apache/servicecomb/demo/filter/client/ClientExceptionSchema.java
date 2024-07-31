@@ -40,7 +40,7 @@ public class ClientExceptionSchema {
 
   private RestOperations restTemplate = RestTemplateBuilder.create();
 
-  @RpcReference(microserviceName = "filterServer", schemaId = "ExceptionSchema")
+  @RpcReference(microserviceName = "com.servicecomb.filterServer", schemaId = "ExceptionSchema")
   public void setExceptionSchema(IExceptionSchema exceptionSchema) {
     this.exceptionSchema = exceptionSchema;
   }
@@ -48,7 +48,7 @@ public class ClientExceptionSchema {
   @GetMapping(path = "/blockingExceptionRestTemplate")
   public boolean blockingExceptionRestTemplate() {
     return restTemplate.getForObject(
-        "servicecomb://filterServer/exception/blockingException", boolean.class);
+        "servicecomb://com.servicecomb.filterServer/exception/blockingException", boolean.class);
   }
 
   @GetMapping(path = "/blockingExceptionReference")
@@ -58,7 +58,7 @@ public class ClientExceptionSchema {
 
   @GetMapping(path = "/blockingExceptionInvoker")
   public boolean blockingExceptionInvoker() {
-    return InvokerUtils.syncInvoke("filterServer",
+    return InvokerUtils.syncInvoke("com.servicecomb.filterServer",
         "ExceptionSchema", "blockingException", null, boolean.class);
   }
 

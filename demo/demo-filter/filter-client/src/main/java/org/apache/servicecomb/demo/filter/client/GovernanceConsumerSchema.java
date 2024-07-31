@@ -29,7 +29,7 @@ public class GovernanceConsumerSchema {
     boolean providerFlowControl();
   }
 
-  @RpcReference(microserviceName = "filterServer", schemaId = "GovernanceProviderSchema")
+  @RpcReference(microserviceName = "com.servicecomb.filterServer", schemaId = "GovernanceProviderSchema")
   private GovernanceProviderSchemaInf retrySchemaInf;
 
 

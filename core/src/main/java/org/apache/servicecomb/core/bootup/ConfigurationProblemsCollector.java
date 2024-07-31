@@ -18,7 +18,9 @@ package org.apache.servicecomb.core.bootup;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
@@ -31,19 +33,35 @@ import org.springframework.core.env.Environment;
  * and sending ConfigurationProblemsAlarmEvent.
  */
 public class ConfigurationProblemsCollector implements BootUpInformationCollector {
+  private static final String SERVICE_NAME_PATTERN_STRING = "([A-Za-z])|([A-Za-z][A-Za-z0-9_\\-.]*[A-Za-z0-9])";
+
+  private static final Pattern SERVICE_NAME_PATTERN = Pattern.compile(SERVICE_NAME_PATTERN_STRING);
+
   @Override
   public String collect(SCBEngine engine) {
     StringBuilder result = new StringBuilder();
     collectCsePrefix(engine.getEnvironment(), result);
     collectServiceDefinition(engine.getEnvironment(), result);
+    collectServiceDefinitionValidation(engine.getEnvironment(), result);
     collectTimeoutConfiguration(engine.getEnvironment(), result);
     collectIsolationConfiguration(engine.getEnvironment(), result);
     if (result.isEmpty()) {
       return null;
     }
-    String warnings = "Configurations warnings:\n" + result;
+    String warnings = "[WARN]Configurations warnings:\n" + result;
     EventManager.post(new ConfigurationProblemsAlarmEvent(Type.OPEN, warnings));
     return warnings;
+  }
+
+  private void collectServiceDefinitionValidation(Environment environment, StringBuilder result) {
+    String application = BootStrapProperties.readApplication(environment);
+    if (!SERVICE_NAME_PATTERN.matcher(application).matches()) {
+      result.append("application does not match pattern ").append(SERVICE_NAME_PATTERN_STRING).append(".");
+    }
+    String serviceName = BootStrapProperties.readServiceName(environment);
+    if (!SERVICE_NAME_PATTERN.matcher(serviceName).matches()) {
+      result.append("service name does not match pattern ").append(SERVICE_NAME_PATTERN_STRING).append(".");
+    }
   }
 
   private void collectIsolationConfiguration(Environment environment, StringBuilder result) {
