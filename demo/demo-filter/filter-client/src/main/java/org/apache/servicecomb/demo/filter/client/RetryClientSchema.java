@@ -37,7 +37,7 @@ public class RetryClientSchema {
     CompletableFuture<Boolean> successWhenRetryAsync();
   }
 
-  @RpcReference(microserviceName = "filterServer", schemaId = "RetrySchema")
+  @RpcReference(microserviceName = "com.servicecomb.filterServer", schemaId = "RetrySchema")
   private RetrySchemaInf retrySchemaInf;
 
   RestOperations restTemplate = RestTemplateBuilder.create();
@@ -65,7 +65,7 @@ public class RetryClientSchema {
 
   @GetMapping(path = "/governance/successWhenRetry")
   public boolean successWhenRetry() {
-    return restTemplate.getForObject("servicecomb://filterServer/retry/governance/successWhenRetry",
+    return restTemplate.getForObject("servicecomb://com.servicecomb.filterServer/retry/governance/successWhenRetry",
         Boolean.class);
   }
 

@@ -33,12 +33,12 @@ public class TestGovernanceSchemaFromEdge implements CategorizedTestCase {
     boolean providerFlowControl();
   }
 
-  @RpcReference(microserviceName = "filterEdge", schemaId = "GovernanceConsumerSchema")
+  @RpcReference(microserviceName = "com.servicecomb.filterEdge", schemaId = "GovernanceConsumerSchema")
   private GovernanceEdgeSchemaInf retrySchemaInf;
 
   @Override
   public String getMicroserviceName() {
-    return "filterEdge";
+    return "com.servicecomb.filterEdge";
   }
 
   @Override

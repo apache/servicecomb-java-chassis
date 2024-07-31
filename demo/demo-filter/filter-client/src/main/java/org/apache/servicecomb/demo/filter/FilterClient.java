@@ -44,6 +44,6 @@ public class FilterClient {
   }
 
   public static void run() throws Exception {
-    CategorizedTestCaseRunner.runCategorizedTestCase("filterServer");
+    CategorizedTestCaseRunner.runCategorizedTestCase("com.servicecomb.filterServer");
   }
 }

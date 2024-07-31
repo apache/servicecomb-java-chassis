@@ -18,7 +18,8 @@
 servicecomb:
   service:
     application: filtertest
-    name: filterEdge
+    # test service name with dot
+    name: com.servicecomb.filterEdge
     version: 0.0.1
 
   registry:
@@ -53,11 +54,11 @@ servicecomb:
             filterClient:
               prefixSegmentCount: 0
               path: "/retry/.*"
-              microserviceName: filterClient
+              microserviceName: com.servicecomb.filterClient
             filterClient2:
               prefixSegmentCount: 0
               path: "/govern/.*"
-              microserviceName: filterClient
+              microserviceName: com.servicecomb.filterClient
   matchGroup:
     edgeFlowControl: |
       matches:

@@ -29,7 +29,7 @@ public class TestExceptionSchemaFromClient implements CategorizedTestCase {
 
   RestOperations restTemplate = RestTemplateBuilder.create();
 
-  private static final String SERVER = "servicecomb://filterClient";
+  private static final String SERVER = "servicecomb://com.servicecomb.filterClient";
 
   @Override
   public String getMicroserviceName() {

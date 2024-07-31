@@ -38,20 +38,20 @@ public class TestRetrySchemaFromEdge implements CategorizedTestCase {
     CompletableFuture<Boolean> successWhenRetryAsync();
   }
 
-  @RpcReference(microserviceName = "filterEdge", schemaId = "RetryClientSchema")
+  @RpcReference(microserviceName = "com.servicecomb.filterEdge", schemaId = "RetryClientSchema")
   private RetrySchemaInf retrySchemaInf;
 
   RestOperations restTemplate = RestTemplateBuilder.create();
 
   RestTemplate springRestTemplate = new RestTemplate();
 
-  private static final String SERVER = "servicecomb://filterEdge";
+  private static final String SERVER = "servicecomb://com.servicecomb.filterEdge";
 
   private static final String EDGE_SERVER = "http://127.0.0.1:9090";
 
   @Override
   public String getMicroserviceName() {
-    return "filterEdge";
+    return "com.servicecomb.filterEdge";
   }
 
   @Override
@@ -87,8 +87,8 @@ public class TestRetrySchemaFromEdge implements CategorizedTestCase {
 
   private void testRetryGovernanceFromEdgeDefaultDispatcher() {
     TestMgr.check(springRestTemplate.getForObject(
-        EDGE_SERVER + "/service/filterClient/retry/governance/successWhenRetry", boolean.class), true);
+        EDGE_SERVER + "/service/com.servicecomb.filterClient/retry/governance/successWhenRetry", boolean.class), true);
     TestMgr.check(springRestTemplate.getForObject(
-        EDGE_SERVER + "/service/filterClient/retry/governance/successWhenRetry", boolean.class), true);
+        EDGE_SERVER + "/service/com.servicecomb.filterClient/retry/governance/successWhenRetry", boolean.class), true);
   }
 }
