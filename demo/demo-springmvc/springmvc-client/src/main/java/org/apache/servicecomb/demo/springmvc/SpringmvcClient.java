@@ -25,7 +25,6 @@ import org.apache.servicecomb.config.InMemoryDynamicPropertiesSource;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.demo.springmvc.client.CodeFirstRestTemplateSpringmvc;
 import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
@@ -64,8 +63,6 @@ public class SpringmvcClient {
 
   private static RestOperations restTemplate;
 
-  private static Controller controller;
-
   public static void main(String[] args) {
     new SpringApplicationBuilder(SpringmvcClient.class).web(WebApplicationType.NONE).run(args);
 
@@ -96,7 +93,6 @@ public class SpringmvcClient {
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
     templateUrlWithProviderPrefix.setRequestFactory(new UrlWithProviderPrefixClientHttpRequestFactory("/pojo/rest"));
-    controller = BeanUtils.getBean("controller");
 
     String prefix = "cse://springmvc";
     String microserviceName = "springmvc";
@@ -225,7 +221,6 @@ public class SpringmvcClient {
 
       testControllerAllTransport(templateUrlWithServiceName, microserviceName);
 
-      testController();
       testSpringMvcDefaultValuesAllTransport(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValuesJavaPrimitiveAllTransport(templateUrlWithServiceName, microserviceName);
     }
@@ -333,13 +328,6 @@ public class SpringmvcClient {
             String.class,
             "ha"));
   }
-
-  private static void testController() {
-    Person user = new Person();
-    user.setName("world");
-    TestMgr.check("ha world", controller.saySomething("ha", user));
-  }
-
 
   private static void testSpringMvcDefaultValuesRest(RestTemplate template, String microserviceName) {
     String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";

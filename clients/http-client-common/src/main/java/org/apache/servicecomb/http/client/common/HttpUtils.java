@@ -18,6 +18,7 @@
 package org.apache.servicecomb.http.client.common;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -55,7 +56,14 @@ public final class HttpUtils {
     if (value == null) {
       return "";
     }
-    return URLEncoder.encode(value, "UTF-8");
+    return URLEncoder.encode(value, StandardCharsets.UTF_8);
+  }
+
+  public static String decodeURLParam(String value) throws IOException {
+    if (value == null) {
+      return null;
+    }
+    return URLDecoder.decode(value, StandardCharsets.UTF_8);
   }
 
   public static String sha256Encode(String key, String data) throws Exception {
