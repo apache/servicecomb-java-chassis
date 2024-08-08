@@ -37,7 +37,7 @@ public class TestFormRequestSchema implements CategorizedTestCase {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(TestFormRequestSchema.class);
 
-  private RestOperations restTemplate = RestTemplateBuilder.create();
+  private final RestOperations restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {
@@ -45,19 +45,16 @@ public class TestFormRequestSchema implements CategorizedTestCase {
     // testFormRequestFail会关闭连接，防止下个测试用例失败，睡眠2s
     Thread.sleep(2000);
     testFormRequestSuccess();
+    testFormRequestBufferSize();
   }
 
   // formSize is less than default maxFormAttributeSize , success
-  private void testFormRequestSuccess() throws Exception {
+  private void testFormRequestSuccess() {
     try {
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
       MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-      StringBuilder stringBuffer = new StringBuilder();
-      for (int i = 0; i < 512; i++) {
-        stringBuffer.append("a");
-      }
-      formData.add("formData", stringBuffer.toString());
+      formData.add("formData", "a".repeat(512));
       HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
       ResponseEntity<String> responseEntity = restTemplate
           .postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
@@ -69,21 +66,39 @@ public class TestFormRequestSchema implements CategorizedTestCase {
   }
 
   // formSize is greater than default maxFormAttributeSize , throw exception
-  private void testFormRequestFail() throws Exception {
+  private void testFormRequestFail() {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-    StringBuilder stringBuffer = new StringBuilder();
-    for (int i = 0; i < 1688; i++) {
-      stringBuffer.append("a");
-    }
-    formData.add("formData", String.valueOf(stringBuffer));
+    formData.add("formData", "a".repeat(1688));
     HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
     try {
       restTemplate.postForEntity("cse://jaxrs/form/formRequest", requestEntity, String.class);
       TestMgr.fail("Size exceed allowed maximum capacity");
     } catch (Throwable e) {
       TestMgr.check(e.getMessage().contains("Internal Server Error"), true);
+    }
+  }
+
+  private void testFormRequestBufferSize() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+    // we can not test a situation for form exceed max buffer size, because the netty buffer is very
+    // big and the trunc can always be decoded and cached buffer size is always 0.
+    formData.add("F0123456789001234567890012345678900123456789001234567890"
+            + "0123456789001234567890012345678900123456789001234567890", "a".repeat(1020)
+        // we can not test a situation for form exceed max buffer size, because the netty buffer is very
+        // big and the trunc can always be decoded and cached buffer size is always 0.
+    );
+    HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(formData, headers);
+    try {
+      ResponseEntity<String> responseEntity =
+          restTemplate.postForEntity("cse://jaxrs/form/formLongName", requestEntity, String.class);
+      TestMgr.check(responseEntity.getBody(), "formRequest success : 1020");
+    } catch (Throwable e) {
+      LOGGER.error("testFormRequestBufferSize-->", e);
+      TestMgr.failed("", e);
     }
   }
 }
