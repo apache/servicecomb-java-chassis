@@ -25,7 +25,8 @@ servicecomb:
   rest:
     address: 0.0.0.0:8080
     server:
-      maxFormAttributeSize: 1024
+      maxFormAttributeSize: 1024 # for testing, and bigger than netty buffer allocator
+      maxFormBufferedBytes: 100
   highway:
     address: 0.0.0.0:7070
   handler:

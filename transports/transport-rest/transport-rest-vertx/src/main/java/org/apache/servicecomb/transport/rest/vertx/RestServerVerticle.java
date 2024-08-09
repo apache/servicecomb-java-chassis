@@ -260,6 +260,8 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
     serverOptions.setMaxFormAttributeSize(TransportConfig.getMaxFormAttributeSize());
+    serverOptions.setMaxFormFields(TransportConfig.getMaxFormFields());
+    serverOptions.setMaxFormBufferedBytes(TransportConfig.getMaxFormBufferedBytes());
     serverOptions.setCompressionLevel(TransportConfig.getCompressionLevel());
     serverOptions.setMaxChunkSize(TransportConfig.getMaxChunkSize());
     serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
