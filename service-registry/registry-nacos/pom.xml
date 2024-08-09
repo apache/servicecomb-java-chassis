@@ -35,6 +35,10 @@
             <artifactId>nacos-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.alibaba.nacos</groupId>
+            <artifactId>nacos-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicecomb</groupId>
             <artifactId>foundation-common</artifactId>
         </dependency>
