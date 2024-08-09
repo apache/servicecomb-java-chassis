@@ -61,6 +61,16 @@ public final class TransportConfig {
         HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE);
   }
 
+  public static int getMaxFormFields() {
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.server.maxFormFields",
+        HttpServerOptions.DEFAULT_MAX_FORM_FIELDS);
+  }
+
+  public static int getMaxFormBufferedBytes() {
+    return LegacyPropertyFactory.getIntProperty("servicecomb.rest.server.maxFormBufferedBytes",
+        HttpServerOptions.DEFAULT_MAX_FORM_BUFFERED_SIZE);
+  }
+
   public static int getCompressionLevel() {
     return LegacyPropertyFactory.getIntProperty("servicecomb.rest.server.compressionLevel",
         HttpServerOptions.DEFAULT_COMPRESSION_LEVEL);

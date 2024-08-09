@@ -23,6 +23,8 @@ import static io.vertx.core.http.HttpServerOptions.DEFAULT_DECOMPRESSION_SUPPORT
 import static io.vertx.core.http.HttpServerOptions.DEFAULT_HTTP2_CONNECTION_WINDOW_SIZE;
 import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_CHUNK_SIZE;
 import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_FORM_ATTRIBUTE_SIZE;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_FORM_BUFFERED_SIZE;
+import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_FORM_FIELDS;
 import static io.vertx.core.http.HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH;
 import static org.apache.servicecomb.common.accessLog.AccessLogConfig.CLIENT_LOG_ENABLED;
 import static org.apache.servicecomb.common.accessLog.AccessLogConfig.CLIENT_LOG_PATTERN;
@@ -127,6 +129,12 @@ public class TestRestServerVerticle {
     Mockito.when(environment.getProperty("servicecomb.rest.server.compressionLevel", int.class,
             DEFAULT_COMPRESSION_LEVEL))
         .thenReturn(DEFAULT_COMPRESSION_LEVEL);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.maxFormFields", int.class,
+            DEFAULT_MAX_FORM_FIELDS))
+        .thenReturn(DEFAULT_MAX_FORM_FIELDS);
+    Mockito.when(environment.getProperty("servicecomb.rest.server.maxFormBufferedBytes", int.class,
+            DEFAULT_MAX_FORM_BUFFERED_SIZE))
+        .thenReturn(DEFAULT_MAX_FORM_BUFFERED_SIZE);
     Mockito.when(environment.getProperty("servicecomb.rest.server.maxChunkSize", int.class,
             DEFAULT_MAX_CHUNK_SIZE))
         .thenReturn(DEFAULT_MAX_CHUNK_SIZE);

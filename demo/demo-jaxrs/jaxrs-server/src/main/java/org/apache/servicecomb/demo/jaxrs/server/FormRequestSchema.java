@@ -17,14 +17,14 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-
-import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "FormRequestSchema")
 @Path("/form")
@@ -38,4 +38,11 @@ public class FormRequestSchema {
     return "formRequest success : " + formData.length();
   }
 
+  @Path("/formLongName")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String formLongName(@FormParam("F0123456789001234567890012345678900123456789001234567890"
+      + "0123456789001234567890012345678900123456789001234567890") String formData) throws Exception {
+    return "formRequest success : " + formData.length();
+  }
 }

@@ -311,12 +311,15 @@ public class RestBodyHandler implements BodyHandler {
 
       context.request().exceptionHandler(t -> {
         context.cancelAndCleanupFileUploads();
+        int sc = 200;
         if (t instanceof DecoderException) {
           // bad request
-          context.fail(400, t.getCause());
-        } else {
-          context.fail(t);
+          sc = 400;
+          if (t.getCause() != null) {
+            t = t.getCause();
+          }
         }
+        context.fail(sc, t);
       });
     }
 
