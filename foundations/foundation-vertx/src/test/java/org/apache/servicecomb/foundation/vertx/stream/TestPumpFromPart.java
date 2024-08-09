@@ -25,23 +25,28 @@ import java.util.concurrent.ExecutionException;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream.ReadResult;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import io.vertx.core.Context;
 import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.impl.SyncContext;
+import io.vertx.core.impl.VertxInternal;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
-import org.junit.jupiter.api.Assertions;
 
 public class TestPumpFromPart {
-  String src = RandomStringUtils.random(100);
+  static Vertx vertx = Vertx.vertx();
+
+  String src = RandomStringUtils.random(100, true, true);
 
   boolean inputStreamClosed;
 
@@ -61,7 +66,12 @@ public class TestPumpFromPart {
 
   IOException error = new IOException();
 
-  Context context = new SyncContext();
+  SyncContext context = new SyncContext();
+
+  @Before
+  public void setup() throws IOException {
+    context.setOwner((VertxInternal) vertx);
+  }
 
   private void run(Context context, boolean closeOutput) throws Throwable {
     inputStream.reset();
