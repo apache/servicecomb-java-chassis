@@ -38,4 +38,11 @@ public class FormRequestSchema {
     return "formRequest success : " + formData.length();
   }
 
+  @Path("/formLongName")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String formLongName(@FormParam("F0123456789001234567890012345678900123456789001234567890"
+      + "0123456789001234567890012345678900123456789001234567890") String formData) throws Exception {
+    return "formRequest success : " + formData.length();
+  }
 }
