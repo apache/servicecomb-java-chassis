@@ -241,8 +241,8 @@ This product bundles files from protostuff which is licensed under the Apache Li
 For details, see  https://github.com/protostuff/protostuff
 
 ================================================================
-For foundations/foundation-protobuf/src/resources/google/protobuf/any.proto
-For foundations/foundation-protobuf/src/resources/google/protobuf/empty.proto
+For foundations/foundation-protobuf/src/main/resources/google/protobuf/any.proto
+For foundations/foundation-protobuf/src/main/resources/google/protobuf/empty.proto
 ================================================================
 This product bundles files from swagger which is licensed under the BSD-3-Clause.
 For details, see https://github.com/protocolbuffers/protobuf
