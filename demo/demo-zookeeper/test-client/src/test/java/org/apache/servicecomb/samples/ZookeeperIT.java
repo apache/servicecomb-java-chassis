@@ -22,12 +22,15 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestClientApplication.class)
 public class ZookeeperIT {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperIT.class);
 
   @BeforeEach
   public void setUp() {
@@ -36,8 +39,15 @@ public class ZookeeperIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    TestClientApplication.run();
-
+    try {
+      TestClientApplication.run();
+    } catch (Exception e) {
+      TestMgr.failed("test case run failed", e);
+      LOGGER.error("-------------- test failed -------------");
+      LOGGER.error("", e);
+      LOGGER.error("-------------- test failed -------------");
+    }
+    TestMgr.summary();
     Assertions.assertTrue(TestMgr.errors().isEmpty());
   }
 }
