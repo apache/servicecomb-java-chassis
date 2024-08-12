@@ -184,10 +184,12 @@
         <version>${guice.version}</version>
       </dependency>
 
+      <!-- will not update anymore, only for testing -->
       <dependency>
         <groupId>com.google.protobuf</groupId>
         <artifactId>protobuf-java</artifactId>
         <version>${protobuf.version}</version>
+        <scope>test</scope>
       </dependency>
 
       <dependency>

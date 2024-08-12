@@ -50,10 +50,11 @@
       <artifactId>jsr305</artifactId>
     </dependency>
 
-    <!-- only for provide any.proto/empty.proto and so on -->
+    <!-- will not update anymore, only for testing -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
+      <scope>test</scope>
     </dependency>
 
     <dependency>
@@ -88,7 +89,7 @@
         </configuration>
         <executions>
           <execution>
-            <phase>generate-sources</phase>
+            <phase>generate-test-sources</phase>
             <goals>
               <goal>test-compile</goal>
             </goals>

@@ -36,6 +36,12 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-protobuf</artifactId>
     </dependency>
+    <!-- will not update anymore, only for testing -->
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
@@ -73,7 +79,7 @@
         </configuration>
         <executions>
           <execution>
-            <phase>generate-sources</phase>
+            <phase>generate-test-sources</phase>
             <goals>
               <goal>test-compile</goal>
             </goals>
