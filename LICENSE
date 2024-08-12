@@ -239,3 +239,10 @@ For foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/ArrayFie
 ================================================================
 This product bundles files from protostuff which is licensed under the Apache License v2.
 For details, see  https://github.com/protostuff/protostuff
+
+================================================================
+For foundations/foundation-protobuf/src/resources/google/protobuf/any.proto
+For foundations/foundation-protobuf/src/resources/google/protobuf/empty.proto
+================================================================
+This product bundles files from swagger which is licensed under the BSD-3-Clause.
+For details, see https://github.com/protocolbuffers/protobuf
