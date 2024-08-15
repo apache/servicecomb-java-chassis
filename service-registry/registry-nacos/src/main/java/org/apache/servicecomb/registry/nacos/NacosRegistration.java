@@ -114,6 +114,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
     try {
       namingService.deregisterInstance(nacosRegistrationInstance.getServiceName(),
           nacosRegistrationInstance.getApplication(), instance);
+      namingService.shutDown();
     } catch (NacosException e) {
       throw new IllegalStateException("destroy process is interrupted.");
     }
