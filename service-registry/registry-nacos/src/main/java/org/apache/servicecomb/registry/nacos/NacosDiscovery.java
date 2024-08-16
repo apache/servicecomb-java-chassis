@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import com.alibaba.nacos.api.exception.NacosException;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -137,7 +138,13 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
 
   @Override
   public void destroy() {
-
+    if (namingService != null) {
+      try {
+        namingService.shutDown();
+      } catch (NacosException e) {
+        throw new IllegalStateException("destroy process is interrupted.");
+      }
+    }
   }
 
   @Override
