@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.LambdaUtils;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.api.LifeCycle;
@@ -318,7 +319,7 @@ public class DiscoveryManager implements LifeCycle {
 
   @Override
   public void destroy() {
-    discoveryList.forEach(LifeCycle::destroy);
+    discoveryList.forEach(LambdaUtils.ignoreException(LifeCycle::destroy));
     task.shutdownNow();
   }
 
