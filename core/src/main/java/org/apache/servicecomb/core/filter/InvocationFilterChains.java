@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.core.filter;
 
 import java.util.Comparator;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public class InvocationFilterChains {
+
   private final List<? extends Filter> filters;
 
   private final Map<String, Map<String, FilterNode>> microserviceChains = new ConcurrentHashMapEx<>();
@@ -37,15 +39,13 @@ public class InvocationFilterChains {
   }
 
   public FilterNode findChain(String application, String serviceName) {
-    FilterNode filterNode = microserviceChains.computeIfAbsent(application, key -> new ConcurrentHashMapEx<>())
-        .get(serviceName);
-    if (filterNode == null) {
-      List<Filter> serviceFilters = filters.stream()
-          .filter(e -> e.enabledForMicroservice(application, serviceName))
-          .sorted(Comparator.comparingInt(a -> a.getOrder(application, serviceName))).collect(Collectors.toList());
-      filterNode = FilterNode.buildChain(serviceFilters);
-      microserviceChains.get(application).put(serviceName, filterNode);
-    }
-    return filterNode;
+    return microserviceChains.computeIfAbsent(application, key -> new ConcurrentHashMapEx<>())
+        .computeIfAbsent(serviceName, (serviceNameInner) -> {
+          List<Filter> serviceFilters = filters.stream()
+              .filter(e -> e.enabledForMicroservice(application, serviceName))
+              .sorted(Comparator.comparingInt(a -> a.getOrder(application, serviceName)))
+              .collect(Collectors.toList());
+          return FilterNode.buildChain(serviceFilters);
+        });
   }
 }
