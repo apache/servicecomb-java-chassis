@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.foundation.common.utils.LambdaUtils;
 import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
@@ -99,7 +100,7 @@ public class RegistrationManager {
   }
 
   public void destroy() {
-    registrationList.forEach(LifeCycle::destroy);
+    registrationList.forEach(LambdaUtils.ignoreException(LifeCycle::destroy));
   }
 
   public void run() {
