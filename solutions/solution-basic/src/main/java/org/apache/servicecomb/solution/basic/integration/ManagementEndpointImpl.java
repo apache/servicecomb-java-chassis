@@ -46,6 +46,9 @@ public class ManagementEndpointImpl implements ManagementEndpoint {
 
   @Override
   public boolean health(String instanceId, String registryName) {
+    if (StringUtils.isEmpty(instanceId) || StringUtils.isEmpty(registryName)) {
+      return false;
+    }
     String mySelf = registrationManager.getInstanceId(registryName);
     if (StringUtils.isEmpty(mySelf)) {
       return false;

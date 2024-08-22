@@ -25,7 +25,7 @@
   <Project rdf:about="https://github.com/apache/servicecomb-java-chassis">
     <created>2021-03-25</created>
     <license rdf:resource="https://spdx.org/licenses/Apache-2.0" />
-    <name>Apache ServiceComb Java-Chassis</name>
+    <name>Apache ServiceComb Java Chassis</name>
     <homepage rdf:resource="https://github.com/apache/servicecomb-java-chassis" />
     <asfext:pmc rdf:resource="https://servicemix.apache.org" />
     <shortdesc>ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features</shortdesc>
@@ -37,9 +37,9 @@
     <category rdf:resource="https://projects.apache.org/category/library" />
     <release>
       <Version>
-        <name>ServiceComb Java-Chassis 2.2.0</name>
-        <created>2021-02-28</created>
-        <revision>2.2.0</revision>
+        <name>ServiceComb Java Chassis 3.2.1</name>
+        <created>2024-08-10</created>
+        <revision>3.2.1</revision>
       </Version>
     </release>
     <repository>
