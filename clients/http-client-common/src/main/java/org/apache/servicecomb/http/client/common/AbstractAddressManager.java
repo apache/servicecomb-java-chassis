@@ -23,12 +23,12 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,8 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class AbstractAddressManager {
@@ -53,42 +51,37 @@ public class AbstractAddressManager {
 
   private static final String V3_PREFIX = "/v3/";
 
-  private static final int DEFAULT_METRICS_WINDOW_TIME = 1;
+  private static final int DEFAULT_ADDRESS_CHECK_TIME = 30;
 
   private static final int ISOLATION_THRESHOLD = 3;
 
-  private List<String> addresses = new ArrayList<>();
+  private volatile List<String> addresses = new ArrayList<>();
+
+  private final List<String> default_isolation_address = new ArrayList<>();
 
   private int index;
 
   private String projectName;
 
   // if address in same zone will be true; others will be false.
-  private final Map<String, Boolean> addressCategory = new HashMap<>();
+  private final Set<String> addressCategory = new HashSet<>();
 
   // recording continuous times of failure of an address.
   private final Map<String, Integer> addressFailureStatus = new ConcurrentHashMap<>();
 
-  // recording address isolation status, if isolated will be false
-  private final Map<String, Boolean> addressIsolated = new ConcurrentHashMap<>();
-
-  // recording address isolation status, if isolated will be false
-  private Cache<String, Boolean> addressIsolationStatus = CacheBuilder.newBuilder()
-      .maximumSize(100)
-      .expireAfterWrite(1, TimeUnit.MINUTES)
-      .build();
-
   private volatile List<String> availableZone = new ArrayList<>();
+
+  private final List<String> isolation_zone_address = new ArrayList<>();
 
   private volatile List<String> availableRegion = new ArrayList<>();
 
-  private final List<String> defaultAddress = new ArrayList<>();
+  private final List<String> isolation_region_address = new ArrayList<>();
 
   private boolean addressAutoRefreshed = false;
 
   private final Object lock = new Object();
 
-  private Random random = new Random();
+  private final Random random = new Random();
 
   private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
       new ThreadFactoryBuilder()
@@ -98,25 +91,33 @@ public class AbstractAddressManager {
   public AbstractAddressManager(List<String> addresses) {
     this.projectName = DEFAULT_PROJECT;
     this.addresses.addAll(addresses);
-    this.defaultAddress.addAll(addresses);
-    this.index = addresses.size() > 0 ? random.nextInt(addresses.size()) : 0;
+    this.addressCategory.addAll(addresses);
+    this.index = !addresses.isEmpty() ? random.nextInt(addresses.size()) : 0;
+    startCheck();
   }
 
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
-    this.defaultAddress.addAll(this.addresses);
-    this.index = addresses.size() > 0 ? random.nextInt(addresses.size()) : 0;
+    this.addressCategory.addAll(this.addresses);
+    this.index = !addresses.isEmpty() ? random.nextInt(addresses.size()) : 0;
+    startCheck();
   }
 
-  @VisibleForTesting
-  Cache<String, Boolean> getAddressIsolationStatus() {
-    return addressIsolationStatus;
+  public void refreshEndpoint(RefreshEndpointEvent event, String key) {
+    if (null == event || !event.getName().equals(key)) {
+      return;
+    }
+
+    availableZone = event.getSameZone().stream().map(this::normalizeUri).collect(Collectors.toList());
+    availableRegion = event.getSameRegion().stream().map(this::normalizeUri).collect(Collectors.toList());
+    addressCategory.addAll(availableZone);
+    addressCategory.addAll(availableRegion);
+    addressAutoRefreshed = true;
   }
 
-  @VisibleForTesting
-  void setAddressIsolationStatus(Cache<String, Boolean> addressIsolationStatus) {
-    this.addressIsolationStatus = addressIsolationStatus;
+  protected String normalizeUri(String endpoint) {
+    return new URLEndPoint(endpoint).toString();
   }
 
   @VisibleForTesting
@@ -137,22 +138,11 @@ public class AbstractAddressManager {
   }
 
   private void startCheck() {
-    executorService.scheduleAtFixedRate(this::checkHistory,
-        0,
-        DEFAULT_METRICS_WINDOW_TIME,
-        TimeUnit.MINUTES);
+    executorService.scheduleAtFixedRate(this::checkHistory, 0, DEFAULT_ADDRESS_CHECK_TIME, TimeUnit.SECONDS);
   }
 
   public String formatUrl(String url, boolean absoluteUrl, String address) {
     return absoluteUrl ? address + url : formatAddress(address) + url;
-  }
-
-  public String address() {
-    if (!addressAutoRefreshed) {
-      return getDefaultAddress();
-    } else {
-      return getAvailableZoneAddress();
-    }
   }
 
   public boolean sslEnabled() {
@@ -163,10 +153,6 @@ public class AbstractAddressManager {
     return addresses.stream().map(this::formatAddress).collect(Collectors.toList());
   }
 
-  protected String getUrlPrefix(String address) {
-    return address + V3_PREFIX;
-  }
-
   protected String formatAddress(String address) {
     try {
       return getUrlPrefix(address) + HttpUtils.encodeURLParam(this.projectName);
@@ -175,27 +161,34 @@ public class AbstractAddressManager {
     }
   }
 
+  protected String getUrlPrefix(String address) {
+    return address + V3_PREFIX;
+  }
+
+  public String address() {
+    if (!addressAutoRefreshed) {
+      return getDefaultAddress();
+    } else {
+      return getAvailableZoneAddress();
+    }
+  }
+
   private String getDefaultAddress() {
-    List<String> addresses = getAvailableAddress(defaultAddress);
     if (!addresses.isEmpty()) {
       return getCurrentAddress(addresses);
     }
-    return getInitAddress();
+    LOGGER.warn("all address is isolation, please check server status.");
+    // when all addresses is isolation, it will use all addresses for polling.
+    return getCurrentAddress(new ArrayList<>(addressCategory));
   }
 
   private String getAvailableZoneAddress() {
-    List<String> addresses = getAvailableZoneIpPorts();
-    if (!addresses.isEmpty()) {
-      return getCurrentAddress(addresses);
+    List<String> zoneOrRegionAddress = getZoneOrRegionAddress();
+    if (!zoneOrRegionAddress.isEmpty()) {
+      return getCurrentAddress(zoneOrRegionAddress);
     }
-    return getInitAddress();
-  }
-
-  // when all available address is fail, it will use all the initial addresses for polling.
-  private String getInitAddress() {
-    if (addresses.isEmpty()) {
-      return null;
-    }
+    LOGGER.warn("all auto discovery address is isolation, please check server status.");
+    // when all available address is isolation, it will use config addresses for polling.
     return getCurrentAddress(addresses);
   }
 
@@ -209,36 +202,73 @@ public class AbstractAddressManager {
     }
   }
 
-  private List<String> getAvailableZoneIpPorts() {
+  private List<String> getZoneOrRegionAddress() {
     List<String> results = new ArrayList<>();
     if (!availableZone.isEmpty()) {
-      results.addAll(getAvailableAddress(availableZone));
+      results.addAll(availableZone);
     } else {
-      results.addAll(getAvailableAddress(availableRegion));
+      results.addAll(availableRegion);
     }
     return results;
   }
 
-  private List<String> getAvailableAddress(List<String> endpoints) {
-    return endpoints.stream().filter(uri -> !addressIsolated.containsKey(uri) || addressIsolated.get(uri))
-        .collect(Collectors.toList());
+  @VisibleForTesting
+  protected void checkHistory() {
+    addressCategory.forEach(address -> {
+      if (telnetTest(address)) {
+        // isolation addresses find address and restore it
+        findAndRestoreAddress(address);
+      } else {
+        recordFailState(address);
+      }
+    });
   }
 
-  protected String normalizeUri(String endpoint) {
-    return new URLEndPoint(endpoint).toString();
+  protected boolean telnetTest(String address) {
+    URI uri = parseIpPortFromURI(address);
+    if (uri == null) {
+      return false;
+    }
+    try (Socket s = new Socket()) {
+      s.connect(new InetSocketAddress(uri.getHost(), uri.getPort()), 3000);
+      return true;
+    } catch (IOException e) {
+      LOGGER.warn("ping endpoint {} failed, It will be quarantined again.", address);
+      return false;
+    }
   }
 
-  public void refreshEndpoint(RefreshEndpointEvent event, String key) {
-    if (null == event || !event.getName().equals(key)) {
+  private URI parseIpPortFromURI(String address) {
+    try {
+      return new URI(address);
+    } catch (URISyntaxException e) {
+      LOGGER.error("parse address [{}] failed.", address, e);
+      return null;
+    }
+  }
+
+  protected void findAndRestoreAddress(String address) {
+    recordSuccessState(address);
+    if (addressAutoRefreshed) {
+      if (isolation_zone_address.remove(address)) {
+        LOGGER.warn("restore default address [{}]", address);
+        availableZone.add(address);
+        return;
+      }
+      if (isolation_region_address.remove(address)) {
+        LOGGER.warn("restore same zone address [{}]", address);
+        availableRegion.add(address);
+      }
       return;
     }
+    if (default_isolation_address.remove(address)) {
+      LOGGER.warn("restore same region address [{}]", address);
+      addresses.add(address);
+    }
+  }
 
-    availableZone = event.getSameZone().stream().map(this::normalizeUri).collect(Collectors.toList());
-    availableRegion = event.getSameRegion().stream().map(this::normalizeUri).collect(Collectors.toList());
-    availableZone.forEach(address -> addressCategory.put(address, true));
-    availableRegion.forEach(address -> addressCategory.put(address, false));
-    startCheck();
-    addressAutoRefreshed = true;
+  public void recordSuccessState(String address) {
+    addressFailureStatus.put(address, 0);
   }
 
   public void recordFailState(String address) {
@@ -256,96 +286,25 @@ public class AbstractAddressManager {
     }
   }
 
-  public void recordSuccessState(String address) {
-    addressFailureStatus.put(address, 0);
-  }
-
-  @VisibleForTesting
-  protected void checkHistory() {
-    addressIsolated.keySet().stream().filter(this::judgeIsolation).forEach(s -> {
-      if (telnetTest(s)) {
-        rejoinAddress(s);
-      } else {
-        addressIsolationStatus.put(s, false);
-      }
-    });
-  }
-
-  private Boolean judgeIsolation(String address) {
-    try {
-      return addressIsolationStatus.get(address, () -> true);
-    } catch (ExecutionException e) {
-      return true;
-    }
-  }
-
-  protected boolean telnetTest(String address) {
-    URI ipPort = parseIpPortFromURI(address);
-    try (Socket s = new Socket()) {
-      s.connect(new InetSocketAddress(ipPort.getHost(), ipPort.getPort()), 3000);
-      return true;
-    } catch (IOException e) {
-      LOGGER.warn("ping endpoint {} failed, It will be quarantined again.", address);
-    }
-    return false;
-  }
-
-  private URI parseIpPortFromURI(String uri) {
-    try {
-      return new URI(uri);
-    } catch (URISyntaxException e) {
-      return null;
-    }
-  }
-
-  //Query whether the current address belongs to the same AZ or region through azmap,
-  // add it to the sequence of, and delete the record in history
-  @VisibleForTesting
-  void rejoinAddress(String address) {
-    if (!addressAutoRefreshed) {
-      defaultAddress.add(address);
-      addressFailureStatus.put(address, 0);
-      addressIsolated.remove(address);
-      return;
-    }
-
-    if (addressCategory.get(address) == null) {
-      LOGGER.warn("may not happen {}-{}", addressCategory.size(), address);
-      return;
-    }
-
-    if (addressCategory.get(address)) {
-      availableZone.add(address);
-    } else {
-      availableRegion.add(address);
-    }
-    addressFailureStatus.put(address, 0);
-    addressIsolated.remove(address);
-  }
-
   //Query whether the current address belongs to the same AZ or the same region through AZMap,
   // and delete it from the record. At the same time, add records in history and cache
   @VisibleForTesting
   void removeAddress(String address) {
     if (!addressAutoRefreshed) {
-      defaultAddress.remove(address);
-      addressIsolated.put(address, false);
-      addressIsolationStatus.put(address, false);
+      if (addresses.remove(address)) {
+        LOGGER.warn("isolation default address [{}]", address);
+        default_isolation_address.add(address);
+      }
       return;
     }
-
-    if (addressCategory.get(address) == null) {
-      LOGGER.warn("may not happen {}-{}", addressCategory.size(), address);
+    if (availableZone.remove(address)) {
+      LOGGER.warn("isolation same zone address [{}]", address);
+      isolation_zone_address.add(address);
       return;
     }
-
-    if (addressCategory.get(address)) {
-      availableZone.remove(address);
-    } else {
-      availableRegion.remove(address);
+    if (availableRegion.remove(address)) {
+      LOGGER.warn("isolation same region address [{}]", address);
+      isolation_region_address.add(address);
     }
-
-    addressIsolated.put(address, false);
-    addressIsolationStatus.put(address, false);
   }
 }
