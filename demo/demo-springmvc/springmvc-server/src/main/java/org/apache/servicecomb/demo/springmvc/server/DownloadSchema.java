@@ -57,8 +57,15 @@ public class DownloadSchema {
   }
 
   @GetMapping(path = "/deleteAfterFinished")
-  public ResponseEntity<Part> deleteAfterFinished(@RequestParam("content") String content) throws IOException {
-    File file = createTempFile(content);
+  public ResponseEntity<Part> deleteAfterFinished(@RequestParam("content") String content,
+      @RequestParam(value = "fileName", required = false) String fileName) throws IOException {
+    File file;
+
+    if (StringUtils.isNotEmpty(fileName)) {
+      file = createTempFile(fileName, content);
+    } else {
+      file = createTempFile(content);
+    }
 
     return ResponseEntity
         .ok()
