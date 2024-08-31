@@ -18,9 +18,9 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.part.AbstractPart;
@@ -36,7 +36,7 @@ public class FileUploadPart extends AbstractPart {
 
   @Override
   public InputStream getInputStream() throws IOException {
-    return new FileInputStream(fileUpload.uploadedFileName());
+    return Files.newInputStream(new File(fileUpload.uploadedFileName()).toPath());
   }
 
   @Override

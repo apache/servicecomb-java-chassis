@@ -42,6 +42,7 @@ public class TestDownloadSchema implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
     testDownloadFileAndDeleted();
+    testDownloadFileAndDeletedCN();
     testDownloadFileNotDeleted();
     testDownloadFileWithNull();
     testSetContentTypeByResponseEntity();
@@ -89,6 +90,19 @@ public class TestDownloadSchema implements CategorizedTestCase {
     RestOperations restTemplate = RestTemplateBuilder.create();
     ReadStreamPart readStreamPart = restTemplate
         .getForObject("servicecomb://springmvc/download/deleteAfterFinished?content=hello", ReadStreamPart.class);
+    String hello = readStreamPart.saveAsString().get();
+    TestMgr.check(hello, "hello");
+
+    boolean exists = restTemplate
+        .getForObject("servicecomb://springmvc/download/assertLastFileDeleted", boolean.class);
+    TestMgr.check(exists, false);
+  }
+
+  private void testDownloadFileAndDeletedCN() throws Exception {
+    RestOperations restTemplate = RestTemplateBuilder.create();
+    ReadStreamPart readStreamPart = restTemplate
+        .getForObject("servicecomb://springmvc/download/deleteAfterFinished?content={1}&fileName={2}",
+            ReadStreamPart.class, "hello", "中文");
     String hello = readStreamPart.saveAsString().get();
     TestMgr.check(hello, "hello");
 

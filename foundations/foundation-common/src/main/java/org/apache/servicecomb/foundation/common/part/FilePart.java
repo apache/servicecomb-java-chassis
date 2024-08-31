@@ -18,9 +18,9 @@
 package org.apache.servicecomb.foundation.common.part;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.apache.commons.io.FileUtils;
 
@@ -41,7 +41,7 @@ public class FilePart extends AbstractPart implements FilePartForSend {
 
   @Override
   public InputStream getInputStream() throws IOException {
-    return new FileInputStream(file);
+    return Files.newInputStream(file.toPath());
   }
 
   @Override
