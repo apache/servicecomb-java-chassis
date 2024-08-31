@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -116,6 +117,9 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   public void internalFlushBuffer() {
+    if (serverResponse.closed()) {
+      return;
+    }
     serverResponse.end();
   }
 
@@ -130,6 +134,10 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
 
   @Override
   public CompletableFuture<Void> sendBuffer(Buffer buffer) {
+    if (serverResponse.closed()) {
+      return CompletableFuture.failedFuture(new IOException("Response is closed before sending any data. "
+          + "Maybe client is timeout or check idle connection timeout for provider is properly configured."));
+    }
     CompletableFuture<Void> future = new CompletableFuture<>();
     serverResponse.write(buffer).onComplete(result -> {
       if (result.failed()) {
