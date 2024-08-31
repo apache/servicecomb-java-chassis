@@ -87,7 +87,7 @@
     <resilience4j.versioin>1.7.0</resilience4j.versioin>
     <ribbon.version>2.7.18</ribbon.version>
     <rxjava.version>1.3.8</rxjava.version>
-    <rxnetty.version>0.5.1</rxnetty.version>
+    <rxnetty.version>0.4.20</rxnetty.version>
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
     <servlet-api.version>4.0.4</servlet-api.version>
