@@ -61,7 +61,7 @@
     <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
     <protoc3-maven-plugin.version>3.19.2</protoc3-maven-plugin.version>
     <protoc-gen-grpc-java-plugin.version>1.47.0</protoc-gen-grpc-java-plugin.version>
-    <puppycrawl-checkstyle.version>10.17.0</puppycrawl-checkstyle.version>
+    <puppycrawl-checkstyle.version>10.18.1</puppycrawl-checkstyle.version>
     <release-maven-plugin.version>3.1.1</release-maven-plugin.version>
     <site-maven-plugin.version>3.12.1</site-maven-plugin.version>
     <source-maven-plugin.version>3.3.0</source-maven-plugin.version>
