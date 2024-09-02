@@ -72,7 +72,9 @@ public abstract class ProducerInvocationFlow {
             if (throwable != null) {
               // Server codec operates on Response. So the filter chain result should be Response and
               // will never throw exception.
-              LOGGER.error("Maybe a fatal bug that should be addressed.", throwable);
+              // Sometimes Server Codec will throw exception, e.g. Connection Closed.
+              LOGGER.error("Maybe a fatal bug that should be addressed or codec exception for {}.",
+                  invocation.getInvocationQualifiedName(), throwable);
               response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
                   new CommonExceptionData("Internal error, check logs for details.")));
             }
@@ -87,7 +89,9 @@ public abstract class ProducerInvocationFlow {
           if (throwable != null) {
             // Server codec operates on Response. So the filter chain result should be Response and
             // will never throw exception.
-            LOGGER.error("Maybe a fatal bug that should be addressed.", throwable);
+            // Sometimes Server Codec will throw exception, e.g. Connection Closed.
+            LOGGER.error("Maybe a fatal bug that should be addressed or codec exception for {}.",
+                invocation.getInvocationQualifiedName(), throwable);
             response = Response.createFail(new InvocationException(Status.INTERNAL_SERVER_ERROR,
                 new CommonExceptionData("Internal error, check logs for details.")));
           }

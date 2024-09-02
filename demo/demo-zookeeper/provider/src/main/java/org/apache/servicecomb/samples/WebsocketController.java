@@ -33,14 +33,24 @@ public class WebsocketController {
   @PostMapping("/websocket")
   @Transport(name = CoreConst.WEBSOCKET)
   public void websocket(ServerWebSocket serverWebsocket) {
+    // Client may have not registered message handler, and messages sent may get lost.
+    // So we sleep for a while to send message.
     AtomicInteger receiveCount = new AtomicInteger(0);
-    serverWebsocket.writeTextMessage("hello", r -> {
-    });
     serverWebsocket.textMessageHandler(s -> {
       receiveCount.getAndIncrement();
     });
     serverWebsocket.closeHandler((v) -> System.out.println("closed"));
+
     new Thread(() -> {
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+
+      serverWebsocket.writeTextMessage("hello", r -> {
+      });
+
       for (int i = 0; i < 5; i++) {
         serverWebsocket.writeTextMessage("hello " + i, r -> {
         });
