@@ -57,6 +57,9 @@ public class AbstractAddressManager {
 
   private volatile List<String> addresses = new ArrayList<>();
 
+  // when all addresses are isolation, it will use this for polling.
+  private final List<String> defaultAddress = new ArrayList<>();
+
   private final List<String> defaultIsolationAddress = new ArrayList<>();
 
   private int index;
@@ -91,6 +94,7 @@ public class AbstractAddressManager {
   public AbstractAddressManager(List<String> addresses) {
     this.projectName = DEFAULT_PROJECT;
     this.addresses.addAll(addresses);
+    this.defaultAddress.addAll(addresses);
     this.addressCategory.addAll(addresses);
     this.index = !addresses.isEmpty() ? random.nextInt(addresses.size()) : 0;
     startCheck();
@@ -99,6 +103,7 @@ public class AbstractAddressManager {
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
+    this.defaultAddress.addAll(addresses);
     this.addressCategory.addAll(this.addresses);
     this.index = !addresses.isEmpty() ? random.nextInt(addresses.size()) : 0;
     startCheck();
@@ -178,8 +183,8 @@ public class AbstractAddressManager {
       return getCurrentAddress(addresses);
     }
     LOGGER.warn("all addresses are isolation, please check server status.");
-    // when all addresses is isolation, it will use all addresses for polling.
-    return getCurrentAddress(new ArrayList<>(addressCategory));
+    // when all addresses are isolation, it will use all default address for polling.
+    return getCurrentAddress(new ArrayList<>(defaultAddress));
   }
 
   private String getAvailableZoneAddress() {
@@ -188,7 +193,7 @@ public class AbstractAddressManager {
       return getCurrentAddress(zoneOrRegionAddress);
     }
     LOGGER.warn("all auto discovery addresses are isolation, please check server status.");
-    // when all available address is isolation, it will use config addresses for polling.
+    // when all available address are isolation, it will use config addresses for polling.
     return getCurrentAddress(addresses);
   }
 
