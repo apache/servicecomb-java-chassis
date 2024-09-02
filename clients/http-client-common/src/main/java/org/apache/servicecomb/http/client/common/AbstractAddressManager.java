@@ -57,13 +57,13 @@ public class AbstractAddressManager {
 
   private volatile List<String> addresses = new ArrayList<>();
 
-  private final List<String> default_isolation_address = new ArrayList<>();
+  private final List<String> defaultIsolationAddress = new ArrayList<>();
 
   private int index;
 
   private String projectName;
 
-  // if address in same zone will be true; others will be false.
+  // all address list.
   private final Set<String> addressCategory = new HashSet<>();
 
   // recording continuous times of failure of an address.
@@ -71,11 +71,11 @@ public class AbstractAddressManager {
 
   private volatile List<String> availableZone = new ArrayList<>();
 
-  private final List<String> isolation_zone_address = new ArrayList<>();
+  private final List<String> isolationZoneAddress = new ArrayList<>();
 
   private volatile List<String> availableRegion = new ArrayList<>();
 
-  private final List<String> isolation_region_address = new ArrayList<>();
+  private final List<String> isolationRegionAddress = new ArrayList<>();
 
   private boolean addressAutoRefreshed = false;
 
@@ -177,7 +177,7 @@ public class AbstractAddressManager {
     if (!addresses.isEmpty()) {
       return getCurrentAddress(addresses);
     }
-    LOGGER.warn("all address is isolation, please check server status.");
+    LOGGER.warn("all addresses are isolation, please check server status.");
     // when all addresses is isolation, it will use all addresses for polling.
     return getCurrentAddress(new ArrayList<>(addressCategory));
   }
@@ -187,7 +187,7 @@ public class AbstractAddressManager {
     if (!zoneOrRegionAddress.isEmpty()) {
       return getCurrentAddress(zoneOrRegionAddress);
     }
-    LOGGER.warn("all auto discovery address is isolation, please check server status.");
+    LOGGER.warn("all auto discovery addresses are isolation, please check server status.");
     // when all available address is isolation, it will use config addresses for polling.
     return getCurrentAddress(addresses);
   }
@@ -250,18 +250,18 @@ public class AbstractAddressManager {
   protected void findAndRestoreAddress(String address) {
     recordSuccessState(address);
     if (addressAutoRefreshed) {
-      if (isolation_zone_address.remove(address)) {
+      if (isolationZoneAddress.remove(address)) {
         LOGGER.warn("restore default address [{}]", address);
         availableZone.add(address);
         return;
       }
-      if (isolation_region_address.remove(address)) {
+      if (isolationRegionAddress.remove(address)) {
         LOGGER.warn("restore same zone address [{}]", address);
         availableRegion.add(address);
       }
       return;
     }
-    if (default_isolation_address.remove(address)) {
+    if (defaultIsolationAddress.remove(address)) {
       LOGGER.warn("restore same region address [{}]", address);
       addresses.add(address);
     }
@@ -293,18 +293,18 @@ public class AbstractAddressManager {
     if (!addressAutoRefreshed) {
       if (addresses.remove(address)) {
         LOGGER.warn("isolation default address [{}]", address);
-        default_isolation_address.add(address);
+        defaultIsolationAddress.add(address);
       }
       return;
     }
     if (availableZone.remove(address)) {
       LOGGER.warn("isolation same zone address [{}]", address);
-      isolation_zone_address.add(address);
+      isolationZoneAddress.add(address);
       return;
     }
     if (availableRegion.remove(address)) {
       LOGGER.warn("isolation same region address [{}]", address);
-      isolation_region_address.add(address);
+      isolationRegionAddress.add(address);
     }
   }
 }
