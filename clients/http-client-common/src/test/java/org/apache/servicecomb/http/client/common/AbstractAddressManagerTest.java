@@ -32,9 +32,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-
 public class AbstractAddressManagerTest {
 
   private static final List<String> addresses = new ArrayList<>();
@@ -124,20 +121,9 @@ public class AbstractAddressManagerTest {
     addressManager.recordFailState(address);
     Assertions.assertEquals("http://127.0.0.4:30100", addressManager.address());
 
-    // mock cacheAddress status refresh after 10 minute
-    Cache<String, Boolean> cache = CacheBuilder.newBuilder()
-        .maximumSize(100)
-        .expireAfterWrite(10, TimeUnit.MINUTES)
-        .build();
-    cache.put("http://127.0.0.3:30100", true);
-
-    addressManager.setAddressIsolationStatus(cache);
-    Cache<String, Boolean> result = addressManager.getAddressIsolationStatus();
-    Assertions.assertEquals(true, result.get("http://127.0.0.3:30100", () -> false));
-
     // test restore isolation
     addressManager.checkHistory();
-    addressManager.rejoinAddress("http://127.0.0.3:30100");
+    addressManager.findAndRestoreAddress("http://127.0.0.3:30100");
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
   }
