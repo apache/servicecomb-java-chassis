@@ -117,6 +117,9 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   public void internalFlushBuffer() {
+    if (serverResponse.closed()) {
+      return;
+    }
     if (bodyBuffer == null) {
       serverResponse.end();
       return;
