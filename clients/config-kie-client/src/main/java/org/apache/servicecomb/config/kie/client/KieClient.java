@@ -101,6 +101,7 @@ public class KieClient implements KieConfigOperation {
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
     } catch (Exception e) {
+      addressManager.recordFailState(address);
       LOGGER.error("query configuration from {} failed, message={}", url, e.getMessage());
       throw new OperationException("read response failed. ", e);
     }
