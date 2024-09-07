@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -247,6 +248,36 @@ public class TestAbstractHttpServletResponse {
   @Test
   public void sendPart() {
     Error error = Assertions.assertThrows(Error.class, () -> response.sendPart(null));
+    checkError(error);
+  }
+
+  @Test
+  public void testSendRedirectWithStatusCode() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.sendRedirect("", HttpServletResponse.SC_ACCEPTED));
+    checkError(error);
+  }
+
+  @Test
+  public void testSendRedirectWithClearBuffer() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.sendRedirect("", true));
+    checkError(error);
+  }
+
+  @Test
+  public void testSendRedirectWithStatusCodeAndClearBuffer() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.sendRedirect("", HttpServletResponse.SC_ACCEPTED, true));
+    checkError(error);
+  }
+
+  @Test
+  public void testSetTrailerFields() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.setTrailerFields(null));
+    checkError(error);
+  }
+
+  @Test
+  public void testGetTrailerFields() {
+    Error error = Assertions.assertThrows(Error.class, () -> response.getTrailerFields());
     checkError(error);
   }
 }

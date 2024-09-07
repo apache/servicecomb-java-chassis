@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 
 import io.vertx.core.buffer.Buffer;
 import jakarta.servlet.ServletOutputStream;
@@ -231,6 +232,31 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
 
   @Override
   public CompletableFuture<Void> sendBuffer(Buffer buffer) {
+    throw new Error("not supported method");
+  }
+
+  @Override
+  public void sendRedirect(String location, boolean clearBuffer) throws IOException {
+    throw new Error("not supported method");
+  }
+
+  @Override
+  public void sendRedirect(String location, int statusCode) throws IOException {
+    throw new Error("not supported method");
+  }
+
+  @Override
+  public void sendRedirect(String location, int statusCode, boolean clearBuffer) throws IOException {
+    throw new Error("not supported method");
+  }
+
+  @Override
+  public void setTrailerFields(Supplier<Map<String, String>> supplier) {
+    throw new Error("not supported method");
+  }
+
+  @Override
+  public Supplier<Map<String, String>> getTrailerFields() {
     throw new Error("not supported method");
   }
 }
