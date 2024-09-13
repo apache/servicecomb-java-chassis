@@ -18,5 +18,4 @@
 package org.apache.servicecomb.http.client.event;
 
 public class EngineConnectChangedEvent {
-    
 }
