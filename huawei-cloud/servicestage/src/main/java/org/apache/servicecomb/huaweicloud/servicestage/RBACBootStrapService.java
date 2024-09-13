@@ -73,6 +73,7 @@ public class RBACBootStrapService implements BootStrapService {
     }
 
     ServiceCenterAddressManager addressManager = createAddressManager(environment);
+    addressManager.setEventBus(EventManager.getEventBus());
     SSLProperties sslProperties = createSSLProperties(environment);
     sslProperties.setEnabled(addressManager.sslEnabled());
 
