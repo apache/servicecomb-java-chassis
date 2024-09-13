@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.eventbus.EventBus;
 
 public class ConfigCenterClient implements ConfigCenterOperation {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterClient.class);
@@ -55,6 +56,10 @@ public class ConfigCenterClient implements ConfigCenterOperation {
   public ConfigCenterClient(ConfigCenterAddressManager addressManager, HttpTransport httpTransport) {
     this.addressManager = addressManager;
     this.httpTransport = httpTransport;
+  }
+
+  public void setEventBus(EventBus eventBus) {
+    addressManager.setEventBus(eventBus);
   }
 
   @Override

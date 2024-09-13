@@ -33,6 +33,7 @@ import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.http.client.auth.DefaultRequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
+import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 import org.apache.servicecomb.service.center.client.ServiceCenterAddressManager;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -60,6 +61,7 @@ public class RBACBootStrapService implements BootStrapService {
     }
 
     ServiceCenterAddressManager addressManager = createAddressManager(environment);
+    addressManager.setEventBus(ServiceCenterEventBus.getEventBus());
     SSLProperties sslProperties = createSSLProperties(environment, "sc.consumer");
     sslProperties.setEnabled(addressManager.sslEnabled());
 

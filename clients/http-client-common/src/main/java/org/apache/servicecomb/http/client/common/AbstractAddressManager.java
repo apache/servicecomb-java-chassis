@@ -35,11 +35,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.servicecomb.http.client.event.EngineConnectChangedEvent;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class AbstractAddressManager {
@@ -85,6 +87,8 @@ public class AbstractAddressManager {
   private final Object lock = new Object();
 
   private final Random random = new Random();
+
+  private EventBus eventBus;
 
   private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
       new ThreadFactoryBuilder()
@@ -257,6 +261,9 @@ public class AbstractAddressManager {
     if (addressAutoRefreshed) {
       if (isolationZoneAddress.remove(address)) {
         LOGGER.warn("restore default address [{}]", address);
+        if (eventBus != null && availableZone.isEmpty()) {
+          eventBus.post(new EngineConnectChangedEvent());
+        }
         availableZone.add(address);
         return;
       }
@@ -305,11 +312,18 @@ public class AbstractAddressManager {
     if (availableZone.remove(address)) {
       LOGGER.warn("isolation same zone address [{}]", address);
       isolationZoneAddress.add(address);
+      if (eventBus != null && availableZone.isEmpty() && !availableRegion.isEmpty()) {
+        eventBus.post(new EngineConnectChangedEvent());
+      }
       return;
     }
     if (availableRegion.remove(address)) {
       LOGGER.warn("isolation same region address [{}]", address);
       isolationRegionAddress.add(address);
     }
+  }
+
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
   }
 }
