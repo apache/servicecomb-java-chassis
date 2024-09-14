@@ -50,9 +50,9 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
         .getIntProperty(CONFIG_RATIO, 30).get();
   }
 
-  private int getRatioCeiling() {
+  private int getRatioCeiling(int defaultValue) {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty(CONFIG_RATIO_CEILING, 70).get();
+        .getIntProperty(CONFIG_RATIO_CEILING, defaultValue).get();
   }
 
   @Override
@@ -74,7 +74,7 @@ public class ZoneAwareDiscoveryFilter implements ServerListFilterExt {
     });
 
     int ratio = getRatio();
-    int ratioCeiling = getRatioCeiling();
+    int ratioCeiling = getRatioCeiling(100 - ratio);
 
     if (hasEnoughMembers(servers.size(), instancesRegionAndAZMatch.size(), ratio, ratioCeiling)) {
       return instancesRegionAndAZMatch;
