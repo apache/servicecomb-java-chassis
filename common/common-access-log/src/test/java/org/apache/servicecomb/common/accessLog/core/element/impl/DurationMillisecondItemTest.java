@@ -66,6 +66,13 @@ public class DurationMillisecondItemTest {
 
     strBuilder = new StringBuilder();
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
+    Assertions.assertEquals("0", strBuilder.toString());
+
+    when(invocationStageTrace.getStartSend()).thenReturn(1000L);
+    when(invocationStageTrace.getFinish()).thenReturn(1001_000L);
+
+    strBuilder = new StringBuilder();
+    ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
     Assertions.assertEquals("1", strBuilder.toString());
   }
 }

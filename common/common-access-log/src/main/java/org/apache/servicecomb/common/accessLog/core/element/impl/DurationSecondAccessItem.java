@@ -28,12 +28,19 @@ public class DurationSecondAccessItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append((accessLogEvent.getMilliEndTime() - accessLogEvent.getMilliStartTime()) / 1000);
+    builder.append(calc(accessLogEvent.getMilliEndTime(), accessLogEvent.getMilliStartTime()) / 1000);
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    builder.append((finishEvent.getInvocation().getInvocationStageTrace().getFinish() -
+    builder.append(calc(finishEvent.getInvocation().getInvocationStageTrace().getFinish(),
         finishEvent.getInvocation().getInvocationStageTrace().getStartSend()) / 1000_000_000);
+  }
+
+  private long calc(long end, long begin) {
+    if (begin == 0 || end == 0) {
+      return 0;
+    }
+    return end - begin;
   }
 }
