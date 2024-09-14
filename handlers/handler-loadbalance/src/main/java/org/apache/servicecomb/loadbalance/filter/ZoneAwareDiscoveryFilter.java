@@ -64,9 +64,9 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
         int.class, 30);
   }
 
-  private int getRatioCeiling() {
+  private int getRatioCeiling(int defaultValue) {
     return environment.getProperty(CONFIG_RATIO_CEILING,
-        int.class, 70);
+        int.class, defaultValue);
   }
 
   @Override
@@ -104,7 +104,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
     }
 
     int ratio = getRatio();
-    int ratioCeiling = getRatioCeiling();
+    int ratioCeiling = getRatioCeiling(100 - ratio);
 
     if (hasEnoughMembers(instances.size(), instancesRegionAndAZMatch.size(), ratio, ratioCeiling)) {
       parent.child(GROUP_PREFIX + groups, new DiscoveryTreeNode()

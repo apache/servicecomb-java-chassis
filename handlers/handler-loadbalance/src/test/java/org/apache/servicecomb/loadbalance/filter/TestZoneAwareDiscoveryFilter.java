@@ -46,7 +46,7 @@ public class TestZoneAwareDiscoveryFilter {
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
         int.class, 30)).thenReturn(50);
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratioCeiling",
-        int.class, 70)).thenReturn(70);
+        int.class, 50)).thenReturn(70);
 
     ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
     filter.setEnvironment(environment);
@@ -116,7 +116,7 @@ public class TestZoneAwareDiscoveryFilter {
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
         int.class, 30)).thenReturn(40);
     Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratioCeiling",
-        int.class, 70)).thenReturn(60);
+        int.class, 60)).thenReturn(60);
 
     ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
     filter.setEnvironment(environment);
