@@ -69,12 +69,15 @@ public class ServiceCenterClient implements ServiceCenterOperation {
 
   private EventBus eventBus;
 
+  private ServiceCenterAddressManager addressManager;
+
   public ServiceCenterClient(ServiceCenterRawClient httpClient) {
     this.httpClient = httpClient;
   }
 
   public ServiceCenterClient setEventBus(EventBus eventBus) {
     this.eventBus = eventBus;
+    addressManager.setEventBus(eventBus);
     return this;
   }
 
@@ -90,6 +93,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         .setTenantName(tenantName)
         .setAddressManager(addressManager)
         .setHttpTransport(httpTransport).build();
+    this.addressManager = addressManager;
   }
 
   @Override

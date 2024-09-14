@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.config.kie.client;
 
+import com.google.common.eventbus.EventBus;
+
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -65,6 +67,10 @@ public class KieClient implements KieConfigOperation {
     this.httpTransport = httpTransport;
     this.addressManager = addressManager;
     this.kieConfiguration = kieConfiguration;
+  }
+
+  public void setEventBus(EventBus eventBus) {
+    addressManager.setEventBus(eventBus);
   }
 
   @Override
