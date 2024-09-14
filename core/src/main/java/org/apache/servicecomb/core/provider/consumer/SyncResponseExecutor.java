@@ -98,8 +98,7 @@ public class SyncResponseExecutor implements Executor {
 
     // In invocation handlers, may call other microservices, invocation
     // timeout may be much longer than request timeout.
-    // But this is quite rare, for simplicity, default two times of request timeout.
-    // If users need longer timeout, can configure invocation timeout.
-    return invocation.getOperationMeta().getConfig().getMsRequestTimeout() * 2;
+    // For simplicity, default 30000 or two times of request timeout.
+    return Math.max(invocation.getOperationMeta().getConfig().getMsRequestTimeout() * 2, 30000);
   }
 }
