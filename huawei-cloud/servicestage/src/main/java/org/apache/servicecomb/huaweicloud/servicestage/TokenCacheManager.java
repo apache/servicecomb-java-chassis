@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.http.client.event.EngineConnectChangedEvent;
 import org.apache.servicecomb.service.center.client.OperationEvents;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
@@ -152,6 +153,11 @@ public final class TokenCacheManager {
           cache.refresh(registryName);
         }
       });
+    }
+
+    @Subscribe
+    public void onEngineConnectChangedEvent(EngineConnectChangedEvent event) {
+      cache.refresh(registryName);
     }
 
     private String createHeaders() {
