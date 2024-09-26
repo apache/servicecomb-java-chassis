@@ -193,4 +193,12 @@ public interface ServiceCenterOperation {
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
   boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties);
+
+  /**
+   * Check serviceCenter isolation address available
+   *
+   * @param serviceId serviceId
+   * @param instanceId instanceId
+   */
+  void checkIsolationAddressAvailable(String serviceId, String instanceId);
 }

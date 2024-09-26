@@ -71,11 +71,7 @@ public class ServiceCenterRawClient {
       throws IOException {
     String address = addressManager.address();
     String formatUrl = addressManager.formatUrl(url, absoluteUrl, address);
-    if (headers == null) {
-      headers = new HashMap<>();
-    }
-    headers.put(HEADER_TENANT_NAME, tenantName);
-    HttpRequest httpRequest = new HttpRequest(formatUrl, headers, content, method);
+    HttpRequest httpRequest = buildHttpRequest(formatUrl, headers, content, method);
 
     try {
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
@@ -95,6 +91,26 @@ public class ServiceCenterRawClient {
         throw ioException;
       }
     }
+  }
+
+  public void checkServiceCenterAddressAvailable(String url, Map<String, String> headers, String content,
+      String address) {
+    String formatUrl = addressManager.formatUrl(url, false, address);
+    HttpRequest httpRequest = buildHttpRequest(formatUrl, headers, content, HttpRequest.PUT);
+    try {
+      httpTransport.doRequest(httpRequest);
+      addressManager.findAndRestoreAddress(address);
+    } catch (IOException e) {
+      LOGGER.error("check service center isolation address {} available error!", address, e);
+    }
+  }
+
+  private HttpRequest buildHttpRequest(String url, Map<String, String> headers, String content, String method) {
+    if (headers == null) {
+      headers = new HashMap<>();
+    }
+    headers.put(HEADER_TENANT_NAME, tenantName);
+    return new HttpRequest(url, headers, content, method);
   }
 
   public static class Builder {

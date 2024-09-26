@@ -553,4 +553,16 @@ public class ServiceCenterClient implements ServiceCenterOperation {
               "update service instance status fails", e);
     }
   }
+
+  @Override
+  public void checkIsolationAddressAvailable(String serviceId, String instanceId) {
+    List<String> isolationAddresses = addressManager.getIsolationAddresses();
+    if (isolationAddresses.isEmpty()) {
+      return;
+    }
+    for (String address : isolationAddresses) {
+      httpClient.checkServiceCenterAddressAvailable("/registry/microservices/" + serviceId + "/instances/" + instanceId +
+              "/heartbeat", null, null, address);
+    }
+  }
 }
