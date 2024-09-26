@@ -17,21 +17,11 @@
 
 package org.apache.servicecomb.http.client.common;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
@@ -42,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class AbstractAddressManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAddressManager.class);
@@ -52,8 +41,6 @@ public class AbstractAddressManager {
   public static final String V4_PREFIX = "/v4/";
 
   private static final String V3_PREFIX = "/v3/";
-
-  private static final int DEFAULT_ADDRESS_CHECK_TIME = 30;
 
   private static final int ISOLATION_THRESHOLD = 3;
 
@@ -67,9 +54,6 @@ public class AbstractAddressManager {
   private int index;
 
   private String projectName;
-
-  // all address list.
-  private final Set<String> addressCategory = new HashSet<>();
 
   // recording continuous times of failure of an address.
   private final Map<String, Integer> addressFailureStatus = new ConcurrentHashMap<>();
@@ -90,27 +74,22 @@ public class AbstractAddressManager {
 
   private EventBus eventBus;
 
-  private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1,
-      new ThreadFactoryBuilder()
-          .setNameFormat("check-available-address-%d")
-          .build());
-
   public AbstractAddressManager(List<String> addresses) {
     this.projectName = DEFAULT_PROJECT;
     this.addresses.addAll(addresses);
     this.defaultAddress.addAll(addresses);
-    this.addressCategory.addAll(addresses);
-    this.index = !addresses.isEmpty() ? random.nextInt(addresses.size()) : 0;
-    startCheck();
+    this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
   }
 
   public AbstractAddressManager(String projectName, List<String> addresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
     this.addresses = this.transformAddress(addresses);
     this.defaultAddress.addAll(addresses);
-    this.addressCategory.addAll(this.addresses);
-    this.index = !addresses.isEmpty() ? random.nextInt(addresses.size()) : 0;
-    startCheck();
+    this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
+  }
+
+  private int getRandomIndex() {
+    return random.nextInt(addresses.size());
   }
 
   public void refreshEndpoint(RefreshEndpointEvent event, String key) {
@@ -120,8 +99,6 @@ public class AbstractAddressManager {
 
     availableZone = event.getSameZone().stream().map(this::normalizeUri).collect(Collectors.toList());
     availableRegion = event.getSameRegion().stream().map(this::normalizeUri).collect(Collectors.toList());
-    addressCategory.addAll(availableZone);
-    addressCategory.addAll(availableRegion);
     addressAutoRefreshed = true;
   }
 
@@ -144,10 +121,6 @@ public class AbstractAddressManager {
 
   public List<String> getAvailableRegion() {
     return availableRegion;
-  }
-
-  private void startCheck() {
-    executorService.scheduleAtFixedRate(this::checkHistory, 0, DEFAULT_ADDRESS_CHECK_TIME, TimeUnit.SECONDS);
   }
 
   public String formatUrl(String url, boolean absoluteUrl, String address) {
@@ -188,7 +161,7 @@ public class AbstractAddressManager {
     }
     LOGGER.warn("all addresses are isolation, please check server status.");
     // when all addresses are isolation, it will use all default address for polling.
-    return getCurrentAddress(new ArrayList<>(defaultAddress));
+    return getCurrentAddress(defaultAddress);
   }
 
   private String getAvailableZoneAddress() {
@@ -221,42 +194,7 @@ public class AbstractAddressManager {
     return results;
   }
 
-  @VisibleForTesting
-  protected void checkHistory() {
-    addressCategory.forEach(address -> {
-      if (telnetTest(address)) {
-        // isolation addresses find address and restore it
-        findAndRestoreAddress(address);
-      } else {
-        recordFailState(address);
-      }
-    });
-  }
-
-  protected boolean telnetTest(String address) {
-    URI uri = parseIpPortFromURI(address);
-    if (uri == null) {
-      return false;
-    }
-    try (Socket s = new Socket()) {
-      s.connect(new InetSocketAddress(uri.getHost(), uri.getPort()), 3000);
-      return true;
-    } catch (IOException e) {
-      LOGGER.warn("ping endpoint {} failed, It will be quarantined again.", address);
-      return false;
-    }
-  }
-
-  private URI parseIpPortFromURI(String address) {
-    try {
-      return new URI(address);
-    } catch (URISyntaxException e) {
-      LOGGER.error("parse address [{}] failed.", address, e);
-      return null;
-    }
-  }
-
-  protected void findAndRestoreAddress(String address) {
+  public void recoverIsolatedAddress(String address) {
     recordSuccessState(address);
     if (addressAutoRefreshed) {
       if (isolationZoneAddress.remove(address)) {
@@ -325,5 +263,12 @@ public class AbstractAddressManager {
 
   public void setEventBus(EventBus eventBus) {
     this.eventBus = eventBus;
+  }
+
+  public List<String> getIsolationAddresses() {
+    List<String> isolationAddresses = new ArrayList<>(defaultIsolationAddress);
+    isolationAddresses.addAll(isolationZoneAddress);
+    isolationAddresses.addAll(isolationRegionAddress);
+    return isolationAddresses;
   }
 }

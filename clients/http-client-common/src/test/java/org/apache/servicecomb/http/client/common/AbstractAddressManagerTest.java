@@ -42,8 +42,6 @@ public class AbstractAddressManagerTest {
 
   private static AbstractAddressManager addressManager3;
 
-  private static int index;
-
   @BeforeEach
   public void setUp() throws NoSuchFieldException, IllegalAccessException {
     addresses.add("http://127.0.0.1:30103");
@@ -90,12 +88,7 @@ public class AbstractAddressManagerTest {
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
-    AbstractAddressManager addressManager = new AbstractAddressManager(addresses) {
-      @Override
-      protected boolean telnetTest(String address) {
-        return true;
-      }
-    };
+    AbstractAddressManager addressManager = new AbstractAddressManager(addresses) {};
 
     addressManager.refreshEndpoint(event, "TEST");
 
@@ -122,8 +115,7 @@ public class AbstractAddressManagerTest {
     Assertions.assertEquals("http://127.0.0.4:30100", addressManager.address());
 
     // test restore isolation
-    addressManager.checkHistory();
-    addressManager.findAndRestoreAddress("http://127.0.0.3:30100");
+    addressManager.recoverIsolatedAddress("http://127.0.0.3:30100");
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
   }

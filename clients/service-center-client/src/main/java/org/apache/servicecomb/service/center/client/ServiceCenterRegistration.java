@@ -248,6 +248,7 @@ public class ServiceCenterRegistration extends AbstractTask {
               microserviceInstance.getInstanceId());
           eventBus.post(new MicroserviceInstanceRegistrationEvent(true, microservice, microserviceInstance));
           startTask(new SendHeartBeatTask(0));
+          startTask(new CheckServiceCenterAddressTask());
         }
       } catch (Exception e) {
         LOGGER.error("register microservice instance failed, and will try again.", e);
@@ -290,6 +291,16 @@ public class ServiceCenterRegistration extends AbstractTask {
         eventBus.post(new HeartBeatEvent(false, microservice, microserviceInstance));
         startTask(new BackOffSleepTask(failedCount + 1, new SendHeartBeatTask(failedCount + 1)));
       }
+    }
+  }
+
+  class CheckServiceCenterAddressTask implements Task {
+    @Override
+    public void execute() {
+      serviceCenterClient.checkIsolationAddressAvailable(microservice.getServiceId(),
+          microserviceInstance.getInstanceId());
+      startTask(new BackOffSleepTask(Math.max(heartBeatInterval, heartBeatRequestTimeout),
+          new CheckServiceCenterAddressTask()));
     }
   }
 }

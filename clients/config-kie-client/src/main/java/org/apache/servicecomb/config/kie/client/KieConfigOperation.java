@@ -31,4 +31,12 @@ public interface KieConfigOperation {
    *  @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
   ConfigurationsResponse queryConfigurations(ConfigurationsRequest request, String address);
+
+  /**
+   * Check kie isolation address available
+   *
+   * @param configurationsRequest configurationsRequest
+   * @param address isolation address
+   */
+  void checkAddressAvailable(ConfigurationsRequest configurationsRequest, String address);
 }
