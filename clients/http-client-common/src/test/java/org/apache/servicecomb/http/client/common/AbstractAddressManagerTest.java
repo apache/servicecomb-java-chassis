@@ -115,7 +115,7 @@ public class AbstractAddressManagerTest {
     Assertions.assertEquals("http://127.0.0.4:30100", addressManager.address());
 
     // test restore isolation
-    addressManager.findAndRestoreAddress("http://127.0.0.3:30100");
+    addressManager.recoverIsolatedAddress("http://127.0.0.3:30100");
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
   }

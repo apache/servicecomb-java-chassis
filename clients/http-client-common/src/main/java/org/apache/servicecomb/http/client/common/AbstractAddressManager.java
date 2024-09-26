@@ -194,7 +194,7 @@ public class AbstractAddressManager {
     return results;
   }
 
-  public void findAndRestoreAddress(String address) {
+  public void recoverIsolatedAddress(String address) {
     recordSuccessState(address);
     if (addressAutoRefreshed) {
       if (isolationZoneAddress.remove(address)) {

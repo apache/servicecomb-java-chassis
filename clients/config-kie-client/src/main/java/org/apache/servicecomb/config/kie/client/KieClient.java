@@ -122,7 +122,7 @@ public class KieClient implements KieConfigOperation {
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
       if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED
           || httpResponse.getStatusCode() == HttpStatus.SC_OK) {
-        addressManager.findAndRestoreAddress(address);
+        addressManager.recoverIsolatedAddress(address);
       }
     } catch (IOException e) {
       LOGGER.error("check kie config isolation address {} available error!", address, e);

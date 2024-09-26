@@ -147,7 +147,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
       if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED
           || httpResponse.getStatusCode() == HttpStatus.SC_OK) {
-        addressManager.findAndRestoreAddress(address);
+        addressManager.recoverIsolatedAddress(address);
       }
     } catch (Exception e) {
       LOGGER.error("check config center isolation address {} available error!", address);

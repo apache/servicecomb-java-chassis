@@ -99,7 +99,7 @@ public class ServiceCenterRawClient {
     HttpRequest httpRequest = buildHttpRequest(formatUrl, headers, content, HttpRequest.PUT);
     try {
       httpTransport.doRequest(httpRequest);
-      addressManager.findAndRestoreAddress(address);
+      addressManager.recoverIsolatedAddress(address);
     } catch (IOException e) {
       LOGGER.error("check service center isolation address {} available error!", address, e);
     }
