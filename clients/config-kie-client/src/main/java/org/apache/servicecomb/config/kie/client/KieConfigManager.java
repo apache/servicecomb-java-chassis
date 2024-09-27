@@ -124,6 +124,7 @@ public class KieConfigManager extends AbstractTask {
   public void startConfigKieManager() {
     this.configurationsRequests.forEach((t) ->
         this.startTask(new PollConfigurationTask(0, t)));
+    startTask(new CheckKieConfigAddressTask(configurationsRequests.get(0)));
   }
 
   class PollConfigurationTask implements Task {
@@ -158,6 +159,27 @@ public class KieConfigManager extends AbstractTask {
         startTask(
             new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1, this.configurationsRequest)));
       }
+    }
+  }
+
+  class CheckKieConfigAddressTask implements Task {
+    ConfigurationsRequest configurationsRequest;
+
+    public CheckKieConfigAddressTask(ConfigurationsRequest configurationsRequest) {
+      this.configurationsRequest = configurationsRequest;
+    }
+
+    @Override
+    public void execute() {
+      List<String> isolationAddresses = kieAddressManager.getIsolationAddresses();
+      if (isolationAddresses.isEmpty()) {
+        return;
+      }
+      for (String address : isolationAddresses) {
+        configKieClient.checkAddressAvailable(this.configurationsRequest, address);
+      }
+      startTask(new BackOffSleepTask(kieConfiguration.getRefreshIntervalInMillis(),
+          new CheckKieConfigAddressTask(this.configurationsRequest)));
     }
   }
 }

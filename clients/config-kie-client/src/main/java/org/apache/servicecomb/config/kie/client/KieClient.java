@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.kie.client;
 
 import com.google.common.eventbus.EventBus;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -110,6 +111,21 @@ public class KieClient implements KieConfigOperation {
       addressManager.recordFailState(address);
       LOGGER.error("query configuration from {} failed, message={}", url, e.getMessage());
       throw new OperationException("read response failed. ", e);
+    }
+  }
+
+  @Override
+  public void checkAddressAvailable(ConfigurationsRequest request, String address) {
+    String url = buildUrl(request, address);
+    HttpRequest httpRequest = new HttpRequest(url, null, null, HttpRequest.GET);
+    try {
+      HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
+      if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED
+          || httpResponse.getStatusCode() == HttpStatus.SC_OK) {
+        addressManager.recoverIsolatedAddress(address);
+      }
+    } catch (IOException e) {
+      LOGGER.error("check kie config isolation address {} available error!", address, e);
     }
   }
 
