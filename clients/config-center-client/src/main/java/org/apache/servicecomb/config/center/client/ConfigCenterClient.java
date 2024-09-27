@@ -132,6 +132,28 @@ public class ConfigCenterClient implements ConfigCenterOperation {
     }
   }
 
+  @Override
+  public void checkAddressAvailable(QueryConfigurationsRequest request, String address) {
+    String dimensionsInfo = buildDimensionsInfo(request, true);
+    try {
+      String uri = address + "/configuration/items?dimensionsInfo="
+          + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
+
+      Map<String, String> headers = new HashMap<>();
+      headers.put("x-environment", request.getEnvironment());
+      HttpRequest httpRequest = new HttpRequest(uri, headers, null,
+          HttpRequest.GET);
+
+      HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
+      if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED
+          || httpResponse.getStatusCode() == HttpStatus.SC_OK) {
+        addressManager.recoverIsolatedAddress(address);
+      }
+    } catch (Exception e) {
+      LOGGER.error("check config center isolation address {} available error!", address);
+    }
+  }
+
   private String buildDimensionsInfo(QueryConfigurationsRequest request, boolean withVersion) {
     String result =
         request.getServiceName() + DEFAULT_APP_SEPARATOR

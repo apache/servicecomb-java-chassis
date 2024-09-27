@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config.center.client;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.config.center.client.model.ConfigCenterConfiguration;
@@ -63,6 +64,7 @@ public class ConfigCenterManager extends AbstractTask {
 
   public void startConfigCenterManager() {
     this.startTask(new PollConfigurationTask(0));
+    this.startTask(new CheckConfigCenterAddressTask());
   }
 
   class PollConfigurationTask implements Task {
@@ -89,6 +91,21 @@ public class ConfigCenterManager extends AbstractTask {
         LOGGER.error("get configurations from ConfigCenter failed, and will try again.", e);
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));
       }
+    }
+  }
+
+  class CheckConfigCenterAddressTask implements Task {
+    @Override
+    public void execute() {
+      List<String> isolationAddresses = configCenterAddressManager.getIsolationAddresses();
+      if (isolationAddresses.isEmpty()) {
+        return;
+      }
+      for (String address : isolationAddresses) {
+        configCenterClient.checkAddressAvailable(queryConfigurationsRequest, address);
+      }
+      startTask(new BackOffSleepTask(configCenterConfiguration.getRefreshIntervalInMillis(),
+          new CheckConfigCenterAddressTask()));
     }
   }
 }
