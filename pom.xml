@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache</groupId>
     <artifactId>apache</artifactId>
-    <version>31</version>
+    <version>33</version>
   </parent>
 
 
@@ -37,9 +37,10 @@
   <url>https://github.com/apache/servicecomb-java-chassis</url>
 
   <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
-    <argLine>-Dfile.encoding=UTF-8</argLine>
     <skip-remote-resource>true</skip-remote-resource>
     <!-- plugin version start -->
     <!-- sort by alpha -->
@@ -420,8 +421,6 @@
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <compilerArgument>-parameters</compilerArgument>
-            <source>17</source>
-            <target>17</target>
             <showDeprecation>true</showDeprecation>
             <showWarnings>true</showWarnings>
             <!--<failOnWarning>true</failOnWarning>-->
