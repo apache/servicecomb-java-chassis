@@ -80,7 +80,7 @@
     <reactive-streams.version>1.0.4</reactive-streams.version>
     <resilience4j.versioin>1.7.0</resilience4j.versioin>
     <ribbon.version>2.7.18</ribbon.version>
-    <rxjava.version>3.1.8</rxjava.version>
+    <rxjava.version>3.1.9</rxjava.version>
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
     <servlet-api.version>6.0.0</servlet-api.version>
