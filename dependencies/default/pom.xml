@@ -36,7 +36,7 @@
     <awaitility.version>4.2.2</awaitility.version>
     <brave.version>6.0.3</brave.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
-    <commons-io.version>2.15.1</commons-io.version>
+    <commons-io.version>2.17.0</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
     <commons-logging.version>1.3.4</commons-logging.version>
