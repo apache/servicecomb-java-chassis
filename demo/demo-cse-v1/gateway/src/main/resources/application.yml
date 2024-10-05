@@ -54,7 +54,7 @@ servicecomb:
     canary-header: |
       matches:
         - headers:
-            canary: 
+            canary:
               prefix: ""
   mapper:
     canary-header: |

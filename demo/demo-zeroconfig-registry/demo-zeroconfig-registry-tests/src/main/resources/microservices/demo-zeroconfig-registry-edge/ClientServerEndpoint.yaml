@@ -153,4 +153,3 @@ components:
           type: string
           format: date-time
       x-java-class: org.apache.servicecomb.demo.zeroconfig.client.ClientModel
-

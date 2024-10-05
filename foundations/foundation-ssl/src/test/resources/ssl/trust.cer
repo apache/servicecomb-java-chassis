@@ -50,18 +50,18 @@ Certificate:
                     05:60:4b
                 Exponent: 65537 (0x10001)
         X509v3 extensions:
-            X509v3 Basic Constraints: 
+            X509v3 Basic Constraints:
                 CA:TRUE
             X509v3 Key Usage: critical
                 Certificate Sign, CRL Sign
-            X509v3 Subject Key Identifier: 
+            X509v3 Subject Key Identifier:
                 D5:4E:82:08:70:16:63:3D:DF:87:25:0B:7D:2E:EB:83:21:6A:BA:5B
-            X509v3 Authority Key Identifier: 
+            X509v3 Authority Key Identifier:
                 keyid:D5:4E:82:08:70:16:63:3D:DF:87:25:0B:7D:2E:EB:83:21:6A:BA:5B
                 DirName:/C=CN/ST=GuangDong/L=ShenZhen/O=Huawei Technologies Co., Ltd/OU=OSS & Service Tools Dept/CN=OSS3.0 CA
                 serial:7D:FD:C5:D8:70:DA:6E:0F:00:00:00:00:00:00:00:00
 
-            X509v3 Subject Alternative Name: 
+            X509v3 Subject Alternative Name:
                 email:oss3ca@huawei.com
     Signature Algorithm: sha256WithRSAEncryption
         8a:52:5f:99:d0:7b:a0:8c:2d:e8:6c:ff:7a:bc:89:64:03:d4:

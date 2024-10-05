@@ -41,8 +41,8 @@ shutDownHandler:
 hsa:
   manager:
     url:  127.0.0.1
-  serializer: 
-    default: protostuff    
+  serializer:
+    default: protostuff
   provider:
     service:
       name: ${spring.application.name}
@@ -52,7 +52,7 @@ hsa:
         rpc:
           serviceLevel: interface
           dsf:
-#            ip: "10.57.65.225"   
+#            ip: "10.57.65.225"
             port: 7450
 
 eureka:

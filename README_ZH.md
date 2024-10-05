@@ -1,4 +1,4 @@
-# Java Chassis | [English](README.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) 
+# Java Chassis | [English](README.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的JAVA SDK。它包含如下特性：
 
@@ -58,7 +58,7 @@ public class ProviderServiceConfiguration {
 }
 ```
 
-使用RPC方式访问提供者。 
+使用RPC方式访问提供者。
 
 ```java
 @RestSchema(schemaId = "ConsumerController", schemaInterface = ConsumerService.class)
@@ -87,7 +87,7 @@ public class ConsumerController implements ConsumerService {
 
 # 编译 Java Chassis
 
-开发者可以通过MAVEN仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 17版本，并预先安装maven。 
+开发者可以通过MAVEN仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 17版本，并预先安装maven。
 
       mvn clean install
 

@@ -1,4 +1,4 @@
-This demo is an integration test for testing 
+This demo is an integration test for testing
 
 ```yaml
 servicecomb:
@@ -7,7 +7,7 @@ servicecomb:
       registerUrlPrefix: true
 ```
 
-When this configuration is enabled, web context path is added to swagger, and consumer can 
+When this configuration is enabled, web context path is added to swagger, and consumer can
 invoke with context path
 
 ```yaml

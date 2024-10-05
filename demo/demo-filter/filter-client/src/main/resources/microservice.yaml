@@ -46,4 +46,3 @@ servicecomb:
     retry-governance: |
       maxAttempts: 2
       retryOnResponseStatus: [500]
-

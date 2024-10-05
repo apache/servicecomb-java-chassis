@@ -9,7 +9,7 @@
 * 依次启动 provider、consumer、gateway
 
 * 在配置中心增加如下配置：
-* 应用级配置：consumer.yaml。类型为 yaml。 
+* 应用级配置：consumer.yaml。类型为 yaml。
 
 ```yaml
 cse:
@@ -18,7 +18,7 @@ cse:
       foo: foo
 ```
 
-  * 自定义配置：priority1.yaml。label信息： public=default 。类型为 yaml。 
+  * 自定义配置：priority1.yaml。label信息： public=default 。类型为 yaml。
 ```yaml
 cse:
   v2:
@@ -27,7 +27,7 @@ cse:
       common: common
 ```
 
-  * 自定义配置：priority1.yaml。label信息： public=default,extra=default 。类型为 yaml。 
+  * 自定义配置：priority1.yaml。label信息： public=default,extra=default 。类型为 yaml。
 ```yaml
 cse:
   v2:
@@ -36,7 +36,7 @@ cse:
       extra: common
 ```
 
-  * 应用级配置：priority2.yaml。类型为 yaml。 
+  * 应用级配置：priority2.yaml。类型为 yaml。
 ```yaml
 cse:
   v2:
@@ -44,7 +44,7 @@ cse:
       priority: v2
 ```
 
-  * 服务级配置：priority3.yaml，微服务性选择consumer。类型为 yaml。 
+  * 服务级配置：priority3.yaml，微服务性选择consumer。类型为 yaml。
 ```yaml
 cse:
   v2:
@@ -68,12 +68,12 @@ cse:
       priority1: v2
 ```
 
-  * 应用级配置： cse.v2.test.bar: bar 。 类型为 text。 
-  
+  * 应用级配置： cse.v2.test.bar: bar 。 类型为 text。
+
 * 执行 tests-client 里面的集成测试用例 （成功）
 
 * 修改
-  * priority1.yaml。label信息： public=default 。类型为 yaml。 
+  * priority1.yaml。label信息： public=default 。类型为 yaml。
 ```yaml
 cse:
   v2:
@@ -81,10 +81,10 @@ cse:
       priority: v4
 ```
 
-* 执行 tests-client 里面的集成测试用例 （成功） 
+* 执行 tests-client 里面的集成测试用例 （成功）
 
 * 修改
-  * 应用级priority3.yaml。 
+  * 应用级priority3.yaml。
 ```yaml
 cse:
   v2:
@@ -92,10 +92,10 @@ cse:
       priority: v5
 ```
 
-* 执行 tests-client 里面的集成测试用例 （失败） 
+* 执行 tests-client 里面的集成测试用例 （失败）
 
 * 修改
-  * 应用级priority3.yaml。label信息：  
+  * 应用级priority3.yaml。label信息：
 ```yaml
 cse:
   v2:
@@ -103,7 +103,7 @@ cse:
       priority: v3
 ```
 
-* 执行 tests-client 里面的集成测试用例 （成功） 
+* 执行 tests-client 里面的集成测试用例 （成功）
 * 修改
   * 应用级consumerApp.yaml。
 ```yaml
@@ -113,7 +113,7 @@ cse:
       priority1: v10
 ```
 
-* 执行 tests-client 里面的集成测试用例 （成功） 
+* 执行 tests-client 里面的集成测试用例 （成功）
 * 修改
   * 服务级配置：consumerSer.yaml。
 ```yaml
