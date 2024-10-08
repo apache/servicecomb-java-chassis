@@ -154,4 +154,3 @@ application/x-x509-ca-cert                  cacert
 application/x-x509-server-cert              scert
 application/x-x509-user-cert                ucert
 application/x-x509-email-cert               ecert
-

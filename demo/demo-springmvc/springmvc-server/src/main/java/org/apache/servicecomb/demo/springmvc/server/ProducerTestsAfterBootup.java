@@ -75,4 +75,3 @@ public class ProducerTestsAfterBootup implements BootListener {
     }
   }
 }
-

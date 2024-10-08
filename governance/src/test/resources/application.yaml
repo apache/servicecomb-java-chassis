@@ -96,7 +96,7 @@ servicecomb:
     demo-mapper-query: |
       matches:
         - queries:
-            name: 
+            name:
               exact: "bob"
   rateLimiting:
     demo-rateLimiting: |

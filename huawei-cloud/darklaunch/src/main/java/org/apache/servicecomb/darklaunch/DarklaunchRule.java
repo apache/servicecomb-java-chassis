@@ -89,4 +89,3 @@ public class DarklaunchRule {
     this.ruleItems.add(ruleItem);
   }
 }
-

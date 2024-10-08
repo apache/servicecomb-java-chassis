@@ -47,5 +47,5 @@
             <artifactId>java-chassis-core</artifactId>
         </dependency>
     </dependencies>
-    
+
 </project>
