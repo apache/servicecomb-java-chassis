@@ -16,38 +16,46 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>service-registry-parent</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>registry-etcd</artifactId>
-  <name>Java Chassis::Service Registry::Etcd</name>
-
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-parent</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>demo-etcd</artifactId>
+  <name>Java Chassis::Demo::Etcd</name>
+  <packaging>pom</packaging>
   <dependencies>
-
     <dependency>
-      <groupId>io.etcd</groupId>
-      <artifactId>jetcd-core</artifactId>
-      <version>0.8.3</version>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-common</artifactId>
+      <artifactId>solution-basic</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-registry</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-core</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
     </dependency>
   </dependencies>
+
+  <modules>
+    <module>provider</module>
+    <module>consumer</module>
+    <module>gateway</module>
+    <module>test-client</module>
+  </modules>
 
 </project>

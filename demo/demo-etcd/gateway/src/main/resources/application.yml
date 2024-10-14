@@ -1,3 +1,4 @@
+#
 ## ---------------------------------------------------------------------------
 ## Licensed to the Apache Software Foundation (ASF) under one or more
 ## contributor license agreements.  See the NOTICE file distributed with
@@ -14,5 +15,39 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
+servicecomb:
+  service:
+    application: demo-etcd
+    version: 0.0.1
+    name: gateway
+  registry:
+    zk:
+      enabled: true
+      connectString: 127.0.0.1:2181
 
-org.apache.servicecomb.registry.etcd.EtcdConfiguration
+  rest:
+    address: 0.0.0.0:9090?websocketEnabled=true
+    server:
+      websocket-prefix: /ws
+
+  http:
+    dispatcher:
+      edge:
+        default:
+          enabled: false
+        url:
+          enabled: true
+          pattern: /(.*)
+          mappings:
+            consumer:
+              prefixSegmentCount: 0
+              path: "/.*"
+              microserviceName: consumer
+              versionRule: 0.0.0+
+        websocket:
+          mappings:
+            consumer:
+              prefixSegmentCount: 0
+              path: "/ws/.*"
+              microserviceName: consumer
+              versionRule: 0.0.0+

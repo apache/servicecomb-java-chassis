@@ -154,8 +154,6 @@
     <module>clients</module>
     <module>governance</module>
     <module>huawei-cloud</module>
-    <module>test_provider</module>
-    <module>test_consumer</module>
   </modules>
 
   <build>

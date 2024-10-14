@@ -1,3 +1,4 @@
+#
 ## ---------------------------------------------------------------------------
 ## Licensed to the Apache Software Foundation (ASF) under one or more
 ## contributor license agreements.  See the NOTICE file distributed with
@@ -14,5 +15,11 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
+servicecomb:
+  service:
+    application: demo-etcd
+    name: test-client
+    version: 0.0.1
 
-org.apache.servicecomb.registry.etcd.EtcdConfiguration
+  rest:
+    address: 0.0.0.0:9097 # should be same with server.port to use web container
