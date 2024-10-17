@@ -18,11 +18,11 @@ package org.apache.servicecomb.config;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 /**
  * SPI to add new DynamicPropertiesSource.
  */
 public interface DynamicPropertiesSource extends Ordered {
-  MapPropertySource create(Environment environment);
+  PropertySource<?> create(Environment environment);
 }
