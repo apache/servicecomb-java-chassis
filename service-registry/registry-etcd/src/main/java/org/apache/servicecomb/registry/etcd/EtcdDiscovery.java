@@ -17,7 +17,10 @@
 package org.apache.servicecomb.registry.etcd;
 
 import com.google.common.collect.Lists;
-import io.etcd.jetcd.*;
+import io.etcd.jetcd.ByteSequence;
+import io.etcd.jetcd.Client;
+import io.etcd.jetcd.KeyValue;
+import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.WatchOption;
@@ -26,8 +29,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.registry.api.Discovery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
@@ -35,6 +36,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
@@ -45,8 +47,6 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
     private EtcdRegistryProperties etcdRegistryProperties;
 
     private Client client;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EtcdDiscovery.class);
 
     private InstanceChangedListener<EtcdDiscoveryInstance> instanceChangedListener;
 
@@ -76,10 +76,10 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
     @Override
     public List<EtcdDiscoveryInstance> findServiceInstances(String application, String serviceName) {
 
-        String prefixPath = basePath + "/" + application;
+        String prefixPath = basePath + "/" + application + "/" + serviceName;
         Watch watchClient = client.getWatchClient();
         watchClient.watch(ByteSequence.from(prefixPath, Charset.defaultCharset()),
-                WatchOption.newBuilder().build(),
+                WatchOption.builder().build(),
                 resp -> {
                     List<KeyValue> keyValueList = resp.getEvents().stream().map(WatchEvent::getKeyValue).toList();
                     instanceChangedListener.onInstanceChanged(name(), application, serviceName, convertServiceInstanceList(keyValueList));
@@ -93,7 +93,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
         CompletableFuture<GetResponse> getFuture = client.getKVClient().get(
                 ByteSequence.from(prefix, StandardCharsets.UTF_8),
-                GetOption.newBuilder().withPrefix(ByteSequence.from(prefix, StandardCharsets.UTF_8)).build()
+                GetOption.builder().withPrefix(ByteSequence.from(prefix, StandardCharsets.UTF_8)).build()
         );
         GetResponse response = MuteExceptionUtil.builder().withLog("get kv by prefix error")
                 .executeCompletableFuture(getFuture);
@@ -114,11 +114,14 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
         return list;
     }
 
-//    todo
     @Override
     public List<String> findServices(String application) {
 
-        return List.of();
+        String prefixPath = basePath + "/" + application;
+        List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
+        return endpointKv.stream()
+                .map(kv -> kv.getKey().toString(StandardCharsets.UTF_8)) // 转换 ByteSequence 为 String
+                .collect(Collectors.toList());
     }
 
     @Override

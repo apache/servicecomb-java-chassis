@@ -29,8 +29,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestClientApplication.class)
-public class ZookeeperIT {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ZookeeperIT.class);
+public class EtcdIT {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EtcdIT.class);
 
   @BeforeEach
   public void setUp() {
@@ -38,7 +38,7 @@ public class ZookeeperIT {
   }
 
   @Test
-  public void clientGetsNoError() throws Exception {
+  public void clientGetsNoError() {
     try {
       TestClientApplication.run();
     } catch (Exception e) {

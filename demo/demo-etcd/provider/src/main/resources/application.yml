@@ -24,20 +24,20 @@ servicecomb:
     properties:
       group: green
   registry:
-    zk:
-      connectString: 127.0.0.1:2181
-  config:
-    zk:
-      connectString: 127.0.0.1:2181
-      instance-tag: config-demo
+    etcd:
+      connectString: http://127.0.0.1:2379
+#  config:
+#    zk:
+#      connectString: 127.0.0.1:2181
+#      instance-tag: config-demo
 
   rest:
     address: 0.0.0.0:9094?websocketEnabled=true
     server:
       websocket-prefix: /ws
 
-  highway:
-    address: 0.0.0.0:7094
+#  highway:
+#    address: 0.0.0.0:7094
 
   cors:
     enabled: true
@@ -45,3 +45,7 @@ servicecomb:
     allowCredentials: false
     allowedMethod: "*"
     maxAge: 3600
+
+key1: 1
+key2: 3
+key3: 5
