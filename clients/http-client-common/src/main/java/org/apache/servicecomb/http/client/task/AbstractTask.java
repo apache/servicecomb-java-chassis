@@ -106,8 +106,10 @@ public class AbstractTask {
       running = false;
       this.taskPool.shutdown();
       this.taskPool.awaitTermination(10, TimeUnit.SECONDS);
-      this.addrCheckExecutor.shutdown();
-      this.addrCheckExecutor.awaitTermination(10, TimeUnit.SECONDS);
+      if (addrCheckExecutor != null) {
+        this.addrCheckExecutor.shutdown();
+        this.addrCheckExecutor.awaitTermination(10, TimeUnit.SECONDS);
+      }
     } catch (InterruptedException e) {
       LOGGER.warn("tasks not shutdown in time {}", e.getMessage());
     }
