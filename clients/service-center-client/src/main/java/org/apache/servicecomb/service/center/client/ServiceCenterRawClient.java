@@ -93,15 +93,15 @@ public class ServiceCenterRawClient {
     }
   }
 
-  public void checkServiceCenterAddressAvailable(String url, Map<String, String> headers, String content,
+  public void checkAddressAvailable(String url, Map<String, String> headers, String content,
       String address) {
     String formatUrl = addressManager.formatUrl(url, false, address);
-    HttpRequest httpRequest = buildHttpRequest(formatUrl, headers, content, HttpRequest.PUT);
+    HttpRequest httpRequest = buildHttpRequest(formatUrl, headers, content, HttpRequest.GET);
     try {
       httpTransport.doRequest(httpRequest);
       addressManager.recoverIsolatedAddress(address);
     } catch (IOException e) {
-      LOGGER.error("check service center isolation address {} available error!", address, e);
+      LOGGER.error("check service center isolation address {} available error!", address);
     }
   }
 

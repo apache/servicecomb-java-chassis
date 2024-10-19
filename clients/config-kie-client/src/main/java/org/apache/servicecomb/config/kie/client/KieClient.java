@@ -125,7 +125,7 @@ public class KieClient implements KieConfigOperation {
         addressManager.recoverIsolatedAddress(address);
       }
     } catch (IOException e) {
-      LOGGER.error("check kie config isolation address {} available error!", address, e);
+      LOGGER.error("check kie config isolation address {} available error!", address);
     }
   }
 
