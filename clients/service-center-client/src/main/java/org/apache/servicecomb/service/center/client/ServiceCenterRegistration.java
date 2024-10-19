@@ -104,6 +104,7 @@ public class ServiceCenterRegistration extends AbstractTask {
 
   public void startRegistration() {
     startTask(new RegisterMicroserviceTask(0));
+    schedulerCheckAddressAvailable("sc-addr-check", new CheckAddressTask(), heartBeatInterval);
   }
 
   class RegisterMicroserviceTask implements Task {
@@ -248,7 +249,6 @@ public class ServiceCenterRegistration extends AbstractTask {
               microserviceInstance.getInstanceId());
           eventBus.post(new MicroserviceInstanceRegistrationEvent(true, microservice, microserviceInstance));
           startTask(new SendHeartBeatTask(0));
-          startTask(new CheckServiceCenterAddressTask());
         }
       } catch (Exception e) {
         LOGGER.error("register microservice instance failed, and will try again.", e);
@@ -294,13 +294,10 @@ public class ServiceCenterRegistration extends AbstractTask {
     }
   }
 
-  class CheckServiceCenterAddressTask implements Task {
+  class CheckAddressTask implements Runnable {
     @Override
-    public void execute() {
-      serviceCenterClient.checkIsolationAddressAvailable(microservice.getServiceId(),
-          microserviceInstance.getInstanceId());
-      startTask(new BackOffSleepTask(Math.max(heartBeatInterval, heartBeatRequestTimeout),
-          new CheckServiceCenterAddressTask()));
+    public void run() {
+      serviceCenterClient.checkIsolationAddressAvailable();
     }
   }
 }

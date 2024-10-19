@@ -196,9 +196,6 @@ public interface ServiceCenterOperation {
 
   /**
    * Check serviceCenter isolation address available
-   *
-   * @param serviceId serviceId
-   * @param instanceId instanceId
    */
-  void checkIsolationAddressAvailable(String serviceId, String instanceId);
+  void checkIsolationAddressAvailable();
 }

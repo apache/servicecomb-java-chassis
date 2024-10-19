@@ -125,7 +125,8 @@ public class KieConfigManager extends AbstractTask {
   public void startConfigKieManager() {
     this.configurationsRequests.forEach((t) ->
         this.startTask(new PollConfigurationTask(0, t)));
-    startTask(new CheckKieConfigAddressTask(configurationsRequests.get(0)));
+    schedulerCheckAddressAvailable("kie-addr-check", new CheckKieAddressTask(configurationsRequests.get(0)),
+        kieConfiguration.getRefreshIntervalInMillis());
   }
 
   class PollConfigurationTask implements Task {
@@ -161,15 +162,15 @@ public class KieConfigManager extends AbstractTask {
     }
   }
 
-  class CheckKieConfigAddressTask implements Task {
+  class CheckKieAddressTask implements Runnable {
     ConfigurationsRequest configurationsRequest;
 
-    public CheckKieConfigAddressTask(ConfigurationsRequest configurationsRequest) {
+    public CheckKieAddressTask(ConfigurationsRequest configurationsRequest) {
       this.configurationsRequest = configurationsRequest;
     }
 
     @Override
-    public void execute() {
+    public void run() {
       List<String> isolationAddresses = kieAddressManager.getIsolationAddresses();
       if (isolationAddresses.isEmpty()) {
         return;
@@ -177,8 +178,6 @@ public class KieConfigManager extends AbstractTask {
       for (String address : isolationAddresses) {
         configKieClient.checkAddressAvailable(this.configurationsRequest, address);
       }
-      startTask(new BackOffSleepTask(kieConfiguration.getRefreshIntervalInMillis(),
-          new CheckKieConfigAddressTask(this.configurationsRequest)));
     }
   }
 }

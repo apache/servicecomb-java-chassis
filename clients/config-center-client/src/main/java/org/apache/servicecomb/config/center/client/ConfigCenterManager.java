@@ -64,7 +64,8 @@ public class ConfigCenterManager extends AbstractTask {
 
   public void startConfigCenterManager() {
     this.startTask(new PollConfigurationTask(0));
-    this.startTask(new CheckConfigCenterAddressTask());
+    schedulerCheckAddressAvailable("cc-addr-check", new CheckConfigCenterAddressTask(),
+        configCenterConfiguration.getRefreshIntervalInMillis());
   }
 
   class PollConfigurationTask implements Task {
@@ -94,9 +95,9 @@ public class ConfigCenterManager extends AbstractTask {
     }
   }
 
-  class CheckConfigCenterAddressTask implements Task {
+  class CheckConfigCenterAddressTask implements Runnable {
     @Override
-    public void execute() {
+    public void run() {
       List<String> isolationAddresses = configCenterAddressManager.getIsolationAddresses();
       if (isolationAddresses.isEmpty()) {
         return;
@@ -104,8 +105,6 @@ public class ConfigCenterManager extends AbstractTask {
       for (String address : isolationAddresses) {
         configCenterClient.checkAddressAvailable(queryConfigurationsRequest, address);
       }
-      startTask(new BackOffSleepTask(configCenterConfiguration.getRefreshIntervalInMillis(),
-          new CheckConfigCenterAddressTask()));
     }
   }
 }
