@@ -20,6 +20,7 @@ package org.apache.servicecomb.http.client.task;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
@@ -63,6 +64,8 @@ public class AbstractTask {
 
   private volatile boolean running = true;
 
+  private ScheduledExecutorService addrCheckExecutor;
+
   protected AbstractTask(String taskName) {
     initTaskPool(taskName);
     Runtime.getRuntime().addShutdownHook(new Thread(AbstractTask.this::stop, taskName + "-shutdown-hook"));
@@ -71,6 +74,13 @@ public class AbstractTask {
   protected void initTaskPool(String taskName) {
     this.taskPool = Executors.newSingleThreadExecutor((task) ->
         new Thread(task, taskName));
+  }
+
+  protected void schedulerCheckAddressAvailable(String taskName, Runnable task, long delayTime) {
+    if (addrCheckExecutor == null) {
+      addrCheckExecutor = Executors.newScheduledThreadPool(1, (t) -> new Thread(t, taskName));
+    }
+    addrCheckExecutor.scheduleWithFixedDelay(task, delayTime, delayTime, TimeUnit.MILLISECONDS);
   }
 
   protected void startTask(Task task) {
@@ -96,6 +106,10 @@ public class AbstractTask {
       running = false;
       this.taskPool.shutdown();
       this.taskPool.awaitTermination(10, TimeUnit.SECONDS);
+      if (addrCheckExecutor != null) {
+        this.addrCheckExecutor.shutdown();
+        this.addrCheckExecutor.awaitTermination(10, TimeUnit.SECONDS);
+      }
     } catch (InterruptedException e) {
       LOGGER.warn("tasks not shutdown in time {}", e.getMessage());
     }
