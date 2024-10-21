@@ -278,6 +278,11 @@
         <artifactId>registry-zookeeper</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-etcd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- ServiceComb： solutions -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
