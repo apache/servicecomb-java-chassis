@@ -55,4 +55,3 @@ public interface IHeaderParamWithListSchemaSpringMvc {
       @Parameter(name = "headerList", in = ParameterIn.HEADER, style = ParameterStyle.PIPEDELIMITED, explode = Explode.FALSE)
           List<String> headerList);
 }
-

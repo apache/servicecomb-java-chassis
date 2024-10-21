@@ -259,4 +259,3 @@ public class NacosClient {
     return properties;
   }
 }
-

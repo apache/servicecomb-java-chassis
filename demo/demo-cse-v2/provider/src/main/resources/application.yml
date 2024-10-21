@@ -37,4 +37,3 @@ servicecomb:
 
   rest:
     address: 0.0.0.0:9093 # should be same with server.port to use web container
-

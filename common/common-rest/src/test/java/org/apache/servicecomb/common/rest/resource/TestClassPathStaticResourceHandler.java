@@ -49,7 +49,7 @@ public class TestClassPathStaticResourceHandler {
     Part part = response.getResult();
 
     try (InputStream is = part.getInputStream()) {
-      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("<html></html>"));
+      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("<html></html>\n"));
     }
     Assertions.assertEquals("text/html", part.getContentType());
     Assertions.assertEquals("text/html", response.getHeader(HttpHeaders.CONTENT_TYPE));

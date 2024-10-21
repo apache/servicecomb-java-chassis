@@ -83,4 +83,3 @@ public class TestBoolSchema extends TestSchemaBase {
             exception.getMessage());
   }
 }
-

@@ -77,4 +77,3 @@ public class LightWeightRegistryConfiguration {
         ZERO_CONFIG_DISCOVERY_CLIENT, DiscoveryClient.class);
   }
 }
-

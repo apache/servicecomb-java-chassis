@@ -1,19 +1,19 @@
 # Java Chassis [中文](README_ZH.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features. 
+Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features.
 
 # releases
 
 | Release Train  | Latest Version | Compiled JDK Version | Tested JDK Version | Open API | Notes                    |
 |----------------|----------------|----------------------|--------------------|----------|--------------------------|
-| Java Chassis 3 | 3.2.1          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
-| Java Chassis 2 | 2.8.19         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
+| Java Chassis 3 | 3.2.2          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
+| Java Chassis 2 | 2.8.20         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
 | Java Chassis 1 | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
 
->>>NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not 
+>>>NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not
 > work together with Java Chassis 3. All related consumers, providers and edge service need use Java Chassis 3 when upgrading.
 
->>>NOTICE: Java Chassis 1 reached its end of support now after it's first release from 2018. 
+>>>NOTICE: Java Chassis 1 reached its end of support now after it's first release from 2018.
 
 # Quick Start
 
@@ -66,7 +66,7 @@ public class ConsumerController implements ConsumerService {
 }
 ```
 
-Try out this example [here](https://servicecomb.apache.org/references/java-chassis/zh_CN/start/first-sample.html) . 
+Try out this example [here](https://servicecomb.apache.org/references/java-chassis/zh_CN/start/first-sample.html) .
 
 # Documentation
 

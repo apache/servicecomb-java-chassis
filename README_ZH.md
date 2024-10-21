@@ -1,4 +1,4 @@
-# Java Chassis | [English](README.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) 
+# Java Chassis | [English](README.md) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
 Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的JAVA SDK。它包含如下特性：
 
@@ -14,8 +14,8 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 | 版本火车           | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
 |----------------|--------|------------|-------------------|----------|-----------------|
-| Java Chassis 3 | 3.2.1  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
-| Java Chassis 2 | 2.8.19 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
+| Java Chassis 3 | 3.2.2  | OpenJDK 17 | OpenJDK 17        | 3.0.x    | 依赖Spring Boot 3 |
+| Java Chassis 2 | 2.8.20 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
 | Java Chassis 1 | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
 
 >>>NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2、Java Chassis 1不能与Java Chassis 3共存互访. 升级Java Chassis 3, 需要将相关的消费者、提供者和边缘服务同时升级.
@@ -58,7 +58,7 @@ public class ProviderServiceConfiguration {
 }
 ```
 
-使用RPC方式访问提供者。 
+使用RPC方式访问提供者。
 
 ```java
 @RestSchema(schemaId = "ConsumerController", schemaInterface = ConsumerService.class)
@@ -87,7 +87,7 @@ public class ConsumerController implements ConsumerService {
 
 # 编译 Java Chassis
 
-开发者可以通过MAVEN仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 17版本，并预先安装maven。 
+开发者可以通过MAVEN仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 17版本，并预先安装maven。
 
       mvn clean install
 

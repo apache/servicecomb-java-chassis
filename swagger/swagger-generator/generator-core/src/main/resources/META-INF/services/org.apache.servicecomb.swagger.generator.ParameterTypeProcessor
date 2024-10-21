@@ -18,4 +18,3 @@
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartParameterTypeProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayParameterTypeProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartListParameterTypeProcessor
-
