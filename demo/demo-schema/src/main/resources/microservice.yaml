@@ -27,4 +27,3 @@ servicecomb:
     exception:
       print-stack-trace: true
       print-rate-limit: true
-

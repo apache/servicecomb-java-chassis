@@ -1,15 +1,15 @@
 ## ServiceComb-Service-Center Client for Java
 
-   Sample Java client for ServiceComb-Service-Center HTTP API.   
+   Sample Java client for ServiceComb-Service-Center HTTP API.
    If you want more information about the ServiceComb-Service-Center HTTP API, go [here](https://github.com/apache/servicecomb-service-center/blob/master/docs/openapi/v4.yaml).
-   
+
 ### Build & Install
-   
+
    local Build from source :
    ```
     maven clean install
    ```
-   
+
    add dependency to maven
    ```
     <dependency>
@@ -79,14 +79,14 @@ MicroservicesResponse services = client.getMicroserviceList();
 for(Microservice microservice : services.getServices())
 {
   for (MicroserviceInstance instance: client.getMicroserviceInstanceList(microservice.getServiceId()).getInstances())
-  { 
-    client.sendHeartBeats(new HeartbeatsRequest(microservice.getServiceId(),instance.getInstanceId())); 
+  {
+    client.sendHeartBeats(new HeartbeatsRequest(microservice.getServiceId(),instance.getInstanceId()));
   }
 }
 ```
 
 #### Other API
-You can see client API code and tests, go [here](https://github.com/apache/servicecomb-java-chassis/blob/master/clients/service-center-client/src/main/java/org/apache/servicecomb/service/center/client/ServiceCenterClient.java) 
+You can see client API code and tests, go [here](https://github.com/apache/servicecomb-java-chassis/blob/master/clients/service-center-client/src/main/java/org/apache/servicecomb/service/center/client/ServiceCenterClient.java)
 
 
 ### More development

@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 public class NacosDynamicPropertiesSource implements DynamicPropertiesSource {
   public static final String SOURCE_NAME = "nacos";
@@ -60,7 +61,7 @@ public class NacosDynamicPropertiesSource implements DynamicPropertiesSource {
   }
 
   @Override
-  public MapPropertySource create(Environment environment) {
+  public PropertySource<?> create(Environment environment) {
     init(environment);
     return new MapPropertySource(SOURCE_NAME, valueCache);
   }

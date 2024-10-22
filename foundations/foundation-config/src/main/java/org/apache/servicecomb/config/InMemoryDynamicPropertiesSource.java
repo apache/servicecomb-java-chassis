@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertySource;
 
 /**
  * This DynamicPropertiesSource is created for easier system tests.
@@ -32,7 +33,7 @@ public class InMemoryDynamicPropertiesSource implements DynamicPropertiesSource 
   private static final Map<String, Object> DYNAMIC = new HashMap<>();
 
   @Override
-  public MapPropertySource create(Environment environment) {
+  public PropertySource<?> create(Environment environment) {
     return new MapPropertySource(SOURCE_NAME, DYNAMIC);
   }
 

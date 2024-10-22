@@ -24,4 +24,3 @@ import org.apache.servicecomb.swagger.generator.ParameterAnnotationProcessor;
 public abstract class SpringmvcParameterAnnotationsProcessor<ANNOTATION> implements
     ParameterAnnotationProcessor<ANNOTATION> {
 }
-

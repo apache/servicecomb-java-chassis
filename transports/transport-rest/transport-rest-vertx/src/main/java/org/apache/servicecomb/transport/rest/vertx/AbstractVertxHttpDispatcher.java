@@ -43,4 +43,3 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
     return bodyHandler;
   }
 }
-

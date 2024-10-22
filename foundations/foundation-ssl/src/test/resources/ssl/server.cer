@@ -50,18 +50,18 @@ Certificate:
                     53:08:33
                 Exponent: 65537 (0x10001)
         X509v3 extensions:
-            X509v3 Basic Constraints: 
+            X509v3 Basic Constraints:
                 CA:FALSE
             X509v3 Key Usage: critical
                 Digital Signature, Non Repudiation, Key Encipherment
-            X509v3 Subject Key Identifier: 
+            X509v3 Subject Key Identifier:
                 27:15:69:5B:D5:13:60:C4:5C:62:54:75:55:A1:1D:4D:57:27:03:1F
-            X509v3 Authority Key Identifier: 
+            X509v3 Authority Key Identifier:
                 keyid:D5:4E:82:08:70:16:63:3D:DF:87:25:0B:7D:2E:EB:83:21:6A:BA:5B
                 DirName:/C=CN/ST=GuangDong/L=ShenZhen/O=Huawei Technologies Co., Ltd/OU=OSS & Service Tools Dept/CN=OSS3.0 CA
                 serial:7D:FD:C5:D8:70:DA:6E:0F:00:00:00:00:00:00:00:00
 
-            X509v3 Subject Alternative Name: 
+            X509v3 Subject Alternative Name:
                 DNS:10.57.65.225, IP Address:10.57.65.225
     Signature Algorithm: sha256WithRSAEncryption
         38:1b:40:c9:3c:7f:63:a0:2d:64:59:2b:d9:4a:4b:db:c4:70:
