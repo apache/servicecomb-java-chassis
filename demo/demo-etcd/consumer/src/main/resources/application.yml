@@ -24,7 +24,7 @@ servicecomb:
       group: red
   registry:
     etcd:
-#      enabled: true
+      #      enabled: true
       connectString: http://127.0.0.1:2379
 
   rest:
@@ -34,6 +34,3 @@ servicecomb:
 
 #  highway:
 #    address: 0.0.0.0:7092
-
-
-

@@ -24,17 +24,17 @@ import org.springframework.context.annotation.Configuration;
 public class EtcdConfiguration {
   @Bean
   @ConfigurationProperties(prefix = EtcdConst.ETCD_REGISTRY_PREFIX)
-  public EtcdRegistryProperties zookeeperRegistryProperties() {
+  public EtcdRegistryProperties etcdRegistryProperties() {
     return new EtcdRegistryProperties();
   }
 
   @Bean
-  public EtcdDiscovery zookeeperDiscovery() {
+  public EtcdDiscovery etcdDiscovery() {
     return new EtcdDiscovery();
   }
 
   @Bean
-  public EtcdRegistration zookeeperRegistration() {
+  public EtcdRegistration etcdRegistration() {
     return new EtcdRegistration();
   }
 }

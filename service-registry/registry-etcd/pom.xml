@@ -34,7 +34,6 @@
     <dependency>
       <groupId>io.etcd</groupId>
       <artifactId>jetcd-core</artifactId>
-      <version>0.8.3</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

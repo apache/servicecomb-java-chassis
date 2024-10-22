@@ -43,11 +43,9 @@ public class ClientWebsocketController {
     WebSocket providerWebSocket = providerService.websocket();
     providerWebSocket.closeHandler(v -> serverWebsocket.close());
     providerWebSocket.textMessageHandler(m -> {
-      System.out.println("send message " + m);
       serverWebsocket.writeTextMessage(m);
     });
     serverWebsocket.textMessageHandler(m -> {
-      System.out.println("receive message " + m);
       providerWebSocket.writeTextMessage(m);
     });
   }

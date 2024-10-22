@@ -60,21 +60,21 @@
               <configuration>
                 <images>
                   <image>
-                    <name>zookeeper:3.8.3</name>
-                    <alias>zookeeper</alias>
+                    <name>etcd:3.5.9</name>
+                    <alias>etcd</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
                       <wait>
                         <log>binding to port</log>
                         <tcp>
                           <ports>
-                            <port>2181</port>
+                            <port>2379</port>
                           </ports>
                         </tcp>
                         <time>60000</time>
                       </wait>
                       <ports>
-                        <port>zookeeper.port:2181</port>
+                        <port>etcd.port:2379</port>
                       </ports>
                     </run>
                   </image>
@@ -85,12 +85,13 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.zk.connectString=zookeeper:2181 -Dservicecomb.config.zk.connectString=zookeeper:2181
+                          -Dservicecomb.registry.etcd.connectString=http://etcd:2379
+                          -Dservicecomb.config.etcd.connectString=http://etcd:2379
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/etcd-provider-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>zookeeper:zookeeper</link>
+                        <link>etcd:etcd</link>
                       </links>
                       <wait>
                         <log>ServiceComb is ready</log>
@@ -113,12 +114,12 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.zk.connectString=zookeeper:2181
+                          -Dservicecomb.registry.etcd.connectString=http://etcd:2379
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/etcd-consumer-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>zookeeper:zookeeper</link>
+                        <link>etcd:etcd</link>
                       </links>
                       <wait>
                         <log>ServiceComb is ready</log>
@@ -141,12 +142,12 @@
                       <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.registry.zk.connectString=zookeeper:2181
+                          -Dservicecomb.registry.etcd.connectString=http://etcd:2379
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/etcd-gateway-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>zookeeper:zookeeper</link>
+                        <link>etcd:etcd</link>
                       </links>
                       <wait>
                         <log>ServiceComb is ready</log>

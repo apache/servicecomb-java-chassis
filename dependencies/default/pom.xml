@@ -91,6 +91,7 @@
     <vertx.version>4.5.10</vertx.version>
     <zipkin.version>3.4.1</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
+    <jetcd-core.version>0.8.3</jetcd-core.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -541,6 +542,12 @@
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>io.etcd</groupId>
+        <artifactId>jetcd-core</artifactId>
+        <version>${jetcd-core.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

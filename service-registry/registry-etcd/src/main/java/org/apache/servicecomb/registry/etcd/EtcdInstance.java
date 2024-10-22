@@ -191,18 +191,18 @@ public class EtcdInstance implements MicroserviceInstance {
   @Override
   public String toString() {
     return "EtcdInstance{" +
-            "serviceId='" + serviceId + '\'' +
-            ", instanceId='" + instanceId + '\'' +
-            ", environment='" + environment + '\'' +
-            ", application='" + application + '\'' +
-            ", serviceName='" + serviceName + '\'' +
-            ", alias='" + alias + '\'' +
-            ", version='" + version + '\'' +
-            ", description='" + description + '\'' +
-            ", dataCenterInfo=" + dataCenterInfo +
-            ", endpoints=" + endpoints +
-            ", schemas=" + schemas +
-            ", properties=" + properties +
-            '}';
+        "serviceId='" + serviceId + '\'' +
+        ", instanceId='" + instanceId + '\'' +
+        ", environment='" + environment + '\'' +
+        ", application='" + application + '\'' +
+        ", serviceName='" + serviceName + '\'' +
+        ", alias='" + alias + '\'' +
+        ", version='" + version + '\'' +
+        ", description='" + description + '\'' +
+        ", dataCenterInfo=" + dataCenterInfo +
+        ", endpoints=" + endpoints +
+        ", schemas=" + schemas +
+        ", properties=" + properties +
+        '}';
   }
 }

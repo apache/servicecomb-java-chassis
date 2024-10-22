@@ -28,25 +28,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RestSchema(schemaId = "ProviderController")
 @RequestMapping(path = "/")
 public class ProviderController implements InitializingBean {
-    private Environment environment;
+  private Environment environment;
 
-    @Autowired
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
-    // a very simple service to echo the request parameter
-    @GetMapping("/sayHello")
-    public String sayHello(@RequestParam("name") String name) {
-        return "Hello " + name;
-    }
+  // a very simple service to echo the request parameter
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
+    return "Hello " + name;
+  }
 
-    @GetMapping("/getConfig")
-    public String getConfig(@RequestParam("key") String key) {
-        return environment.getProperty(key);
-    }
+  @GetMapping("/getConfig")
+  public String getConfig(@RequestParam("key") String key) {
+    return environment.getProperty(key);
+  }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    }
+  @Override
+  public void afterPropertiesSet() throws Exception {
+  }
 }
