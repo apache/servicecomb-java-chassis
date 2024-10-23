@@ -60,7 +60,8 @@
               <configuration>
                 <images>
                   <image>
-                    <name>etcd:3.5.9</name>
+<!--                    <name>etcd:3.5.9</name>-->
+                    <name>bitnami/etcd:latest</name>
                     <alias>etcd</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>

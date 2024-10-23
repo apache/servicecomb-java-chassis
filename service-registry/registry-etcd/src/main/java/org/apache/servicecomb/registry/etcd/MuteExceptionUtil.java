@@ -55,7 +55,7 @@ public class MuteExceptionUtil {
       try {
         return function.apply(t);
       } catch (Exception e) {
-        LOGGER.error(getLogMessage("execute Function failure..."), customMessageParams,  e);
+        LOGGER.error(getLogMessage("execute Function failure..."), customMessageParams, e);
         return null;
       }
     }
@@ -73,7 +73,7 @@ public class MuteExceptionUtil {
       try {
         return completableFuture.get();
       } catch (Exception e) {
-        LOGGER.error(getLogMessage("execute CompletableFuture failure..."),customMessageParams, e);
+        LOGGER.error(getLogMessage("execute CompletableFuture failure..."), customMessageParams, e);
         return null;
       }
     }
@@ -82,7 +82,7 @@ public class MuteExceptionUtil {
       try {
         return function.apply(t1, t2);
       } catch (Exception e) {
-        LOGGER.error(getLogMessage("execute FunctionWithDoubleParam failure..."),customMessageParams, e);
+        LOGGER.error(getLogMessage("execute FunctionWithDoubleParam failure..."), customMessageParams, e);
         return null;
       }
     }

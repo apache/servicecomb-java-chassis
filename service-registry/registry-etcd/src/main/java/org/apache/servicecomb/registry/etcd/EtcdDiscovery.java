@@ -85,7 +85,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   public List<EtcdDiscoveryInstance> findServiceInstances(String application, String serviceName) {
 
     String prefixPath = basePath + "/" + application + "/" + serviceName;
-    if (!isWatch) {
+    SingletonManager.getInstance().getSingleton(prefixPath, serName -> {
       Watch watchClient = client.getWatchClient();
       try {
         watchClient.watch(ByteSequence.from(prefixPath, Charset.defaultCharset()), WatchOption.builder().build(),
@@ -94,11 +94,11 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
               instanceChangedListener.onInstanceChanged(name(), application, serviceName,
                   convertServiceInstanceList(keyValueList));
             });
-        isWatch = true;
       } catch (Exception e) {
         LOGGER.error("add watch failure", e);
       }
-    }
+      return watchClient;
+    });
     List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
     return convertServiceInstanceList(endpointKv);
   }
@@ -110,7 +110,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
             GetOption.builder().withPrefix(ByteSequence.from(prefix, StandardCharsets.UTF_8)).build());
     GetResponse response = MuteExceptionUtil.builder().withLog("get kv by prefix error")
         .executeCompletableFuture(getFuture);
-    return response.getKvs(); // 返回所有匹配前缀的键值对
+    return response.getKvs();
   }
 
   private List<EtcdDiscoveryInstance> convertServiceInstanceList(List<KeyValue> keyValueList) {
