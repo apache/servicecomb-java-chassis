@@ -198,7 +198,7 @@ public class AbstractAddressManager {
     recordSuccessState(address);
     if (addressAutoRefreshed) {
       if (isolationZoneAddress.remove(address)) {
-        LOGGER.warn("restore default address [{}]", address);
+        LOGGER.warn("restore same region address [{}]", address);
         if (eventBus != null && availableZone.isEmpty()) {
           eventBus.post(new EngineConnectChangedEvent());
         }
@@ -212,7 +212,7 @@ public class AbstractAddressManager {
       return;
     }
     if (defaultIsolationAddress.remove(address)) {
-      LOGGER.warn("restore same region address [{}]", address);
+      LOGGER.warn("restore default address [{}]", address);
       addresses.add(address);
     }
   }
