@@ -60,13 +60,12 @@
               <configuration>
                 <images>
                   <image>
-<!--                    <name>etcd:3.5.9</name>-->
                     <name>bitnami/etcd:latest</name>
                     <alias>etcd</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
                       <wait>
-                        <log>binding to port</log>
+                        <log>etcdserver</log>
                         <tcp>
                           <ports>
                             <port>2379</port>
@@ -77,6 +76,9 @@
                       <ports>
                         <port>etcd.port:2379</port>
                       </ports>
+                      <env>
+                        <ALLOW_NONE_AUTHENTICATION>yes</ALLOW_NONE_AUTHENTICATION>
+                      </env>
                     </run>
                   </image>
                   <image>

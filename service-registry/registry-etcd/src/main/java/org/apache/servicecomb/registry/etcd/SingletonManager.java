@@ -36,8 +36,16 @@ public class SingletonManager {
     return instance;
   }
 
-  public <T> T getSingleton(String key, Function<? super String, ? extends T> mappingFunction) {
+  public <T> T computeIfAbsent(String key, Function<? super String, ? extends T> mappingFunction) {
     return (T) singletons.computeIfAbsent(key, mappingFunction);
+  }
+
+  public <T> T get(String key) {
+    return (T) singletons.get(key);
+  }
+
+  public void remove(String key) {
+    singletons.remove(key);
   }
 
   public void destroy() {

@@ -25,6 +25,7 @@ servicecomb:
   registry:
     etcd:
       #      enabled: true
+#      authenticationInfo: chenzhida:chenzhida
       connectString: http://127.0.0.1:2379
 
   rest:

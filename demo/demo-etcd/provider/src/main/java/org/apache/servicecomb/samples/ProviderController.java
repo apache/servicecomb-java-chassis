@@ -38,7 +38,7 @@ public class ProviderController implements InitializingBean {
   // a very simple service to echo the request parameter
   @GetMapping("/sayHello")
   public String sayHello(@RequestParam("name") String name) {
-    return "Hello " + name;
+    return "Hello " + environment.getProperty("servicecomb.rest.address");
   }
 
   @GetMapping("/getConfig")

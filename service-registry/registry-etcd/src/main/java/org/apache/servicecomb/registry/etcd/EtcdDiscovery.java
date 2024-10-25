@@ -18,8 +18,11 @@ package org.apache.servicecomb.registry.etcd;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -40,7 +43,6 @@ import io.etcd.jetcd.Watch;
 import io.etcd.jetcd.kv.GetResponse;
 import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.WatchOption;
-import io.etcd.jetcd.watch.WatchEvent;
 
 public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
@@ -53,8 +55,6 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   private Client client;
 
   private InstanceChangedListener<EtcdDiscoveryInstance> instanceChangedListener;
-
-  private static volatile boolean isWatch = false;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EtcdDiscovery.class);
 
@@ -85,22 +85,43 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   public List<EtcdDiscoveryInstance> findServiceInstances(String application, String serviceName) {
 
     String prefixPath = basePath + "/" + application + "/" + serviceName;
-    SingletonManager.getInstance().getSingleton(prefixPath, serName -> {
+    SingletonManager.getInstance().computeIfAbsent(prefixPath, serName -> {
       Watch watchClient = client.getWatchClient();
       try {
-        watchClient.watch(ByteSequence.from(prefixPath, Charset.defaultCharset()), WatchOption.builder().build(),
+        ByteSequence prefixByteSeq = ByteSequence.from(prefixPath, Charset.defaultCharset());
+        watchClient.watch(
+            prefixByteSeq,
+            WatchOption.builder().withPrefix(prefixByteSeq).build(),
             resp -> {
-              List<KeyValue> keyValueList = resp.getEvents().stream().map(WatchEvent::getKeyValue).toList();
-              instanceChangedListener.onInstanceChanged(name(), application, serviceName,
-                  convertServiceInstanceList(keyValueList));
-            });
+              Map<String, EtcdDiscoveryInstance> instanceMap = SingletonManager.getInstance()
+                  .get("instance:" + prefixPath);
+              resp.getEvents().forEach(event -> {
+                String key = event.getKeyValue().getKey().toString(Charset.defaultCharset());
+                switch (event.getEventType()) {
+                  case PUT -> {
+                    EtcdDiscoveryInstance newInstance = getEtcdDiscoveryInstance(event.getKeyValue());
+                    instanceMap.put(key, newInstance);
+                  }
+                  case DELETE -> instanceMap.remove(key);
+                  default -> LOGGER.error("unkonw event");
+                }
+              });
+              List<EtcdDiscoveryInstance> discoveryInstanceList = new ArrayList<>(instanceMap.values());
+              instanceChangedListener.onInstanceChanged(name(), application, serviceName, discoveryInstanceList);
+            }
+        );
       } catch (Exception e) {
-        LOGGER.error("add watch failure", e);
+        LOGGER.error("Failed to add watch", e);
       }
       return watchClient;
     });
+
     List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
-    return convertServiceInstanceList(endpointKv);
+    List<EtcdDiscoveryInstance> etcdDiscoveryInstances = convertServiceInstanceList(endpointKv);
+    SingletonManager.getInstance().computeIfAbsent("instance:" + prefixPath, v -> etcdDiscoveryInstances.stream()
+        .collect(
+            Collectors.toConcurrentMap(instance -> prefixPath + "/" + instance.getInstanceId(), Function.identity())));
+    return etcdDiscoveryInstances;
   }
 
   public List<KeyValue> getValuesByPrefix(String prefix) {
@@ -117,16 +138,21 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
     List<EtcdDiscoveryInstance> list = Lists.newArrayListWithExpectedSize(keyValueList.size());
     for (KeyValue keyValue : keyValueList) {
-      String valueJson = new String(keyValue.getValue().getBytes(), Charset.defaultCharset());
-
-      EtcdInstance etcdInstance = MuteExceptionUtil.builder()
-          .withLog("convert json value to obj from etcd failure, {}", valueJson)
-          .executeFunctionWithDoubleParam(JsonUtils::readValue, valueJson.getBytes(StandardCharsets.UTF_8),
-              EtcdInstance.class);
-      EtcdDiscoveryInstance etcdDiscoveryInstance = new EtcdDiscoveryInstance(etcdInstance);
+      EtcdDiscoveryInstance etcdDiscoveryInstance = getEtcdDiscoveryInstance(keyValue);
       list.add(etcdDiscoveryInstance);
     }
     return list;
+  }
+
+  private static EtcdDiscoveryInstance getEtcdDiscoveryInstance(KeyValue keyValue) {
+    String valueJson = new String(keyValue.getValue().getBytes(), Charset.defaultCharset());
+
+    EtcdInstance etcdInstance = MuteExceptionUtil.builder()
+        .withLog("convert json value to obj from etcd failure, {}", valueJson)
+        .executeFunctionWithDoubleParam(JsonUtils::readValue, valueJson.getBytes(StandardCharsets.UTF_8),
+            EtcdInstance.class);
+    EtcdDiscoveryInstance etcdDiscoveryInstance = new EtcdDiscoveryInstance(etcdInstance);
+    return etcdDiscoveryInstance;
   }
 
   @Override
@@ -159,13 +185,23 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
   @Override
   public void run() {
-    client = Client.builder().endpoints(etcdRegistryProperties.getConnectString()).build();
+    if (StringUtils.isEmpty(etcdRegistryProperties.getAuthenticationInfo())) {
+      this.client = Client.builder().endpoints(etcdRegistryProperties.getConnectString()).build();
+    } else {
+      String[] authInfo = etcdRegistryProperties.getAuthenticationInfo().split(":");
+      this.client = Client.builder()
+          .endpoints(etcdRegistryProperties.getConnectString())
+          .user(ByteSequence.from(authInfo[0], Charset.defaultCharset()))
+          .password(ByteSequence.from(authInfo[1], Charset.defaultCharset()))
+          .build();
+    }
   }
 
   @Override
   public void destroy() {
     if (client != null) {
       client.close();
+      SingletonManager.getInstance().destroy();
     }
   }
 }
