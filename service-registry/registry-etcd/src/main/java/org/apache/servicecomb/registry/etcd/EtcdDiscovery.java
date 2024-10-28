@@ -18,11 +18,9 @@ package org.apache.servicecomb.registry.etcd;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -47,8 +45,6 @@ import io.etcd.jetcd.options.WatchOption;
 
 public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
-  private final String basePrefix = "instance:";
-
   private Environment environment;
 
   private String basePath;
@@ -61,9 +57,8 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EtcdDiscovery.class);
 
-  private Map<String, Map<String, EtcdDiscoveryInstance>> etcdInstanceMap = new ConcurrentHashMapEx<>();
-
   private Map<String, Watch> watchMap = new ConcurrentHashMapEx<>();
+
 
   @Autowired
   @SuppressWarnings("unused")
@@ -96,27 +91,8 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
       Watch watchClient = client.getWatchClient();
       try {
         ByteSequence prefixByteSeq = ByteSequence.from(prefixPath, Charset.defaultCharset());
-        watchClient.watch(
-            prefixByteSeq,
-            WatchOption.builder().withPrefix(prefixByteSeq).build(),
-            resp -> {
-              Map<String, EtcdDiscoveryInstance> instanceMap = etcdInstanceMap
-                  .get(basePrefix + prefixPath);
-              resp.getEvents().forEach(event -> {
-                String key = event.getKeyValue().getKey().toString(Charset.defaultCharset());
-                switch (event.getEventType()) {
-                  case PUT -> {
-                    EtcdDiscoveryInstance newInstance = getEtcdDiscoveryInstance(event.getKeyValue());
-                    instanceMap.put(key, newInstance);
-                  }
-                  case DELETE -> instanceMap.remove(key);
-                  default -> LOGGER.error("unkonw event");
-                }
-              });
-              List<EtcdDiscoveryInstance> discoveryInstanceList = new ArrayList<>(instanceMap.values());
-              instanceChangedListener.onInstanceChanged(name(), application, serviceName, discoveryInstanceList);
-            }
-        );
+        watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
+            resp -> watchNode(application, serviceName, prefixPath));
       } catch (Exception e) {
         LOGGER.error("Failed to add watch", e);
       }
@@ -124,14 +100,24 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
     });
 
     List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
-    List<EtcdDiscoveryInstance> etcdDiscoveryInstances = convertServiceInstanceList(endpointKv);
-    etcdInstanceMap.computeIfAbsent(basePrefix + prefixPath, v -> etcdDiscoveryInstances.stream()
-        .collect(
-            Collectors.toConcurrentMap(instance -> prefixPath + "/" + instance.getInstanceId(), Function.identity())));
-    return etcdDiscoveryInstances;
+    return convertServiceInstanceList(endpointKv);
   }
 
-  public List<KeyValue> getValuesByPrefix(String prefix) {
+  private void watchNode(String application, String serviceName, String prefixPath) {
+
+    CompletableFuture<GetResponse> getFuture = client.getKVClient()
+        .get(ByteSequence.from(prefixPath, StandardCharsets.UTF_8),
+            GetOption.builder().withPrefix(ByteSequence.from(prefixPath, StandardCharsets.UTF_8)).build());
+    getFuture.thenAcceptAsync(response -> {
+      List<EtcdDiscoveryInstance> discoveryInstanceList = convertServiceInstanceList(response.getKvs());
+      instanceChangedListener.onInstanceChanged(name(), application, serviceName, discoveryInstanceList);
+    }).exceptionally(e -> {
+      LOGGER.error("watchNode error", e);
+      return null;
+    });
+  }
+
+  private List<KeyValue> getValuesByPrefix(String prefix) {
 
     CompletableFuture<GetResponse> getFuture = client.getKVClient()
         .get(ByteSequence.from(prefix, StandardCharsets.UTF_8),
@@ -167,8 +153,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
     String prefixPath = basePath + "/" + application;
     List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
-    return endpointKv.stream().map(kv -> kv.getKey().toString(StandardCharsets.UTF_8))
-        .collect(Collectors.toList());
+    return endpointKv.stream().map(kv -> kv.getKey().toString(StandardCharsets.UTF_8)).collect(Collectors.toList());
   }
 
   @Override
@@ -196,11 +181,9 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
       this.client = Client.builder().endpoints(etcdRegistryProperties.getConnectString()).build();
     } else {
       String[] authInfo = etcdRegistryProperties.getAuthenticationInfo().split(":");
-      this.client = Client.builder()
-          .endpoints(etcdRegistryProperties.getConnectString())
+      this.client = Client.builder().endpoints(etcdRegistryProperties.getConnectString())
           .user(ByteSequence.from(authInfo[0], Charset.defaultCharset()))
-          .password(ByteSequence.from(authInfo[1], Charset.defaultCharset()))
-          .build();
+          .password(ByteSequence.from(authInfo[1], Charset.defaultCharset())).build();
     }
   }
 
@@ -208,7 +191,6 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   public void destroy() {
     if (client != null) {
       client.close();
-      etcdInstanceMap = null;
       watchMap = null;
     }
   }
