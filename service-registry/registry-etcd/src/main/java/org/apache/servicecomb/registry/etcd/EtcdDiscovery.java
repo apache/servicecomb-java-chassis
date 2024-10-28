@@ -27,6 +27,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.slf4j.Logger;
@@ -46,6 +47,8 @@ import io.etcd.jetcd.options.WatchOption;
 
 public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
+  private final String basePrefix = "instance:";
+
   private Environment environment;
 
   private String basePath;
@@ -57,6 +60,10 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   private InstanceChangedListener<EtcdDiscoveryInstance> instanceChangedListener;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(EtcdDiscovery.class);
+
+  private Map<String, Map<String, EtcdDiscoveryInstance>> etcdInstanceMap = new ConcurrentHashMapEx<>();
+
+  private Map<String, Watch> watchMap = new ConcurrentHashMapEx<>();
 
   @Autowired
   @SuppressWarnings("unused")
@@ -85,7 +92,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   public List<EtcdDiscoveryInstance> findServiceInstances(String application, String serviceName) {
 
     String prefixPath = basePath + "/" + application + "/" + serviceName;
-    SingletonManager.getInstance().computeIfAbsent(prefixPath, serName -> {
+    watchMap.computeIfAbsent(prefixPath, serName -> {
       Watch watchClient = client.getWatchClient();
       try {
         ByteSequence prefixByteSeq = ByteSequence.from(prefixPath, Charset.defaultCharset());
@@ -93,8 +100,8 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
             prefixByteSeq,
             WatchOption.builder().withPrefix(prefixByteSeq).build(),
             resp -> {
-              Map<String, EtcdDiscoveryInstance> instanceMap = SingletonManager.getInstance()
-                  .get("instance:" + prefixPath);
+              Map<String, EtcdDiscoveryInstance> instanceMap = etcdInstanceMap
+                  .get(basePrefix + prefixPath);
               resp.getEvents().forEach(event -> {
                 String key = event.getKeyValue().getKey().toString(Charset.defaultCharset());
                 switch (event.getEventType()) {
@@ -118,7 +125,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
     List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
     List<EtcdDiscoveryInstance> etcdDiscoveryInstances = convertServiceInstanceList(endpointKv);
-    SingletonManager.getInstance().computeIfAbsent("instance:" + prefixPath, v -> etcdDiscoveryInstances.stream()
+    etcdInstanceMap.computeIfAbsent(basePrefix + prefixPath, v -> etcdDiscoveryInstances.stream()
         .collect(
             Collectors.toConcurrentMap(instance -> prefixPath + "/" + instance.getInstanceId(), Function.identity())));
     return etcdDiscoveryInstances;
@@ -160,7 +167,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
 
     String prefixPath = basePath + "/" + application;
     List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
-    return endpointKv.stream().map(kv -> kv.getKey().toString(StandardCharsets.UTF_8)) // 转换 ByteSequence 为 String
+    return endpointKv.stream().map(kv -> kv.getKey().toString(StandardCharsets.UTF_8))
         .collect(Collectors.toList());
   }
 
@@ -201,7 +208,8 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   public void destroy() {
     if (client != null) {
       client.close();
-      SingletonManager.getInstance().destroy();
+      etcdInstanceMap = null;
+      watchMap = null;
     }
   }
 }

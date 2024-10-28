@@ -20,7 +20,7 @@ public class EtcdConst {
 
   public static final String ETCD_REGISTRY_NAME = "etcd-registry";
 
-  public static final String ETCD_DISCOVERY_ROOT = "/servicecomb/etcd/%s";
+  public static final String ETCD_DISCOVERY_ROOT = "/servicecomb/registry/%s";
 
   public static final String ETCD_REGISTRY_PREFIX = "servicecomb.registry.etcd";
 
