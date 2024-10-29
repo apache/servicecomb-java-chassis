@@ -18,25 +18,44 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
-    <version>3.3.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>service-registry-parent</artifactId>
-  <name>Java Chassis::Service Registry</name>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-parent</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>demo-etcd</artifactId>
+  <name>Java Chassis::Demo::Etcd</name>
   <packaging>pom</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>solution-basic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+  </dependencies>
 
   <modules>
-    <module>registry-local</module>
-    <module>registry-service-center</module>
-    <module>registry-lightweight</module>
-    <module>registry-zero-config</module>
-    <module>registry-nacos</module>
-    <module>registry-zookeeper</module>
-    <module>registry-etcd</module>
+    <module>provider</module>
+    <module>consumer</module>
+    <module>gateway</module>
+    <module>test-client</module>
   </modules>
+
 </project>

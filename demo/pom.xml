@@ -56,6 +56,7 @@
     <module>demo-cse-v1</module>
     <module>demo-cse-v2</module>
     <module>demo-nacos</module>
+    <module>demo-etcd</module>
     <module>demo-zookeeper</module>
   </modules>
 
