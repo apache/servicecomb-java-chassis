@@ -48,7 +48,7 @@
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
     <dependency-check-maven-plugin.version>10.0.4</dependency-check-maven-plugin.version>
     <docker-maven-plugin.version>0.45.1</docker-maven-plugin.version>
-    <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
+    <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
     <gpg-maven-plugin.version>3.2.7</gpg-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
     <javadoc-maven-plugin.version>3.10.1</javadoc-maven-plugin.version>
