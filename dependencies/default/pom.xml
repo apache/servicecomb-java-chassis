@@ -31,7 +31,7 @@
 
   <properties>
     <!-- Dependency versions: sort by alphabetic order -->
-    <activation.version>1.2.2</activation.version>
+    <activation.version>2.0.0</activation.version>
     <assertj.version>3.26.3</assertj.version>
     <awaitility.version>4.2.2</awaitility.version>
     <brave.version>6.0.3</brave.version>
