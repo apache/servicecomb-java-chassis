@@ -44,7 +44,7 @@
     <skip-remote-resource>true</skip-remote-resource>
     <!-- plugin version start -->
     <!-- sort by alpha -->
-    <checkstyle-maven-plugin.version>3.5.0</checkstyle-maven-plugin.version>
+    <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
     <dependency-check-maven-plugin.version>11.1.0</dependency-check-maven-plugin.version>
     <docker-maven-plugin.version>0.45.1</docker-maven-plugin.version>
