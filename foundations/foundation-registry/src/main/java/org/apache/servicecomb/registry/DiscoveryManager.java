@@ -93,10 +93,6 @@ public class DiscoveryManager implements LifeCycle {
 
   private void onInstancesChanged(String registryName, String application, String serviceName,
       List<? extends DiscoveryInstance> instances) {
-    for (InstanceChangeListener listener : this.instanceChangeListeners) {
-      listener.onInstancesChanged(registryName, application, serviceName, instances);
-    }
-
     Map<String, StatefulDiscoveryInstance> statefulInstances = allInstances.computeIfAbsent(application, key ->
         new ConcurrentHashMapEx<>()).computeIfAbsent(serviceName, key -> new ConcurrentHashMapEx<>());
 
@@ -136,6 +132,10 @@ public class DiscoveryManager implements LifeCycle {
         application, serviceName, instances.size(), instanceInfo);
 
     rebuildVersionCache(application, serviceName);
+
+    for (InstanceChangeListener listener : this.instanceChangeListeners) {
+      listener.onInstancesChanged(registryName, application, serviceName, instances);
+    }
   }
 
   public void addInstanceChangeListener(InstanceChangeListener instanceChangeListener) {
