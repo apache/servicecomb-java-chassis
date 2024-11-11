@@ -30,7 +30,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestClientApplication.class)
 public class EtcdIT {
-  private static final Logger LOGGER = LoggerFactory.getLogger(EtcdConfigIT.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(EtcdIT.class);
 
   @BeforeEach
   public void setUp() {
