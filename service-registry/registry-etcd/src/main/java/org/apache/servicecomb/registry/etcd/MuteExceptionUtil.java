@@ -50,7 +50,6 @@ public class MuteExceptionUtil {
       return logMessage != null ? logMessage : defaultMessage;
     }
 
-    // 执行带异常处理的Function
     public <T, R> R executeFunction(FunctionWithException<T, R> function, T t) {
       try {
         return function.apply(t);
