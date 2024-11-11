@@ -153,9 +153,7 @@ public class EtcdClient {
     ByteSequence prefixByteSeq = ByteSequence.from(path, Charset.defaultCharset());
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
-        resp -> {
-          new Thread(new GetDataRunable(tagData, this, path)).start();
-        });
+        resp -> new Thread(new GetDataRunable(tagData, this, path)).start());
     this.tagData = parseData(path);
   }
 
