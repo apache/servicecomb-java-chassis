@@ -40,17 +40,17 @@ public class EtcdConfigIT implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
 
     testEnvironment();
-//    testApplication();
-//    testService();
-//    testVersion();
-//    testTag();
+    testApplication();
+    testService();
+    testVersion();
+    testTag();
   }
 
   private void testEnvironment() {
 
     putValue("/servicecomb/config/environment/production/application.properties",
         "test1=env1");
-//    testGetConfig("test1", "env1");
+    testGetConfig("test1", "env1");
   }
 
   private void testApplication() {
@@ -83,7 +83,7 @@ public class EtcdConfigIT implements CategorizedTestCase {
 
 
   public void putValue(String key, String value) {
-    try (Client client = Client.builder().endpoints("http://etcd:2379").build()) {
+    try (Client client = Client.builder().endpoints("http://localhost:2379").build()) {
 
       client.getKVClient().put(
           ByteSequence.from(key, StandardCharsets.UTF_8),

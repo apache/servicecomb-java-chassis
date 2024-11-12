@@ -90,7 +90,7 @@
                         <time>60000</time>
                       </wait>
                       <ports>
-                        <port>etcd.port:2379</port>
+                        <port>2379:2379</port>
                       </ports>
                       <env>
                         <ALLOW_NONE_AUTHENTICATION>yes</ALLOW_NONE_AUTHENTICATION>
