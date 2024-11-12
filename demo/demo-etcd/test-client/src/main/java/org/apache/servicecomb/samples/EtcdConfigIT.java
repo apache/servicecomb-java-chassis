@@ -27,9 +27,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
+import io.etcd.jetcd.ByteSequence;
 import io.etcd.jetcd.Client;
 
-//@Component
+@Component
 public class EtcdConfigIT implements CategorizedTestCase {
   RestOperations template = new RestTemplate();
 
@@ -82,11 +83,11 @@ public class EtcdConfigIT implements CategorizedTestCase {
 
 
   public void putValue(String key, String value) {
-    try (Client client = Client.builder().endpoints("http://localhost:2379").build()) {
+    try (Client client = Client.builder().endpoints("http://etcd:2379").build()) {
 
       client.getKVClient().put(
-          io.etcd.jetcd.ByteSequence.from(key, StandardCharsets.UTF_8),
-          io.etcd.jetcd.ByteSequence.from(value, StandardCharsets.UTF_8)
+          ByteSequence.from(key, StandardCharsets.UTF_8),
+          ByteSequence.from(value, StandardCharsets.UTF_8)
       ).get();
 
       LOGGER.info("Value set successfully");
