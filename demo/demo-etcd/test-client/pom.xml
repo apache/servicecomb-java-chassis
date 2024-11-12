@@ -45,6 +45,12 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>commons-logging</artifactId>
+          <groupId>commons-logging</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.etcd</groupId>
@@ -70,7 +76,7 @@
               <configuration>
                 <images>
                   <image>
-                    <name>bitnami/etcd:latest</name>
+                    <name>bitnami/etcd:3.5.16</name>
                     <alias>etcd</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>

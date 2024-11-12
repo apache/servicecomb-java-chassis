@@ -21,15 +21,19 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import io.etcd.jetcd.Client;
 
-@Component
+//@Component
 public class EtcdConfigIT implements CategorizedTestCase {
   RestOperations template = new RestTemplate();
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(EtcdConfigIT.class);
 
   @Override
   public void testRestTransport() throws Exception {
@@ -85,7 +89,7 @@ public class EtcdConfigIT implements CategorizedTestCase {
           io.etcd.jetcd.ByteSequence.from(value, StandardCharsets.UTF_8)
       ).get();
 
-      System.out.println("Value set successfully");
+      LOGGER.info("Value set successfully");
     } catch (Exception e) {
       e.printStackTrace();
     }
