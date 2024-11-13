@@ -45,7 +45,7 @@ public class EtcdDynamicPropertiesSource implements DynamicPropertiesSource {
     try {
       etcdClient.refreshEtcdConfig();
     } catch (Exception e) {
-      throw new IllegalStateException("Set up zookeeper config failed.", e);
+      throw new IllegalStateException("Set up etcd config failed.", e);
     }
   }
 
