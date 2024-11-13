@@ -49,34 +49,44 @@ public class EtcdConfigIT implements CategorizedTestCase {
   private void testEnvironment() {
 
     putValue("/servicecomb/config/environment/production/application.properties",
+        "test1=env");
+    putValue("/servicecomb/config/environment/production/application.properties",
         "test1=env1");
     testGetConfig("test1", "env1");
   }
 
   private void testApplication() {
 
-    putValue("/servicecomb/config/environment/production/demo-etcd/application.properties",
+    putValue("/servicecomb/config/application/production/demo-etcd/application.properties",
+        "test2=applition");
+    putValue("/servicecomb/config/application/production/demo-etcd/application.properties",
         "test2=applition2");
     testGetConfig("test2", "applition2");
   }
 
   private void testService() {
 
-    putValue("/servicecomb/config/environment/production/demo-etcd/test-client/application.properties",
+    putValue("/servicecomb/config/service/production/demo-etcd/test-client/application.properties",
+        "test3=service");
+    putValue("/servicecomb/config/service/production/demo-etcd/test-client/application.properties",
         "test3=service3");
     testGetConfig("test3", "service3");
   }
 
   private void testVersion() {
 
-    putValue("/servicecomb/config/environment/production/demo-etcd/test-client/0.0.1/application.properties",
+    putValue("/servicecomb/config/version/production/demo-etcd/test-client/application.properties",
+        "test3=version");
+    putValue("/servicecomb/config/version/production/demo-etcd/test-client/0.0.1/application.properties",
         "test4=version4");
     testGetConfig("test4", "version4");
   }
 
   private void testTag() {
 
-    putValue("/servicecomb/config/environment/production/demo-etcd/test-client/0.0.1/tag1/application.properties",
+    putValue("/servicecomb/config/tag/production/demo-etcd/test-client/0.0.1/tag1/application.properties",
+        "test5=tag");
+    putValue("/servicecomb/config/tag/production/demo-etcd/test-client/0.0.1/tag1/application.properties",
         "test5=tag5");
     testGetConfig("test5", "tag5");
   }

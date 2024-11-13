@@ -28,6 +28,7 @@ servicecomb:
     etcd:
       instance-tag: tag1
 
+test1: env
 test2: applition
 test3: service
 test4: version
