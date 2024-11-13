@@ -119,8 +119,8 @@ public class EtcdClient {
     } else {
       String[] authInfo = etcdConfig.getAuthInfo().split(":");
       this.client = Client.builder().endpoints(etcdConfig.getConnectString())
-          .user(ByteSequence.from(authInfo[0], Charset.defaultCharset()))
-          .password(ByteSequence.from(authInfo[1], Charset.defaultCharset())).build();
+          .user(ByteSequence.from(authInfo[0], StandardCharsets.UTF_8))
+          .password(ByteSequence.from(authInfo[1], StandardCharsets.UTF_8)).build();
     }
   }
 
@@ -150,7 +150,7 @@ public class EtcdClient {
         BootStrapProperties.readServiceVersion(environment),
         etcdConfig.getInstanceTag());
 
-    ByteSequence prefixByteSeq = ByteSequence.from(path, Charset.defaultCharset());
+    ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
         resp -> new Thread(new GetDataRunable(tagData, this, path)).start());
@@ -163,7 +163,7 @@ public class EtcdClient {
         BootStrapProperties.readServiceName(environment),
         BootStrapProperties.readServiceVersion(environment));
 
-    ByteSequence prefixByteSeq = ByteSequence.from(path, Charset.defaultCharset());
+    ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
         resp -> new Thread(new GetDataRunable(versionData, this, path)).start());
@@ -175,7 +175,7 @@ public class EtcdClient {
         BootStrapProperties.readApplication(environment),
         BootStrapProperties.readServiceName(environment));
 
-    ByteSequence prefixByteSeq = ByteSequence.from(path, Charset.defaultCharset());
+    ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
         resp -> new Thread(new GetDataRunable(serviceData, this, path)).start());
@@ -185,7 +185,7 @@ public class EtcdClient {
   private void addApplicationConfig(String env) throws Exception {
     String path = String.format(PATH_APPLICATION, env, BootStrapProperties.readApplication(environment));
 
-    ByteSequence prefixByteSeq = ByteSequence.from(path, Charset.defaultCharset());
+    ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
         resp -> new Thread(new GetDataRunable(applicationData, this, path)).start());
@@ -195,7 +195,7 @@ public class EtcdClient {
   private void addEnvironmentConfig(String env) throws Exception {
     String path = String.format(PATH_ENVIRONMENT, env);
 
-    ByteSequence prefixByteSeq = ByteSequence.from(path, Charset.defaultCharset());
+    ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
         resp -> new Thread(new GetDataRunable(environmentData, this, path)).start());

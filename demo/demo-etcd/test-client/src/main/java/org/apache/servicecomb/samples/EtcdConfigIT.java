@@ -44,6 +44,25 @@ public class EtcdConfigIT implements CategorizedTestCase {
     testService();
     testVersion();
     testTag();
+    testOverride();
+  }
+
+  private void testOverride() {
+
+    putValue("/servicecomb/config/environment/production/application2.properties",
+        "testValue=t1");
+    putValue("/servicecomb/config/application/production/demo-etcd/application2.properties",
+        "testValue=t2");
+    testGetConfig("testValue", "t2");
+    putValue("/servicecomb/config/service/production/demo-etcd/provider/application2.properties",
+        "testValue=t3");
+    testGetConfig("testValue", "t3");
+    putValue("/servicecomb/config/version/production/demo-etcd/provider/0.0.1/application2.properties",
+        "testValue=t4");
+    testGetConfig("testValue", "t4");
+    putValue("/servicecomb/config/tag/production/demo-etcd/provider/0.0.1/tag1/application2.properties",
+        "testValue=t5");
+    testGetConfig("testValue", "t5");
   }
 
   private void testEnvironment() {
@@ -66,27 +85,27 @@ public class EtcdConfigIT implements CategorizedTestCase {
 
   private void testService() {
 
-    putValue("/servicecomb/config/service/production/demo-etcd/test-client/application.properties",
+    putValue("/servicecomb/config/service/production/demo-etcd/provider/application.properties",
         "test3=service");
-    putValue("/servicecomb/config/service/production/demo-etcd/test-client/application.properties",
+    putValue("/servicecomb/config/service/production/demo-etcd/provider/application.properties",
         "test3=service3");
     testGetConfig("test3", "service3");
   }
 
   private void testVersion() {
 
-    putValue("/servicecomb/config/version/production/demo-etcd/test-client/application.properties",
+    putValue("/servicecomb/config/version/production/demo-etcd/provider/application.properties",
         "test3=version");
-    putValue("/servicecomb/config/version/production/demo-etcd/test-client/0.0.1/application.properties",
+    putValue("/servicecomb/config/version/production/demo-etcd/provider/0.0.1/application.properties",
         "test4=version4");
     testGetConfig("test4", "version4");
   }
 
   private void testTag() {
 
-    putValue("/servicecomb/config/tag/production/demo-etcd/test-client/0.0.1/tag1/application.properties",
+    putValue("/servicecomb/config/tag/production/demo-etcd/provider/0.0.1/tag1/application.properties",
         "test5=tag");
-    putValue("/servicecomb/config/tag/production/demo-etcd/test-client/0.0.1/tag1/application.properties",
+    putValue("/servicecomb/config/tag/production/demo-etcd/provider/0.0.1/tag1/application.properties",
         "test5=tag5");
     testGetConfig("test5", "tag5");
   }

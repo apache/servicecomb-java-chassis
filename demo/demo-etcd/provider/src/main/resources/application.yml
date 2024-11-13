@@ -29,6 +29,7 @@ servicecomb:
   config:
     etcd:
       connectString: http://127.0.0.1:2379
+      instance-tag: tag1
 
   rest:
     address: 0.0.0.0:9094?websocketEnabled=true
@@ -42,6 +43,13 @@ servicecomb:
     allowedMethod: "*"
     maxAge: 3600
 
+
 key1: 1
 key2: 3
 key3: 5
+
+test1: env
+test2: applition
+test3: service
+test4: version
+test5: tag
