@@ -18,9 +18,11 @@ package org.apache.servicecomb.registry.etcd;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +60,6 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   private static final Logger LOGGER = LoggerFactory.getLogger(EtcdDiscovery.class);
 
   private Map<String, Watch> watchMap = new ConcurrentHashMapEx<>();
-
 
   @Autowired
   @SuppressWarnings("unused")
@@ -99,8 +100,17 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
       return watchClient;
     });
 
-    List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
-    return convertServiceInstanceList(endpointKv);
+//     async get all instances,because sync is bad way in etcd.
+    ConditionWaiter<List<EtcdDiscoveryInstance>> waiter = new ConditionWaiter<>(new ArrayList<>(), 50,
+        TimeUnit.MILLISECONDS);
+    waiter.executeTaskAsync(() -> {
+      CompletableFuture<GetResponse> getFuture = client.getKVClient()
+          .get(ByteSequence.from(prefixPath, StandardCharsets.UTF_8),
+              GetOption.builder().withPrefix(ByteSequence.from(prefixPath, StandardCharsets.UTF_8)).build());
+      GetResponse getResponse = getFuture.get();
+      return convertServiceInstanceList(getResponse.getKvs());
+    });
+    return waiter.waitForCompletion();
   }
 
   private void watchNode(String application, String serviceName, String prefixPath) {
@@ -144,16 +154,19 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
         .withLog("convert json value to obj from etcd failure, {}", valueJson)
         .executeFunctionWithDoubleParam(JsonUtils::readValue, valueJson.getBytes(StandardCharsets.UTF_8),
             EtcdInstance.class);
-    EtcdDiscoveryInstance etcdDiscoveryInstance = new EtcdDiscoveryInstance(etcdInstance);
-    return etcdDiscoveryInstance;
+    return new EtcdDiscoveryInstance(etcdInstance);
   }
 
   @Override
   public List<String> findServices(String application) {
 
-    String prefixPath = basePath + "/" + application;
-    List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
-    return endpointKv.stream().map(kv -> kv.getKey().toString(StandardCharsets.UTF_8)).collect(Collectors.toList());
+    ConditionWaiter<List<String>> waiter = new ConditionWaiter<>(new ArrayList<>(), 50, TimeUnit.MILLISECONDS);
+    waiter.executeTaskAsync(() -> {
+      String prefixPath = basePath + "/" + application;
+      List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
+      return endpointKv.stream().map(kv -> kv.getKey().toString(StandardCharsets.UTF_8)).collect(Collectors.toList());
+    });
+    return waiter.waitForCompletion();
   }
 
   @Override
