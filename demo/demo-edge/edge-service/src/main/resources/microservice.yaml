@@ -38,6 +38,9 @@ servicecomb:
       http2.useAlpnEnabled: false
   loadbalance:
     filter:
+      service:
+        warmup:
+          enabled: false
       operation:
         enabled: true
   handler:
