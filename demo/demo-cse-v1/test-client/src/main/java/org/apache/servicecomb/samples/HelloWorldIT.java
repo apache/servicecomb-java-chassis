@@ -41,6 +41,7 @@ public class HelloWorldIT implements CategorizedTestCase {
     testHelloWorldeEptyProtectionCloseWeightLess100();
     testHelloWorldEmptyProtectionCloseFallback();
     testHelloWorldEmptyProtectionCloseWeight100Two();
+    testHelloWorldWarmUp();
   }
 
   private void testHelloWorld() {
@@ -199,5 +200,26 @@ public class HelloWorldIT implements CategorizedTestCase {
     }
 
     TestMgr.check(failCount == succCount, true);
+  }
+
+  private void testHelloWorldWarmUp() throws InterruptedException {
+    int oldCount = 0;
+    int newCount = 0;
+
+    for (int i = 0; i < 100; i++) {
+      String result = template
+              .getForObject(Config.GATEWAY_URL + "/sayHello?name=World", String.class);
+      Thread.sleep(1000);
+      if (result.equals("\"Hello World\"")) {
+        oldCount++;
+      } else if (result.equals("\"Hello in canary World\"")) {
+        newCount++;
+      } else {
+        TestMgr.fail("not expected result testHelloWorldCanary");
+        return;
+      }
+    }
+
+    TestMgr.check(oldCount > newCount, true);
   }
 }
