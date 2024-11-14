@@ -46,6 +46,16 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.etcd</groupId>
+      <artifactId>jetcd-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.25.5</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
   <profiles>
@@ -60,7 +70,7 @@
               <configuration>
                 <images>
                   <image>
-                    <name>bitnami/etcd:latest</name>
+                    <name>bitnami/etcd:3.5.16</name>
                     <alias>etcd</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
@@ -74,7 +84,7 @@
                         <time>60000</time>
                       </wait>
                       <ports>
-                        <port>etcd.port:2379</port>
+                        <port>2379:2379</port>
                       </ports>
                       <env>
                         <ALLOW_NONE_AUTHENTICATION>yes</ALLOW_NONE_AUTHENTICATION>

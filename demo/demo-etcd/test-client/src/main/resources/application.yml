@@ -23,3 +23,15 @@ servicecomb:
 
   rest:
     address: 0.0.0.0:9097 # should be same with server.port to use web container
+
+  config:
+    etcd:
+      instance-tag: tag1
+
+test1: env
+test2: applition
+test3: service
+test4: version
+test5: tag
+
+

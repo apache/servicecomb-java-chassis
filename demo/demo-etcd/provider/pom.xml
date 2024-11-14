@@ -41,12 +41,16 @@
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.25.3</version>
+      <version>3.25.5</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-etcd</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>config-etcd</artifactId>
     </dependency>
 
     <dependency>
