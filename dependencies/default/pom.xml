@@ -74,7 +74,7 @@
     <netty.version>4.1.113.Final</netty.version>
     <okhttp3.version>4.12.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
-    <protobuf.version>3.23.4</protobuf.version>
+    <protobuf.version>4.28.3</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
     <protostuff-parser.version>2.2.27</protostuff-parser.version>
     <reactive-streams.version>1.0.4</reactive-streams.version>
