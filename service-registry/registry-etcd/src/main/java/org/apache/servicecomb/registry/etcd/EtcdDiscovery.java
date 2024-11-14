@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -164,7 +165,15 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
     waiter.executeTaskAsync(() -> {
       String prefixPath = basePath + "/" + application;
       List<KeyValue> endpointKv = getValuesByPrefix(prefixPath);
-      return endpointKv.stream().map(kv -> kv.getKey().toString(StandardCharsets.UTF_8)).collect(Collectors.toList());
+      return endpointKv.stream()
+          .map(kv -> kv.getKey().toString(StandardCharsets.UTF_8))
+          .map(key -> {
+            String[] parts = StringUtils.split(key, "/");
+            return parts.length > 5 ? parts[4] : null;
+          })
+          .filter(Objects::nonNull)
+          .distinct()
+          .collect(Collectors.toList());
     });
     return waiter.waitForCompletion();
   }

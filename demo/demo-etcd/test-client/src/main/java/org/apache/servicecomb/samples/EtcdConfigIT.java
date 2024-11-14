@@ -94,7 +94,7 @@ public class EtcdConfigIT implements CategorizedTestCase {
 
   private void testVersion() {
 
-    putValue("/servicecomb/config/version/production/demo-etcd/provider/application.properties",
+    putValue("/servicecomb/config/version/production/demo-etcd/provider/0.0.1/application.properties",
         "test3=version");
     putValue("/servicecomb/config/version/production/demo-etcd/provider/0.0.1/application.properties",
         "test4=version4");
