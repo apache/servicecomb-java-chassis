@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import io.swagger.models.auth.In;
-
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;

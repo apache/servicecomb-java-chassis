@@ -36,7 +36,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   private static final int INSTANCE_WEIGHT = 100;
 
   // Default time for warm up, the unit is second
-  private static final String DEFAULT_WARM_UP_TIME = "0";
+  private static final String DEFAULT_WARM_UP_TIME = "30";
 
   private static final String WARM_TIME_KEY = "warmupTime";
 
