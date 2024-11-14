@@ -19,6 +19,7 @@ package org.apache.servicecomb.loadbalance.filterext;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
@@ -71,7 +72,9 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     int index = 0;
     for (ServiceCombServer server : servers) {
       Map<String, String> properties = server.getInstance().getProperties();
-      boolean isWarmed = calculateAndCheckIsWarmUp(properties, weights, index, server.getInstance().getTimestamp());
+      String registerTimeStr = StringUtils.isBlank(server.getInstance().getTimestamp()) ? "0" :
+              server.getInstance().getTimestamp();
+      boolean isWarmed = calculateAndCheckIsWarmUp(properties, weights, index, registerTimeStr);
       isAllInstanceWarmUp &= isWarmed;
       totalWeight += weights[index++];
     }
