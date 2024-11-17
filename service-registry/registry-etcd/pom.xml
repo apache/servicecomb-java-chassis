@@ -34,6 +34,12 @@
     <dependency>
       <groupId>io.etcd</groupId>
       <artifactId>jetcd-core</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>protobuf-java</artifactId>
+          <groupId>com.google.protobuf</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -46,6 +52,10 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
     </dependency>
   </dependencies>
 

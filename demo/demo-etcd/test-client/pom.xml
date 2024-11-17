@@ -50,12 +50,6 @@
       <groupId>io.etcd</groupId>
       <artifactId>jetcd-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>3.25.5</version>
-      <scope>runtime</scope>
-    </dependency>
   </dependencies>
 
   <profiles>
