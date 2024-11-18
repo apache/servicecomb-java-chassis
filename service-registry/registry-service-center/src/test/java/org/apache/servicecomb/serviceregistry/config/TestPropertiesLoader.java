@@ -26,6 +26,7 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.config.InstancePropertiesConst;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -89,6 +90,7 @@ public class TestPropertiesLoader {
   public void testInstancePropertiesLoader() {
     Microservice microservice = LocalServiceRegistryFactory.createLocal().getMicroservice();
     MicroserviceInstance instance = microservice.getInstance();
+    instance.getProperties().remove(InstancePropertiesConst.REGISTER_TIME_KEY);
     Map<String, String> expectedMap = new HashMap<>();
     expectedMap.put("key0", "value0");
     expectedMap.put("ek0", "ev0");
