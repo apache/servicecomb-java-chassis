@@ -21,7 +21,7 @@ servicecomb-config-order: 10
 servicecomb:
   instance:
     properties:
-      warmupTime: 60
+      warmupTime: 60000
       warmupCurve: 2
   service:
     application: demo-java-chassis-cse-v1
