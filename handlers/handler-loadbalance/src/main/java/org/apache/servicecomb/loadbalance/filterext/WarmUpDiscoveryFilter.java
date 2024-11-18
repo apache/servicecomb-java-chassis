@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
+import org.apache.servicecomb.registry.config.InstancePropertiesConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +37,8 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
 
   private static final int INSTANCE_WEIGHT = 100;
 
-  // Default time for warm up, the unit is second
-  private static final String DEFAULT_WARM_UP_TIME = "30";
+  // Default time for warm up, the unit is milliseconds
+  private static final String DEFAULT_WARM_UP_TIME = "30000";
 
   private static final String WARM_TIME_KEY = "warmupTime";
 
@@ -72,9 +73,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     int index = 0;
     for (ServiceCombServer server : servers) {
       Map<String, String> properties = server.getInstance().getProperties();
-      String registerTimeStr = StringUtils.isBlank(server.getInstance().getTimestamp()) ? "0" :
-              server.getInstance().getTimestamp();
-      boolean isWarmed = calculateAndCheckIsWarmUp(properties, weights, index, registerTimeStr);
+      boolean isWarmed = calculateAndCheckIsWarmUp(properties, weights, index);
       isAllInstanceWarmUp &= isWarmed;
       totalWeight += weights[index++];
     }
@@ -101,11 +100,11 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     return servers;
   }
 
-  private boolean calculateAndCheckIsWarmUp(Map<String, String> metadata, int[] weights, int index,
-          String registerTimeStr) {
+  private boolean calculateAndCheckIsWarmUp(Map<String, String> metadata, int[] weights, int index) {
     final int warmUpCurve = Integer.parseInt(metadata.getOrDefault(WARM_CURVE_KEY, DEFAULT_WARM_UP_CURVE));
     final long warmUpTime = Long.parseLong(metadata.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
-    final long registerTime = Long.parseLong(registerTimeStr);
+    String registerTimeStr = metadata.get(InstancePropertiesConst.REGISTER_TIME_KEY);
+    final long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
     final int weight = calculateWeight(registerTime, warmUpTime, warmUpCurve);
     weights[index] = weight;
     return isWarmed(registerTime, warmUpTime);
@@ -119,7 +118,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
       warmUpCurve = Integer.parseInt(DEFAULT_WARM_UP_CURVE);
     }
     // calculated in seconds
-    final long runTime = System.currentTimeMillis() / 1000 - registerTime;
+    final long runTime = System.currentTimeMillis() - registerTime;
     if (runTime > 0 && runTime < warmUpTime) {
       return calculateWarmUpWeight(runTime, warmUpTime, warmUpCurve);
     }
@@ -132,6 +131,6 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   }
 
   private boolean isWarmed(long registerTime, long warmUpTime) {
-    return registerTime == 0L || System.currentTimeMillis() / 1000 - registerTime > warmUpTime;
+    return registerTime == 0L || System.currentTimeMillis() - registerTime > warmUpTime;
   }
 }
