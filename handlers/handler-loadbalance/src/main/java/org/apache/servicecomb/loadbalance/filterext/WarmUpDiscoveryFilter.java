@@ -26,11 +26,13 @@ import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.config.InstancePropertiesConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   private static final Logger LOGGER = LoggerFactory.getLogger(WarmUpDiscoveryFilter.class);
@@ -67,20 +69,30 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     if (servers.size() <= 1) {
       return servers;
     }
-    boolean isAllInstanceWarmUp = true;
+    if (CollectionUtils.isEmpty(existNeedWarmUpInstances(servers))) {
+      return servers;
+    }
     int[] weights = new int[servers.size()];
     int totalWeight = 0;
     int index = 0;
     for (ServiceCombServer server : servers) {
-      Map<String, String> properties = server.getInstance().getProperties();
-      boolean isWarmed = calculateAndCheckIsWarmUp(properties, weights, index);
-      isAllInstanceWarmUp &= isWarmed;
+      weights[index] = calculate(server.getInstance().getProperties());
       totalWeight += weights[index++];
     }
-    if (!isAllInstanceWarmUp) {
-      return chooseServer(totalWeight, weights, servers);
-    }
-    return servers;
+    return chooseServer(totalWeight, weights, servers);
+  }
+
+  private List<ServiceCombServer> existNeedWarmUpInstances(List<ServiceCombServer> servers) {
+    return servers.stream()
+            .filter(server -> isInstanceNeedWarmUp(server.getInstance().getProperties()))
+            .collect(Collectors.toList());
+  }
+
+  private boolean isInstanceNeedWarmUp(Map<String, String> properties) {
+    final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
+    String registerTimeStr = properties.get(InstancePropertiesConst.REGISTER_TIME_KEY);
+    final long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
+    return registerTime != 0L && System.currentTimeMillis() - registerTime < warmUpTime;
   }
 
   private List<ServiceCombServer> chooseServer(int totalWeight, int[] weights, List<ServiceCombServer> servers) {
@@ -100,14 +112,12 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     return servers;
   }
 
-  private boolean calculateAndCheckIsWarmUp(Map<String, String> metadata, int[] weights, int index) {
-    final int warmUpCurve = Integer.parseInt(metadata.getOrDefault(WARM_CURVE_KEY, DEFAULT_WARM_UP_CURVE));
-    final long warmUpTime = Long.parseLong(metadata.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
-    String registerTimeStr = metadata.get(InstancePropertiesConst.REGISTER_TIME_KEY);
+  private int calculate(Map<String, String> properties) {
+    final int warmUpCurve = Integer.parseInt(properties.getOrDefault(WARM_CURVE_KEY, DEFAULT_WARM_UP_CURVE));
+    final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
+    String registerTimeStr = properties.get(InstancePropertiesConst.REGISTER_TIME_KEY);
     final long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
-    final int weight = calculateWeight(registerTime, warmUpTime, warmUpCurve);
-    weights[index] = weight;
-    return isWarmed(registerTime, warmUpTime);
+    return calculateWeight(registerTime, warmUpTime, warmUpCurve);
   }
 
   private int calculateWeight(long registerTime, long warmUpTime, int warmUpCurve) {
@@ -128,9 +138,5 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   private int calculateWarmUpWeight(double runtime, double warmUpTime, int warmUpCurve) {
     final int round = (int) Math.round(Math.pow(runtime / warmUpTime, warmUpCurve) * INSTANCE_WEIGHT);
     return round < 1 ? 1 : Math.min(round, INSTANCE_WEIGHT);
-  }
-
-  private boolean isWarmed(long registerTime, long warmUpTime) {
-    return registerTime == 0L || System.currentTimeMillis() - registerTime > warmUpTime;
   }
 }
