@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -49,7 +50,12 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   // Preheat calculates curve value
   private static final String DEFAULT_WARM_UP_CURVE = "2";
 
+  // provider run time, the unit is milliseconds
+  private static final long PROVIDER_RUN_TIME = 30 * 60 * 1000;
+
   private final Random random = new Random();
+
+  private final Map<String, Long> instanceInvokeTime = new HashMap<>();
 
   @Override
   public int getOrder() {
@@ -76,7 +82,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     int totalWeight = 0;
     int index = 0;
     for (ServiceCombServer server : servers) {
-      weights[index] = calculate(server.getInstance().getProperties());
+      weights[index] = calculate(server.getInstance().getProperties(), server.getInstance().getInstanceId());
       totalWeight += weights[index++];
     }
     return chooseServer(totalWeight, weights, servers);
@@ -84,15 +90,28 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
 
   private List<ServiceCombServer> existNeedWarmUpInstances(List<ServiceCombServer> servers) {
     return servers.stream()
-            .filter(server -> isInstanceNeedWarmUp(server.getInstance().getProperties()))
+            .filter(server -> isInstanceNeedWarmUp(server.getInstance().getProperties(),
+                server.getInstance().getInstanceId()))
             .collect(Collectors.toList());
   }
 
-  private boolean isInstanceNeedWarmUp(Map<String, String> properties) {
-    final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
+  private boolean isInstanceNeedWarmUp(Map<String, String> properties, String instanceId) {
     String registerTimeStr = properties.get(InstancePropertiesConst.REGISTER_TIME_KEY);
-    final long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
-    return registerTime != 0L && System.currentTimeMillis() - registerTime < warmUpTime;
+    long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
+
+    // Provider run time greater than 30 minute, can be regarded as not need warn up.
+    // To ensure that the consumer is restarted but the provider is not restarted.
+    if (System.currentTimeMillis() - registerTime > PROVIDER_RUN_TIME) {
+      return false;
+    }
+    Long invokeTime = instanceInvokeTime.get(instanceId);
+
+    // instance have not been invoked need to be warn-up
+    if (invokeTime == null) {
+      return true;
+    }
+    final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
+    return System.currentTimeMillis() - invokeTime < warmUpTime;
   }
 
   private List<ServiceCombServer> chooseServer(int totalWeight, int[] weights, List<ServiceCombServer> servers) {
@@ -106,29 +125,36 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("warm up choose service instance: " + servers.get(i).getInstance().getInstanceId());
         }
+        setInstanceStartInvokeTime(servers.get(i));
         return Collections.singletonList(servers.get(i));
       }
     }
     return servers;
   }
 
-  private int calculate(Map<String, String> properties) {
-    final int warmUpCurve = Integer.parseInt(properties.getOrDefault(WARM_CURVE_KEY, DEFAULT_WARM_UP_CURVE));
-    final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
-    String registerTimeStr = properties.get(InstancePropertiesConst.REGISTER_TIME_KEY);
-    final long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
-    return calculateWeight(registerTime, warmUpTime, warmUpCurve);
+  private void setInstanceStartInvokeTime(ServiceCombServer server) {
+    instanceInvokeTime.putIfAbsent(server.getInstance().getInstanceId(), System.currentTimeMillis());
   }
 
-  private int calculateWeight(long registerTime, long warmUpTime, int warmUpCurve) {
-    if (warmUpTime <= 0 || registerTime <= 0) {
+  private int calculate(Map<String, String> properties, String instanceId) {
+    // if instance wasn't called, return default weight, will have higher weight be selected, better into warn up
+    if (instanceInvokeTime.get(instanceId) == null) {
+      return INSTANCE_WEIGHT;
+    }
+    final int warmUpCurve = Integer.parseInt(properties.getOrDefault(WARM_CURVE_KEY, DEFAULT_WARM_UP_CURVE));
+    final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
+    return calculateWeight(instanceInvokeTime.get(instanceId), warmUpTime, warmUpCurve);
+  }
+
+  private int calculateWeight(long invokeStartTime, long warmUpTime, int warmUpCurve) {
+    if (warmUpTime <= 0) {
       return INSTANCE_WEIGHT;
     }
     if (warmUpCurve <= 0) {
       warmUpCurve = Integer.parseInt(DEFAULT_WARM_UP_CURVE);
     }
-    // calculated in seconds
-    final long runTime = System.currentTimeMillis() - registerTime;
+    // calculated in milliseconds
+    final long runTime = System.currentTimeMillis() - invokeStartTime;
     if (runTime > 0 && runTime < warmUpTime) {
       return calculateWarmUpWeight(runTime, warmUpTime, warmUpCurve);
     }
