@@ -96,12 +96,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   }
 
   private boolean isInstanceNeedWarmUp(Map<String, String> properties, String instanceId) {
-    String registerTimeStr = properties.get(InstancePropertiesConst.REGISTER_TIME_KEY);
-    long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
-
-    // Provider run time greater than 30 minute, can be regarded as not need warn up.
-    // To ensure that the consumer is restarted but the provider is not restarted.
-    if (System.currentTimeMillis() - registerTime > PROVIDER_RUN_TIME) {
+    if (isRunTimeUpBaseStartupTime(properties)) {
       return false;
     }
     Long invokeTime = instanceInvokeTime.get(instanceId);
@@ -112,6 +107,15 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     }
     final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
     return System.currentTimeMillis() - invokeTime < warmUpTime;
+  }
+
+  private boolean isRunTimeUpBaseStartupTime(Map<String, String> properties) {
+    String registerTimeStr = properties.get(InstancePropertiesConst.REGISTER_TIME_KEY);
+    long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
+
+    // Provider run time greater than 30 minute, can be regarded as not need warn up.
+    // To ensure that the consumer is restarted but the provider is not restarted.
+    return System.currentTimeMillis() - registerTime > PROVIDER_RUN_TIME;
   }
 
   private List<ServiceCombServer> chooseServer(int totalWeight, int[] weights, List<ServiceCombServer> servers) {
@@ -133,6 +137,9 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   }
 
   private void setInstanceStartInvokeTime(ServiceCombServer server) {
+    if (isRunTimeUpBaseStartupTime(server.getInstance().getProperties())) {
+      return;
+    }
     instanceInvokeTime.putIfAbsent(server.getInstance().getInstanceId(), System.currentTimeMillis());
   }
 
