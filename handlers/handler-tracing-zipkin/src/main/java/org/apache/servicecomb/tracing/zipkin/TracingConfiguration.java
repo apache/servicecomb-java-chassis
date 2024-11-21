@@ -71,7 +71,7 @@ public class TracingConfiguration {
       havingValue = "true")
   static class ZipkinReporterConfiguration {
     @Bean
-    BytesMessageSender okHttpSender(DynamicProperties dynamicProperties) {
+    BytesMessageSender scbOkHttpSender(DynamicProperties dynamicProperties) {
       String apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
           CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
       // use default value if the user set value is invalid
@@ -90,7 +90,7 @@ public class TracingConfiguration {
     }
 
     @Bean
-    Reporter<Span> zipkinReporter(DynamicProperties dynamicProperties, BytesMessageSender sender) {
+    Reporter<Span> scbZipkinReporter(DynamicProperties dynamicProperties, BytesMessageSender sender) {
       String apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
           CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
       if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0) {
@@ -102,14 +102,14 @@ public class TracingConfiguration {
   }
 
   @Bean
-  CurrentTraceContext currentTraceContext() {
+  CurrentTraceContext scbCurrentTraceContext() {
     return ThreadLocalCurrentTraceContext.newBuilder()
         .addScopeDecorator(MDCScopeDecorator.newBuilder().build())
         .build();
   }
 
   @Bean
-  Tracing tracing(@Autowired(required = false) Sender sender,
+  Tracing scbTracing(@Autowired(required = false) Sender sender,
       CurrentTraceContext currentTraceContext, Environment environment, DynamicProperties dynamicProperties) {
     Tracing.Builder builder = Tracing.newBuilder()
         .localServiceName(BootStrapProperties.readServiceName(environment))
@@ -124,7 +124,7 @@ public class TracingConfiguration {
   }
 
   @Bean
-  HttpTracing httpTracing(Tracing tracing) {
+  HttpTracing scbHttpTracing(Tracing tracing) {
     return HttpTracing.newBuilder(tracing)
         .clientRequestParser(new CustomHttpRequestParser())
         .clientResponseParser(new CustomHttpResponseParser())
@@ -133,7 +133,7 @@ public class TracingConfiguration {
   }
 
   @Bean
-  ZipkinTracingFilter zipkinTracingFilter() {
+  ZipkinTracingFilter scbZipkinTracingFilter() {
     return new ZipkinTracingFilter();
   }
 

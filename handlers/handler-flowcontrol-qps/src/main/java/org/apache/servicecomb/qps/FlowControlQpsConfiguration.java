@@ -30,12 +30,12 @@ public class FlowControlQpsConfiguration {
   public static final String FLOW_CONTROL_ENABLED = FLOW_CONTROL_PREFIX + ".enabled";
 
   @Bean
-  public ProviderFlowControlFilter providerFlowControlFilter(Environment environment) {
+  public ProviderFlowControlFilter scbProviderFlowControlFilter(Environment environment) {
     return new ProviderFlowControlFilter(environment);
   }
 
   @Bean
-  public ConsumerFlowControlFilter consumerFlowControlFilter(Environment environment) {
+  public ConsumerFlowControlFilter scbConsumerFlowControlFilter(Environment environment) {
     return new ConsumerFlowControlFilter(environment);
   }
 }

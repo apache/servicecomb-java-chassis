@@ -24,32 +24,32 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class DashboardConfiguration {
   @Bean
-  public MonitorInformationCollector monitorInformationCollector() {
+  public MonitorInformationCollector scbMonitorInformationCollector() {
     return new MonitorInformationCollector();
   }
 
   @Bean
-  public MonitorConstant monitorConstant(Environment environment) {
+  public MonitorConstant scbMonitorConstant(Environment environment) {
     return new MonitorConstant(environment);
   }
 
   @Bean
-  public MonitorBootListener monitorBootListener() {
+  public MonitorBootListener scbMonitorBootListener() {
     return new MonitorBootListener();
   }
 
   @Bean
-  public DataFactory dataFactory() {
+  public DataFactory scbDataFactory() {
     return new DataFactory();
   }
 
   @Bean
-  public MetricsMonitorDataProvider metricsMonitorDataProvider() {
+  public MetricsMonitorDataProvider scbMetricsMonitorDataProvider() {
     return new MetricsMonitorDataProvider();
   }
 
   @Bean
-  public DefaultMonitorDataPublisher defaultMonitorDataPublisher() {
+  public DefaultMonitorDataPublisher scbDefaultMonitorDataPublisher() {
     return new DefaultMonitorDataPublisher();
   }
 }

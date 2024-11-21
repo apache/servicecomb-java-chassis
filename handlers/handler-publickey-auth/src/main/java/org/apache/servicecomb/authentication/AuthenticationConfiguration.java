@@ -35,32 +35,32 @@ public class AuthenticationConfiguration {
   public static final String ACCESS_CONTROL_ENABLED = ACCESS_CONTROL_PREFIX + ".enabled";
 
   @Bean
-  public ConsumerAuthFilter consumerAuthFilter() {
+  public ConsumerAuthFilter scbConsumerAuthFilter() {
     return new ConsumerAuthFilter();
   }
 
   @Bean
-  public ProviderAuthFilter providerAuthFilter() {
+  public ProviderAuthFilter scbProviderAuthFilter() {
     return new ProviderAuthFilter();
   }
 
   @Bean
-  public AuthenticationBootListener authenticationBootListener() {
+  public AuthenticationBootListener scbAuthenticationBootListener() {
     return new AuthenticationBootListener();
   }
 
   @Bean
-  public ConsumerTokenManager consumerTokenManager() {
+  public ConsumerTokenManager scbConsumerTokenManager() {
     return new ConsumerTokenManager();
   }
 
   @Bean
-  public ProviderTokenManager providerTokenManager() {
+  public ProviderTokenManager scbProviderTokenManager() {
     return new ProviderTokenManager();
   }
 
   @Bean
-  public AccessController accessController(Environment environment) {
+  public AccessController scbAccessController(Environment environment) {
     return new AccessController(environment);
   }
 }

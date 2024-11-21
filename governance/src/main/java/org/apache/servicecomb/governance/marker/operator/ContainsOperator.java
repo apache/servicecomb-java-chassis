@@ -19,6 +19,11 @@ package org.apache.servicecomb.governance.marker.operator;
 public class ContainsOperator implements MatchOperator {
 
   @Override
+  public String name() {
+    return "contains";
+  }
+
+  @Override
   public boolean match(String targetStr, String patternStr) {
     return targetStr.contains(patternStr);
   }

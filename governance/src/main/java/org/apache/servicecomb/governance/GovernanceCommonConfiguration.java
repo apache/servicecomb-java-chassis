@@ -42,10 +42,9 @@ import org.apache.servicecomb.governance.marker.operator.MatchOperator;
 import org.apache.servicecomb.governance.marker.operator.PrefixOperator;
 import org.apache.servicecomb.governance.marker.operator.SuffixOperator;
 import org.apache.servicecomb.governance.properties.BulkheadProperties;
-import org.apache.servicecomb.governance.properties.TimeLimiterProperties;
-import org.apache.servicecomb.governance.properties.GovernanceCacheProperties;
 import org.apache.servicecomb.governance.properties.CircuitBreakerProperties;
 import org.apache.servicecomb.governance.properties.FaultInjectionProperties;
+import org.apache.servicecomb.governance.properties.GovernanceCacheProperties;
 import org.apache.servicecomb.governance.properties.IdentifierRateLimitProperties;
 import org.apache.servicecomb.governance.properties.InstanceBulkheadProperties;
 import org.apache.servicecomb.governance.properties.InstanceIsolationProperties;
@@ -54,6 +53,7 @@ import org.apache.servicecomb.governance.properties.MapperProperties;
 import org.apache.servicecomb.governance.properties.MatchProperties;
 import org.apache.servicecomb.governance.properties.RateLimitProperties;
 import org.apache.servicecomb.governance.properties.RetryProperties;
+import org.apache.servicecomb.governance.properties.TimeLimiterProperties;
 import org.apache.servicecomb.governance.service.MatchersService;
 import org.apache.servicecomb.governance.service.MatchersServiceImpl;
 import org.springframework.beans.factory.ObjectProvider;
@@ -66,175 +66,175 @@ import io.micrometer.core.instrument.MeterRegistry;
 public class GovernanceCommonConfiguration {
   // properties configuration
   @Bean
-  public BulkheadProperties bulkheadProperties() {
+  public BulkheadProperties scbBulkheadProperties() {
     return new BulkheadProperties();
   }
 
   @Bean
-  public InstanceBulkheadProperties instanceBulkheadProperties() {
+  public InstanceBulkheadProperties scbInstanceBulkheadProperties() {
     return new InstanceBulkheadProperties();
   }
 
   @Bean
-  public CircuitBreakerProperties circuitBreakerProperties() {
+  public CircuitBreakerProperties scbCircuitBreakerProperties() {
     return new CircuitBreakerProperties();
   }
 
   @Bean
-  public InstanceIsolationProperties instanceIsolationProperties() {
+  public InstanceIsolationProperties scbInstanceIsolationProperties() {
     return new InstanceIsolationProperties();
   }
 
   @Bean
-  public MatchProperties matchProperties() {
+  public MatchProperties scbMatchProperties() {
     return new MatchProperties();
   }
 
   @Bean
-  public RateLimitProperties rateLimitProperties() {
+  public RateLimitProperties scbRateLimitProperties() {
     return new RateLimitProperties();
   }
 
   @Bean
-  public IdentifierRateLimitProperties identifierRateLimitProperties() {
+  public IdentifierRateLimitProperties scbIdentifierRateLimitProperties() {
     return new IdentifierRateLimitProperties();
   }
 
   @Bean
-  public RetryProperties retryProperties() {
+  public RetryProperties scbRetryProperties() {
     return new RetryProperties();
   }
 
   @Bean
-  public TimeLimiterProperties timeLimiterProperties() {
+  public TimeLimiterProperties scbTimeLimiterProperties() {
     return new TimeLimiterProperties();
   }
 
   @Bean
-  public GovernanceCacheProperties cacheProperties() {
+  public GovernanceCacheProperties scbCacheProperties() {
     return new GovernanceCacheProperties();
   }
 
   @Bean
-  public FaultInjectionProperties faultInjectionProperties() {
+  public FaultInjectionProperties scbFaultInjectionProperties() {
     return new FaultInjectionProperties();
   }
 
   @Bean
-  public LoadBalanceProperties loadBalanceProperties() {
+  public LoadBalanceProperties scbLoadBalanceProperties() {
     return new LoadBalanceProperties();
   }
 
   @Bean
-  public MapperProperties mapperProperties() {
+  public MapperProperties scbMapperProperties() {
     return new MapperProperties();
   }
 
   // handlers configuration
   @Bean
-  public BulkheadHandler bulkheadHandler(BulkheadProperties bulkheadProperties) {
+  public BulkheadHandler scbBulkheadHandler(BulkheadProperties bulkheadProperties) {
     return new BulkheadHandler(bulkheadProperties);
   }
 
   @Bean
-  public InstanceBulkheadHandler instanceBulkheadHandler(InstanceBulkheadProperties instanceBulkheadProperties) {
+  public InstanceBulkheadHandler scbInstanceBulkheadHandler(InstanceBulkheadProperties instanceBulkheadProperties) {
     return new InstanceBulkheadHandler(instanceBulkheadProperties);
   }
 
   @Bean
-  public LoadBalanceHandler loadBalanceHandler(LoadBalanceProperties loadBalanceProperties) {
+  public LoadBalanceHandler scbLoadBalanceHandler(LoadBalanceProperties loadBalanceProperties) {
     return new LoadBalanceHandler(loadBalanceProperties);
   }
 
   @Bean
-  public CircuitBreakerHandler circuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
+  public CircuitBreakerHandler scbCircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
       AbstractCircuitBreakerExtension circuitBreakerExtension) {
     return new CircuitBreakerHandler(circuitBreakerProperties, circuitBreakerExtension);
   }
 
   @Bean
-  public InstanceIsolationHandler instanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
+  public InstanceIsolationHandler scbInstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
       AbstractInstanceIsolationExtension isolationExtension,
       ObjectProvider<MeterRegistry> meterRegistry) {
     return new InstanceIsolationHandler(instanceIsolationProperties, isolationExtension, meterRegistry);
   }
 
   @Bean
-  public RateLimitingHandler rateLimitingHandler(RateLimitProperties rateLimitProperties) {
+  public RateLimitingHandler scbRateLimitingHandler(RateLimitProperties rateLimitProperties) {
     return new RateLimitingHandler(rateLimitProperties);
   }
 
   @Bean
-  public IdentifierRateLimitingHandler identifierRateLimitingHandler(
+  public IdentifierRateLimitingHandler scbIdentifierRateLimitingHandler(
       IdentifierRateLimitProperties identifierRateLimitProperties) {
     return new IdentifierRateLimitingHandler(identifierRateLimitProperties);
   }
 
   @Bean
-  public RetryHandler retryHandler(RetryProperties retryProperties, AbstractRetryExtension retryExtension) {
+  public RetryHandler scbRetryHandler(RetryProperties retryProperties, AbstractRetryExtension retryExtension) {
     return new RetryHandler(retryProperties, retryExtension);
   }
 
   @Bean
-  public TimeLimiterHandler timeLimiterHandler(TimeLimiterProperties timeLimiterProperties) {
+  public TimeLimiterHandler scbTimeLimiterHandler(TimeLimiterProperties timeLimiterProperties) {
     return new TimeLimiterHandler(timeLimiterProperties);
   }
 
   @Bean
-  public GovernanceCacheHandler<String, Object> governanceCacheHandler(GovernanceCacheProperties cacheProperties) {
+  public GovernanceCacheHandler<String, Object> scbGovernanceCacheHandler(GovernanceCacheProperties cacheProperties) {
     return new GovernanceCacheHandler<String, Object>(cacheProperties);
   }
 
   @Bean
-  public FaultInjectionHandler faultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
+  public FaultInjectionHandler scbFaultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
     return new FaultInjectionHandler(faultInjectionProperties);
   }
 
   @Bean
-  public MapperHandler mapperHandler(MapperProperties mapperProperties) {
+  public MapperHandler scbMapperHandler(MapperProperties mapperProperties) {
     return new MapperHandler(mapperProperties);
   }
 
   // request processor
   @Bean
-  public RequestProcessor requestProcessor(Map<String, MatchOperator> operatorMap) {
+  public RequestProcessor scbRequestProcessor(Map<String, MatchOperator> operatorMap) {
     return new RequestProcessor(operatorMap);
   }
 
   // matchers
   @Bean
-  public MatchersService matchersService(RequestProcessor requestProcessor, MatchProperties matchProperties) {
+  public MatchersService scbMatchersService(RequestProcessor requestProcessor, MatchProperties matchProperties) {
     return new MatchersServiceImpl(requestProcessor, matchProperties);
   }
 
   @Bean
-  public MatchersManager matchersManager(MatchersService matchersService) {
+  public MatchersManager scbMatchersManager(MatchersService matchersService) {
     return new MatchersManager(matchersService);
   }
 
   // operators
   @Bean
-  public CompareOperator compareOperator() {
+  public CompareOperator scbCompareOperator() {
     return new CompareOperator();
   }
 
   @Bean
-  public ContainsOperator containsOperator() {
+  public ContainsOperator scbContainsOperator() {
     return new ContainsOperator();
   }
 
   @Bean
-  public ExactOperator exactOperator() {
+  public ExactOperator scbExactOperator() {
     return new ExactOperator();
   }
 
   @Bean
-  public PrefixOperator prefixOperator() {
+  public PrefixOperator scbPrefixOperator() {
     return new PrefixOperator();
   }
 
   @Bean
-  public SuffixOperator suffixOperator() {
+  public SuffixOperator scbSuffixOperator() {
     return new SuffixOperator();
   }
 }

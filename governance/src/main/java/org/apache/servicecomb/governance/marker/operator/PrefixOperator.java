@@ -21,6 +21,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class PrefixOperator implements MatchOperator {
   @Override
+  public String name() {
+    return "prefix";
+  }
+
+  @Override
   public boolean match(String requestValue, String patternValue) {
     return StringUtils.startsWith(requestValue, patternValue);
   }

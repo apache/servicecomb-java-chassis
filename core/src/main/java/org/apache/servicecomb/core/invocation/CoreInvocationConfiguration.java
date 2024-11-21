@@ -29,19 +29,19 @@ import com.google.common.eventbus.EventBus;
 @Configuration
 public class CoreInvocationConfiguration {
   @Bean
-  public InvocationTimeoutBootListener invocationTimeoutBootListener(EventBus eventBus,
+  public InvocationTimeoutBootListener scbInvocationTimeoutBootListener(EventBus eventBus,
       List<InvocationTimeoutStrategy> strategies,
       Environment environment) {
     return new InvocationTimeoutBootListener(eventBus, strategies, environment);
   }
 
   @Bean
-  public PassingTimeStrategy passingTimeStrategy() {
+  public PassingTimeStrategy scbPassingTimeStrategy() {
     return new PassingTimeStrategy();
   }
 
   @Bean
-  public ProcessingTimeStrategy processingTimeStrategy() {
+  public ProcessingTimeStrategy scbProcessingTimeStrategy() {
     return new ProcessingTimeStrategy();
   }
 }

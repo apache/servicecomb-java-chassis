@@ -29,12 +29,12 @@ public class FaultInjectionConfiguration {
   public static final String FAULT_INJECTION_ENABLED = FAULT_INJECTION_PREFIX + ".enabled";
 
   @Bean
-  public ConsumerAbortFaultFilter consumerAbortFaultFilter() {
+  public ConsumerAbortFaultFilter scbConsumerAbortFaultFilter() {
     return new ConsumerAbortFaultFilter();
   }
 
   @Bean
-  public ConsumerDelayFaultFilter consumerDelayFaultFilter() {
+  public ConsumerDelayFaultFilter scbConsumerDelayFaultFilter() {
     return new ConsumerDelayFaultFilter();
   }
 }

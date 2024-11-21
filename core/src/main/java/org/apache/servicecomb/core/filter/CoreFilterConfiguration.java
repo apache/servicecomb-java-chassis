@@ -29,32 +29,32 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CoreFilterConfiguration {
   @Bean
-  public ProviderOperationFilter producerOperationFilter() {
+  public ProviderOperationFilter scbProducerOperationFilter() {
     return new ProviderOperationFilter();
   }
 
   @Bean
-  public ScheduleFilter scheduleFilter() {
+  public ScheduleFilter scbScheduleFilter() {
     return new ScheduleFilter();
   }
 
   @Bean
-  public RetryFilter retryFilter(RetryHandler retryHandler) {
+  public RetryFilter scbRetryFilter(RetryHandler retryHandler) {
     return new RetryFilter(retryHandler);
   }
 
   @Bean
-  public ContextMapperFilter contextMapperFilter(MapperHandler mapperHandler) {
+  public ContextMapperFilter scbContextMapperFilter(MapperHandler mapperHandler) {
     return new ContextMapperFilter(mapperHandler);
   }
 
   @Bean
-  public FilterChainsManager filterChainsManager() {
+  public FilterChainsManager scbFilterChainsManager() {
     return new FilterChainsManager();
   }
 
   @Bean
-  public ParameterValidatorFilter parameterValidatorFilter() {
+  public ParameterValidatorFilter scbParameterValidatorFilter() {
     return new ParameterValidatorFilter();
   }
 }

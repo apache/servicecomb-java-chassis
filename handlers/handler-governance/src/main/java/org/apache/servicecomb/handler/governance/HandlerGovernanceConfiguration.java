@@ -34,29 +34,29 @@ public class HandlerGovernanceConfiguration {
   public static final String GOVERNANCE_ENABLED = GOVERNANCE_PREFIX + ".enabled";
 
   @Bean
-  public ConsumerInstanceBulkheadFilter consumerInstanceBulkheadFilter(
+  public ConsumerInstanceBulkheadFilter scbConsumerInstanceBulkheadFilter(
       InstanceBulkheadHandler instanceBulkheadHandler) {
     return new ConsumerInstanceBulkheadFilter(instanceBulkheadHandler);
   }
 
   @Bean
-  public ConsumerInstanceIsolationFilter consumerInstanceIsolationFilter(
+  public ConsumerInstanceIsolationFilter scbConsumerInstanceIsolationFilter(
       InstanceIsolationHandler instanceIsolationHandler) {
     return new ConsumerInstanceIsolationFilter(instanceIsolationHandler);
   }
 
   @Bean
-  public ProviderBulkheadFilter providerBulkheadFilter(BulkheadHandler bulkheadHandler) {
+  public ProviderBulkheadFilter scbProviderBulkheadFilter(BulkheadHandler bulkheadHandler) {
     return new ProviderBulkheadFilter(bulkheadHandler);
   }
 
   @Bean
-  public ProviderCircuitBreakerFilter providerCircuitBreakerFilter(CircuitBreakerHandler circuitBreakerHandler) {
+  public ProviderCircuitBreakerFilter scbProviderCircuitBreakerFilter(CircuitBreakerHandler circuitBreakerHandler) {
     return new ProviderCircuitBreakerFilter(circuitBreakerHandler);
   }
 
   @Bean
-  public ProviderRateLimitingFilter providerRateLimitingFilter(RateLimitingHandler rateLimitingHandler) {
+  public ProviderRateLimitingFilter scbProviderRateLimitingFilter(RateLimitingHandler rateLimitingHandler) {
     return new ProviderRateLimitingFilter(rateLimitingHandler);
   }
 }

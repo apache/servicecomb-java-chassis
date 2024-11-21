@@ -22,12 +22,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CoreExceptionConfiguration {
   @Bean
-  public Exceptions exceptions() {
+  public Exceptions scbExceptions() {
     return new Exceptions();
   }
 
   @Bean
-  public DefaultExceptionProcessor defaultExceptionProcessor() {
+  public DefaultExceptionProcessor scbDefaultExceptionProcessor() {
     return new DefaultExceptionProcessor();
   }
 }

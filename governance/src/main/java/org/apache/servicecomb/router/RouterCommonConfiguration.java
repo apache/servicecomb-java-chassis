@@ -26,17 +26,17 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class RouterCommonConfiguration {
   @Bean
-  public RouterRuleCache routerRuleCache(Environment environment) {
+  public RouterRuleCache scbRouterRuleCache(Environment environment) {
     return new RouterRuleCache(environment);
   }
 
   @Bean
-  public RouterRuleMatcher routerRuleMatcher(RouterRuleCache routerRuleCache, RequestProcessor requestProcessor) {
+  public RouterRuleMatcher scbRouterRuleMatcher(RouterRuleCache routerRuleCache, RequestProcessor requestProcessor) {
     return new RouterRuleMatcher(routerRuleCache, requestProcessor);
   }
 
   @Bean
-  public RouterFilter routerFilter(RouterRuleMatcher routerRuleMatcher, RouterRuleCache routerRuleCache) {
+  public RouterFilter scbRouterFilter(RouterRuleMatcher routerRuleMatcher, RouterRuleCache routerRuleCache) {
     return new RouterFilter(routerRuleMatcher, routerRuleCache);
   }
 }

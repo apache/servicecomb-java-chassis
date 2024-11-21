@@ -23,12 +23,12 @@ import org.springframework.core.env.Environment;
 @Configuration
 public class EdgeCoreConfiguration {
   @Bean
-  public EdgeBootListener edgeBootListener() {
+  public EdgeBootListener scbEdgeBootListener() {
     return new EdgeBootListener();
   }
 
   @Bean
-  public EdgeAddHeaderFilter edgeAddHeaderFilter(Environment environment) {
+  public EdgeAddHeaderFilter scbEdgeAddHeaderFilter(Environment environment) {
     return new EdgeAddHeaderFilter(environment);
   }
 }
