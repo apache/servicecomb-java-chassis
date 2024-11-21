@@ -131,9 +131,9 @@ public class TestDateTimeSchema implements CategorizedTestCase {
   private void testDateTimeSchemaMulticast() throws Exception {
     DiscoveryContext context = new DiscoveryContext();
     VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc");
-    List<String> enpoints = serversVersionedCache.data();
+    List<String> endpoints = serversVersionedCache.data();
 
-    for (String endpoint : enpoints) {
+    for (String endpoint : endpoints) {
       InvocationContext invocationContext = new InvocationContext();
       invocationContext.addLocalContext(LoadBalanceFilter.SERVICECOMB_SERVER_ENDPOINT, endpoint);
       Date date = new Date();
@@ -155,11 +155,11 @@ public class TestDateTimeSchema implements CategorizedTestCase {
   private void testDateTimeSchemaMulticastRestTemplate() throws Exception {
     DiscoveryContext context = new DiscoveryContext();
     VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc");
-    List<String> enpoints = serversVersionedCache.data();
+    List<String> endpoints = serversVersionedCache.data();
 
     RestOperations restTemplate = RestTemplateBuilder.create();
 
-    for (String endpoint : enpoints) {
+    for (String endpoint : endpoints) {
       CseHttpEntity<?> entity = new CseHttpEntity<>(null);
       InvocationContext invocationContext = new InvocationContext();
       invocationContext.addLocalContext(LoadBalanceFilter.SERVICECOMB_SERVER_ENDPOINT, endpoint);

@@ -128,10 +128,10 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
 
     testGenericsModel();
 
-    testSpecailNameModel();
+    testSpecialNameModel();
   }
 
-  private void testSpecailNameModel() {
+  private void testSpecialNameModel() {
     SpecialNameModel model = new SpecialNameModel();
     model.setaIntName(30);
     SpecialNameModel result = specialNameModelInf.specialNameModel(0, model);

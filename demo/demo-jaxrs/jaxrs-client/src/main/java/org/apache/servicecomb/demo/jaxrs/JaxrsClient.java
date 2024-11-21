@@ -388,7 +388,7 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      // Message dependends on locale, so just check the short part.
+      // Message depended on locale, so just check the short part.
       // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{jakarta.validation.constraints.Min.message}'}]]
       // ignored
       if (e.getErrorData() instanceof CommonExceptionData) {
@@ -426,7 +426,7 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      // Message dependends on locale, so just check the short part.
+      // Message depended on locale, so just check the short part.
       if (e.getErrorData() instanceof CommonExceptionData) {
         // highway decode/encode 'Object' with special type information, got runtime type
         CommonExceptionData data = (CommonExceptionData) e.getErrorData();
@@ -468,7 +468,7 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
-      // Message dependends on locale, so just check the short part.
+      // Message depended on locale, so just check the short part.
       if (e.getErrorData() instanceof CommonExceptionData) {
         // highway decode/encode 'Object' with special type information, got runtime type
         CommonExceptionData data = (CommonExceptionData) e.getErrorData();
