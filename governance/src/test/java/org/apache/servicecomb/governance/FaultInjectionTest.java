@@ -42,9 +42,9 @@ public class FaultInjectionTest {
   private FaultInjectionHandler faultInjectionHandler2;
 
   @Autowired
-  public void setFaultInjectionHandler(FaultInjectionHandler faultInjectionHandler,
+  public void setFaultInjectionHandler(FaultInjectionHandler scbFaultInjectionHandler,
       @Qualifier("faultInjectionHandler2") FaultInjectionHandler faultInjectionHandler2) {
-    this.faultInjectionHandler = faultInjectionHandler;
+    this.faultInjectionHandler = scbFaultInjectionHandler;
     this.faultInjectionHandler2 = faultInjectionHandler2;
   }
 

@@ -38,8 +38,8 @@ public class MapperTest {
   private MapperHandler mapperHandler2;
 
   @Autowired
-  public void setMapperHandler(MapperHandler mapperHandler, @Qualifier("mapperHandler2") MapperHandler mapperHandler2) {
-    this.mapperHandler = mapperHandler;
+  public void setMapperHandler(MapperHandler scbMapperHandler, @Qualifier("mapperHandler2") MapperHandler mapperHandler2) {
+    this.mapperHandler = scbMapperHandler;
     this.mapperHandler2 = mapperHandler2;
   }
 

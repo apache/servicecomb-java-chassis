@@ -132,13 +132,13 @@ public class GovernanceCommonConfiguration {
 
   // handlers configuration
   @Bean
-  public BulkheadHandler scbBulkheadHandler(BulkheadProperties bulkheadProperties) {
-    return new BulkheadHandler(bulkheadProperties);
+  public BulkheadHandler scbBulkheadHandler(BulkheadProperties scbBulkheadProperties) {
+    return new BulkheadHandler(scbBulkheadProperties);
   }
 
   @Bean
-  public InstanceBulkheadHandler scbInstanceBulkheadHandler(InstanceBulkheadProperties instanceBulkheadProperties) {
-    return new InstanceBulkheadHandler(instanceBulkheadProperties);
+  public InstanceBulkheadHandler scbInstanceBulkheadHandler(InstanceBulkheadProperties scbInstanceBulkheadProperties) {
+    return new InstanceBulkheadHandler(scbInstanceBulkheadProperties);
   }
 
   @Bean
@@ -147,16 +147,16 @@ public class GovernanceCommonConfiguration {
   }
 
   @Bean
-  public CircuitBreakerHandler scbCircuitBreakerHandler(CircuitBreakerProperties circuitBreakerProperties,
+  public CircuitBreakerHandler scbCircuitBreakerHandler(CircuitBreakerProperties scbCircuitBreakerProperties,
       AbstractCircuitBreakerExtension circuitBreakerExtension) {
-    return new CircuitBreakerHandler(circuitBreakerProperties, circuitBreakerExtension);
+    return new CircuitBreakerHandler(scbCircuitBreakerProperties, circuitBreakerExtension);
   }
 
   @Bean
-  public InstanceIsolationHandler scbInstanceIsolationHandler(InstanceIsolationProperties instanceIsolationProperties,
+  public InstanceIsolationHandler scbInstanceIsolationHandler(InstanceIsolationProperties scbInstanceIsolationProperties,
       AbstractInstanceIsolationExtension isolationExtension,
       ObjectProvider<MeterRegistry> meterRegistry) {
-    return new InstanceIsolationHandler(instanceIsolationProperties, isolationExtension, meterRegistry);
+    return new InstanceIsolationHandler(scbInstanceIsolationProperties, isolationExtension, meterRegistry);
   }
 
   @Bean
@@ -186,13 +186,13 @@ public class GovernanceCommonConfiguration {
   }
 
   @Bean
-  public FaultInjectionHandler scbFaultInjectionHandler(FaultInjectionProperties faultInjectionProperties) {
-    return new FaultInjectionHandler(faultInjectionProperties);
+  public FaultInjectionHandler scbFaultInjectionHandler(FaultInjectionProperties scbFaultInjectionProperties) {
+    return new FaultInjectionHandler(scbFaultInjectionProperties);
   }
 
   @Bean
-  public MapperHandler scbMapperHandler(MapperProperties mapperProperties) {
-    return new MapperHandler(mapperProperties);
+  public MapperHandler scbMapperHandler(MapperProperties scbMapperProperties) {
+    return new MapperHandler(scbMapperProperties);
   }
 
   // request processor
@@ -203,8 +203,8 @@ public class GovernanceCommonConfiguration {
 
   // matchers
   @Bean
-  public MatchersService scbMatchersService(RequestProcessor requestProcessor, MatchProperties matchProperties) {
-    return new MatchersServiceImpl(requestProcessor, matchProperties);
+  public MatchersService scbMatchersService(RequestProcessor requestProcessor, MatchProperties scbMatchProperties) {
+    return new MatchersServiceImpl(requestProcessor, scbMatchProperties);
   }
 
   @Bean

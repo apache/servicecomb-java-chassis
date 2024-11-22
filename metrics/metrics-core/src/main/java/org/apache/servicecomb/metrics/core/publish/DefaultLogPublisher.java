@@ -314,7 +314,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
     for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
       OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
-      if (isIngoreEmptyPerf(operationPerf)) {
+      if (isIgnoreEmptyPerf(operationPerf)) {
         continue;
       }
       PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
@@ -347,7 +347,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         .append(":\n");
     PerfInfo prepare, queue, providerDecode, providerEncode, execute, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      if (isIngoreEmptyPerf(operationPerf)) {
+      if (isIgnoreEmptyPerf(operationPerf)) {
         continue;
       }
       prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
@@ -385,7 +385,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, encodeRequest, decodeResponse, sendReq, getConnect,
         waitResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      if (isIngoreEmptyPerf(operationPerf)) {
+      if (isIgnoreEmptyPerf(operationPerf)) {
         continue;
       }
       prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
@@ -424,7 +424,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         encodeConsumerRequest, decodeConsumerResponse, sendReq, getConnect,
         waitResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-      if (isIngoreEmptyPerf(operationPerf)) {
+      if (isIgnoreEmptyPerf(operationPerf)) {
         continue;
       }
       prepare = operationPerf.findStage(InvocationStageTrace.STAGE_PREPARE);
@@ -456,7 +456,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     return sb;
   }
 
-  private boolean isIngoreEmptyPerf(OperationPerf operationPerf) {
+  private boolean isIgnoreEmptyPerf(OperationPerf operationPerf) {
     PerfInfo stageTotal = operationPerf.findStage(InvocationStageTrace.STAGE_TOTAL);
     // max latency is calculated in ring algorithm, maybe not 0
     if (Double.compare(0D, stageTotal.getTotalRequests()) == 0
