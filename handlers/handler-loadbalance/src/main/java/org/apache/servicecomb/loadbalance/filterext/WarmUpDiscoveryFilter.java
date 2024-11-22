@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.loadbalance.filterext;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.netflix.config.DynamicPropertyFactory;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,15 +29,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   private static final Logger LOGGER = LoggerFactory.getLogger(WarmUpDiscoveryFilter.class);
+
+  private static final String IGNORE_WARN_UP_TIME = "servicecomb.loadbalance.filter.service.warmup.ignoreWarmUpTime";
 
   private static final int INSTANCE_WEIGHT = 100;
 
@@ -51,11 +58,39 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   private static final String DEFAULT_WARM_UP_CURVE = "2";
 
   // provider run time, the unit is milliseconds
-  private static final long PROVIDER_RUN_TIME = 30 * 60 * 1000;
+  private final long ignoreWarmUpTime;
 
   private final Random random = new Random();
 
-  private final Map<String, Long> instanceInvokeTime = new HashMap<>();
+  private final Map<String, Long> instanceInvokeTime = new ConcurrentHashMap<>();
+
+  public WarmUpDiscoveryFilter() {
+    ScheduledExecutorService executor = Executors.newScheduledThreadPool(1,
+        new ThreadFactoryBuilder()
+            .setNameFormat("warm-up-cache-refresh-%d")
+            .build());
+    ignoreWarmUpTime = getIgnoreWarmUpTime();
+    executor.scheduleAtFixedRate(this::refreshMapCache, 0, 10, TimeUnit.MINUTES);
+  }
+
+  private long getIgnoreWarmUpTime() {
+    return DynamicPropertyFactory.getInstance()
+        .getLongProperty(IGNORE_WARN_UP_TIME, 30 * 60 * 1000)
+        .get();
+  }
+
+  private void refreshMapCache() {
+    List<String> removeKeys = new ArrayList<>();
+    for (Map.Entry<String, Long> entry : instanceInvokeTime.entrySet()) {
+      if (System.currentTimeMillis() - entry.getValue() > ignoreWarmUpTime) {
+        removeKeys.add(entry.getKey());
+      }
+    }
+    if (CollectionUtils.isEmpty(removeKeys)) {
+      return;
+    }
+    removeKeys.forEach(instanceInvokeTime::remove);
+  }
 
   @Override
   public int getOrder() {
@@ -65,7 +100,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(WARM_UP_FILTER_ENABLED, true)
+        .getBooleanProperty(WARM_UP_FILTER_ENABLED, false)
         .get();
   }
 
@@ -75,8 +110,15 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     if (servers.size() <= 1) {
       return servers;
     }
-    if (CollectionUtils.isEmpty(existNeedWarmUpInstances(servers))) {
+    List<ServiceCombServer> notInvokedInstances = new ArrayList<>();
+    if (CollectionUtils.isEmpty(existNeedWarmUpInstances(servers, notInvokedInstances))) {
       return servers;
+    }
+
+    // If exist not invoked instances, choose one that let it into warm up.
+    if (!CollectionUtils.isEmpty(notInvokedInstances)) {
+      setInstanceStartInvokeTime(notInvokedInstances.get(0));
+      return Collections.singletonList(notInvokedInstances.get(0));
     }
     int[] weights = new int[servers.size()];
     int totalWeight = 0;
@@ -88,34 +130,37 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     return chooseServer(totalWeight, weights, servers);
   }
 
-  private List<ServiceCombServer> existNeedWarmUpInstances(List<ServiceCombServer> servers) {
+  private List<ServiceCombServer> existNeedWarmUpInstances(List<ServiceCombServer> servers,
+      List<ServiceCombServer> notInvokedInstances) {
     return servers.stream()
-            .filter(server -> isInstanceNeedWarmUp(server.getInstance().getProperties(),
-                server.getInstance().getInstanceId()))
+            .filter(server -> isInstanceNeedWarmUp(server, notInvokedInstances))
             .collect(Collectors.toList());
   }
 
-  private boolean isInstanceNeedWarmUp(Map<String, String> properties, String instanceId) {
-    if (isRunTimeUpBaseStartupTime(properties)) {
+  private boolean isInstanceNeedWarmUp(ServiceCombServer server, List<ServiceCombServer> notInvokedInstances) {
+    Map<String, String> properties = server.getInstance().getProperties();
+    String instanceId = server.getInstance().getInstanceId();
+    if (isUpIgnoreWarmUpTime(properties)) {
       return false;
     }
     Long invokeTime = instanceInvokeTime.get(instanceId);
 
     // instance have not been invoked need to be warn-up
     if (invokeTime == null) {
+      notInvokedInstances.add(server);
       return true;
     }
     final long warmUpTime = Long.parseLong(properties.getOrDefault(WARM_TIME_KEY, DEFAULT_WARM_UP_TIME));
     return System.currentTimeMillis() - invokeTime < warmUpTime;
   }
 
-  private boolean isRunTimeUpBaseStartupTime(Map<String, String> properties) {
+  private boolean isUpIgnoreWarmUpTime(Map<String, String> properties) {
     String registerTimeStr = properties.get(InstancePropertiesConst.REGISTER_TIME_KEY);
     long registerTime = Long.parseLong(StringUtils.isEmpty(registerTimeStr) ? "0" : registerTimeStr);
 
-    // Provider run time greater than 30 minute, can be regarded as not need warn up.
+    // Provider run time greater than 30 minute, can be regarded as don't need warn up.
     // To ensure that the consumer is restarted but the provider is not restarted.
-    return System.currentTimeMillis() - registerTime > PROVIDER_RUN_TIME;
+    return System.currentTimeMillis() - registerTime > ignoreWarmUpTime;
   }
 
   private List<ServiceCombServer> chooseServer(int totalWeight, int[] weights, List<ServiceCombServer> servers) {
@@ -129,7 +174,6 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
         if (LOGGER.isDebugEnabled()) {
           LOGGER.debug("warm up choose service instance: " + servers.get(i).getInstance().getInstanceId());
         }
-        setInstanceStartInvokeTime(servers.get(i));
         return Collections.singletonList(servers.get(i));
       }
     }
@@ -137,14 +181,10 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   }
 
   private void setInstanceStartInvokeTime(ServiceCombServer server) {
-    if (isRunTimeUpBaseStartupTime(server.getInstance().getProperties())) {
-      return;
-    }
     instanceInvokeTime.putIfAbsent(server.getInstance().getInstanceId(), System.currentTimeMillis());
   }
 
   private int calculate(Map<String, String> properties, String instanceId) {
-    // if instance wasn't called, return default weight, will have higher weight be selected, better into warn up
     if (instanceInvokeTime.get(instanceId) == null) {
       return INSTANCE_WEIGHT;
     }
