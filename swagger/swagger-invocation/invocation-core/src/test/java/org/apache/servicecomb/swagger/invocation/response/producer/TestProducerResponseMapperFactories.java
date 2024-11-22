@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.ws.rs.core.Response.Status;
 
-public class TestProducerResponseMapperFactorys {
+public class TestProducerResponseMapperFactories {
   static class ResponseForTest {
     public String normal() {
       return "normal";

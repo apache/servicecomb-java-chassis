@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.springmvc.response;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public class SpringmvcConsumerResponseMapperFactory implements ConsumerResponseM
   }
 
   @Override
-  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factorys,
       Type consumerType) {
     Type realConsumerType = ((ParameterizedType) consumerType).getActualTypeArguments()[0];
     ConsumerResponseMapper realMapper = factorys.createResponseMapper(realConsumerType);

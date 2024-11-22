@@ -20,7 +20,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 
 public class CompletableFutureProducerResponseMapperFactory implements ProducerResponseMapperFactory {
   @Override
@@ -33,7 +33,7 @@ public class CompletableFutureProducerResponseMapperFactory implements ProducerR
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
       Type producerType) {
     Type realProducerType = ((ParameterizedType) producerType).getActualTypeArguments()[0];
     return factorys.createResponseMapper(realProducerType);

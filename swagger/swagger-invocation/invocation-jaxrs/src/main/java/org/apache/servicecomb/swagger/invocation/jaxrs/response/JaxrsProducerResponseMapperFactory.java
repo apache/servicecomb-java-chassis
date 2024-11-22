@@ -20,7 +20,7 @@ import java.lang.reflect.Type;
 
 import jakarta.ws.rs.core.Response;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 
@@ -31,7 +31,7 @@ public class JaxrsProducerResponseMapperFactory implements ProducerResponseMappe
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
       Type producerType) {
     return new JaxrsProducerResponseMapper();
   }

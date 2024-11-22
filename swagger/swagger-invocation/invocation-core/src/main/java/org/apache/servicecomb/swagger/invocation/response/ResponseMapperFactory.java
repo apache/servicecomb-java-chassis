@@ -25,5 +25,5 @@ public interface ResponseMapperFactory<MAPPER> {
 
   boolean isMatch(Type providerType);
 
-  MAPPER createResponseMapper(ResponseMapperFactorys<MAPPER> factorys, Type providerType);
+  MAPPER createResponseMapper(ResponseMapperFactories<MAPPER> factorys, Type providerType);
 }

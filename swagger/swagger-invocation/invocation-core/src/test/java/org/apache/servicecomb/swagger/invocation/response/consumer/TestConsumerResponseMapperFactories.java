@@ -35,7 +35,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.models.OpenAPI;
 
-public class TestConsumerResponseMapperFactorys {
+public class TestConsumerResponseMapperFactories {
   interface ConsumerResponseForTest {
     String normal();
 

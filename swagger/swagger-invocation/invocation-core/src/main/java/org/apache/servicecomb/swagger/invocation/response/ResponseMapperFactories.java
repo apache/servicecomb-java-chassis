@@ -21,16 +21,16 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
-public class ResponseMapperFactorys<MAPPER> {
-  private final List<ResponseMapperFactory<MAPPER>> factorys;
+public class ResponseMapperFactories<MAPPER> {
+  private final List<ResponseMapperFactory<MAPPER>> factories;
 
   @SuppressWarnings("unchecked")
-  public ResponseMapperFactorys(Class<? extends ResponseMapperFactory<MAPPER>> factoryCls) {
-    factorys = (List<ResponseMapperFactory<MAPPER>>) SPIServiceUtils.getSortedService(factoryCls);
+  public ResponseMapperFactories(Class<? extends ResponseMapperFactory<MAPPER>> factoryCls) {
+    factories = (List<ResponseMapperFactory<MAPPER>>) SPIServiceUtils.getSortedService(factoryCls);
   }
 
   public MAPPER createResponseMapper(Type providerType) {
-    for (ResponseMapperFactory<MAPPER> factory : factorys) {
+    for (ResponseMapperFactory<MAPPER> factory : factories) {
       if (!factory.isMatch(providerType)) {
         continue;
       }

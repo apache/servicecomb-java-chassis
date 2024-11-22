@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.springmvc.response;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +35,7 @@ public class SpringmvcProducerResponseMapperFactory implements ProducerResponseM
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
       Type producerType) {
     Type realProducerType = ((ParameterizedType) producerType).getActualTypeArguments()[0];
     ProducerResponseMapper realMapper = factorys.createResponseMapper(realProducerType);
