@@ -60,7 +60,7 @@
     <maven-remote-resources-plugin.version>3.2.0</maven-remote-resources-plugin.version>
     <os-maven-plugin.version>1.7.1</os-maven-plugin.version>
     <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
-    <protoc3-maven-plugin.version>4.28.3</protoc3-maven-plugin.version>
+    <protoc3-maven-plugin.version>4.27.5</protoc3-maven-plugin.version>
     <protoc-gen-grpc-java-plugin.version>1.47.0</protoc-gen-grpc-java-plugin.version>
     <puppycrawl-checkstyle.version>10.20.0</puppycrawl-checkstyle.version>
     <release-maven-plugin.version>3.1.1</release-maven-plugin.version>
