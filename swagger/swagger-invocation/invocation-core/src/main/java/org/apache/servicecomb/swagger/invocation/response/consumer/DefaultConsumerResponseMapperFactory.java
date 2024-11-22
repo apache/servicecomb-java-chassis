@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.invocation.response.consumer;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 
 public class DefaultConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
   @Override
@@ -32,7 +32,7 @@ public class DefaultConsumerResponseMapperFactory implements ConsumerResponseMap
   }
 
   @Override
-  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factorys,
       Type consumerType) {
     return new DefaultConsumerResponseMapper();
   }

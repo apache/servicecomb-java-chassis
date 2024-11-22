@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AccessLogConfiguration {
   @Bean
-  public AccessLogBootListener accessLogBootListener() {
+  public AccessLogBootListener scbAccessLogBootListener() {
     return new AccessLogBootListener();
   }
 }

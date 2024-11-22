@@ -32,6 +32,11 @@ public class CompareOperator implements MatchOperator {
     charSet.add('!');
   }
 
+  @Override
+  public String name() {
+    return "compare";
+  }
+
   /**
    * 支持 > < = >= <= ! 后面加数字
    *

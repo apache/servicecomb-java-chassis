@@ -32,8 +32,8 @@ public class BulkheadHandlerTest {
   private BulkheadHandler bulkheadHandler;
 
   @Autowired
-  public void setInstanceIsolationHandler(BulkheadHandler bulkheadHandler) {
-    this.bulkheadHandler = bulkheadHandler;
+  public void setInstanceIsolationHandler(BulkheadHandler scbBulkheadHandler) {
+    this.bulkheadHandler = scbBulkheadHandler;
   }
 
   @Test

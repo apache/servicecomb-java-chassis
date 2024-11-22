@@ -49,65 +49,65 @@ public class ServiceCombCoreConfiguration {
   }
 
   @Bean
-  public ConsumerProviderManager consumerProviderManager(Environment environment,
+  public ConsumerProviderManager scbConsumerProviderManager(Environment environment,
       OpenAPIRegistryManager openAPIRegistryManager) {
     return new ConsumerProviderManager(environment, openAPIRegistryManager);
   }
 
   @Bean
-  public ReferenceConfigManager referenceConfigManager() {
+  public ReferenceConfigManager scbReferenceConfigManager() {
     return new ReferenceConfigManager();
   }
 
   @Bean
-  public OpenAPIRegistryManager openAPIRegistryManager() {
+  public OpenAPIRegistryManager scbOpenAPIRegistryManager() {
     return new OpenAPIRegistryManager();
   }
 
   @Bean
-  public LocalOpenAPIRegistry localOpenAPIRegistry(Environment environment) {
+  public LocalOpenAPIRegistry scbLocalOpenAPIRegistry(Environment environment) {
     return new LocalOpenAPIRegistry(environment);
   }
 
   @Bean
-  public RegistryOpenAPIRegistry registryOpenAPIRegistry() {
+  public RegistryOpenAPIRegistry scbRegistryOpenAPIRegistry() {
     return new RegistryOpenAPIRegistry();
   }
 
   @Bean
-  public ProducerBootListener producerBootListener() {
+  public ProducerBootListener scbProducerBootListener() {
     return new ProducerBootListener();
   }
 
   @Bean
-  public FilterChainCollector filterChainCollector() {
+  public FilterChainCollector scbFilterChainCollector() {
     return new FilterChainCollector();
   }
 
   @Bean
-  public ConfigurationProblemsCollector configurationProblemsCollector() {
+  public ConfigurationProblemsCollector scbConfigurationProblemsCollector() {
     return new ConfigurationProblemsCollector();
   }
 
   @Bean
-  public ServiceInformationCollector serviceInformationCollector() {
+  public ServiceInformationCollector scbServiceInformationCollector() {
     return new ServiceInformationCollector();
   }
 
   @Bean
-  public ExecutorManager executorManager() {
+  public ExecutorManager scbExecutorManager() {
     return new ExecutorManager();
   }
 
   @Bean(value = {"cse.executor.groupThreadPool", "cse.executor.default", "servicecomb.executor.groupThreadPool"})
-  public GroupExecutor groupExecutor(Environment environment) {
+  public GroupExecutor scbGroupExecutor(Environment environment) {
     GroupExecutor groupExecutor = new GroupExecutor(environment);
     groupExecutor.init();
     return groupExecutor;
   }
 
   @Bean
-  public TransportManager transportManager() {
+  public TransportManager scbTransportManager() {
     return new TransportManager();
   }
 }

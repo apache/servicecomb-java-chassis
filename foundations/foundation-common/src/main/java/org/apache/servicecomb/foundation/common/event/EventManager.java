@@ -56,7 +56,7 @@ public class EventManager {
   }
 
   @Bean
-  public EventBus eventBus() {
+  public EventBus scbEventBus() {
     return eventBus;
   }
 }

@@ -21,6 +21,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class SuffixOperator implements MatchOperator {
   @Override
+  public String name() {
+    return "suffix";
+  }
+
+  @Override
   public boolean match(String requestValue, String patternValue) {
     return StringUtils.endsWith(requestValue, patternValue);
   }

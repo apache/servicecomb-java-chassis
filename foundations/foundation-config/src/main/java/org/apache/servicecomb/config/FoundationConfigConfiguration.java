@@ -31,39 +31,39 @@ import org.springframework.core.env.Environment;
 @SuppressWarnings("unused")
 public class FoundationConfigConfiguration {
   @Bean
-  public static InjectBeanPostProcessor injectBeanPostProcessor(
+  public static InjectBeanPostProcessor scbInjectBeanPostProcessor(
       @Autowired @Lazy PriorityPropertyManager priorityPropertyManager) {
     return new InjectBeanPostProcessor(priorityPropertyManager);
   }
 
   @Bean
-  public PriorityPropertyManager priorityPropertyManager(ConfigObjectFactory configObjectFactory) {
+  public PriorityPropertyManager scbPriorityPropertyManager(ConfigObjectFactory configObjectFactory) {
     return new PriorityPropertyManager(configObjectFactory);
   }
 
   @Bean
-  public PriorityPropertyFactory priorityPropertyFactory(Environment environment) {
+  public PriorityPropertyFactory scbPriorityPropertyFactory(Environment environment) {
     return new PriorityPropertyFactory(environment);
   }
 
   @Bean
-  public DynamicPropertiesImpl dynamicProperties(Environment environment) {
+  public DynamicPropertiesImpl scbDynamicProperties(Environment environment) {
     return new DynamicPropertiesImpl(environment);
   }
 
   @Bean
-  public ConfigObjectFactory configObjectFactory(PriorityPropertyFactory propertyFactory) {
+  public ConfigObjectFactory scbConfigObjectFactory(PriorityPropertyFactory propertyFactory) {
     return new ConfigObjectFactory(propertyFactory);
   }
 
   @Bean
   @ConfigurationProperties(prefix = DataCenterProperties.PREFIX)
-  public DataCenterProperties dataCenterProperties() {
+  public DataCenterProperties scbDataCenterProperties() {
     return new DataCenterProperties();
   }
 
   @Bean
-  public InMemoryDynamicPropertiesSource inMemoryDynamicPropertiesSource() {
+  public InMemoryDynamicPropertiesSource scbInMemoryDynamicPropertiesSource() {
     return new InMemoryDynamicPropertiesSource();
   }
 }

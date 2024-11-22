@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.invocation.response.producer;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 
 public class DefaultProducerResponseMapperFactory implements ProducerResponseMapperFactory {
   @Override
@@ -32,7 +32,7 @@ public class DefaultProducerResponseMapperFactory implements ProducerResponseMap
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
       Type producerType) {
     return new DefaultProducerResponseMapper();
   }

@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.response.producer;
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 
 public class CseResponseProducerResponseMapperFactory implements ProducerResponseMapperFactory {
   private static final ProducerResponseMapper SAME = (status, response) -> (Response) response;
@@ -30,7 +30,7 @@ public class CseResponseProducerResponseMapperFactory implements ProducerRespons
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
       Type producerType) {
     return SAME;
   }

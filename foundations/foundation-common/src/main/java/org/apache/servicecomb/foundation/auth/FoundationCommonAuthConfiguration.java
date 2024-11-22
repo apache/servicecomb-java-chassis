@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class FoundationCommonAuthConfiguration {
-  public ShaAKSKCipher shaAKSKCipher() {
+  public ShaAKSKCipher scbShaAKSKCipher() {
     return new ShaAKSKCipher();
   }
 }

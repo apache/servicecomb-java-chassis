@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.governance.marker;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -44,14 +45,13 @@ public class RequestProcessor implements ApplicationContextAware {
 
   public static final String infoMessageForCreatingClass = "is not in spring container, create one and register it to spring container";
 
-  private static final String OPERATOR_SUFFIX = "Operator";
-
   private final Map<String, MatchOperator> operatorMap;
 
   private ApplicationContext applicationContext;
 
   public RequestProcessor(Map<String, MatchOperator> operatorMap) {
-    this.operatorMap = operatorMap;
+    this.operatorMap = new HashMap<>(operatorMap.size());
+    operatorMap.forEach((k, v) -> this.operatorMap.put(v.name(), v));
   }
 
   public boolean match(GovernanceRequestExtractor request, Matcher matcher) {
@@ -126,7 +126,7 @@ public class RequestProcessor implements ApplicationContextAware {
     }
 
     for (Entry<String, String> entry : rawOperator.entrySet()) {
-      MatchOperator operator = operatorMap.get(entry.getKey() + OPERATOR_SUFFIX);
+      MatchOperator operator = operatorMap.get(entry.getKey());
       if (operator == null) {
         LOGGER.error("unsupported operator:" + entry.getKey() + ", please use one of :" + operatorMap.keySet());
         return false;

@@ -89,49 +89,49 @@ public class GovernancePropertiesTest {
   }
 
   @Autowired
-  public void setMatchProperties(MatchProperties matchProperties) {
-    this.matchProperties = matchProperties;
+  public void setMatchProperties(MatchProperties scbMatchProperties) {
+    this.matchProperties = scbMatchProperties;
   }
 
   @Autowired
-  public void setBulkheadProperties(BulkheadProperties bulkheadProperties) {
-    this.bulkheadProperties = bulkheadProperties;
+  public void setBulkheadProperties(BulkheadProperties scbBulkheadProperties) {
+    this.bulkheadProperties = scbBulkheadProperties;
   }
 
   @Autowired
-  public void setCircuitBreakerProperties(CircuitBreakerProperties circuitBreakerProperties) {
-    this.circuitBreakerProperties = circuitBreakerProperties;
+  public void setCircuitBreakerProperties(CircuitBreakerProperties scbCircuitBreakerProperties) {
+    this.circuitBreakerProperties = scbCircuitBreakerProperties;
   }
 
   @Autowired
-  public void setTimeLimiterProperties(TimeLimiterProperties timeLimiterProperties) {
-    this.timeLimiterProperties = timeLimiterProperties;
+  public void setTimeLimiterProperties(TimeLimiterProperties scbTimeLimiterProperties) {
+    this.timeLimiterProperties = scbTimeLimiterProperties;
   }
 
   @Autowired
-  public void setGovernanceCacheProperties(GovernanceCacheProperties governanceCacheProperties) {
-    this.governanceCacheProperties = governanceCacheProperties;
+  public void setGovernanceCacheProperties(GovernanceCacheProperties scbGovernanceCacheProperties) {
+    this.governanceCacheProperties = scbGovernanceCacheProperties;
   }
 
   @Autowired
-  public void setRateLimitProperties(RateLimitProperties rateLimitProperties) {
-    this.rateLimitProperties = rateLimitProperties;
+  public void setRateLimitProperties(RateLimitProperties scbRateLimitProperties) {
+    this.rateLimitProperties = scbRateLimitProperties;
   }
 
   @Autowired
-  public void setInstanceIsolationProperties(InstanceIsolationProperties instanceIsolationProperties) {
-    this.instanceIsolationProperties = instanceIsolationProperties;
+  public void setInstanceIsolationProperties(InstanceIsolationProperties scbInstanceIsolationProperties) {
+    this.instanceIsolationProperties = scbInstanceIsolationProperties;
   }
 
   @Autowired
-  public void setRetryProperties(RetryProperties retryProperties) {
-    this.retryProperties = retryProperties;
+  public void setRetryProperties(RetryProperties scbRetryProperties) {
+    this.retryProperties = scbRetryProperties;
   }
 
   @Autowired
   public void setFaultInjectionProperties(
-      FaultInjectionProperties faultInjectionProperties) {
-    this.faultInjectionProperties = faultInjectionProperties;
+      FaultInjectionProperties scbFaultInjectionProperties) {
+    this.faultInjectionProperties = scbFaultInjectionProperties;
   }
 
   @Autowired

@@ -20,7 +20,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 
 public class OptionalConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
   @Override
@@ -33,7 +33,7 @@ public class OptionalConsumerResponseMapperFactory implements ConsumerResponseMa
   }
 
   @Override
-  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factorys,
       Type consumerType) {
     Type realConsumerType = ((ParameterizedType) consumerType).getActualTypeArguments()[0];
     ConsumerResponseMapper realMapper = factorys.createResponseMapper(realConsumerType);

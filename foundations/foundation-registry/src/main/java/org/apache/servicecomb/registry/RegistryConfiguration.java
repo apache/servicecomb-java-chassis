@@ -35,40 +35,40 @@ import org.springframework.context.annotation.Configuration;
 @SuppressWarnings("unused")
 public class RegistryConfiguration {
   @Bean
-  public RegistrationManager registrationManager(
+  public RegistrationManager scbRegistrationManager(
       List<Registration<? extends RegistrationInstance>> registrationList) {
     return new RegistrationManager(registrationList);
   }
 
   @Bean
-  public TelnetInstancePing telnetInstancePing() {
+  public TelnetInstancePing scbTelnetInstancePing() {
     return new TelnetInstancePing();
   }
 
   @Bean
-  public DiscoveryManager discoveryManager(
+  public DiscoveryManager scbDiscoveryManager(
       List<Discovery<? extends DiscoveryInstance>> discoveryList,
       List<InstancePing> pingList) {
     return new DiscoveryManager(discoveryList, pingList);
   }
 
   @Bean
-  public DiscoveryTree discoveryTree(DiscoveryManager discoveryManager) {
+  public DiscoveryTree scbDiscoveryTree(DiscoveryManager discoveryManager) {
     return new DiscoveryTree(discoveryManager);
   }
 
   @Bean
-  public InstanceStatusDiscoveryFilter instanceStatusDiscoveryFilter() {
+  public InstanceStatusDiscoveryFilter scbInstanceStatusDiscoveryFilter() {
     return new InstanceStatusDiscoveryFilter();
   }
 
   @Bean
-  public MicroserviceInstanceCache microserviceInstanceCache(DiscoveryManager discoveryManager) {
+  public MicroserviceInstanceCache scbMicroserviceInstanceCache(DiscoveryManager discoveryManager) {
     return new MicroserviceInstanceCache(discoveryManager);
   }
 
   @Bean
-  public RegistrationId registrationId() {
+  public RegistrationId scbRegistrationId() {
     return new RegistrationId();
   }
 }

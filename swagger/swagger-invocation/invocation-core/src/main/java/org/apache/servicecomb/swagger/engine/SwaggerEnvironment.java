@@ -34,7 +34,7 @@ import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerCont
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerContextArgumentMapperFactory;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
@@ -58,8 +58,8 @@ public class SwaggerEnvironment {
         .getOrLoadSortedService(ConsumerContextArgumentMapperFactory.class)
         .stream()
         .collect(Collectors.toMap(ConsumerContextArgumentMapperFactory::getContextClass, Function.identity()));
-    ResponseMapperFactorys<ConsumerResponseMapper> consumerResponseMapperFactorys =
-        new ResponseMapperFactorys<>(ConsumerResponseMapperFactory.class);
+    ResponseMapperFactories<ConsumerResponseMapper> consumerResponseMapperFactories =
+        new ResponseMapperFactories<>(ConsumerResponseMapperFactory.class);
 
     SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
 
@@ -84,7 +84,7 @@ public class SwaggerEnvironment {
           consumerMethod,
           swaggerOperation);
       ArgumentsMapper argsMapper = creator.createArgumentsMapper();
-      ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys
+      ConsumerResponseMapper responseMapper = consumerResponseMapperFactories
           .createResponseMapper(consumerMethod.getGenericReturnType());
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
@@ -123,8 +123,8 @@ public class SwaggerEnvironment {
         .getOrLoadSortedService(ProducerContextArgumentMapperFactory.class)
         .stream()
         .collect(Collectors.toMap(ProducerContextArgumentMapperFactory::getContextClass, Function.identity()));
-    ResponseMapperFactorys<ProducerResponseMapper> producerResponseMapperFactorys =
-        new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class);
+    ResponseMapperFactories<ProducerResponseMapper> producerResponseMapperFactories =
+        new ResponseMapperFactories<>(ProducerResponseMapperFactory.class);
 
     SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
 
@@ -153,7 +153,7 @@ public class SwaggerEnvironment {
           producerMethod,
           swaggerOperation);
       ProducerArgumentsMapper argsMapper = creator.createArgumentsMapper();
-      ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
+      ProducerResponseMapper responseMapper = producerResponseMapperFactories.createResponseMapper(
           producerMethod.getGenericReturnType());
 
       SwaggerProducerOperation op = new SwaggerProducerOperation();

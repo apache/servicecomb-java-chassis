@@ -17,6 +17,7 @@
 package org.apache.servicecomb.governance.marker.operator;
 
 public interface MatchOperator {
+  String name();
 
   boolean match(String targetStr, String patternStr);
 }

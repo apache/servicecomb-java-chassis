@@ -37,38 +37,38 @@ public class LoadBalanceConfiguration {
   public static final String LOAD_BALANCE_ENABLED = LOAD_BALANCE_PREFIX + ".enabled";
 
   @Bean
-  public LoadBalanceFilter loadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryTree discoveryTree,
+  public LoadBalanceFilter scbLoadBalanceFilter(ExtensionsManager extensionsManager, DiscoveryTree discoveryTree,
       SCBEngine scbEngine) {
     return new LoadBalanceFilter(extensionsManager, discoveryTree, scbEngine);
   }
 
   @Bean
-  public RuleNameExtentionsFactory ruleNameExtentionsFactory() {
+  public RuleNameExtentionsFactory scbRuleNameExtentionsFactory() {
     return new RuleNameExtentionsFactory();
   }
 
   @Bean
-  public ExtensionsManager extensionsManager(List<ExtensionsFactory> extensionsFactories) {
+  public ExtensionsManager scbExtensionsManager(List<ExtensionsFactory> extensionsFactories) {
     return new ExtensionsManager(extensionsFactories);
   }
 
   @Bean
-  public PriorityInstancePropertyDiscoveryFilter priorityInstancePropertyDiscoveryFilter() {
+  public PriorityInstancePropertyDiscoveryFilter scbPriorityInstancePropertyDiscoveryFilter() {
     return new PriorityInstancePropertyDiscoveryFilter();
   }
 
   @Bean
-  public InstancePropertyDiscoveryFilter instancePropertyDiscoveryFilter() {
+  public InstancePropertyDiscoveryFilter scbInstancePropertyDiscoveryFilter() {
     return new InstancePropertyDiscoveryFilter();
   }
 
   @Bean
-  public ServerDiscoveryFilter serverDiscoveryFilter() {
+  public ServerDiscoveryFilter scbServerDiscoveryFilter() {
     return new ServerDiscoveryFilter();
   }
 
   @Bean
-  public ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter() {
+  public ZoneAwareDiscoveryFilter scbZoneAwareDiscoveryFilter() {
     return new ZoneAwareDiscoveryFilter();
   }
 }

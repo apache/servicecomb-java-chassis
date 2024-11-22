@@ -33,47 +33,47 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CommonRestConfiguration {
   @Bean
-  public QueryCodecCsv queryCodecCsv() {
+  public QueryCodecCsv scbQueryCodecCsv() {
     return new QueryCodecCsv();
   }
 
   @Bean
-  public QueryCodecSsv queryCodecSsv() {
+  public QueryCodecSsv scbQueryCodecSsv() {
     return new QueryCodecSsv();
   }
 
   @Bean
-  public QueryCodecPipes queryCodecPipes() {
+  public QueryCodecPipes scbQueryCodecPipes() {
     return new QueryCodecPipes();
   }
 
   @Bean
-  public QueryCodecMulti queryCodecMulti() {
+  public QueryCodecMulti scbQueryCodecMulti() {
     return new QueryCodecMulti();
   }
 
   @Bean
-  public QueryCodecsUtils queryCodecsUtils(QueryCodecs queryCodecs) {
+  public QueryCodecsUtils scbQueryCodecsUtils(QueryCodecs queryCodecs) {
     return new QueryCodecsUtils(queryCodecs);
   }
 
   @Bean
-  public RestServerCodecFilter restServerCodecFilter() {
+  public RestServerCodecFilter scbRestServerCodecFilter() {
     return new RestServerCodecFilter();
   }
 
   @Bean
-  public WebSocketServerCodecFilter webSocketServerCodecFilter() {
+  public WebSocketServerCodecFilter scbWebSocketServerCodecFilter() {
     return new WebSocketServerCodecFilter();
   }
 
   @Bean
-  public QueryCodecs queryCodecs(List<QueryCodec> orderedCodecs) {
+  public QueryCodecs scbQueryCodecs(List<QueryCodec> orderedCodecs) {
     return new QueryCodecs(orderedCodecs);
   }
 
   @Bean
-  public RestEngineSchemaListener restEngineSchemaListener() {
+  public RestEngineSchemaListener scbRestEngineSchemaListener() {
     return new RestEngineSchemaListener();
   }
 }

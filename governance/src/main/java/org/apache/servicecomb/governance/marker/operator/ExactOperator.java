@@ -21,6 +21,11 @@ import org.apache.commons.lang3.StringUtils;
 public class ExactOperator implements MatchOperator {
 
   @Override
+  public String name() {
+    return "exact";
+  }
+
+  @Override
   public boolean match(String targetStr, String patternStr) {
     return StringUtils.equals(targetStr, patternStr);
   }

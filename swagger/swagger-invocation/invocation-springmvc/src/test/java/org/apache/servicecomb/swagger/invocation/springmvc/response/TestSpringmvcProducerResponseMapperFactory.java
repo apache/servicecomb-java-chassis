@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactories;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 import org.hamcrest.MatcherAssert;
@@ -34,7 +34,7 @@ import org.springframework.http.ResponseEntity;
 public class TestSpringmvcProducerResponseMapperFactory {
   SpringmvcProducerResponseMapperFactory factory = new SpringmvcProducerResponseMapperFactory();
 
-  ResponseMapperFactorys<ProducerResponseMapper> factorys = new ResponseMapperFactorys<>(
+  ResponseMapperFactories<ProducerResponseMapper> factorys = new ResponseMapperFactories<>(
       ProducerResponseMapperFactory.class);
 
   public ResponseEntity<String[]> responseEntity() {
