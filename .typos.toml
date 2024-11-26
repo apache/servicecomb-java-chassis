@@ -27,6 +27,7 @@
 ignore = [
     "**/cobertura.ser"
 ]
+
 [words]
 allow = [
     "Verticle",
