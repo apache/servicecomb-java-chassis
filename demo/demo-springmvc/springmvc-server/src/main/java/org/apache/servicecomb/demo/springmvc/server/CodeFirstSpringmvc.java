@@ -302,7 +302,7 @@ public class CodeFirstSpringmvc {
   }
 
   // Using 490, 590 error code, the response type should be CommonExceptionData. Or we need
-  // complex ExceptionConverters to deal with exceptions thrown by Hanlders, etc.
+  // complex ExceptionConverters to deal with exceptions thrown by Handlers, etc.
   @RequestMapping(path = "/fallback/returnnull/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(responseCode = "200",
       content = @Content(schema = @Schema(implementation = String.class)), description = "xxx"),

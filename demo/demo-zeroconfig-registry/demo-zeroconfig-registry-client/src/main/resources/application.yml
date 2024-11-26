@@ -52,7 +52,7 @@ servicecomb:
       matches:
         - apiPath:
             exact: "/governance/retry"
-    demo-retry-no-prefex: |
+    demo-retry-no-prefix: |
       matches:
         - apiPath:
             exact: "/noPrefixRetry"
@@ -82,7 +82,7 @@ servicecomb:
       maxAttempts: 3
       ## services is optional in configuration file
       services: demo-zeroconfig-registry-client
-    demo-retry-no-prefex: |
+    demo-retry-no-prefix: |
       maxAttempts: 3
       ## services is optional in configuration file
       services: demo-zeroconfig-registry-client

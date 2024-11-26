@@ -39,7 +39,7 @@ public class HelloWorldIT implements CategorizedTestCase {
     testHelloWorld();
     testHelloWorldCanary();
     testHelloWorldEmptyProtectionCloseWeight100();
-    testHelloWorldeEptyProtectionCloseWeightLess100();
+    testHelloWorldeEmptyProtectionCloseWeightLess100();
     testHelloWorldEmptyProtectionCloseFallback();
     testHelloWorldEmptyProtectionCloseWeight100Two();
   }
@@ -142,7 +142,7 @@ public class HelloWorldIT implements CategorizedTestCase {
     TestMgr.check(failCount == 20, true);
   }
 
-  private void testHelloWorldeEptyProtectionCloseWeightLess100() {
+  private void testHelloWorldeEmptyProtectionCloseWeightLess100() {
     int failCount = 0;
     int succCount = 0;
 

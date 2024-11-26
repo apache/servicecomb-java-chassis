@@ -26,7 +26,7 @@ public class ContentFileReader implements FileReader {
 
   private final String content;
 
-  private boolean contentReaded;
+  private boolean contentRead;
 
   public ContentFileReader(FileReader importReader, String content) {
     this.importReader = importReader;
@@ -35,8 +35,8 @@ public class ContentFileReader implements FileReader {
 
   @Override
   public CharStream read(String contentOrName) {
-    if (!contentReaded) {
-      contentReaded = true;
+    if (!contentRead) {
+      contentRead = true;
       return CharStreams.fromString(this.content);
     }
 

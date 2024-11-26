@@ -53,7 +53,6 @@ public class User {
   // getter and setter
 }
 ```
-```java
 RootSerializer serializer = protoMapper.createRootSerializer("User", User.class);
 
 User user = new User();
@@ -63,6 +62,8 @@ byte[] pojoBytes= serializer.serialize(user);
 Map<String, Object> map = new HashMap<>();
 map.put("name", "userName");
 byte[] mapBytes = serializer.serialize(map);
+```java
+
 
 // pojoBytes equals mapBytes
 ```
@@ -96,57 +97,57 @@ Map<String, Object> map = mapDeserializer.deserialize(bytes);
 
 Empty:
                 Protostuff ScbStrong  ScbWeak    Protobuf   Jackson
-ser time(ms)  : 519        515        240        288        1242
-ser len       : 36         0          0          0          56
-deser time(ms): 161        69         10         516        486
-deser->ser len: 36         0          0          0          56
-ser+deser(ms) : 680        584        250        804        1728
+serialize time(ms)  : 519        515        240        288        1242
+serialize len       : 36         0          0          0          56
+deserialize time(ms): 161        69         10         516        486
+deserialize->serialize len: 36         0          0          0          56
+serialize+deserialize(ms) : 680        584        250        804        1728
 
 Scalars:
                 Protostuff ScbStrong  ScbWeak    Protobuf   Jackson
-ser time(ms)  : 557        529        328        262        1357
-ser len       : 56         24         24         24         76
-deser time(ms): 181        141        115        527        504
-deser->ser len: 56         24         24         24         76
-ser+deser(ms) : 738        670        443        789        1861
+serialize time(ms)  : 557        529        328        262        1357
+serialize len       : 56         24         24         24         76
+deserialize time(ms): 181        141        115        527        504
+deserialize->serialize len: 56         24         24         24         76
+serialize+deserialize(ms) : 738        670        443        789        1861
 
 Pojo:
                 Protostuff ScbStrong  ScbWeak    Protobuf   Jackson
-ser time(ms)  : 571        574        276        309        1304
-ser len       : 46         10         10         10         66
-deser time(ms): 230        69         112        668        537
-deser->ser len: 46         10         10         10         66
-ser+deser(ms) : 801        643        388        977        1841
+serialize time(ms)  : 571        574        276        309        1304
+serialize len       : 46         10         10         10         66
+deserialize time(ms): 230        69         112        668        537
+deserialize->serialize len: 46         10         10         10         66
+serialize+deserialize(ms) : 801        643        388        977        1841
 
 SimpleList:
                 Protostuff ScbStrong  ScbWeak    Protobuf   Jackson
-ser time(ms)  : 590        609        296        637        1320
-ser len       : 68         32         32         32         88
-deser time(ms): 233        105        122        2226       541
-deser->ser len: 68         32         32         32         88
-ser+deser(ms) : 823        714        418        2863       1861
+serialize time(ms)  : 590        609        296        637        1320
+serialize len       : 68         32         32         32         88
+deserialize time(ms): 233        105        122        2226       541
+deserialize->serialize len: 68         32         32         32         88
+serialize+deserialize(ms) : 823        714        418        2863       1861
 
 PojoList:
                 Protostuff ScbStrong  ScbWeak    Protobuf   Jackson
-ser time(ms)  : 609        632        319        2777       1407
-ser len       : 56         20         20         20         76
-deser time(ms): 244        134        173        2287       679
-deser->ser len: 56         20         20         20         76
-ser+deser(ms) : 853        766        492        5064       2086
+serialize time(ms)  : 609        632        319        2777       1407
+serialize len       : 56         20         20         20         76
+deserialize time(ms): 244        134        173        2287       679
+deserialize->serialize len: 56         20         20         20         76
+serialize+deserialize(ms) : 853        766        492        5064       2086
 
 Map:
                 Protostuff ScbStrong  ScbWeak    Protobuf   Jackson
-ser time(ms)  : 746        772        491        1079       1298
-ser len       : 92         54         54         54         56
-deser time(ms): 522        427        468        1031       422
-deser->ser len: 92         54         54         54         56
-ser+deser(ms) : 1268       1199       959        2110       1720
+serialize time(ms)  : 746        772        491        1079       1298
+serialize len       : 92         54         54         54         56
+deserialize time(ms): 522        427        468        1031       422
+deserialize->serialize len: 92         54         54         54         56
+serialize+deserialize(ms) : 1268       1199       959        2110       1720
 
 Mixed:
                 Protostuff ScbStrong  ScbWeak    Protobuf   Jackson
-ser time(ms)  : 1686       1999       2034       2112       2537
-ser len       : 479        505        505        505        489
-deser time(ms): 1969       2154       2923       2984       3316
-deser->ser len: 479        505        505        505        489
-ser+deser(ms) : 3655       4153       4957       5096       5853
+serialize time(ms)  : 1686       1999       2034       2112       2537
+serialize len       : 479        505        505        505        489
+deserialize time(ms): 1969       2154       2923       2984       3316
+deserialize->serialize len: 479        505        505        505        489
+serialize+deserialize(ms) : 3655       4153       4957       5096       5853
 ```

@@ -243,7 +243,7 @@
             <exclude>**/etc/eclipse-java-google-style.xml</exclude>
             <exclude>**/etc/intellij-java-google-style.xml</exclude>
             <!-- Skip the ssl configuration files -->
-            <exculde>**/resources/ssl/**</exculde>
+            <exclude>**/resources/ssl/**</exclude>
             <!-- SKip the licenses files -->
             <exclude>**/src/release/licenses/**</exclude>
             <!-- Skip the demo log files -->
