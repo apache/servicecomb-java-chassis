@@ -36,7 +36,7 @@ public class URLEndPoint {
 
   private final boolean sslEnabled;
 
-  private final Map<String, List<String>> querys;
+  private final Map<String, List<String>> queries;
 
   private final String hostOrIp;
 
@@ -49,7 +49,7 @@ public class URLEndPoint {
       throw new IllegalArgumentException("port not specified.");
     }
     port = uri.getPort();
-    querys = splitQuery(uri);
+    queries = splitQuery(uri);
     if (endpoint.contains(HTTPS_KEY)) {
       sslEnabled = true;
     } else {
@@ -68,7 +68,7 @@ public class URLEndPoint {
   }
 
   public String getFirst(String key) {
-    List<String> values = querys.get(key);
+    List<String> values = queries.get(key);
     if (values == null) {
       return null;
     }

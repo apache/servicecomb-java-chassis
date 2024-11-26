@@ -29,10 +29,10 @@ public class ResponseRootSerializer {
 
   private final boolean isWrap;
 
-  public ResponseRootSerializer(RootSerializer serializer, boolean isWrapp, boolean noTypesInfo) {
+  public ResponseRootSerializer(RootSerializer serializer, boolean isWrap, boolean noTypesInfo) {
     this.rootSerializer = serializer;
     this.noTypesInfo = noTypesInfo;
-    this.isWrap = isWrapp;
+    this.isWrap = isWrap;
   }
 
   public byte[] serialize(Object value) throws IOException {

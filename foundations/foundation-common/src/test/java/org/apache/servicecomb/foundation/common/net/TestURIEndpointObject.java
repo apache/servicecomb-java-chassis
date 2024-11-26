@@ -65,8 +65,8 @@ public class TestURIEndpointObject {
         "cse://1.1.1.1:1234/abc?a=1&b=&country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name());
     URIEndpointObject ep = new URIEndpointObject(strUri);
 
-    Map<String, List<String>> querys = Deencapsulation.getField(ep, "querys");
-    Assertions.assertEquals(3, querys.size());
+    Map<String, List<String>> queries = Deencapsulation.getField(ep, "queries");
+    Assertions.assertEquals(3, queries.size());
 
     Assertions.assertEquals(1, ep.getQuery("a").size());
     Assertions.assertEquals("1", ep.getFirst("a"));
