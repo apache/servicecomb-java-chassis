@@ -56,12 +56,12 @@ public class LocalDiscoveryInstance extends AbstractDiscoveryInstance {
       SwaggerGenerator generator = SwaggerGenerator.create(v);
       OpenAPI openAPI = generator.generate();
       if (openAPI == null) {
-        throw new IllegalStateException(String.format("Generate schema for %s/%s/%s faild.",
+        throw new IllegalStateException(String.format("Generate schema for %s/%s/%s failed.",
             registryBean.getAppId(), registryBean.getServiceName(), k));
       }
       String schemaContent = SwaggerUtils.swaggerToString(openAPI);
       if (StringUtils.isEmpty(schemaContent)) {
-        throw new IllegalStateException(String.format("Generate schema for %s/%s/%s faild.",
+        throw new IllegalStateException(String.format("Generate schema for %s/%s/%s failed.",
             registryBean.getAppId(), registryBean.getServiceName(), k));
       }
       localOpenAPIRegistry.registerOpenAPI(registryBean.getAppId(), registryBean.getServiceName(),

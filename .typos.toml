@@ -30,4 +30,6 @@ ignore = [
 [words]
 allow = [
     "Verticle",
+    "verticle",
+    "VERTICLE",
 ]

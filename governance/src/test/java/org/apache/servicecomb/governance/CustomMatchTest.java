@@ -90,7 +90,7 @@ public class CustomMatchTest {
     public void test_should_throw_exception_when_not_implements_interface() {
         GovernanceRequest request = new GovernanceRequest();
         try {
-            Matcher mockMatcher = generateMatcher("classNotImplments", "bill,bill2");
+            Matcher mockMatcher = generateMatcher("classNotImplements", "bill,bill2");
             this.requestProcessor.match(request, mockMatcher);
             Assertions.fail("an exception is expected!");
         } catch (Exception e) {

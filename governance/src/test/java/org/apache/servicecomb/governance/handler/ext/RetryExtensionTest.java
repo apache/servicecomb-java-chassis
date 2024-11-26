@@ -134,7 +134,7 @@ public class RetryExtensionTest {
 
   @Test
   public void testRetryEqualTen() {
-    Exception target = new ConnectException("connectin refused");
+    Exception target = new ConnectException("connection refused");
     for (int i = 0; i < 8; i++) {
       target = new Exception("Level" + i, target);
     }
@@ -145,7 +145,7 @@ public class RetryExtensionTest {
 
   @Test
   public void testRetryOverTen() {
-    Exception target = new ConnectException("connectin refused");
+    Exception target = new ConnectException("connection refused");
     for (int i = 0; i < 9; i++) {
       target = new Exception("Level" + i, target);
     }

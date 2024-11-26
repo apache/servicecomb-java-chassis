@@ -89,7 +89,7 @@ public class EtcdDiscovery implements Discovery<EtcdDiscoveryInstance> {
   public List<EtcdDiscoveryInstance> findServiceInstances(String application, String serviceName) {
 
     String prefixPath = basePath + "/" + application + "/" + serviceName;
-    watchMap.computeIfAbsent(prefixPath, serName -> {
+    watchMap.computeIfAbsent(prefixPath, listenServiceName -> {
       Watch watchClient = client.getWatchClient();
       try {
         ByteSequence prefixByteSeq = ByteSequence.from(prefixPath, Charset.defaultCharset());

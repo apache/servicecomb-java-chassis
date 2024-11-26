@@ -37,7 +37,7 @@ import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
-public class TestSessionSticknessRule {
+public class TestSessionStickinessRule {
   @Test
   public void testServerWithoutTimeoutAndWithThreshold() {
 

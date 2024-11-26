@@ -103,7 +103,7 @@ servicecomb:
       rate: 1
     demo-rateLimiting-servicename: |
       rate: 1
-    wrongIngored: |
+    wrongIgnored: |
       rate: 0
   identifierRateLimiting:
     demo-rateLimiting: |
@@ -131,7 +131,7 @@ servicecomb:
   retry:
     demo-retry: |
       maxAttempts: 3
-    wrongIngored: |
+    wrongIgnored: |
       maxAttempts: -1
   circuitBreaker:
     demo-circuitBreaker: |
@@ -139,7 +139,7 @@ servicecomb:
       slidingWindowSize: 2
       slidingWindowType: COUNT_BASED
       services: myself:1.0,other
-    wrongIngored: |
+    wrongIgnored: |
       rules:
         match: demo-circuitBreaker.xx
       minimumNumberOfCalls: -1
@@ -158,7 +158,7 @@ servicecomb:
       maxConcurrentCalls: 1
       maxWaitDuration: 3000
       services: other:1.0
-    wrongIngored: |
+    wrongIgnored: |
       rules:
         match: demo-bulkhead.xx
       maxWaitDuration: -1
@@ -191,7 +191,7 @@ servicecomb:
       type: abort
       percentage: 50
       errorCode: 500
-    wrongIngored: |
+    wrongIgnored: |
       delayTime: -1
       type: ERROR
   faultInjection2:

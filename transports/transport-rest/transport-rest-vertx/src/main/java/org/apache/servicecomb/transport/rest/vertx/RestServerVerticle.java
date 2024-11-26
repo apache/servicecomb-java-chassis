@@ -121,7 +121,7 @@ public class RestServerVerticle extends AbstractVerticle {
           SPIServiceUtils.getAllService(HttpServerExceptionHandler.class);
       httpServer.exceptionHandler(e -> {
         if (e instanceof ClosedChannelException) {
-          // This is quite normal in between browser and ege, so do not print out.
+          // This is quite normal in between browser and edge, so do not print out.
           LOGGER.debug("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
         } else {
           LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
