@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
-import org.apache.servicecomb.registry.config.InstancePropertiesConst;
 import org.apache.servicecomb.registry.config.InstancePropertiesLoader;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 
@@ -189,9 +188,6 @@ public class MicroserviceInstance {
 
     // load properties
     Map<String, String> propertiesMap = InstancePropertiesLoader.INSTANCE.loadProperties(configuration);
-
-    // add register time for warm up
-    propertiesMap.put(InstancePropertiesConst.REGISTER_TIME_KEY, String.valueOf(System.currentTimeMillis()));
     microserviceInstance.setProperties(propertiesMap);
 
     // load data center information
