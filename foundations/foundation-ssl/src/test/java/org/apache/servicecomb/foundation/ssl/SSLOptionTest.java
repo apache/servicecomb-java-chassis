@@ -47,7 +47,7 @@ public class SSLOptionTest {
     Mockito.when(environment.getProperty("ssl.checkCN.host")).thenReturn("true");
     Mockito.when(environment.getProperty("ssl.checkCN.white")).thenReturn("true");
     Mockito.when(environment.getProperty("ssl.checkCN.white.file")).thenReturn("white.list");
-    Mockito.when(environment.getProperty("ssl.allowRenegociate")).thenReturn("false");
+    Mockito.when(environment.getProperty("ssl.allowRenegotiate")).thenReturn("false");
     Mockito.when(environment.getProperty("ssl.storePath")).thenReturn("internal");
     Mockito.when(environment.getProperty("ssl.trustStore")).thenReturn("trust.jks");
     Mockito.when(environment.getProperty("ssl.trustStoreType")).thenReturn("JKS");
@@ -91,9 +91,9 @@ public class SSLOptionTest {
     option.setCheckCNWhiteFile(checkCNWhiteFile);
     Assertions.assertEquals("white.list", checkCNWhiteFile);
 
-    boolean allowRenegociate = option.isAllowRenegociate();
-    option.setAllowRenegociate(allowRenegociate);
-    Assertions.assertFalse(allowRenegociate);
+    boolean allowRenegotiate = option.isAllowRenegotiate();
+    option.setAllowRenegotiate(allowRenegotiate);
+    Assertions.assertFalse(allowRenegotiate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
@@ -158,9 +158,9 @@ public class SSLOptionTest {
     option.setCheckCNWhiteFile(checkCNWhiteFile);
     Assertions.assertEquals("white.list", checkCNWhiteFile);
 
-    boolean allowRenegociate = option.isAllowRenegociate();
-    option.setAllowRenegociate(allowRenegociate);
-    Assertions.assertFalse(allowRenegociate);
+    boolean allowRenegotiate = option.isAllowRenegotiate();
+    option.setAllowRenegotiate(allowRenegotiate);
+    Assertions.assertFalse(allowRenegotiate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);
@@ -264,9 +264,9 @@ public class SSLOptionTest {
     option.setCheckCNWhiteFile(checkCNWhiteFile);
     Assertions.assertEquals("white.list", checkCNWhiteFile);
 
-    boolean allowRenegociate = option.isAllowRenegociate();
-    option.setAllowRenegociate(allowRenegociate);
-    Assertions.assertFalse(allowRenegociate);
+    boolean allowRenegotiate = option.isAllowRenegotiate();
+    option.setAllowRenegotiate(allowRenegotiate);
+    Assertions.assertFalse(allowRenegotiate);
 
     String storePath = option.getStorePath();
     option.setStorePath(storePath);

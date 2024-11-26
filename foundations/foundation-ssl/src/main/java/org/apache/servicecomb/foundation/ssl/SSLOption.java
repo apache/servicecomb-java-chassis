@@ -47,7 +47,7 @@ public final class SSLOption {
     DEFAULT_OPTION.setCheckCNHost(false);
     DEFAULT_OPTION.setCheckCNWhite(false);
     DEFAULT_OPTION.setCheckCNWhiteFile("white.list");
-    DEFAULT_OPTION.setAllowRenegociate(true);
+    DEFAULT_OPTION.setAllowRenegotiate(true);
     DEFAULT_OPTION.setStorePath("internal");
     DEFAULT_OPTION.setTrustStore("trust.jks");
     DEFAULT_OPTION.setTrustStoreType("JKS");
@@ -72,7 +72,7 @@ public final class SSLOption {
 
   private String checkCNWhiteFile;
 
-  private boolean allowRenegociate;
+  private boolean allowRenegotiate;
 
   private String clientAuth;
 
@@ -126,8 +126,8 @@ public final class SSLOption {
     this.checkCNWhiteFile = checkCNWhiteFile;
   }
 
-  public void setAllowRenegociate(boolean allowRenegociate) {
-    this.allowRenegociate = allowRenegociate;
+  public void setAllowRenegotiate(boolean allowRenegotiate) {
+    this.allowRenegotiate = allowRenegotiate;
   }
 
   public void setStorePath(String storePath) {
@@ -186,8 +186,8 @@ public final class SSLOption {
     return checkCNWhiteFile;
   }
 
-  public boolean isAllowRenegociate() {
-    return allowRenegociate;
+  public boolean isAllowRenegotiate() {
+    return allowRenegotiate;
   }
 
   public String getStorePath() {
@@ -314,10 +314,10 @@ public final class SSLOption {
         DEFAULT_OPTION.getCiphers(),
         "ssl." + tag + ".checkCN.white.file",
         "ssl.checkCN.white.file");
-    option.allowRenegociate = getBooleanProperty(environment,
-        DEFAULT_OPTION.isAllowRenegociate(),
-        "ssl." + tag + ".allowRenegociate",
-        "ssl.allowRenegociate");
+    option.allowRenegotiate = getBooleanProperty(environment,
+        DEFAULT_OPTION.isAllowRenegotiate(),
+        "ssl." + tag + ".allowRenegotiate",
+        "ssl.allowRenegotiate");
     option.storePath =
         getStringProperty(environment,
             DEFAULT_OPTION.getStorePath(),
@@ -365,7 +365,7 @@ public final class SSLOption {
     this.checkCNHost = propBoolean(props, "ssl.checkCN.host");
     this.checkCNWhite = propBoolean(props, "ssl.checkCN.white");
     this.checkCNWhiteFile = propString(props, "ssl.checkCN.white.file");
-    this.allowRenegociate = propBoolean(props, "ssl.allowRenegociate");
+    this.allowRenegotiate = propBoolean(props, "ssl.allowRenegotiate");
     this.storePath = propString(props, "ssl.storePath");
     this.clientAuth = propString(props, "ssl.clientAuth", false);
     this.trustStore = propString(props, "ssl.trustStore");

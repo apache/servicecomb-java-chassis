@@ -22,3 +22,8 @@
 "VERTX" = "VERTX"
 "Vertx" = "Vertx"
 "vertx" = "vertx"
+
+[files]
+ignore = [
+    "**/cobertura.ser"
+]

@@ -23,7 +23,7 @@ ssl:
   checkCN.host: true
   checkCN.white: true
   checkCN.white.file: white.list
-  allowRenegociate: false
+  allowRenegotiate: false
   storePath: internal
   trustStore: trust.jks
   trustStoreType: JKS
