@@ -171,7 +171,7 @@ public final class SSLManager {
       setClientAuth(option, socket);
       return socket;
     } catch (UnknownHostException e) {
-      throw new IllegalArgumentException("unkown host");
+      throw new IllegalArgumentException("unknown host");
     } catch (IOException e) {
       throw new IllegalArgumentException("unable create socket");
     }

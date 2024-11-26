@@ -40,7 +40,7 @@ public class PropertiesLoader extends AbstractLoader {
   public <T> T load() throws Exception {
     Properties props = new Properties();
     for (String locationPattern : locationPatternList) {
-      List<Resource> resList = PaaSResourceUtils.getSortedPorperties(locationPattern);
+      List<Resource> resList = PaaSResourceUtils.getSortedProperties(locationPattern);
       foundResList.addAll(resList);
       PaaSPropertiesLoaderUtils.fillAllProperties(props, resList);
     }

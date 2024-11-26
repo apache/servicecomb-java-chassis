@@ -25,32 +25,32 @@ import org.junit.jupiter.api.Test;
 public class TestException {
   @Test
   public void testCseException() {
-    CseException oExeception = new CseException("500", "InternalServerError");
-    Assertions.assertEquals("500", oExeception.getCode());
+    CseException oException = new CseException("500", "InternalServerError");
+    Assertions.assertEquals("500", oException.getCode());
     Assertions.assertEquals("ServiceDefinitionException Code:500, Message:InternalServerError",
-        oExeception.toString());
+        oException.toString());
 
-    oExeception = new CseException("503", "OwnException", new Throwable());
-    Assertions.assertEquals("503", oExeception.getCode());
+    oException = new CseException("503", "OwnException", new Throwable());
+    Assertions.assertEquals("503", oException.getCode());
   }
 
   @Test
   public void testExceptionUtils() {
-    CseException oExeception = ExceptionUtils
+    CseException oException = ExceptionUtils
         .createCseException("servicecomb.handler.ref.not.exist", new String("test"));
-    Assertions.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());
+    Assertions.assertEquals("servicecomb.handler.ref.not.exist", oException.getCode());
 
-    oExeception =
+    oException =
         ExceptionUtils.createCseException("servicecomb.handler.ref.not.exist", new Throwable(), new String("test"));
-    Assertions.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());
+    Assertions.assertEquals("servicecomb.handler.ref.not.exist", oException.getCode());
 
-    oExeception = ExceptionUtils.producerOperationNotExist("servicecomb.error", "unit-testing");
-    Assertions.assertEquals("servicecomb.producer.operation.not.exist", oExeception.getCode());
+    oException = ExceptionUtils.producerOperationNotExist("servicecomb.error", "unit-testing");
+    Assertions.assertEquals("servicecomb.producer.operation.not.exist", oException.getCode());
 
-    oExeception = ExceptionUtils.handlerRefNotExist("servicecomb.double.error");
-    Assertions.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());
+    oException = ExceptionUtils.handlerRefNotExist("servicecomb.double.error");
+    Assertions.assertEquals("servicecomb.handler.ref.not.exist", oException.getCode());
 
-    oExeception = ExceptionUtils.lbAddressNotFound("microServiceName", "my rule my world", "transportChannel");
-    Assertions.assertEquals("servicecomb.lb.no.available.address", oExeception.getCode());
+    oException = ExceptionUtils.lbAddressNotFound("microServiceName", "my rule my world", "transportChannel");
+    Assertions.assertEquals("servicecomb.lb.no.available.address", oException.getCode());
   }
 }
