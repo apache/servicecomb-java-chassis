@@ -32,7 +32,7 @@ public class DefaultConsumerResponseMapperFactory implements ConsumerResponseMap
   }
 
   @Override
-  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factorys,
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factories,
       Type consumerType) {
     return new DefaultConsumerResponseMapper();
   }

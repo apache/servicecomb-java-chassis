@@ -54,7 +54,7 @@ public class SwaggerEnvironment {
   public SwaggerConsumer createConsumer(Class<?> consumerIntf, OpenAPI swagger) {
     swagger = checkAndGenerateSwagger(consumerIntf, swagger);
 
-    Map<Class<?>, ContextArgumentMapperFactory> contextFactorys = SPIServiceUtils
+    Map<Class<?>, ContextArgumentMapperFactory> contextFactories = SPIServiceUtils
         .getOrLoadSortedService(ConsumerContextArgumentMapperFactory.class)
         .stream()
         .collect(Collectors.toMap(ConsumerContextArgumentMapperFactory::getContextClass, Function.identity()));
@@ -79,7 +79,7 @@ public class SwaggerEnvironment {
 
       ConsumerArgumentsMapperCreator creator = new ConsumerArgumentsMapperCreator(
           Json.mapper().getSerializationConfig(),
-          contextFactorys,
+          contextFactories,
           consumerIntf,
           consumerMethod,
           swaggerOperation);

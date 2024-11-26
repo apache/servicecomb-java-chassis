@@ -63,7 +63,7 @@ public class TestSpringmvcProducerResponseMapper {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void mapResponse_withoutHeader_sucess() {
+  public void mapResponse_withoutHeader_success() {
     ResponseEntity<String[]> responseEntity =
         new ResponseEntity<>(arrResult, org.springframework.http.HttpStatus.OK);
     Response response = mapper.mapResponse(null, responseEntity);

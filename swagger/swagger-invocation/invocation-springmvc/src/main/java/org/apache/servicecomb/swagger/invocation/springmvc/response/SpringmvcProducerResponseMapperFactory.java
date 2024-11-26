@@ -35,10 +35,10 @@ public class SpringmvcProducerResponseMapperFactory implements ProducerResponseM
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factories,
       Type producerType) {
     Type realProducerType = ((ParameterizedType) producerType).getActualTypeArguments()[0];
-    ProducerResponseMapper realMapper = factorys.createResponseMapper(realProducerType);
+    ProducerResponseMapper realMapper = factories.createResponseMapper(realProducerType);
     return new SpringmvcProducerResponseMapper(realMapper);
   }
 }
