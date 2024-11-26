@@ -114,7 +114,7 @@ public class TestLoadBalanceFilter {
     };
 
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
-    extensionsFactories.add(new RuleNameExtentionsFactory());
+    extensionsFactories.add(new RuleNameExtensionsFactory());
     ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);
 
     DiscoveryTree discoveryTree = new DiscoveryTree(

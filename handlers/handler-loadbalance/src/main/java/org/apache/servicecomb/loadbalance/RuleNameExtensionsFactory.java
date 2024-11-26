@@ -20,7 +20,7 @@ import java.util.Collection;
 
 import com.google.common.collect.Lists;
 
-public class RuleNameExtentionsFactory implements ExtensionsFactory {
+public class RuleNameExtensionsFactory implements ExtensionsFactory {
   private static final Collection<String> ACCEPT_KEYS = Lists.newArrayList(
       Configuration.RULE_STRATEGY_NAME);
 

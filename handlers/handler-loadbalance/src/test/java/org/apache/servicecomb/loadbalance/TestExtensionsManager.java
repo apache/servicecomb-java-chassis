@@ -42,7 +42,7 @@ public class TestExtensionsManager {
   @Test
   public void testRuleName() {
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
-    extensionsFactories.add(new RuleNameExtentionsFactory());
+    extensionsFactories.add(new RuleNameExtensionsFactory());
     ExtensionsManager extensionsManager = new ExtensionsManager(extensionsFactories);
 
     Assertions.assertEquals(RoundRobinRuleExt.class.getName(),

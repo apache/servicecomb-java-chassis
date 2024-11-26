@@ -38,7 +38,7 @@ public final class Configuration {
   // 2.0 configuration items
   public static final String ROOT_20 = "ribbon.";
 
-  // SessionStickinessRule configruation
+  // SessionStickinessRule configuration
   public static final String SESSION_TIMEOUT_IN_SECONDS = "SessionStickinessRule.sessionTimeoutInSeconds";
 
   public static final String SUCCESSIVE_FAILED_TIMES = "SessionStickinessRule.successiveFailedTimes";
