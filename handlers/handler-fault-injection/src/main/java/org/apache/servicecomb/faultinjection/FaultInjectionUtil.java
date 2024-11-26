@@ -39,7 +39,7 @@ public class FaultInjectionUtil {
   private FaultInjectionUtil() {
   }
 
-  // key is config paramter
+  // key is config parameter
   private static final Map<String, AtomicInteger> configCenterValue = new ConcurrentHashMapEx<>();
 
   /**

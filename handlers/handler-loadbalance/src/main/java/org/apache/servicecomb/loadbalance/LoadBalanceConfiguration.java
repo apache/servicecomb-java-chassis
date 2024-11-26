@@ -43,8 +43,8 @@ public class LoadBalanceConfiguration {
   }
 
   @Bean
-  public RuleNameExtentionsFactory scbRuleNameExtentionsFactory() {
-    return new RuleNameExtentionsFactory();
+  public RuleNameExtensionsFactory scbRuleNameExtensionsFactory() {
+    return new RuleNameExtensionsFactory();
   }
 
   @Bean

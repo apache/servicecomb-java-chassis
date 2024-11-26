@@ -61,10 +61,10 @@ public class TransportUtils {
         DEFAULT_OPTION.getCiphers(),
         "ssl." + tag + ".checkCN.white.file",
         "ssl.checkCN.white.file"));
-    option.setAllowRenegociate(getBooleanProperty(environment,
-        DEFAULT_OPTION.isAllowRenegociate(),
-        "ssl." + tag + ".allowRenegociate",
-        "ssl.allowRenegociate"));
+    option.setAllowRenegotiate(getBooleanProperty(environment,
+        DEFAULT_OPTION.isAllowRenegotiate(),
+        "ssl." + tag + ".allowRenegotiate",
+        "ssl.allowRenegotiate"));
     option.setStorePath(
         getStringProperty(environment,
             DEFAULT_OPTION.getStorePath(),

@@ -57,7 +57,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
  *         int add(int x, int y)
  *       swagger parameters:
  *         x, y
- *    2) swagger only one POJO paramter, extract all field to method parameters (POJO dev mode)
+ *    2) swagger only one POJO parameter, extract all field to method parameters (POJO dev mode)
  *      interface method:
  *        int add(int x, int y)
  *      swagger parameters:

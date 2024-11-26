@@ -163,10 +163,10 @@ public class RBACBootStrapService implements BootStrapService {
         DEFAULT_OPTION.getCiphers(),
         "ssl." + SSL_TAG + ".checkCN.white.file",
         "ssl.checkCN.white.file"));
-    option.setAllowRenegociate(getBooleanProperty(environment,
-        DEFAULT_OPTION.isAllowRenegociate(),
-        "ssl." + SSL_TAG + ".allowRenegociate",
-        "ssl.allowRenegociate"));
+    option.setAllowRenegotiate(getBooleanProperty(environment,
+        DEFAULT_OPTION.isAllowRenegotiate(),
+        "ssl." + SSL_TAG + ".allowRenegotiate",
+        "ssl.allowRenegotiate"));
     option.setStorePath(
         getStringProperty(environment,
             DEFAULT_OPTION.getStorePath(),
