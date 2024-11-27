@@ -453,7 +453,7 @@ paths:
     get:
       operationId: queryComplex
       parameters:
-      - name: querys
+      - name: queries
         in: query
         schema:
           type: array

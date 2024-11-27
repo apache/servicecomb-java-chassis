@@ -44,13 +44,13 @@ public final class RestConst {
   public static final String BODY_PARAMETER = "servicecomb-body";
 
   //in invocation response
-  public static final String INVOCATION_HANDLER_RESPONSE = "servicecomb-invocation-hanlder-response";
+  public static final String INVOCATION_HANDLER_RESPONSE = "servicecomb-invocation-handler-response";
 
   //in invocation response
-  public static final String INVOCATION_HANDLER_PROCESSOR = "servicecomb-invocation-hanlder-processor";
+  public static final String INVOCATION_HANDLER_PROCESSOR = "servicecomb-invocation-handler-processor";
 
   //in invocation response
-  public static final String INVOCATION_HANDLER_REQUESTCLIENT = "servicecomb-invocation-hanlder-requestclient";
+  public static final String INVOCATION_HANDLER_REQUESTCLIENT = "servicecomb-invocation-handler-requestclient";
 
   public static final String REST_PRODUCER_INVOCATION = "servicecomb-rest-producer-invocation";
 

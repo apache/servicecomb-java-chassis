@@ -32,4 +32,5 @@ allow = [
     "Verticle",
     "verticle",
     "VERTICLE",
+    "Prelease",
 ]

@@ -102,8 +102,8 @@ public class Echo {
 
   @Path(value = "queryComplex")
   @GET
-  public String queryComplex(@QueryParam(value = "querys") List<User> querys) {
-    return String.format("%s", querys);
+  public String queryComplex(@QueryParam(value = "queries") List<User> queries) {
+    return String.format("%s", queries);
   }
 
   @Operation(summary = "")

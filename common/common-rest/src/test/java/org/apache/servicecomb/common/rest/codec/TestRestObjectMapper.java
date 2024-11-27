@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 public class TestRestObjectMapper {
 
   @Test
-  public void testFormateDate() throws Exception {
+  public void testFormatDate() throws Exception {
     RestObjectMapper mapper = new RestObjectMapper();
     // must read/write ISO 8061 dates
     Date date = mapper.readValue("\"2017-07-21T17:32:28Z\"".getBytes(), Date.class);

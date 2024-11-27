@@ -30,10 +30,10 @@ public class RequestRootSerializer {
 
   private final boolean isWrap;
 
-  public RequestRootSerializer(RootSerializer serializer, boolean isWrapp, boolean noTypesInfo) {
+  public RequestRootSerializer(RootSerializer serializer, boolean isWrap, boolean noTypesInfo) {
     this.rootSerializer = serializer;
     this.noTypesInfo = noTypesInfo;
-    this.isWrap = isWrapp;
+    this.isWrap = isWrap;
   }
 
   @SuppressWarnings("unchecked")

@@ -63,7 +63,7 @@ public class TestSpringmvc {
   }
 
   @Test
-  public void testClassMethodNoHttpMetod() {
+  public void testClassMethodNoHttpMethod() {
     UnitTestSwaggerUtils
         .testSwagger("schemas/requestMappingHttpMethod.yaml", ClassMethodNoHttpMethod.class, "noHttpMethod");
   }

@@ -71,14 +71,14 @@ public class ConfigurableDatetimeAccessItem implements AccessLogItem<RoutingCont
           "wrong format of configuration, \"PATTERN|TIMEZONE|LOCALE\" is expected, but actually is \"" + config + "\"");
     }
 
-    setConfigruations(configArr);
+    setConfigurations(configArr);
   }
 
   private String[] splitConfig(String config) {
     return config.split("\\|{1}?", -1);
   }
 
-  private void setConfigruations(String[] configArr) {
+  private void setConfigurations(String[] configArr) {
     this.pattern = StringUtils.isEmpty(configArr[0]) ? DEFAULT_DATETIME_PATTERN : configArr[0];
     this.timezone = StringUtils.isEmpty(configArr[1]) ? TimeZone.getDefault() : TimeZone.getTimeZone(configArr[1]);
     this.locale = StringUtils.isEmpty(configArr[2]) ? DEFAULT_LOCALE : Locale.forLanguageTag(configArr[2]);

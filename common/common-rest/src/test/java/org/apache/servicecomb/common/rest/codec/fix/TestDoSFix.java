@@ -79,7 +79,7 @@ public class TestDoSFix {
     long start = System.currentTimeMillis();
     try {
       Object ret = callable.call();
-      Assertions.fail("expect failed, but succes to be " + ret);
+      Assertions.fail("expect failed, but success to be " + ret);
     } catch (AssertionError e) {
       throw e;
     } catch (Throwable e) {

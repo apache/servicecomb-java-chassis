@@ -45,7 +45,7 @@ public class URIEndpointObject extends IpPort {
 
   private boolean websocketEnabled;
 
-  private final Map<String, List<String>> querys;
+  private final Map<String, List<String>> queries;
 
   private final String schema;
 
@@ -58,7 +58,7 @@ public class URIEndpointObject extends IpPort {
       throw new IllegalArgumentException("port not specified.");
     }
     setPort(uri.getPort());
-    querys = splitQuery(uri);
+    queries = splitQuery(uri);
     sslEnabled = Boolean.parseBoolean(getFirst(SSL_ENABLED_KEY));
     websocketEnabled = Boolean.parseBoolean(getFirst(WEBSOCKET_ENABLED_KEY));
     String httpVersion = getFirst(PROTOCOL_KEY);
@@ -94,11 +94,11 @@ public class URIEndpointObject extends IpPort {
   }
 
   public List<String> getQuery(String key) {
-    return querys.get(key);
+    return queries.get(key);
   }
 
   public String getFirst(String key) {
-    List<String> values = querys.get(key);
+    List<String> values = queries.get(key);
     // it's impossible that values is not null and size is 0
     if (values == null) {
       return null;
