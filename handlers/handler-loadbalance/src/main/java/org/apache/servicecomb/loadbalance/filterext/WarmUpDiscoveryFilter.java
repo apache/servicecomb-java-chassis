@@ -147,7 +147,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
 
     // check instances allow request
     List<ServiceCombServer> callableServers = getCallableServers(servers, needWarmUpInstances);
-    if(callableServers.size() == 1) {
+    if (callableServers.size() == 1) {
       setInstanceRequestTimestamps(callableServers.get(0));
       return callableServers;
     }
