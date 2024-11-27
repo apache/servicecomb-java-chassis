@@ -199,8 +199,8 @@ public abstract class GovernanceProperties<T extends Configurable> implements In
       return true;
     }
 
-    return Arrays.stream(services.split(",")).anyMatch(ser -> {
-      String[] serviceAndVersion = ser.split(":");
+    return Arrays.stream(services.split(",")).anyMatch(service -> {
+      String[] serviceAndVersion = service.split(":");
       if (serviceAndVersion.length == 1) {
         return microserviceMeta.getName().equals(serviceAndVersion[0]);
       } else if (serviceAndVersion.length == 2) {

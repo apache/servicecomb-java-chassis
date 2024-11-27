@@ -72,7 +72,7 @@ public class KeyPairUtils {
       PrivateKey privKey = keyPair.getPrivate();
       return new KeyPairEntry(privKey, pubKey, encoder.encodeToString(pubKey.getEncoded()));
     } catch (NoSuchAlgorithmException e) {
-      LOGGER.error("generate rsa keypair faild");
+      LOGGER.error("generate rsa keypair failed");
       throw new IllegalStateException("perhaps error occurred on jre");
     }
   }

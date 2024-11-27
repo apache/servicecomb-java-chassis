@@ -201,14 +201,14 @@ public class TestRestServerVerticle {
         result = endpointObject;
       }
     };
-    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080");
+    Endpoint endpoint = new Endpoint(transport, "http://127.0.0.1:8080");
 
     new Expectations() {
       {
         context.config();
         result = jsonObject;
         jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
-        result = endpiont;
+        result = endpoint;
       }
     };
     RestServerVerticle server = new RestServerVerticle();
@@ -228,14 +228,14 @@ public class TestRestServerVerticle {
         result = endpointObject;
       }
     };
-    Endpoint endpiont = new Endpoint(transport, "http://127.0.0.1:8080?sslEnabled=true");
+    Endpoint endpoint = new Endpoint(transport, "http://127.0.0.1:8080?sslEnabled=true");
 
     new Expectations() {
       {
         context.config();
         result = jsonObject;
         jsonObject.getValue(AbstractTransport.ENDPOINT_KEY);
-        result = endpiont;
+        result = endpoint;
       }
     };
     RestServerVerticle server = new RestServerVerticle();
