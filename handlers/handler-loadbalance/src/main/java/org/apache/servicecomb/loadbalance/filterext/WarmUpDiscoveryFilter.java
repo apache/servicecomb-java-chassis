@@ -45,12 +45,12 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   private static final int INSTANCE_WEIGHT = 100;
 
   // Default time for warm up, the unit is milliseconds
-  private static final String DEFAULT_WARM_UP_TIME = "30000";
+  private static final long DEFAULT_WARM_UP_TIME = 30000L;
 
   // Preheat calculates curve value
-  private static final String DEFAULT_WARM_UP_CURVE = "2";
+  private static final int DEFAULT_WARM_UP_CURVE = 2;
 
-  private static final String DEFAULT_WARM_UP_MAX_CALL = "50";
+  private static final int DEFAULT_WARM_UP_MAX_CALL = 50;
 
   private static final String WARM_UP_TIME = "servicecomb.loadbalance.filter.service.warmup.warm-up-time";
 
@@ -61,14 +61,6 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
 
   // Maximum requests for instance that have been warmed up during the warm-up period
   private static final String WARMED_MAX_CALL = "servicecomb.loadbalance.filter.service.warmup.warmed-max-call";
-
-  private final long warmUpTime;
-
-  private final int warmUpCurve;
-
-  private final int warmUpMaxCall;
-
-  private final int warmedMaxCall;
 
   private final Random random = new Random();
 
@@ -82,17 +74,10 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     return thread;
   });
 
-  private long initTime = System.currentTimeMillis();
+  private long refreshFlagTime = System.currentTimeMillis();
 
   // 10 minutes
-  private static final long REFRESH_TIME = 10 * 60 * 1000;
-
-  public WarmUpDiscoveryFilter() {
-    warmUpTime = Long.parseLong(getDynamicProperty(WARM_UP_TIME, DEFAULT_WARM_UP_TIME));
-    warmUpCurve = Integer.parseInt(getDynamicProperty(WARM_UP_CURVE, DEFAULT_WARM_UP_CURVE));
-    warmUpMaxCall = Integer.parseInt(getDynamicProperty(WARM_UP_MAX_CALL, DEFAULT_WARM_UP_MAX_CALL));
-    warmedMaxCall = Integer.parseInt(getDynamicProperty(WARMED_MAX_CALL, warmUpMaxCall * 5 + ""));
-  }
+  private static final long REFRESH_INTERVAL_TIME = 10 * 60 * 1000;
 
   private void refreshMapCache() {
     List<String> removeKeys = new ArrayList<>();
@@ -133,9 +118,9 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     }
 
     // Refresh every 10 minutes
-    if (System.currentTimeMillis() - initTime >= REFRESH_TIME) {
+    if (System.currentTimeMillis() - refreshFlagTime >= REFRESH_INTERVAL_TIME) {
       warmUpExecutor.execute(this::refreshMapCache);
-      initTime = System.currentTimeMillis();
+      refreshFlagTime = System.currentTimeMillis();
     }
 
     // If exist not invoked instances, choose one that let it into warm up.
@@ -179,7 +164,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
       notInvokedInstances.add(server);
       return true;
     }
-    return System.currentTimeMillis() - invokeTime < warmUpTime;
+    return System.currentTimeMillis() - invokeTime < getWarmUpTime();
   }
 
   private List<ServiceCombServer> chooseServer(int totalWeight, int[] weights, List<ServiceCombServer> servers) {
@@ -209,6 +194,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
   }
 
   private int calculateWeight(String instanceId) {
+    long warmUpTime = getWarmUpTime();
     if (warmUpTime <= 0 || instanceInvokeTime.get(instanceId) == null) {
       return INSTANCE_WEIGHT;
     }
@@ -217,12 +203,13 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     // calculated in milliseconds
     final long runTime = System.currentTimeMillis() - invokeStartTime;
     if (runTime > 0 && runTime < warmUpTime) {
-      return calculateWarmUpWeight(runTime, warmUpTime, warmUpCurve);
+      return calculateWarmUpWeight(runTime, warmUpTime);
     }
     return INSTANCE_WEIGHT;
   }
 
-  private int calculateWarmUpWeight(double runtime, double warmUpTime, int warmUpCurve) {
+  private int calculateWarmUpWeight(double runtime, double warmUpTime) {
+    int warmUpCurve = getWarmUpCurve();
     final int round = (int) Math.round(Math.pow(runtime / warmUpTime, warmUpCurve) * INSTANCE_WEIGHT);
     return round < 1 ? 1 : Math.min(round, INSTANCE_WEIGHT);
   }
@@ -242,14 +229,9 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
       return true;
     }
     long currentTime = System.currentTimeMillis();
+    long warmUpTime = getWarmUpTime();
     requestTimestamps.entrySet().removeIf(entry -> currentTime - entry.getKey() > warmUpTime);
     return requestTimestamps.size() <= maxRequests;
-  }
-
-  private String getDynamicProperty(String key, String defaultValue) {
-    return DynamicPropertyFactory.getInstance()
-        .getStringProperty(key, defaultValue)
-        .get();
   }
 
   private List<ServiceCombServer> getCallableServers(List<ServiceCombServer> servers,
@@ -258,6 +240,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
     List<ServiceCombServer> result = new ArrayList<>();
 
     // check need warm up instance current requests.
+    int warmUpMaxCall = getWarmUpMaxCall();
     needWarmUpInstances.forEach(server -> {
       String instanceId = server.getInstance().getInstanceId();
       instanceIds.add(instanceId);
@@ -265,6 +248,7 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
         result.add(server);
       }
     });
+    int warmedMaxCall = getWarmedMaxCall(warmUpMaxCall * 5);
 
     // check warmed instances requests
     servers.forEach(server -> {
@@ -284,5 +268,29 @@ public class WarmUpDiscoveryFilter implements ServerListFilterExt {
       instanceRequestTimestamps.put(instanceId, new ConcurrentHashMap<>());
     }
     instanceRequestTimestamps.get(instanceId).put(System.currentTimeMillis(), 1);
+  }
+
+  private long getWarmUpTime() {
+    return DynamicPropertyFactory.getInstance()
+        .getLongProperty(WARM_UP_TIME, DEFAULT_WARM_UP_TIME)
+        .get();
+  }
+
+  private int getWarmUpCurve() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty(WARM_UP_CURVE, DEFAULT_WARM_UP_CURVE)
+        .get();
+  }
+
+  private int getWarmUpMaxCall() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty(WARM_UP_MAX_CALL, DEFAULT_WARM_UP_MAX_CALL)
+        .get();
+  }
+
+  private int getWarmedMaxCall(int defaultValue) {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty(WARMED_MAX_CALL, defaultValue)
+        .get();
   }
 }

@@ -35,6 +35,12 @@ servicecomb:
   rest:
     address: 0.0.0.0:9090?sslEnabled=false
 
+  loadbalance:
+    filter:
+      service:
+        warmup:
+          enabled: true
+
   http:
     dispatcher:
       edge:
