@@ -34,11 +34,15 @@ public interface ServerListFilterExt {
 
   int ORDER_ZONE_AWARE = 200;
 
+  int ORDER_WARM_UP = Integer.MAX_VALUE;
+
   String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
 
   String ISOLATION_FILTER_ENABLED = "servicecomb.loadbalance.filter.isolation.enabled";
 
   String ZONE_AWARE_FILTER_ENABLED = "servicecomb.loadbalance.filter.zoneaware.enabled";
+
+  String WARM_UP_FILTER_ENABLED = "servicecomb.loadbalance.filter.service.warmup.enabled";
 
   default int getOrder() {
     return ORDER_NORMAL;

@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.loadbalance.filterext.IsolationServerListFilterExt
 org.apache.servicecomb.loadbalance.filterext.ZoneAwareDiscoveryFilter
+org.apache.servicecomb.loadbalance.filterext.WarmUpDiscoveryFilter

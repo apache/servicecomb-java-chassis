@@ -36,6 +36,12 @@ servicecomb:
   rest:
     address: 0.0.0.0:9092  # should be same with server.port to use web container
 
+  loadbalance:
+    filter:
+      service:
+        warmup:
+          enabled: true
+
   routeRule:
     provider: |
       - precedence: 1
