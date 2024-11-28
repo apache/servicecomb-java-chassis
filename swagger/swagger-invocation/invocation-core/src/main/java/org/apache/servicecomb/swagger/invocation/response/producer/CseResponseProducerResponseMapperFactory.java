@@ -30,7 +30,7 @@ public class CseResponseProducerResponseMapperFactory implements ProducerRespons
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factories,
       Type producerType) {
     return SAME;
   }

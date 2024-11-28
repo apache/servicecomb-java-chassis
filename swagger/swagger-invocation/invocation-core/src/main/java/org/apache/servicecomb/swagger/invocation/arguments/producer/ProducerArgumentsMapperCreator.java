@@ -49,9 +49,9 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   private final Map<String, Type> swaggerParameterTypes;
 
   public ProducerArgumentsMapperCreator(SerializationConfig serializationConfig,
-      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys, Class<?> producerClass,
+      Map<Class<?>, ContextArgumentMapperFactory> contextFactories, Class<?> producerClass,
       Method producerMethod, SwaggerOperation swaggerOperation) {
-    super(serializationConfig, contextFactorys, producerClass, producerMethod, swaggerOperation);
+    super(serializationConfig, contextFactories, producerClass, producerMethod, swaggerOperation);
 
     swaggerParameterTypes = new HashMap<>();
   }

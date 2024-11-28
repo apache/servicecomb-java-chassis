@@ -31,7 +31,7 @@ public class JaxrsProducerResponseMapperFactory implements ProducerResponseMappe
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factories,
       Type producerType) {
     return new JaxrsProducerResponseMapper();
   }

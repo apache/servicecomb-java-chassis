@@ -33,9 +33,9 @@ public class CompletableFutureProducerResponseMapperFactory implements ProducerR
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factories,
       Type producerType) {
     Type realProducerType = ((ParameterizedType) producerType).getActualTypeArguments()[0];
-    return factorys.createResponseMapper(realProducerType);
+    return factories.createResponseMapper(realProducerType);
   }
 }

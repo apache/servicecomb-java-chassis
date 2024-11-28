@@ -34,7 +34,7 @@ import org.springframework.http.ResponseEntity;
 public class TestSpringmvcProducerResponseMapperFactory {
   SpringmvcProducerResponseMapperFactory factory = new SpringmvcProducerResponseMapperFactory();
 
-  ResponseMapperFactories<ProducerResponseMapper> factorys = new ResponseMapperFactories<>(
+  ResponseMapperFactories<ProducerResponseMapper> factories = new ResponseMapperFactories<>(
       ProducerResponseMapperFactory.class);
 
   public ResponseEntity<String[]> responseEntity() {
@@ -67,7 +67,7 @@ public class TestSpringmvcProducerResponseMapperFactory {
     Method responseEntityMethod = ReflectUtils.findMethod(this.getClass(), "responseEntity");
 
     ProducerResponseMapper mapper = factory
-        .createResponseMapper(factorys, responseEntityMethod.getGenericReturnType());
+        .createResponseMapper(factories, responseEntityMethod.getGenericReturnType());
     MatcherAssert.assertThat(mapper, Matchers.instanceOf(SpringmvcProducerResponseMapper.class));
 
     ResponseEntity<String[]> responseEntity = new ResponseEntity<>(new String[] {"a", "b"}, HttpStatus.OK);

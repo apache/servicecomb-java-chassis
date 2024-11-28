@@ -33,9 +33,9 @@ public class CompletableFutureConsumerResponseMapperFactory implements ConsumerR
   }
 
   @Override
-  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factorys,
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factories,
       Type consumerType) {
     Type realConsumerType = ((ParameterizedType) consumerType).getActualTypeArguments()[0];
-    return factorys.createResponseMapper(realConsumerType);
+    return factories.createResponseMapper(realConsumerType);
   }
 }

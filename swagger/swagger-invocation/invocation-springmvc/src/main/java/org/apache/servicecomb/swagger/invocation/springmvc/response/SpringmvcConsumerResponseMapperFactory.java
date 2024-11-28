@@ -35,10 +35,10 @@ public class SpringmvcConsumerResponseMapperFactory implements ConsumerResponseM
   }
 
   @Override
-  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factorys,
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factories,
       Type consumerType) {
     Type realConsumerType = ((ParameterizedType) consumerType).getActualTypeArguments()[0];
-    ConsumerResponseMapper realMapper = factorys.createResponseMapper(realConsumerType);
+    ConsumerResponseMapper realMapper = factories.createResponseMapper(realConsumerType);
     return new SpringmvcConsumerResponseMapper(realMapper);
   }
 }

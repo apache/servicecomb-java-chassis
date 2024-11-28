@@ -31,7 +31,7 @@ public class JaxrsConsumerResponseMapperFactory implements ConsumerResponseMappe
   }
 
   @Override
-  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factorys,
+  public ConsumerResponseMapper createResponseMapper(ResponseMapperFactories<ConsumerResponseMapper> factories,
       Type consumerType) {
     return new JaxrsConsumerResponseMapper();
   }

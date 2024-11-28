@@ -52,7 +52,7 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
       msCycleBegin = msNow;
     }
 
-    // Configuration update and use is at the situation of multi-threaded concurrency
+    // Configuration update and use is at the situation of multi-thread concurrency
     // It is possible that operation level updated to null,but schema level or microservice level does not updated
     boolean isLimitRequest = newCount - lastRequestCount >= this.getQpsLimit();
     if (isLimitRequest){

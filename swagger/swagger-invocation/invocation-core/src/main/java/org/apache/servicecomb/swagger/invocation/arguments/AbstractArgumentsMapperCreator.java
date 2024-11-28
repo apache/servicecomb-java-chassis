@@ -96,7 +96,7 @@ public abstract class AbstractArgumentsMapperCreator {
   protected SerializationConfig serializationConfig;
 
   // key is context class
-  protected Map<Class<?>, ContextArgumentMapperFactory> contextFactorys;
+  protected Map<Class<?>, ContextArgumentMapperFactory> contextFactories;
 
   // consumer or producer
   protected Method providerMethod;
@@ -117,10 +117,10 @@ public abstract class AbstractArgumentsMapperCreator {
   protected Set<String> processedSwaggerParameters;
 
   public AbstractArgumentsMapperCreator(SerializationConfig serializationConfig,
-      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys, Class<?> providerClass,
+      Map<Class<?>, ContextArgumentMapperFactory> contextFactories, Class<?> providerClass,
       Method providerMethod, SwaggerOperation swaggerOperation) {
     this.serializationConfig = serializationConfig;
-    this.contextFactorys = contextFactorys;
+    this.contextFactories = contextFactories;
     this.providerClass = providerClass;
     this.providerMethod = providerMethod;
     this.swaggerOperation = swaggerOperation;
@@ -198,7 +198,7 @@ public abstract class AbstractArgumentsMapperCreator {
    * @return true means processed
    */
   protected boolean processContextParameter(java.lang.reflect.Parameter providerParameter) {
-    ContextArgumentMapperFactory contextFactory = contextFactorys.get(providerParameter.getType());
+    ContextArgumentMapperFactory contextFactory = contextFactories.get(providerParameter.getType());
     if (contextFactory == null) {
       return false;
     }

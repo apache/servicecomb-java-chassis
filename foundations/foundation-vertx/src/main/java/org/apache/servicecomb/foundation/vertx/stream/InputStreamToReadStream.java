@@ -97,16 +97,16 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
   }
 
   class ReadResult {
-    int readed;
+    int read;
 
     byte[] bytes = new byte[readBufferSize];
 
     void doRead() throws IOException {
-      readed = inputStream.read(bytes);
+      read = inputStream.read(bytes);
     }
 
     Buffer toBuffer() {
-      return Buffer.buffer(Unpooled.wrappedBuffer(bytes).writerIndex(readed));
+      return Buffer.buffer(Unpooled.wrappedBuffer(bytes).writerIndex(read));
     }
   }
 
@@ -143,7 +143,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
     readInProgress = false;
     ReadResult readResult = ar.result();
-    if (readResult.readed < 0) {
+    if (readResult.read < 0) {
       handleEnd();
       return;
     }

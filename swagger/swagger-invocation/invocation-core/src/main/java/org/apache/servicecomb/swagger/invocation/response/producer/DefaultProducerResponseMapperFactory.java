@@ -32,7 +32,7 @@ public class DefaultProducerResponseMapperFactory implements ProducerResponseMap
   }
 
   @Override
-  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factorys,
+  public ProducerResponseMapper createResponseMapper(ResponseMapperFactories<ProducerResponseMapper> factories,
       Type producerType) {
     return new DefaultProducerResponseMapper();
   }
