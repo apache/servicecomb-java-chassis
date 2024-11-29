@@ -262,7 +262,7 @@ public final class NetUtils {
   /**
    * 对于配置为0.0.0.0的地址，let it go
    * schema, e.g. http
-   * adddress, e.g 0.0.0.0:8080
+   * address, e.g 0.0.0.0:8080
    * return 实际监听的地址
    */
   public static String getRealListenAddress(String schema, String address) {

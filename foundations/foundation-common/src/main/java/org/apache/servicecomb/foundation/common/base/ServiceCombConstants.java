@@ -30,7 +30,7 @@ public interface ServiceCombConstants {
 
   String DEFAULT_TRACING_COLLECTOR_ADDRESS = "http://127.0.0.1:9411";
 
-  String CONFIG_KEY_SPLITER = "_";
+  String CONFIG_KEY_SPLITTER = "_";
 
   String CONFIG_FRAMEWORK_DEFAULT_NAME = "servicecomb-java-chassis";
 

@@ -118,7 +118,7 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
     return resList;
   }
 
-  public static List<Resource> getSortedPorperties(String locationPattern) {
+  public static List<Resource> getSortedProperties(String locationPattern) {
     return getSortedResources(locationPattern, PROPERTIES_SUFFIX);
   }
 

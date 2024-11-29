@@ -55,15 +55,15 @@ public class TestFileNameTooLong {
     Assertions.assertTrue(names.isEmpty());
   }
 
-  private static void findLongFileName(File folder, List<String> holder, int baseLenght) {
+  private static void findLongFileName(File folder, List<String> holder, int baseLength) {
     if (folder.isFile()) {
-      if (folder.getAbsolutePath().length() >= MAN_FILE_SIZE + baseLenght) {
+      if (folder.getAbsolutePath().length() >= MAN_FILE_SIZE + baseLength) {
         holder.add(folder.getAbsolutePath());
       }
     } else if (folder.isDirectory() && !"target".equals(folder.getName())) {
       File[] children = folder.listFiles();
       for (File child : children) {
-        findLongFileName(child, holder, baseLenght);
+        findLongFileName(child, holder, baseLength);
       }
     } else {
       return;
