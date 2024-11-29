@@ -120,8 +120,8 @@ public class ProducerProviderManager {
   }
 
   // This is special requirement by users: When service deployed in tomcat,user want to use RestTemplate to
-  // call REST service by the full url. e.g. restTemplate.getForObejct("cse://serviceName/root/prefix/health")
-  // By default, user's do not need context prefix, e.g. restTemplate.getForObejct("cse://serviceName/health")
+  // call REST service by the full url. e.g. restTemplate.getForObject("cse://serviceName/root/prefix/health")
+  // By default, user's do not need context prefix, e.g. restTemplate.getForObject("cse://serviceName/health")
   private void registerUrlPrefixToSwagger(OpenAPI swagger) {
     String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (!StringUtils.isEmpty(urlPrefix) && !SwaggerUtils.getBasePath(swagger).startsWith(urlPrefix)

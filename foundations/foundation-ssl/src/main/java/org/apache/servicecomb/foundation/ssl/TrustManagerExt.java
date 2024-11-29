@@ -189,7 +189,7 @@ public class TrustManagerExt extends X509ExtendedTrustManager {
             }
           }
         } catch (SocketException e) {
-          throw new CertificateException("Get local adrress fail.");
+          throw new CertificateException("Get local address fail.");
         }
       } else if (cnValid(cns, ipTmp)) {
         return;

@@ -213,7 +213,7 @@ public class SSLOptionTest {
   }
 
   @Test
-  public void testSSLOptionYamlOptionWithProperyFalse() throws Exception {
+  public void testSSLOptionYamlOptionWithPropertyFalse() throws Exception {
     Mockito.when(environment.getProperty("ssl.authPeer")).thenReturn("false");
 
     SSLOption option = SSLOption.build("server", environment);
@@ -225,7 +225,7 @@ public class SSLOptionTest {
   }
 
   @Test
-  public void testSSLOptionYamlOptionWithProperyTrue() throws Exception {
+  public void testSSLOptionYamlOptionWithPropertyTrue() throws Exception {
     SSLOption option = SSLOption.build("server", environment);
 
     boolean authPeer = option.isAuthPeer();
