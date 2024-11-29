@@ -25,7 +25,7 @@
 
 [files]
 extend-exclude = [
-    "**/cobertura.ser"  # 排除该路径
+    "**/cobertura.ser"
 ]
 [default]
 extend-ignore-words-re = [
