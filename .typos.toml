@@ -24,13 +24,15 @@
 "vertx" = "vertx"
 
 [files]
-ignore = [
+extend-exclude = [
     "**/cobertura.ser"
 ]
-[words]
-allow = [
+[default]
+extend-ignore-words-re = [
     "Verticle",
     "verticle",
     "VERTICLE",
     "Prelease",
+    "cobertura",
+    "ser",
 ]

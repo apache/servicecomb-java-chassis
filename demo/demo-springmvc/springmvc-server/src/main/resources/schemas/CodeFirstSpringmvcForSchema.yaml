@@ -21,7 +21,7 @@ info:
   title: swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema
   version: 1.0.0
 servers:
-- url: /forScheam
+- url: /forSchema
 paths:
   /uploadFile:
     post:

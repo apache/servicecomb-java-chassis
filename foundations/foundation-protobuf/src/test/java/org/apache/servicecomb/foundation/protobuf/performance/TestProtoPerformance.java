@@ -65,17 +65,17 @@ public class TestProtoPerformance {
     System.out.printf("                " + strFmt + "\n",
         result.engineResults.stream().map(r -> r.engineName).toArray());
 
-    System.out.printf("ser time(ms)  : " + numberFmt + "\n",
-        result.engineResults.stream().map(r -> r.msSerTime).toArray());
-    System.out.printf("ser len       : " + numberFmt + "\n",
-        result.engineResults.stream().map(r -> r.serBytes.length).toArray());
+    System.out.printf("serialize time(ms)  : " + numberFmt + "\n",
+        result.engineResults.stream().map(r -> r.msSerializeTime).toArray());
+    System.out.printf("serialize len       : " + numberFmt + "\n",
+        result.engineResults.stream().map(r -> r.serializeBytes.length).toArray());
 
-    System.out.printf("deser time(ms): " + numberFmt + "\n",
-        result.engineResults.stream().map(r -> r.msDeserTime).toArray());
-    System.out.printf("deser->ser len: " + numberFmt + "\n",
-        result.engineResults.stream().map(r -> r.deserResultBytes.length).toArray());
+    System.out.printf("deserialize time(ms): " + numberFmt + "\n",
+        result.engineResults.stream().map(r -> r.msDeserializeTime).toArray());
+    System.out.printf("deserialize->serialize len: " + numberFmt + "\n",
+        result.engineResults.stream().map(r -> r.deserializeResultBytes.length).toArray());
 
-    System.out.printf("ser+deser(ms) : " + numberFmt + "\n\n",
-        result.engineResults.stream().map(r -> r.msSerTime + r.msDeserTime).toArray());
+    System.out.printf("serialize+deserialize(ms) : " + numberFmt + "\n\n",
+        result.engineResults.stream().map(r -> r.msSerializeTime + r.msDeserializeTime).toArray());
   }
 }

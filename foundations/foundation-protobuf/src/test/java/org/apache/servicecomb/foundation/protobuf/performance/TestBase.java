@@ -79,25 +79,25 @@ public abstract class TestBase {
     {
       long msStart = System.currentTimeMillis();
       for (int idx = 0; idx < count; idx++) {
-        engineResult.serBytes = engine.serialize(model);
+        engineResult.serializeBytes = engine.serialize(model);
       }
       long msEnd = System.currentTimeMillis();
 
-      engineResult.msSerTime = msEnd - msStart;
+      engineResult.msSerializeTime = msEnd - msStart;
     }
 
     // deserialize
     {
       long msStart = System.currentTimeMillis();
       for (int idx = 0; idx < count; idx++) {
-        engineResult.deserResult = engine.deserialize(engineResult.serBytes);
+        engineResult.deserializeResult = engine.deserialize(engineResult.serializeBytes);
       }
       long msEnd = System.currentTimeMillis();
 
-      engineResult.msDeserTime = msEnd - msStart;
+      engineResult.msDeserializeTime = msEnd - msStart;
     }
 
-    engineResult.deserResultBytes = engine.serialize(engineResult.deserResult);
+    engineResult.deserializeResultBytes = engine.serialize(engineResult.deserializeResult);
     return engineResult;
   }
 }

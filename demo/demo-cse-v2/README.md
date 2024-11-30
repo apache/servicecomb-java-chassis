@@ -60,7 +60,7 @@ cse:
       priority1: v1
 ```
 
-* 服务级配置：consumerSer.yaml，微服务性选择consumer。类型为 yaml。
+* 服务级配置：consumerService.yaml，微服务性选择consumer。类型为 yaml。
 ```yaml
 cse:
   v2:
@@ -115,7 +115,7 @@ cse:
 
 * 执行 tests-client 里面的集成测试用例 （成功）
 * 修改
-  * 服务级配置：consumerSer.yaml。
+  * 服务级配置：consumerService.yaml。
 ```yaml
 cse:
   v2:

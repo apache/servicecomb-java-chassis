@@ -38,10 +38,10 @@ public class UploadDownloadSchemaTest implements CategorizedTestCase {
   @Override
   public void testRestTransport() throws Exception {
     testEmptyFileUploadWork();
-    testNonEmptyFileUploadWorkd();
+    testNonEmptyFileUploadWork();
   }
 
-  private void testNonEmptyFileUploadWorkd() throws Exception {
+  private void testNonEmptyFileUploadWork() throws Exception {
     String file2Content = " bonjour";
     File someFile = File.createTempFile("upload2", ".txt");
     FileUtils.writeStringToFile(someFile, file2Content, StandardCharsets.UTF_8, false);

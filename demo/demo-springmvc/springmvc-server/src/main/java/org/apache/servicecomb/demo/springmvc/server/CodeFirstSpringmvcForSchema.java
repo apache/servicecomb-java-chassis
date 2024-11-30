@@ -32,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
  * only checksum is validated to make sure schema is not changed.
  */
 @RestSchema(schemaId = "CodeFirstSpringmvcForSchema")
-@RequestMapping(path = "/forScheam")
+@RequestMapping(path = "/forSchema")
 public class CodeFirstSpringmvcForSchema {
   /*
    * Using http://editor.swagger.io/ . Listing errors not handled:

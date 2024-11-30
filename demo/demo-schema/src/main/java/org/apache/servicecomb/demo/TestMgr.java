@@ -32,7 +32,7 @@ public class TestMgr {
 
   private static String msg = "";
 
-  private static final AtomicLong checkes = new AtomicLong(0);
+  private static final AtomicLong checks = new AtomicLong(0);
 
   public static void setMsg(String msg) {
     TestMgr.msg = msg;
@@ -47,7 +47,7 @@ public class TestMgr {
   }
 
   public static void check(Object expect, Object real, Throwable error) {
-    checkes.incrementAndGet();
+    checks.incrementAndGet();
 
     if (expect == real) {
       return;
@@ -66,7 +66,7 @@ public class TestMgr {
   }
 
   public static void checkNotEmpty(String real) {
-    checkes.incrementAndGet();
+    checks.incrementAndGet();
 
     if (StringUtils.isEmpty(real)) {
       errorList.add(new Error(msg + " | unexpected null result, method is " + getCaller()));
@@ -78,7 +78,7 @@ public class TestMgr {
   }
 
   public static void failed(String desc, Throwable e) {
-    checkes.incrementAndGet();
+    checks.incrementAndGet();
 
     Error error = new Error(msg + " | " + desc + ", method is " + getCaller());
     if (e != null) {
@@ -94,12 +94,12 @@ public class TestMgr {
   public static void summary() {
     if (errorList.isEmpty()) {
       LOGGER.info("............. test finished ............");
-      LOGGER.info("............. total checks : " + checkes.get());
+      LOGGER.info("............. total checks : " + checks.get());
       return;
     }
 
     LOGGER.info("............. test not finished ............");
-    LOGGER.info("............. total checks : " + checkes.get());
+    LOGGER.info("............. total checks : " + checks.get());
     LOGGER.info("............. total errors : " + errorList.size());
     LOGGER.info("............. error details: ");
     for (Throwable e : errorList) {
