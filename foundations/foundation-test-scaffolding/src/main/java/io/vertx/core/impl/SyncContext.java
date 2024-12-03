@@ -16,12 +16,6 @@
  */
 package io.vertx.core.impl;
 
-import java.io.Serial;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import io.netty.channel.EventLoop;
 import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
@@ -32,6 +26,12 @@ import io.vertx.core.Promise;
 import io.vertx.core.ThreadingModel;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.spi.tracing.VertxTracer;
+
+import java.io.Serial;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * This class is created to make vertx unit test easier
@@ -86,6 +86,11 @@ public class SyncContext extends ContextBase implements ContextInternal {
   @Override
   public <T> void execute(T t, Handler<T> handler) {
 
+  }
+
+  @Override
+  public Future<Void> close() {
+    return Future.succeededFuture();
   }
 
   @Override
