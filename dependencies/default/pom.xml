@@ -87,7 +87,7 @@
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>2.3</snakeyaml.version>
     <spring.version>6.1.10</spring.version>
-    <swagger.version>2.2.25</swagger.version>
+    <swagger.version>2.2.26</swagger.version>
     <vertx.version>4.5.11</vertx.version>
     <zipkin.version>3.4.2</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
