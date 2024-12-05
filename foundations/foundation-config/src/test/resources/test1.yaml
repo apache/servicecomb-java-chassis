@@ -38,7 +38,7 @@ shutDownHandler:
   enabled: true
   timeLimit: 30000
 
-hsa:
+has:
   manager:
     url:  127.0.0.1
   serializer:

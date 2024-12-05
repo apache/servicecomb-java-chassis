@@ -51,7 +51,7 @@ public class TestSSLOptionFactory {
   }
 
   @Test
-  public void testSSLOptionFactoryCorrent() {
+  public void testSSLOptionFactoryCurrent() {
     new MockUp<SSLOption>() {
       @Mock
       public String getStringProperty(Environment environment, String defaultValue,

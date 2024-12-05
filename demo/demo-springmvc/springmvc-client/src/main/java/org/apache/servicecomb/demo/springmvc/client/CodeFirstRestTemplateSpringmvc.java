@@ -213,12 +213,12 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     Map<String, String> map = new HashMap<>();
     String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
     map.put("form1", code);
-    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
+    HttpEntity<Map<String, String>> formEntry = new HttpEntity<>(map, formHeaders);
     TestMgr.check(code + "null",
-        template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+        template.postForEntity(cseUrlPrefix + "/testform", formEntry, String.class).getBody());
     map.put("form2", "hello");
     TestMgr
-        .check(code + "hello", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+        .check(code + "hello", template.postForEntity(cseUrlPrefix + "/testform", formEntry, String.class).getBody());
   }
 
   private void testCodeFirstTestFormHighway(RestOperations template, String cseUrlPrefix) {
@@ -228,16 +228,16 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
     map.put("form1", code);
     map.put("form2", "");
-    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
-    TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+    HttpEntity<Map<String, String>> formEntry = new HttpEntity<>(map, formHeaders);
+    TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntry, String.class).getBody());
 
     map = new HashMap<>();
     code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
     map.put("form1", code);
     map.put("form2", null);
-    formEntiry = new HttpEntity<>(map, formHeaders);
+    formEntry = new HttpEntity<>(map, formHeaders);
     TestMgr.check(code + "null",
-        template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+        template.postForEntity(cseUrlPrefix + "/testform", formEntry, String.class).getBody());
   }
 
   private void testCodeFirstTestFormRest(RestOperations template, String cseUrlPrefix) {
@@ -247,8 +247,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
     map.put("form1", code);
     map.put("form2", "");
-    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
+    HttpEntity<Map<String, String>> formEntry = new HttpEntity<>(map, formHeaders);
     // Rest will have empty string, but users will try to avoid depend on this, This is different from highway
-    TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+    TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntry, String.class).getBody());
   }
 }

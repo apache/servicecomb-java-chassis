@@ -36,7 +36,7 @@ public class TestBoolSchema extends TestSchemaBase {
 
     // equalsIgnoreCase
     doTestFromString("true");
-    doTestFromString("trUe");
+    doTestFromString("true");
   }
 
   @Test

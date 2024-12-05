@@ -20,14 +20,14 @@ public class TestEngineResult {
   public String engineName;
 
   // serialize
-  public long msSerTime;
+  public long msSerializeTime;
 
-  public byte[] serBytes;
+  public byte[] serializeBytes;
 
   // deserialize
-  public long msDeserTime;
+  public long msDeserializeTime;
 
-  public Object deserResult;
+  public Object deserializeResult;
 
-  public byte[] deserResultBytes;
+  public byte[] deserializeResultBytes;
 }

@@ -98,13 +98,13 @@ public final class YAMLUtil {
   }
 
   @SuppressWarnings("unchecked")
-  public static Map<String, Object> retrieveItems(String prefix, Map<String, Object> propertieMap) {
+  public static Map<String, Object> retrieveItems(String prefix, Map<String, Object> propertiesMap) {
     Map<String, Object> result = new LinkedHashMap<>();
     if (!prefix.isEmpty()) {
       prefix += ".";
     }
 
-    for (Map.Entry<String, Object> entry : propertieMap.entrySet()) {
+    for (Map.Entry<String, Object> entry : propertiesMap.entrySet()) {
       if (entry.getValue() instanceof Map) {
         result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
       } else {
