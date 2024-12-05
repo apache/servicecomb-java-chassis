@@ -20,6 +20,7 @@ package org.apache.servicecomb.core.exception;
 import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 
@@ -51,8 +52,15 @@ class ExceptionsTest {
     assertThat(invocationException).hasCause(exception);
     assertThat(invocationException.getStatus()).isEqualTo(BAD_REQUEST);
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
-    assertThat(Json.encode(invocationException.getErrorData()))
-        .isEqualTo("{\"code\":\"SCB.00000000\",\"message\":\"Unexpected exception when processing none. msg\"}");
+    
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    try {
+      assertThat(objectMapper.readTree(Json.encode(invocationException.getErrorData())))
+          .isEqualTo(objectMapper.readTree("{\"code\":\"SCB.00000000\",\"message\":\"Unexpected exception when processing none. msg\"}"));
+    } catch (Exception e) {
+      throw new AssertionError("Error during JSON comparison: " + e.getMessage(), e);
+    }
   }
 
   @Test
@@ -64,8 +72,15 @@ class ExceptionsTest {
     assertThat(invocationException).hasCause(exception);
     assertThat(invocationException.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
-    assertThat(Json.encode(invocationException.getErrorData()))
-        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"Unexpected exception when processing none. msg\"}");
+
+    ObjectMapper objectMapper = new ObjectMapper();
+
+    try {
+      assertThat(objectMapper.readTree(Json.encode(invocationException.getErrorData())))
+          .isEqualTo(objectMapper.readTree("{\"code\":\"SCB.50000000\",\"message\":\"Unexpected exception when processing none. msg\"}"));
+    } catch (Exception e) {
+      throw new AssertionError("Error during JSON comparison: " + e.getMessage(), e);
+    }
   }
 
   static class ThrowExceptionWhenConvert implements ExceptionConverter<Throwable> {
