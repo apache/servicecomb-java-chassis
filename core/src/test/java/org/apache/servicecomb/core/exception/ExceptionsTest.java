@@ -35,6 +35,9 @@ import io.vertx.core.json.Json;
 import jakarta.ws.rs.core.Response.StatusType;
 
 class ExceptionsTest {
+
+  private static final ObjectMapper objectMapper = new ObjectMapper();
+
   @Test
   void should_not_convert_invocation_exception() {
     InvocationException exception = Exceptions.genericConsumer("msg");
@@ -53,8 +56,6 @@ class ExceptionsTest {
     assertThat(invocationException.getStatus()).isEqualTo(BAD_REQUEST);
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
 
-    ObjectMapper objectMapper = new ObjectMapper();
-
     try {
       assertThat(objectMapper.readTree(Json.encode(invocationException.getErrorData())))
           .isEqualTo(objectMapper.readTree("{\"code\":\"SCB.00000000\",\"message\":\"Unexpected exception when processing none. msg\"}"));
@@ -72,8 +73,6 @@ class ExceptionsTest {
     assertThat(invocationException).hasCause(exception);
     assertThat(invocationException.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
-
-    ObjectMapper objectMapper = new ObjectMapper();
 
     try {
       assertThat(objectMapper.readTree(Json.encode(invocationException.getErrorData())))
