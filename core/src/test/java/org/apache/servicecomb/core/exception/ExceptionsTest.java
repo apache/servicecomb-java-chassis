@@ -52,7 +52,7 @@ class ExceptionsTest {
     assertThat(invocationException).hasCause(exception);
     assertThat(invocationException.getStatus()).isEqualTo(BAD_REQUEST);
     assertThat(invocationException.getErrorData()).isInstanceOf(CommonExceptionData.class);
-    
+
     ObjectMapper objectMapper = new ObjectMapper();
 
     try {
