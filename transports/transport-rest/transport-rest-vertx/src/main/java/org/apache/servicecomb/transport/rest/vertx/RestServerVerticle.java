@@ -267,6 +267,17 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
     serverOptions.setDecoderInitialBufferSize(TransportConfig.getDecoderInitialBufferSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
+
+    // WebSocket config start
+    serverOptions.setMaxWebSocketFrameSize(TransportConfig.getMaxWebSocketFrameSize());
+    serverOptions.setMaxWebSocketMessageSize(TransportConfig.getMaxWebSocketMessageSize());
+    serverOptions.setWebSocketClosingTimeout(TransportConfig.getWebSocketClosingTimeoutInSeconds());
+    serverOptions.setWebSocketCompressionLevel(TransportConfig.getWebSocketCompressionLevel());
+    serverOptions.setPerFrameWebSocketCompressionSupported(TransportConfig.getPerFrameWebSocketCompressionSupported());
+    serverOptions.setPerMessageWebSocketCompressionSupported(
+        TransportConfig.getPerMessageWebSocketCompressionSupported());
+    // WebSocket config end
+
     if (endpointObject.isHttp2Enabled()) {
       serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
           .setHttp2ConnectionWindowSize(TransportConfig.getHttp2ConnectionWindowSize())

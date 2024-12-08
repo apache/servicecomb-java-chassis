@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import io.vertx.core.http.ClientAuth;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.WebSocketClientOptions;
 import io.vertx.core.net.ClientOptionsBase;
 import io.vertx.core.net.JksOptions;
 import io.vertx.core.net.NetServerOptions;
@@ -86,11 +87,30 @@ public final class VertxTLSBuilder {
     buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
   }
 
+  public static void buildWebSocketClientOptions(String sslKey, WebSocketClientOptions webSocketClientOptions) {
+    SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(sslKey, null);
+    SSLOption sslOption;
+    if (factory == null) {
+      sslOption = SSLOption.buildFromYaml(sslKey);
+    } else {
+      sslOption = factory.createSSLOption();
+    }
+    SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
+    buildWebSocketClientOptions(sslOption, sslCustom, webSocketClientOptions);
+  }
+
   public static HttpClientOptions buildHttpClientOptions(SSLOption sslOption, SSLCustom sslCustom,
       HttpClientOptions httpClientOptions) {
     buildClientOptionsBase(sslOption, sslCustom, httpClientOptions);
     httpClientOptions.setVerifyHost(sslOption.isCheckCNHost());
     return httpClientOptions;
+  }
+
+  public static WebSocketClientOptions buildWebSocketClientOptions(SSLOption sslOption, SSLCustom sslCustom,
+      WebSocketClientOptions webSocketClientOptions) {
+    buildClientOptionsBase(sslOption, sslCustom, webSocketClientOptions);
+    webSocketClientOptions.setVerifyHost(sslOption.isCheckCNHost());
+    return webSocketClientOptions;
   }
 
   public static ClientOptionsBase buildClientOptionsBase(SSLOption sslOption, SSLCustom sslCustom,

@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -35,6 +36,11 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
   @Override
   public int getOrder() {
     return -10000;
+  }
+
+  @Override
+  public boolean enabledForTransport(String transport) {
+    return HttpClientFilter.super.enabledForTransport(transport) || Const.WEBSOCKET.equals(transport);
   }
 
   @Override

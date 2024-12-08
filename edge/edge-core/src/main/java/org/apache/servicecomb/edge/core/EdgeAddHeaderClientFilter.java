@@ -24,6 +24,7 @@ import java.util.function.BiConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -75,6 +76,11 @@ public class EdgeAddHeaderClientFilter implements HttpClientFilter {
   @Override
   public boolean enabled() {
     return enabled;
+  }
+
+  @Override
+  public boolean enabledForTransport(String transport) {
+    return HttpClientFilter.super.enabledForTransport(transport) || Const.WEBSOCKET.equals(transport);
   }
 
   @Override

@@ -20,10 +20,11 @@ package org.apache.servicecomb.common.rest.filter.inner;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -38,9 +39,14 @@ public class ClientRestArgsFilter implements HttpClientFilter {
   }
 
   @Override
+  public boolean enabledForTransport(String transport) {
+    return HttpClientFilter.super.enabledForTransport(transport)|| Const.WEBSOCKET.equals(transport);
+  }
+
+  @Override
   public CompletableFuture<Void> beforeSendRequestAsync(Invocation invocation, HttpServletRequestEx requestEx) {
     CompletableFuture<Void> result = new CompletableFuture<>();
-    RestClientRequestImpl restClientRequest = (RestClientRequestImpl) invocation.getHandlerContext()
+    RestClientRequest restClientRequest = (RestClientRequest) invocation.getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);

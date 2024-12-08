@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import javax.servlet.AsyncContext;
@@ -33,7 +34,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
-import io.vertx.ext.web.impl.RoutingContextInternal;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.slf4j.Logger;
@@ -42,9 +42,11 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.FileUpload;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.impl.RoutingContextInternal;
 
 // wrap vertx http request to Servlet http request
 public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletRequest {
@@ -301,5 +303,31 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     }
 
     return characterEncoding;
+  }
+
+  /**
+   * Async switch protocol to WebSocket. Notice that the returned ServerWebSocket has been paused.
+   */
+  public CompletableFuture<ServerWebSocket> toWebSocket() {
+    if (vertxRequest.isEnded()) {
+      throw new IllegalStateException("an ended VertxRequest cannot switch to WebSocket protocol!");
+    }
+    final CompletableFuture<ServerWebSocket> future = vertxRequest.toWebSocket()
+        .toCompletionStage()
+        .toCompletableFuture()
+        .whenComplete((ws, t) -> {
+          if (ws != null) {
+            ws.pause();
+            return;
+          }
+
+          if (t == null) {
+            LOGGER.error("failed to switch to WebSocket!");
+          } else {
+            LOGGER.error("failed to switch to WebSocket!", t);
+          }
+        });
+    vertxRequest.resume();
+    return future;
   }
 }

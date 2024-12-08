@@ -67,7 +67,7 @@ public class TestHttpUtils {
   @Test
   public void uriEncode_failed() {
     IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class,
-            () -> HttpUtils.uriEncodePath(":"));
+        () -> HttpUtils.uriEncodePath(":"));
     Assertions.assertEquals("uriEncode failed, path=\":\".", illegalArgumentException.getMessage());
     Assertions.assertTrue(illegalArgumentException.getCause() instanceof URISyntaxException);
   }
@@ -106,7 +106,7 @@ public class TestHttpUtils {
   @Test
   public void uriDecode_failed() {
     IllegalArgumentException illegalArgumentException = Assertions.assertThrows(IllegalArgumentException.class,
-            () -> HttpUtils.uriDecodePath(":"));
+        () -> HttpUtils.uriDecodePath(":"));
     Assertions.assertEquals("uriDecode failed, path=\":\".", illegalArgumentException.getMessage());
     Assertions.assertTrue(illegalArgumentException.getCause() instanceof URISyntaxException);
   }
@@ -175,5 +175,77 @@ public class TestHttpUtils {
     String character = HttpUtils.getCharsetFromContentType(MediaType.APPLICATION_JSON + ";charset=\" utf-8 \";");
 
     Assertions.assertEquals("utf-8", character);
+  }
+
+  @Test
+  public void splitPath() {
+    Assertions.assertNull(HttpUtils.splitPathFromUri(null));
+    Assertions.assertEquals("", HttpUtils.splitPathFromUri(""));
+    Assertions.assertEquals(" ", HttpUtils.splitPathFromUri(" "));
+    Assertions.assertEquals("\t", HttpUtils.splitPathFromUri("\t"));
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("/"));
+    Assertions.assertEquals("//", HttpUtils.splitPathFromUri("//"));
+    Assertions.assertEquals("/abc", HttpUtils.splitPathFromUri("/abc"));
+    Assertions.assertEquals("//abc", HttpUtils.splitPathFromUri("//abc"));
+    Assertions.assertEquals("abc", HttpUtils.splitPathFromUri("abc"));
+    Assertions.assertEquals("a/bc", HttpUtils.splitPathFromUri("a/bc"));
+    Assertions.assertEquals("/a/bc", HttpUtils.splitPathFromUri("/a/bc"));
+    Assertions.assertEquals("", HttpUtils.splitPathFromUri("?abc=def"));
+
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("http://localhost"));
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("http://localhost "));
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("http://localhost\t"));
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("http://localhost/"));
+    Assertions.assertEquals("//", HttpUtils.splitPathFromUri("http://localhost//"));
+    Assertions.assertEquals("/abc", HttpUtils.splitPathFromUri("http://localhost/abc"));
+    Assertions.assertEquals("/a/bc", HttpUtils.splitPathFromUri("http://localhost/a/bc"));
+    Assertions.assertEquals("/abc", HttpUtils.splitPathFromUri("http://localhost/abc?"));
+    Assertions.assertEquals("/abc", HttpUtils.splitPathFromUri("http://localhost/abc?k=v"));
+    Assertions.assertEquals("/a/bc", HttpUtils.splitPathFromUri("http://localhost/a/bc?k=v"));
+
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("rest://localhost:80"));
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("rest://localhost:80 "));
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("rest://localhost:80\t"));
+    Assertions.assertEquals("/", HttpUtils.splitPathFromUri("rest://localhost:80/"));
+    Assertions.assertEquals("//", HttpUtils.splitPathFromUri("rest://localhost:80//"));
+    Assertions.assertEquals("/abc", HttpUtils.splitPathFromUri("rest://localhost:80/abc"));
+    Assertions.assertEquals("/a/bc", HttpUtils.splitPathFromUri("rest://localhost:80/a/bc"));
+    Assertions.assertEquals("/abc", HttpUtils.splitPathFromUri("rest://localhost:80/abc?"));
+    Assertions.assertEquals("/a/bc", HttpUtils.splitPathFromUri("rest://localhost:80/a/bc?"));
+    Assertions.assertEquals("/abc", HttpUtils.splitPathFromUri("rest://localhost:80/abc?k=v&m=n"));
+  }
+
+  @Test
+  public void splitQuery() {
+    Assertions.assertNull(HttpUtils.splitQueryFromUri(null));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri(""));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri(" "));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("\t"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("/"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("//"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("/abc"));
+    Assertions.assertEquals("", HttpUtils.splitQueryFromUri("/abc?"));
+    Assertions.assertEquals("k=v", HttpUtils.splitQueryFromUri("/abc?k=v"));
+    Assertions.assertEquals("k=v&m=n", HttpUtils.splitQueryFromUri("/abc?k=v&m=n"));
+
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost "));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost\t"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost/"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost//"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost/abc"));
+    Assertions.assertEquals("", HttpUtils.splitQueryFromUri("http://localhost/abc?"));
+    Assertions.assertEquals("k=v", HttpUtils.splitQueryFromUri("http://localhost/abc?k=v"));
+    Assertions.assertEquals("k=v&m=n", HttpUtils.splitQueryFromUri("http://localhost/abc?k=v&m=n"));
+
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost:80"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost:80 "));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost:80\t"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost:80/"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost:80//"));
+    Assertions.assertNull(HttpUtils.splitQueryFromUri("http://localhost:80/abc"));
+    Assertions.assertEquals("", HttpUtils.splitQueryFromUri("http://localhost:80/abc?"));
+    Assertions.assertEquals("k=v", HttpUtils.splitQueryFromUri("http://localhost:80/abc?k=v"));
+    Assertions.assertEquals("k=v&m=n", HttpUtils.splitQueryFromUri("http://localhost:80/abc?k=v&m=n"));
   }
 }
