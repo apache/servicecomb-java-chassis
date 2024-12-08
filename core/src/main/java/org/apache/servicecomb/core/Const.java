@@ -25,9 +25,13 @@ public final class Const {
 
   public static final String CSE_CONTEXT = "x-cse-context";
 
+  public static final String TRANSPORT_NAME = "x-transport-name";
+
   public static final String RESTFUL = "rest";
 
   public static final String HIGHWAY = "highway";
+
+  public static final String WEBSOCKET = "websocket";
 
   public static final String ANY_TRANSPORT = "";
 
