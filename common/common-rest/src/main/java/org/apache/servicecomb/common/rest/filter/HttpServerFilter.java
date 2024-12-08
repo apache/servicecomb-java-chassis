@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest.filter;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -47,5 +48,16 @@ public interface HttpServerFilter {
    */
   default CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation, HttpServletResponseEx responseEx) {
     return CompletableFuture.completedFuture(null);
+  }
+
+  /**
+   * check whether this filter should be enabled for the transport.
+   * <strong>Note that the param "transport" may be null.</strong>
+   */
+  default boolean enabledForTransport(String transport) {
+    return transport == null
+        || Const.RESTFUL.equals(transport)
+        || Const.HIGHWAY.equals(transport)
+        || Const.ANY_TRANSPORT.equals(transport);
   }
 }

@@ -48,7 +48,9 @@ public class HttpServerFilterBeforeSendResponseExecutor {
 
   protected CompletableFuture<Void> safeInvoke(HttpServerFilter httpServerFilter) {
     try {
-      if (httpServerFilter.enabled()) {
+      // 404 or other error cases, invocation is null
+      final String providerTransportName = invocation == null ? null : invocation.getProviderTransportName();
+      if (httpServerFilter.enabled() && httpServerFilter.enabledForTransport(providerTransportName)) {
         CompletableFuture<Void> future = httpServerFilter.beforeSendResponseAsync(invocation, responseEx);
         if (future == null) {
           future = new CompletableFuture<>();

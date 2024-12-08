@@ -17,7 +17,16 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.response;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.concurrent.CompletableFuture;
+
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
+
+import io.swagger.models.Model;
 
 public class CompletableFutureProcessor extends DefaultResponseTypeProcessor {
   public CompletableFutureProcessor() {
@@ -27,5 +36,23 @@ public class CompletableFutureProcessor extends DefaultResponseTypeProcessor {
   @Override
   public Class<?> getProcessType() {
     return CompletableFuture.class;
+  }
+
+  @Override
+  public Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      Type genericResponseType) {
+    if (!(genericResponseType instanceof ParameterizedType)) {
+      return super.process(swaggerGenerator, operationGenerator, genericResponseType);
+    }
+
+    final Type[] actualTypeArguments = ((ParameterizedType) genericResponseType).getActualTypeArguments();
+    if (actualTypeArguments.length != 1) {
+      // fallback to legacy mode
+      return super.process(swaggerGenerator, operationGenerator, genericResponseType);
+    }
+    final Type actualTypeArgument = actualTypeArguments[0];
+    final ResponseTypeProcessor actualResponseTypeProcessor =
+        SwaggerGeneratorUtils.findResponseTypeProcessor(actualTypeArgument);
+    return actualResponseTypeProcessor.process(swaggerGenerator, operationGenerator, actualTypeArgument);
   }
 }

@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.swagger.invocation.generator.ScbResponseProcessor
+org.apache.servicecomb.swagger.invocation.ws.ServerWebSocketResponseProcessor

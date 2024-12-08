@@ -27,6 +27,7 @@ import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
@@ -53,6 +54,11 @@ public class ServerRestArgsFilter implements HttpServerFilter {
   @Override
   public boolean enabled() {
     return enabled;
+  }
+
+  @Override
+  public boolean enabledForTransport(String transport) {
+    return HttpServerFilter.super.enabledForTransport(transport) || Const.WEBSOCKET.equals(transport);
   }
 
   @Override

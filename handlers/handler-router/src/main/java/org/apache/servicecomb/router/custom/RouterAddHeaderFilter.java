@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -53,6 +54,11 @@ public class RouterAddHeaderFilter implements HttpServerFilter {
   @Override
   public boolean enabled() {
     return true;
+  }
+
+  @Override
+  public boolean enabledForTransport(String transport) {
+    return HttpServerFilter.super.enabledForTransport(transport) || Const.WEBSOCKET.equals(transport);
   }
 
   @Override

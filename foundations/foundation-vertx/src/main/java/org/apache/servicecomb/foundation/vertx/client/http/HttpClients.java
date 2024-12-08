@@ -27,6 +27,9 @@ import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
+import org.apache.servicecomb.foundation.vertx.client.ws.WebSocketClientOptionsSPI;
+import org.apache.servicecomb.foundation.vertx.client.ws.WebSocketClientPoolFactory;
+import org.apache.servicecomb.foundation.vertx.client.ws.WebSocketClientWithContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +38,7 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.dns.AddressResolverOptions;
+import io.vertx.core.http.WebSocketClient;
 
 /**
  *  load and manages a set of HttpClient at boot up.
@@ -43,6 +47,8 @@ public class HttpClients {
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpClients.class);
 
   private static final Map<String, ClientPoolManager<HttpClientWithContext>> httpClients = new HashMap<>();
+
+  private static final Map<String, ClientPoolManager<WebSocketClientWithContext>> wsClients = new HashMap<>();
 
   /* load at boot up, call this method once and only once. */
   public static void load() {
@@ -56,6 +62,18 @@ public class HttpClients {
         httpClients.put(option.clientName(), createClientPoolManager(option));
       }
     });
+
+    final List<WebSocketClientOptionsSPI> websocketClientOptionsList =
+        SPIServiceUtils.getOrLoadSortedService(WebSocketClientOptionsSPI.class);
+    websocketClientOptionsList.forEach(option -> {
+      if (!option.enabled()) {
+        return;
+      }
+      if (wsClients.containsKey(option.clientName())) {
+        LOGGER.warn("websocket client pool {} initialized again.", option.clientName());
+      }
+      wsClients.put(option.clientName(), createWebSocketClientPoolManager(option));
+    });
   }
 
   /* destroy at shutdown. */
@@ -63,6 +81,11 @@ public class HttpClients {
     httpClients.clear();
     List<HttpClientOptionsSPI> clientOptionsList = SPIServiceUtils.getOrLoadSortedService(HttpClientOptionsSPI.class);
     clientOptionsList.forEach(option -> VertxUtils.blockCloseVertxByName(option.clientName()));
+
+    wsClients.clear();
+    List<WebSocketClientOptionsSPI> websocketClientOptionsList =
+        SPIServiceUtils.getOrLoadSortedService(WebSocketClientOptionsSPI.class);
+    websocketClientOptionsList.forEach(option -> VertxUtils.blockCloseVertxByName(option.clientName()));
   }
 
   private static ClientPoolManager<HttpClientWithContext> createClientPoolManager(HttpClientOptionsSPI option) {
@@ -71,6 +94,27 @@ public class HttpClients {
         new HttpClientPoolFactory(HttpClientOptionsSPI.createHttpClientOptions(option)));
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientPoolManager,
+            option.getInstanceCount())
+        .setWorker(option.isWorker())
+        .setWorkerPoolName(option.getWorkerPoolName())
+        .setWorkerPoolSize(option.getWorkerPoolSize());
+    try {
+      VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
+      return clientPoolManager;
+    } catch (InterruptedException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  private static ClientPoolManager<WebSocketClientWithContext> createWebSocketClientPoolManager(
+      WebSocketClientOptionsSPI option) {
+    Vertx vertx = getOrCreateVertx(option);
+    final ClientPoolManager<WebSocketClientWithContext> clientPoolManager = new ClientPoolManager<>(
+        vertx,
+        new WebSocketClientPoolFactory(option,
+            WebSocketClientOptionsSPI.createWebSocketClientOptions(option)));
+
+    final DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientPoolManager,
             option.getInstanceCount())
         .setWorker(option.isWorker())
         .setWorkerPoolName(option.getWorkerPoolName())
@@ -128,6 +172,15 @@ public class HttpClients {
     ClientPoolManager<HttpClientWithContext> poolManager = httpClients.get(clientName);
     if (poolManager == null) {
       LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
+      return null;
+    }
+    return poolManager.findClientPool(sync, targetContext);
+  }
+
+  public static WebSocketClientWithContext getWebSocketClient(String clientName, boolean sync, Context targetContext) {
+    final ClientPoolManager<WebSocketClientWithContext> poolManager = wsClients.get(clientName);
+    if (poolManager == null) {
+      LOGGER.error("websocket client name [{}] not exists, should only happen in tests.", clientName);
       return null;
     }
     return poolManager.findClientPool(sync, targetContext);

@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerInvocationContextMapperFactory
-org.apache.servicecomb.swagger.invocation.arguments.consumer.ClientWebSocketArgumentMapperFactory
+org.apache.servicecomb.transport.rest.client.ws.WebSocketTransportClientOptionsSPI

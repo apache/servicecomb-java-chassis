@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest.filter;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -43,4 +44,10 @@ public interface HttpClientFilter {
    * if return a null response, then sdk will call next filter.afterReceiveResponse
    */
   Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx);
+
+  default boolean enabledForTransport(String transport) {
+    return Const.RESTFUL.equals(transport)
+        || Const.HIGHWAY.equals(transport)
+        || Const.ANY_TRANSPORT.equals(transport);
+  }
 }
