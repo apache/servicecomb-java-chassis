@@ -55,5 +55,5 @@ public interface WebSocket {
 
   boolean writeQueueFull();
 
-  void onDrain();
+  void onWriteQueueDrain();
 }

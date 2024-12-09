@@ -55,13 +55,24 @@ public abstract class AbstractBaseWebSocket implements WebSocket {
     webSocketAdapter.resume();
   }
 
+  /**
+   * Check whether the message sending queue is full, in which case you should pause your sending action.
+   * To get to know when to recover sending action, please override the {@link #onWriteQueueDrain()} method
+   * to subscribe the notification that the message sending queue is ready to accept message again.
+   *
+   * @return true if message sending queue is full.
+   */
   @Override
   public boolean writeQueueFull() {
     return webSocketAdapter.writeQueueFull();
   }
 
+  /**
+   * The callback to notify when the message sending queue is ready to accept sending message/frame again.
+   * Usually this method is used in conjunction with the {@link #writeQueueFull()}.
+   */
   @Override
-  public void onDrain() {
+  public void onWriteQueueDrain() {
   }
 
   public void setWebSocketAdapter(WebSocketAdapter webSocketAdapter) {

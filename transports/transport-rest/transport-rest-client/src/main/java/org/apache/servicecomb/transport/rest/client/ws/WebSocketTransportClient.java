@@ -41,8 +41,7 @@ public class WebSocketTransportClient {
   public void send(Invocation invocation, AsyncResponse asyncResp) {
     final WebSocketClientWithContext webSocketClientWithContext = findHttpClientPool(invocation);
     final WebSocketClientInvocation webSocketClientInvocation = new WebSocketClientInvocation(
-        webSocketClientWithContext,
-        httpClientFilters);
+        webSocketClientWithContext, httpClientFilters);
     try {
       webSocketClientInvocation.invoke(invocation, asyncResp);
     } catch (Throwable e) {

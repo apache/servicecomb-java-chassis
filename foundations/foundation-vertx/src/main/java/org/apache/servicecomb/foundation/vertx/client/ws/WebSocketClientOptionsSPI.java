@@ -24,7 +24,7 @@ import io.vertx.core.http.HttpVersion;
 import io.vertx.core.http.WebSocketClientOptions;
 
 /**
- * WebSocket client options must be set by implementation.
+ * WebSocket client options must be set by implementations.
  */
 public abstract class WebSocketClientOptionsSPI implements HttpClientOptionsSPI {
   public static WebSocketClientOptions createWebSocketClientOptions(WebSocketClientOptionsSPI spi) {
