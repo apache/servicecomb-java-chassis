@@ -57,6 +57,7 @@ import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.net.impl.ConnectionBase;
 import io.vertx.ext.web.Router;
@@ -88,6 +89,7 @@ public class RestServerVerticle extends AbstractVerticle {
         return;
       }
       Router mainRouter = Router.router(vertx);
+      mountWebSocketPauseHandler(mainRouter);
       mountAccessLogHandler(mainRouter);
       mountCorsHandler(mainRouter);
       initDispatcher(mainRouter);
@@ -161,6 +163,18 @@ public class RestServerVerticle extends AbstractVerticle {
         // this handler does nothing, just ensure the failure handler can catch exception
         .handler(RoutingContext::next)
         .failureHandler(failureHandler);
+  }
+
+  private void mountWebSocketPauseHandler(Router mainRouter) {
+    mainRouter.route().handler(context -> {
+      final HttpServerRequest request = context.request();
+      if (request.headers().contains(
+          io.vertx.core.http.HttpHeaders.UPGRADE, io.vertx.core.http.HttpHeaders.WEBSOCKET, true)) {
+        // pause for websocket, to avoid missing end event, which may cause vert.x HttpServerRequest toWebSocket never complete
+        request.pause();
+      }
+      context.next();
+    });
   }
 
   private void mountAccessLogHandler(Router mainRouter) {
@@ -267,6 +281,7 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setDecompressionSupported(TransportConfig.getDecompressionSupported());
     serverOptions.setDecoderInitialBufferSize(TransportConfig.getDecoderInitialBufferSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
+    serverOptions.setLogActivity(TransportConfig.enableLogActivity());
 
     // WebSocket config start
     serverOptions.setMaxWebSocketFrameSize(TransportConfig.getMaxWebSocketFrameSize());

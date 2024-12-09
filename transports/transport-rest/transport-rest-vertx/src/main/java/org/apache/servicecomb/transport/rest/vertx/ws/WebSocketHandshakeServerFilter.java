@@ -52,7 +52,7 @@ public class WebSocketHandshakeServerFilter implements HttpServerFilter {
     if (invocation.isEdge()
         && (invocation.getLocalContext(WEBSOCKET_PIPE_CONTEXT_KEY) == null)) {
       // prepare pipe for edge forward websocket scene
-      final WebSocketPipe webSocketPipe = new WebSocketPipe();
+      final WebSocketPipe webSocketPipe = new WebSocketPipe(invocation.getTraceId());
       invocation.addLocalContext(WEBSOCKET_PIPE_CONTEXT_KEY, webSocketPipe);
       invocation.addLocalContext(ClientWebSocketArgumentMapper.SCB_CLIENT_WEBSOCKET_LOCAL_CONTEXT_KEY,
           webSocketPipe.getClientWebSocket());
@@ -73,7 +73,10 @@ public class WebSocketHandshakeServerFilter implements HttpServerFilter {
         ((VertxServerRequestToHttpServletRequest) invocation.getRequestEx())
             .toWebSocket()
             .whenComplete((ws, t) ->
-                new VertxWebSocketAdaptor(invocation.getOperationMeta().getExecutor(),
+                new VertxWebSocketAdaptor(
+                    invocation.getInvocationType(),
+                    invocation.getTraceId(),
+                    invocation.getOperationMeta().getExecutor(),
                     (ServerWebSocket) result,
                     ws));
       }

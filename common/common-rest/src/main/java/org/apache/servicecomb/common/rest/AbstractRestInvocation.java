@@ -46,7 +46,6 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.ws.ServerWebSocket;
@@ -185,15 +184,6 @@ public abstract class AbstractRestInvocation {
     Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
     if (qpsFlowControlReject.value) {
       return;
-    }
-
-    if (Const.WEBSOCKET.equals(invocation.getProviderTransportName())) {
-      // pause for WebSocket handshake, waiting for completion of the biz REST operation
-      if (requestEx instanceof VertxServerRequestToHttpServletRequest) {
-        ((VertxServerRequestToHttpServletRequest) requestEx).getContext()
-            .request()
-            .pause();
-      }
     }
 
     try {

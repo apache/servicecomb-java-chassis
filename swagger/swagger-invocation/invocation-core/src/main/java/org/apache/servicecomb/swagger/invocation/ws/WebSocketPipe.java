@@ -30,13 +30,20 @@ import io.netty.handler.codec.http.websocketx.WebSocketCloseStatus;
 public class WebSocketPipe {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketPipe.class);
 
+  private final String websocketSessionId;
+
   private final PipeServerWebSocket serverWebSocket;
 
   private final PipeClientWebSocket clientWebSocket;
 
+  /**
+   * There is chance that the server and client try to close connection at the same time.
+   * Use one lock to avoid the client and server websocket deadlock in closing procedure.
+   */
   private final Object statusLock = new Object();
 
-  public WebSocketPipe() {
+  public WebSocketPipe(String websocketSessionId) {
+    this.websocketSessionId = websocketSessionId;
     this.clientWebSocket = new PipeClientWebSocket();
     this.serverWebSocket = new PipeServerWebSocket();
     this.clientWebSocket.connect(serverWebSocket);
@@ -97,32 +104,33 @@ public class WebSocketPipe {
       peer.sendMessage(message)
           .whenComplete((v, t) -> {
             if (t != null) {
-              LOGGER.error("failed to forward message", t);
+              LOGGER.error("[{}] failed to forward message", websocketSessionId, t);
             }
           });
       if (peer.writeQueueFull()) {
         this.pause();
-        LOGGER.debug("pipe paused, direction is server to client");
+        LOGGER.debug("[{}] pipe paused, direction is server to client", websocketSessionId);
       }
     }
 
     @Override
     public void onError(Throwable t) {
-      LOGGER.error("websocket error", t);
+      LOGGER.error("[{}] websocket error", websocketSessionId, t);
       synchronized (statusLock) {
         transferStatus(PipeWebSocketStatus.ERROR);
-        safelyClose();
+        safelyClose((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
+            WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
       }
     }
 
     @Override
     public void onClose(Short closeStatusCode, String closeReason) {
       transferStatus(PipeWebSocketStatus.CLOSED);
-      safelyClose(); // should close peer
+      safelyClose(closeStatusCode, closeReason); // should close peer
     }
 
     @Override
-    public void onDrain() {
+    public void onWriteQueueDrain() {
       peer.resume();
     }
 
@@ -132,6 +140,7 @@ public class WebSocketPipe {
         if (status == PipeWebSocketStatus.CLOSING || status == PipeWebSocketStatus.CLOSED) {
           return CompletableFuture.completedFuture(null);
         }
+
         transferStatus(PipeWebSocketStatus.CLOSING);
         if (status.ordinal() < PipeWebSocketStatus.RUNNING.ordinal()) {
           transferStatus(PipeWebSocketStatus.CLOSED);
@@ -151,7 +160,9 @@ public class WebSocketPipe {
     private void transferStatus(PipeWebSocketStatus expectedOldStatus, PipeWebSocketStatus newStatus) {
       synchronized (statusLock) {
         if (status != expectedOldStatus) {
-          safelyClose();
+          safelyClose((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
+              WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
+          LOGGER.error("[{}] illegal state transfer: from {} to {}", websocketSessionId, expectedOldStatus, newStatus);
           throw new IllegalStateException("Illegal state transfer: ["
               + expectedOldStatus
               + "] to ["
@@ -162,21 +173,19 @@ public class WebSocketPipe {
       }
     }
 
-    private void safelyClose() {
+    private void safelyClose(Short closeStatusCode, String closeReason) {
       try {
-        close((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
-            WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
+        close(closeStatusCode, closeReason);
       } catch (Throwable e) {
-        LOGGER.error("failed to close pipe server websocket", e);
+        LOGGER.error("[{}] failed to close pipe server websocket", websocketSessionId, e);
       }
       if (peer == null) {
         return;
       }
       try {
-        peer.close((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
-            WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
+        peer.close(closeStatusCode, closeReason);
       } catch (Throwable e) {
-        LOGGER.error("failed to close pipe client websocket", e);
+        LOGGER.error("[{}] failed to close pipe client websocket", websocketSessionId, e);
       }
     }
   }
@@ -215,32 +224,33 @@ public class WebSocketPipe {
       peer.sendMessage(message)
           .whenComplete((v, t) -> {
             if (t != null) {
-              LOGGER.error("failed to forward message", t);
+              LOGGER.error("[{}] failed to forward message", websocketSessionId, t);
             }
           });
       if (peer.writeQueueFull()) {
         this.pause();
-        LOGGER.debug("pipe paused, direction is client to server");
+        LOGGER.debug("[{}] pipe paused, direction is client to server", websocketSessionId);
       }
     }
 
     @Override
     public void onError(Throwable t) {
-      LOGGER.error("websocket error", t);
+      LOGGER.error("[{}] websocket error", websocketSessionId, t);
       synchronized (statusLock) {
         transferStatus(PipeWebSocketStatus.ERROR);
-        safelyClose();
+        safelyClose((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
+            WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
       }
     }
 
     @Override
     public void onClose(Short closeStatusCode, String closeReason) {
       transferStatus(PipeWebSocketStatus.CLOSED);
-      safelyClose(); // should close peer
+      safelyClose(closeStatusCode, closeReason); // should close peer
     }
 
     @Override
-    public void onDrain() {
+    public void onWriteQueueDrain() {
       peer.resume();
     }
 
@@ -253,7 +263,9 @@ public class WebSocketPipe {
     private void transferStatus(PipeWebSocketStatus expectedOldStatus, PipeWebSocketStatus newStatus) {
       synchronized (statusLock) {
         if (status != expectedOldStatus) {
-          safelyClose();
+          safelyClose((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
+              WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
+          LOGGER.error("[{}] illegal state transfer: from {} to {}", websocketSessionId, expectedOldStatus, newStatus);
           throw new IllegalStateException("Illegal state transfer: ["
               + expectedOldStatus
               + "] to ["
@@ -264,21 +276,19 @@ public class WebSocketPipe {
       }
     }
 
-    private void safelyClose() {
+    private void safelyClose(Short closeStatusCode, String closeReason) {
       try {
-        close((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
-            WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
+        close(closeStatusCode, closeReason);
       } catch (Throwable e) {
-        LOGGER.error("failed to close pipe client websocket", e);
+        LOGGER.error("[{}] failed to close pipe client websocket", websocketSessionId, e);
       }
       if (peer == null) {
         return;
       }
       try {
-        peer.close((short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code(),
-            WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText());
+        peer.close(closeStatusCode, closeReason);
       } catch (Throwable e) {
-        LOGGER.error("failed to close pipe server websocket", e);
+        LOGGER.error("[{}] failed to close pipe server websocket", websocketSessionId, e);
       }
     }
   }

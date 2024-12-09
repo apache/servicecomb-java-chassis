@@ -56,7 +56,7 @@ import io.vertx.core.http.WebSocketConnectOptions;
 
 public class WebSocketClientInvocation {
 
-  public static final Logger LOGGER = LoggerFactory.getLogger(WebSocketClientInvocation.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketClientInvocation.class);
 
   private static final String[] INTERNAL_HEADERS = new String[] {
       Const.CSE_CONTEXT,

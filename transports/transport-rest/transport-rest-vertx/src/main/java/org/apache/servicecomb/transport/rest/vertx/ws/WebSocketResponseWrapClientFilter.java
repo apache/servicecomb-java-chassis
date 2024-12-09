@@ -68,6 +68,8 @@ public class WebSocketResponseWrapClientFilter implements HttpClientFilter {
         .getOperationMeta()
         .getExecutor();
     final VertxWebSocketAdaptor webSocketAdaptor = new VertxWebSocketAdaptor(
+        invocation.getInvocationType(),
+        invocation.getTraceId(),
         executor,
         clientWebSocket,
         webSocketResponseEx.getVertxClientWebSocket());
