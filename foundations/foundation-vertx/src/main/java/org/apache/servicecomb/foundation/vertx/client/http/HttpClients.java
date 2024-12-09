@@ -38,7 +38,6 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.dns.AddressResolverOptions;
-import io.vertx.core.http.WebSocketClient;
 
 /**
  *  load and manages a set of HttpClient at boot up.
@@ -83,7 +82,7 @@ public class HttpClients {
     clientOptionsList.forEach(option -> VertxUtils.blockCloseVertxByName(option.clientName()));
 
     wsClients.clear();
-    List<WebSocketClientOptionsSPI> websocketClientOptionsList =
+    final List<WebSocketClientOptionsSPI> websocketClientOptionsList =
         SPIServiceUtils.getOrLoadSortedService(WebSocketClientOptionsSPI.class);
     websocketClientOptionsList.forEach(option -> VertxUtils.blockCloseVertxByName(option.clientName()));
   }

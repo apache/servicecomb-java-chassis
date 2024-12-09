@@ -22,6 +22,4 @@ package org.apache.servicecomb.swagger.invocation.ws;
  * There should be such a concept, but not need to supply such function for now.
  */
 public class WebSocketFrame {
-  private boolean isFinal;
-  private WebSocketFrameType type;
 }

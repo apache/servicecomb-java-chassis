@@ -20,13 +20,21 @@ package org.apache.servicecomb.transport.rest.vertx.ws;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.servicecomb.core.executor.ReactiveExecutor;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.ws.AbstractBaseWebSocket;
 import org.apache.servicecomb.swagger.invocation.ws.BinaryBytesWebSocketMessage;
+import org.apache.servicecomb.swagger.invocation.ws.SerialExecutorWrapper;
 import org.apache.servicecomb.swagger.invocation.ws.TextWebSocketMessage;
 import org.apache.servicecomb.swagger.invocation.ws.WebSocketAdapter;
 import org.apache.servicecomb.swagger.invocation.ws.WebSocketFrame;
 import org.apache.servicecomb.swagger.invocation.ws.WebSocketMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.WebSocketBase;
@@ -35,27 +43,70 @@ import io.vertx.core.http.WebSocketBase;
  * VertxWebSocketAdaptor
  */
 public class VertxWebSocketAdaptor implements WebSocketAdapter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxWebSocketAdaptor.class);
+
+  private static final int DEFAULT_ADAPTER_QUEUE_MAX_SIZE = 100;
+
+  private static final int DEFAULT_ADAPTER_QUEUE_MAX_CONTINUE_TIMES = 10;
+
   private final Executor executor;
 
   private final AbstractBaseWebSocket delegatedWebSocket;
 
+  private final AtomicBoolean inPauseStatus;
+
   private final WebSocketBase vertxWebSocket;
 
-  public VertxWebSocketAdaptor(Executor executor, AbstractBaseWebSocket delegatedWebSocket,
+  private final String websocketSessionId;
+
+  private final InvocationType invocationType;
+
+  public VertxWebSocketAdaptor(
+      InvocationType invocationType,
+      String websocketSessionId,
+      Executor workerPool,
+      AbstractBaseWebSocket delegatedWebSocket,
       WebSocketBase vertxWebSocket) {
-    Objects.requireNonNull(executor, "VertxWebSocketAdaptor executor is null");
+    Objects.requireNonNull(invocationType, "VertxWebSocketAdaptor invocationType is null");
+    Objects.requireNonNull(websocketSessionId, "VertxWebSocketAdaptor websocketSessionId is null");
+    Objects.requireNonNull(workerPool, "VertxWebSocketAdaptor workerPool is null");
     Objects.requireNonNull(delegatedWebSocket, "VertxWebSocketAdaptor delegatedWebSocket is null");
     Objects.requireNonNull(vertxWebSocket, "VertxWebSocketAdaptor vertxWebSocket is null");
-    this.executor = executor;
+    this.invocationType = invocationType;
+    this.websocketSessionId = websocketSessionId;
+    this.executor = workerPool instanceof ReactiveExecutor ?
+        workerPool // for reactive case, no need to wrap it into a serial queue model
+        : prepareSerialExecutorWrapper(workerPool);
     this.delegatedWebSocket = delegatedWebSocket;
     this.vertxWebSocket = vertxWebSocket;
+    inPauseStatus = new AtomicBoolean(true);
+    vertxWebSocket.pause(); // make sure the vert.x WebSocket pause status keep consistent with inPauseStatus flag
 
-    link();
+    prepare();
     delegatedWebSocket.setWebSocketAdapter(this);
     startWorking();
   }
 
-  private void link() {
+  private SerialExecutorWrapper prepareSerialExecutorWrapper(Executor workerPool) {
+    final SerialExecutorWrapper wrapper = new SerialExecutorWrapper(
+        invocationType,
+        websocketSessionId,
+        workerPool,
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.websocket.adapter.queue.maxSize",
+                DEFAULT_ADAPTER_QUEUE_MAX_SIZE)
+            .get(),
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.websocket.adapter.queue.maxContinueTimes",
+                DEFAULT_ADAPTER_QUEUE_MAX_CONTINUE_TIMES)
+            .get());
+    wrapper.subscribeQueueDrainEvent(this::resume);
+    wrapper.subscribeQueueFullEvent(this::pause);
+    return wrapper;
+  }
+
+  private void prepare() {
     linkVertxDrainHandler();
     linkVertxTextMessageHandler();
     linkVertxBinaryMessageHandler();
@@ -66,12 +117,11 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   private void linkVertxCloseHandler() {
     vertxWebSocket.closeHandler(v ->
-        executor.execute(
-            () -> delegatedWebSocket.onClose(vertxWebSocket.closeStatusCode(), vertxWebSocket.closeReason())));
+        scheduleTask(() -> delegatedWebSocket.onClose(vertxWebSocket.closeStatusCode(), vertxWebSocket.closeReason())));
   }
 
   private void linkVertxExceptionHandler() {
-    vertxWebSocket.exceptionHandler(t -> executor.execute(() -> delegatedWebSocket.onError(t)));
+    vertxWebSocket.exceptionHandler(t -> scheduleTask(() -> delegatedWebSocket.onError(t)));
   }
 
   private void linkVertxFrameHandler() {
@@ -82,25 +132,33 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
   private void linkVertxBinaryMessageHandler() {
     vertxWebSocket.binaryMessageHandler(buffer -> {
       final byte[] bytes = buffer.getBytes();
-      executor.execute(
+      scheduleTask(
           () -> delegatedWebSocket.onMessage(new BinaryBytesWebSocketMessage(bytes)));
     });
   }
 
   private void linkVertxTextMessageHandler() {
     vertxWebSocket.textMessageHandler(s ->
-        executor.execute(
+        scheduleTask(
             () -> delegatedWebSocket.onMessage(new TextWebSocketMessage(s))));
   }
 
   private void linkVertxDrainHandler() {
     vertxWebSocket.drainHandler(v ->
-        executor.execute(delegatedWebSocket::onDrain));
+        scheduleTask(delegatedWebSocket::onWriteQueueDrain));
   }
 
   private void startWorking() {
-    executor.execute(
+    scheduleTask(
         delegatedWebSocket::onConnectionReady);
+  }
+
+  private void scheduleTask(Runnable task) {
+    try {
+      executor.execute(task);
+    } catch (Throwable e) {
+      LOGGER.error("[{}]-[{}] error occurs in scheduleTask", invocationType, websocketSessionId, e);
+    }
   }
 
   @Override
@@ -136,12 +194,26 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   @Override
   public void pause() {
-    vertxWebSocket.pause();
+    if (!inPauseStatus.compareAndSet(false, true)) {
+      return;
+    }
+    LOGGER.info("[{}]-[{}] pause websocket", invocationType, websocketSessionId);
+    synchronized (this) {
+      vertxWebSocket.pause();
+      inPauseStatus.set(true);
+    }
   }
 
   @Override
   public void resume() {
-    vertxWebSocket.resume();
+    if (!inPauseStatus.compareAndSet(true, false)) {
+      return;
+    }
+    LOGGER.info("[{}]-[{}] resume websocket", invocationType, websocketSessionId);
+    synchronized (this) {
+      vertxWebSocket.resume();
+      inPauseStatus.set(false);
+    }
   }
 
   @Override

@@ -24,7 +24,6 @@ import com.netflix.config.ConcurrentCompositeConfiguration;
 
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
-import io.vertx.core.http.WebSocketClientOptions;
 import io.vertx.core.net.ClientOptionsBase;
 import io.vertx.core.net.ProxyOptions;
 

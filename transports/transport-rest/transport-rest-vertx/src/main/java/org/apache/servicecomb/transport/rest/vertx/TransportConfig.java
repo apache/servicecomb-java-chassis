@@ -182,6 +182,13 @@ public final class TransportConfig {
         .get();
   }
 
+  public static boolean enableLogActivity() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.server.enableLogActivity",
+            false)
+        .get();
+  }
+
   public static boolean isCorsEnabled() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".enabled", false)

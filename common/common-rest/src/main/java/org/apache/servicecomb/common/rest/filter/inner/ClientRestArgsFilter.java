@@ -40,7 +40,7 @@ public class ClientRestArgsFilter implements HttpClientFilter {
 
   @Override
   public boolean enabledForTransport(String transport) {
-    return HttpClientFilter.super.enabledForTransport(transport)|| Const.WEBSOCKET.equals(transport);
+    return HttpClientFilter.super.enabledForTransport(transport) || Const.WEBSOCKET.equals(transport);
   }
 
   @Override
