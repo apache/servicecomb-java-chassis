@@ -62,6 +62,8 @@ import org.mockito.Mockito;
 
 import com.google.common.eventbus.Subscribe;
 
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -112,6 +114,8 @@ public class TestLoadBalanceHandler2 {
     InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    when(operationMeta.getSwaggerOperation()).thenReturn(new Operation());
+    when(schemaMeta.getSwagger()).thenReturn(new Swagger());
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
@@ -258,6 +262,8 @@ public class TestLoadBalanceHandler2 {
     InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    when(operationMeta.getSwaggerOperation()).thenReturn(new Operation());
+    when(schemaMeta.getSwagger()).thenReturn(new Swagger());
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
@@ -345,6 +351,8 @@ public class TestLoadBalanceHandler2 {
     InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    when(operationMeta.getSwaggerOperation()).thenReturn(new Operation());
+    when(schemaMeta.getSwagger()).thenReturn(new Swagger());
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
@@ -739,6 +747,8 @@ public class TestLoadBalanceHandler2 {
     InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    when(operationMeta.getSwaggerOperation()).thenReturn(new Operation());
+    when(schemaMeta.getSwagger()).thenReturn(new Swagger());
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
     when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
     when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
@@ -778,8 +788,10 @@ public class TestLoadBalanceHandler2 {
     LoadbalanceHandler handler = new LoadbalanceHandler();
     try {
       handler.handle(invocation, asyncResp);
+    } catch (IndexOutOfBoundsException e) {
+      // swallow, IndexOutOfBoundsException is expected because the handler chain of Invocation is not mocked
     } catch (Exception e) {
-
+      throw new IllegalStateException(e);
     }
     Assertions.assertEquals("rest://localhost:9092", invocation.getEndpoint().getEndpoint());
 

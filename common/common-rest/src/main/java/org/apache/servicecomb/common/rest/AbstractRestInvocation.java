@@ -48,6 +48,7 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.apache.servicecomb.swagger.invocation.ws.ServerWebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -279,7 +280,7 @@ public abstract class AbstractRestInvocation {
 
     invocation.getInvocationStageTrace().startServerFiltersRequest();
     for (HttpServerFilter filter : httpServerFilters) {
-      if (filter.enabled()) {
+      if (filter.enabled() && filter.enabledForTransport(invocation.getProviderTransportName())) {
         Response response = filter.afterReceiveRequest(invocation, requestEx);
         if (response != null) {
           return response;
@@ -320,7 +321,9 @@ public abstract class AbstractRestInvocation {
   protected void sendResponse(Response response) {
     RestServerCodecFilter.copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
-    responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
+    if (!(response.getResult() instanceof ServerWebSocket)) {
+      responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
+    }
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR, produceProcessor);
 
@@ -346,18 +349,20 @@ public abstract class AbstractRestInvocation {
           getMicroserviceQualifiedName(), requestEx.getRequestURI(), e);
     }
 
-    try {
-      responseEx.flushBuffer();
-    } catch (Throwable flushException) {
-      LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
-          getMicroserviceQualifiedName(), requestEx.getRequestURI(), flushException);
-    }
+    if (!(response.getResult() instanceof ServerWebSocket)) {
+      try {
+        responseEx.flushBuffer();
+      } catch (Throwable flushException) {
+        LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
+            getMicroserviceQualifiedName(), requestEx.getRequestURI(), flushException);
+      }
 
-    try {
-      requestEx.getAsyncContext().complete();
-    } catch (Throwable completeException) {
-      LOGGER.error("Failed to complete async rest response, operation:{}, request uri:{}",
-          getMicroserviceQualifiedName(), requestEx.getRequestURI(), completeException);
+      try {
+        requestEx.getAsyncContext().complete();
+      } catch (Throwable completeException) {
+        LOGGER.error("Failed to complete async rest response, operation:{}, request uri:{}",
+            getMicroserviceQualifiedName(), requestEx.getRequestURI(), completeException);
+      }
     }
 
     // if failed to locate path, then will not create invocation

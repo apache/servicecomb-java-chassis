@@ -20,9 +20,9 @@ import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.net.UrlEscapers;
-import org.apache.commons.lang3.StringUtils;
 
 public final class HttpUtils {
   private HttpUtils() {
@@ -141,5 +141,42 @@ public final class HttpUtils {
       encoding = encoding.substring(1, encoding.length() - 1);
     }
     return encoding.trim();
+  }
+
+  public static String splitPathFromUri(String uri) {
+    if (uri == null || uri.isEmpty()) {
+      return uri;
+    }
+    int pathStart;
+    final int i = uri.indexOf("://");
+    if (i < 0) { // uri=/path?x=y or uri=path?x=y
+      pathStart = 0;
+    } else { // uri=http://localhost:8080/path?x=y or uri=http://localhost:8080
+      pathStart = uri.indexOf("/", i + 3);
+    }
+
+    if (pathStart < 0) {
+      // for uri=http://localhost:8080 case, return "/" to keep compatible with Vert.x io.vertx.core.http.HttpClientRequest.path.
+      // (i.e. keep compatible with io.vertx.core.http.impl.HttpUtils.parsePath)
+      return "/";
+    }
+
+    final int queryStart = uri.indexOf('?', pathStart);
+    if (queryStart < 0) {
+      return uri.substring(pathStart);
+    } else {
+      return uri.substring(pathStart, queryStart);
+    }
+  }
+
+  public static String splitQueryFromUri(String uri) {
+    if (uri == null || uri.isEmpty()) {
+      return null;
+    }
+    final int queryStart = uri.indexOf('?');
+    if (queryStart < 0) {
+      return null;
+    }
+    return uri.substring(queryStart + 1);
   }
 }

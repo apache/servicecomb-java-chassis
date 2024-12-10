@@ -48,7 +48,7 @@ public class HttpClientFilterBeforeSendRequestExecutor {
 
   protected CompletableFuture<Void> safeInvoke(HttpClientFilter httpClientFilter) {
     try {
-      if (httpClientFilter.enabled()) {
+      if (httpClientFilter.enabled() && httpClientFilter.enabledForTransport(invocation.getTransportName())) {
         CompletableFuture<Void> future = httpClientFilter.beforeSendRequestAsync(invocation, requestEx);
         if (future == null) {
           future = new CompletableFuture<>();

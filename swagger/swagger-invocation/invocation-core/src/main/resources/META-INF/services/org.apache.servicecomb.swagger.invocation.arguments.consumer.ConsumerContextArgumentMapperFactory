@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerInvocationContextMapperFactory
+org.apache.servicecomb.swagger.invocation.arguments.consumer.ClientWebSocketArgumentMapperFactory

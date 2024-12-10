@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.http.HttpStatus;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
@@ -213,6 +214,10 @@ public final class InvokerUtils {
     invocation.getInvocationStageTrace().finishHandlersResponse();
     invocation.onFinish(response);
 
+    if (response.getStatusCode() == HttpStatus.SC_SWITCHING_PROTOCOLS) {
+      response.setStatus(Status.OK); // Switch to OK status to make websocket pass the RPC procedure later
+    }
+
     if (response.isFailed()) {
       // re-throw exception to make sure retry based on exception
       // for InvocationException, users can configure status code for retry
@@ -364,6 +369,10 @@ public final class InvokerUtils {
           invocation.getInvocationStageTrace().finishHandlersResponse();
           invocation.onFinish(ar);
           try {
+            if (ar.getStatusCode() == HttpStatus.SC_SWITCHING_PROTOCOLS) {
+              ar.setStatus(Status.OK); // Switch to OK status to make websocket pass the RPC procedure later
+            }
+
             if (ar.isFailed()) {
               // re-throw exception to make sure retry based on exception
               // for InvocationException, users can configure status code for retry

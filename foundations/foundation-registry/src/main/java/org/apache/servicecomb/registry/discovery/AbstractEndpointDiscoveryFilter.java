@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.registry.discovery;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +30,8 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEndpointDiscoveryFilter.class);
 
   private static final String ALL_TRANSPORT = "";
+
+  private static final String WEBSOCKET_TRANSPORT = "websocket";
 
   @Override
   public boolean isGroupingFilter() {
@@ -50,8 +52,11 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
     for (MicroserviceInstance instance : ((Map<String, MicroserviceInstance>) parent.data()).values()) {
       for (String endpoint : instance.getEndpoints()) {
         try {
-          URI uri = URI.create(endpoint);
-          String transportName = uri.getScheme();
+          final URIEndpointObject endpointObject = new URIEndpointObject(endpoint);
+          String transportName = endpointObject.getScheme();
+          if (endpointObject.isWebsocketEnabled() && WEBSOCKET_TRANSPORT.equals(expectTransportName)) {
+            transportName = WEBSOCKET_TRANSPORT;
+          }
           if (!isTransportNameMatch(transportName, expectTransportName)) {
             continue;
           }
@@ -74,7 +79,10 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
   }
 
   protected boolean isTransportNameMatch(String transportName, String expectTransportName) {
-    return ALL_TRANSPORT.equals(expectTransportName) || transportName.equals(expectTransportName);
+    if (ALL_TRANSPORT.equals(expectTransportName)) {
+      return true;
+    }
+    return transportName.equals(expectTransportName);
   }
 
   protected abstract String findTransportName(DiscoveryContext context, DiscoveryTreeNode parent);

@@ -259,6 +259,7 @@ public class TestAbstractRestInvocation {
     HttpServerFilter filter = Mockito.mock(HttpServerFilter.class);
     Response response = Response.ok("");
     Mockito.when(filter.enabled()).thenReturn(true);
+    Mockito.when(filter.enabledForTransport(Mockito.any())).thenReturn(true);
     Mockito.when(filter.afterReceiveRequest(invocation, requestEx)).thenReturn(response);
 
     Holder<Response> result = new Holder<>();
@@ -327,6 +328,7 @@ public class TestAbstractRestInvocation {
     HttpServerFilter filter = Mockito.mock(HttpServerFilter.class);
     Exception error = new RuntimeExceptionWithoutStackTrace();
     Mockito.when(filter.enabled()).thenReturn(true);
+    Mockito.when(filter.enabledForTransport(Mockito.any())).thenReturn(true);
     Mockito.when(filter.afterReceiveRequest(invocation, requestEx)).thenThrow(error);
 
     Holder<Throwable> result = new Holder<>();
@@ -552,7 +554,6 @@ public class TestAbstractRestInvocation {
         .set(CONTENT_LENGTH, "10")
         .set(TRANSFER_ENCODING, "encoding");
 
-    Mockito.when(response.getResult()).thenThrow(new RuntimeExceptionWithoutStackTrace("stop"));
     Mockito.when(response.getHeaders()).thenReturn(headers);
 
     MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
@@ -573,7 +574,6 @@ public class TestAbstractRestInvocation {
     headers.add("h1", "h1v2");
     headers.add("h2", "h2v");
 
-    Mockito.when(response.getResult()).thenThrow(new RuntimeExceptionWithoutStackTrace("stop"));
     Mockito.when(response.getHeaders()).thenReturn(headers);
 
     MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
