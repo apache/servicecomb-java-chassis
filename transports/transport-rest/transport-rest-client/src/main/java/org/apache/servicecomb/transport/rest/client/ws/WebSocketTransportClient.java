@@ -39,7 +39,7 @@ public class WebSocketTransportClient {
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) {
-    final WebSocketClientWithContext webSocketClientWithContext = findHttpClientPool(invocation);
+    final WebSocketClientWithContext webSocketClientWithContext = findWebSocketPool(invocation);
     final WebSocketClientInvocation webSocketClientInvocation = new WebSocketClientInvocation(
         webSocketClientWithContext, httpClientFilters);
     try {
@@ -50,7 +50,7 @@ public class WebSocketTransportClient {
     }
   }
 
-  protected WebSocketClientWithContext findHttpClientPool(Invocation invocation) {
+  protected WebSocketClientWithContext findWebSocketPool(Invocation invocation) {
     String clientName = WebSocketTransportClientOptionsSPI.CLIENT_NAME;
     return HttpClients.getWebSocketClient(clientName, invocation.isSync(), null);
   }

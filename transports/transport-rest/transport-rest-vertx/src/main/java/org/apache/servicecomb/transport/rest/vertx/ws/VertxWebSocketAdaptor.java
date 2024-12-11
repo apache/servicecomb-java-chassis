@@ -52,11 +52,17 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   private final Executor executor;
 
-  private final AbstractBaseWebSocket delegatedWebSocket;
+  /**
+   * The WebSocket type provided by user(from business logic)
+   */
+  private final AbstractBaseWebSocket bizWebSocket;
+
+  /**
+   * The underlying WebSocket type provided by Vert.x which represents the real WebSocket network connection.
+   */
+  private final WebSocketBase vertxWebSocket;
 
   private final AtomicBoolean inPauseStatus;
-
-  private final WebSocketBase vertxWebSocket;
 
   private final String websocketSessionId;
 
@@ -66,26 +72,32 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
       InvocationType invocationType,
       String websocketSessionId,
       Executor workerPool,
-      AbstractBaseWebSocket delegatedWebSocket,
+      AbstractBaseWebSocket bizWebSocket,
       WebSocketBase vertxWebSocket) {
     Objects.requireNonNull(invocationType, "VertxWebSocketAdaptor invocationType is null");
     Objects.requireNonNull(websocketSessionId, "VertxWebSocketAdaptor websocketSessionId is null");
     Objects.requireNonNull(workerPool, "VertxWebSocketAdaptor workerPool is null");
-    Objects.requireNonNull(delegatedWebSocket, "VertxWebSocketAdaptor delegatedWebSocket is null");
+    Objects.requireNonNull(bizWebSocket, "VertxWebSocketAdaptor bizWebSocket is null");
     Objects.requireNonNull(vertxWebSocket, "VertxWebSocketAdaptor vertxWebSocket is null");
     this.invocationType = invocationType;
     this.websocketSessionId = websocketSessionId;
     this.executor = workerPool instanceof ReactiveExecutor ?
         workerPool // for reactive case, no need to wrap it into a serial queue model
         : prepareSerialExecutorWrapper(workerPool);
-    this.delegatedWebSocket = delegatedWebSocket;
+    this.bizWebSocket = bizWebSocket;
     this.vertxWebSocket = vertxWebSocket;
     inPauseStatus = new AtomicBoolean(true);
     vertxWebSocket.pause(); // make sure the vert.x WebSocket pause status keep consistent with inPauseStatus flag
 
-    prepare();
-    delegatedWebSocket.setWebSocketAdapter(this);
+    // make sure the bi-direction message stream is established
+    linkVertxToBiz();
+    linkBizToVertx(bizWebSocket);
+    // notify that the stream connection is ready to work
     startWorking();
+  }
+
+  private void linkBizToVertx(AbstractBaseWebSocket bizWebSocket) {
+    bizWebSocket.setWebSocketAdapter(this);
   }
 
   private SerialExecutorWrapper prepareSerialExecutorWrapper(Executor workerPool) {
@@ -106,7 +118,7 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
     return wrapper;
   }
 
-  private void prepare() {
+  private void linkVertxToBiz() {
     linkVertxDrainHandler();
     linkVertxTextMessageHandler();
     linkVertxBinaryMessageHandler();
@@ -117,11 +129,11 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   private void linkVertxCloseHandler() {
     vertxWebSocket.closeHandler(v ->
-        scheduleTask(() -> delegatedWebSocket.onClose(vertxWebSocket.closeStatusCode(), vertxWebSocket.closeReason())));
+        scheduleTask(() -> bizWebSocket.onClose(vertxWebSocket.closeStatusCode(), vertxWebSocket.closeReason())));
   }
 
   private void linkVertxExceptionHandler() {
-    vertxWebSocket.exceptionHandler(t -> scheduleTask(() -> delegatedWebSocket.onError(t)));
+    vertxWebSocket.exceptionHandler(t -> scheduleTask(() -> bizWebSocket.onError(t)));
   }
 
   private void linkVertxFrameHandler() {
@@ -133,24 +145,24 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
     vertxWebSocket.binaryMessageHandler(buffer -> {
       final byte[] bytes = buffer.getBytes();
       scheduleTask(
-          () -> delegatedWebSocket.onMessage(new BinaryBytesWebSocketMessage(bytes)));
+          () -> bizWebSocket.onMessage(new BinaryBytesWebSocketMessage(bytes)));
     });
   }
 
   private void linkVertxTextMessageHandler() {
     vertxWebSocket.textMessageHandler(s ->
         scheduleTask(
-            () -> delegatedWebSocket.onMessage(new TextWebSocketMessage(s))));
+            () -> bizWebSocket.onMessage(new TextWebSocketMessage(s))));
   }
 
   private void linkVertxDrainHandler() {
     vertxWebSocket.drainHandler(v ->
-        scheduleTask(delegatedWebSocket::onWriteQueueDrain));
+        scheduleTask(bizWebSocket::onWriteQueueDrain));
   }
 
   private void startWorking() {
     scheduleTask(
-        delegatedWebSocket::onConnectionReady);
+        bizWebSocket::onConnectionReady);
   }
 
   private void scheduleTask(Runnable task) {

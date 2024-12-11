@@ -50,10 +50,10 @@ public class SerialExecutorWrapperTest {
 
   @Test
   public void executeSingleWrapper() throws InterruptedException {
-    // queueCapacity(10) + bufferCapacity(50) + taskInWorking(1) = 61, this is the max task count that not trigger queue full exception
-    final int taskCount = 61;
+    // queueCapacity(100*1.2) + taskInWorking(1) = 121, this is the max task count that not trigger queue full exception
+    final int taskCount = 121;
     final SerialExecutorWrapper wrapper = new SerialExecutorWrapper(InvocationType.PRODUCER,
-        "testSerialWrapper", workerPools, 10, 3);
+        "testSerialWrapper", workerPools, 10, 3); // queueCapacity will be corrected to 100
     wrapper.subscribeQueueDrainEvent(() -> {
     });
     final Object lock = new Object();
@@ -88,9 +88,9 @@ public class SerialExecutorWrapperTest {
 
   @Test
   public void executeSingleWrapperQueueFull() throws InterruptedException {
-    final int taskCount = 62; // taskCount +1 than executeSingleWrapper method
+    final int taskCount = 122; // taskCount +1 than executeSingleWrapper method
     final SerialExecutorWrapper wrapper = new SerialExecutorWrapper(InvocationType.PRODUCER,
-        "testSerialWrapper", workerPools, 10, 3);
+        "testSerialWrapper", workerPools, 10, 3); // queueCapacity will be corrected to 100
     wrapper.subscribeQueueDrainEvent(() -> {
     });
     final Object lock = new Object();
