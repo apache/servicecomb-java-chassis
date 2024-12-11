@@ -31,7 +31,7 @@ public class SerialExecutorWrapper implements Executor {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SerialExecutorWrapper.class);
 
-  private static final int LEAST_QUEUE_CAPACITY = 10;
+  private static final int LEAST_QUEUE_CAPACITY = 100;
 
   private final InvocationType invocationType;
 
@@ -186,7 +186,7 @@ public class SerialExecutorWrapper implements Executor {
   }
 
   private int calculateRealQueueSize() {
-    return queueCapacity + 50;
+    return (int) (queueCapacity * 1.2);
   }
 
   private int calculateDrainThreshold() {
@@ -194,7 +194,7 @@ public class SerialExecutorWrapper implements Executor {
   }
 
   private int calculateFullThreshold() {
-    return (int) (queueCapacity * 0.9);
+    return queueCapacity;
   }
 
   private int correctQueueCapacity(int queueCapacity) {
