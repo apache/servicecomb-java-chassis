@@ -182,6 +182,13 @@ public final class TransportConfig {
         .get();
   }
 
+  public static boolean enableLogActivity() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.server.enableLogActivity",
+            false)
+        .get();
+  }
+
   public static boolean isCorsEnabled() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".enabled", false)
@@ -242,6 +249,48 @@ public final class TransportConfig {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty("servicecomb.rest.server.maxInitialLineLength",
             HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH)
+        .get();
+  }
+
+  public static int getMaxWebSocketFrameSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.websocket.server.maxFrameSize",
+            HttpServerOptions.DEFAULT_MAX_WEBSOCKET_FRAME_SIZE)
+        .get();
+  }
+
+  public static int getMaxWebSocketMessageSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.websocket.server.maxMessageSize",
+            HttpServerOptions.DEFAULT_MAX_WEBSOCKET_MESSAGE_SIZE)
+        .get();
+  }
+
+  public static int getWebSocketClosingTimeoutInSeconds() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.websocket.server.closingTimeoutInSeconds",
+            HttpServerOptions.DEFAULT_WEBSOCKET_CLOSING_TIMEOUT)
+        .get();
+  }
+
+  public static int getWebSocketCompressionLevel() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.websocket.server.compressionLevel",
+            HttpServerOptions.DEFAULT_WEBSOCKET_COMPRESSION_LEVEL)
+        .get();
+  }
+
+  public static boolean getPerFrameWebSocketCompressionSupported() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.websocket.server.perFrameCompressionSupported",
+            HttpServerOptions.DEFAULT_PER_FRAME_WEBSOCKET_COMPRESSION_SUPPORTED)
+        .get();
+  }
+
+  public static boolean getPerMessageWebSocketCompressionSupported() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.websocket.server.perMessageCompressionSupported",
+            HttpServerOptions.DEFAULT_PER_MESSAGE_WEBSOCKET_COMPRESSION_SUPPORTED)
         .get();
   }
 }

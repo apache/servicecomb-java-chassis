@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.transport.rest.vertx.VertxRestTransport
+org.apache.servicecomb.transport.rest.vertx.WebSocketTransport

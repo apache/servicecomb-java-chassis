@@ -28,6 +28,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.google.common.annotations.VisibleForTesting;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -147,6 +148,13 @@ public class Invocation extends SwaggerInvocation {
     this.handlerList = getHandlerChain();
     handlerIndex = 0;
     traceIdLogger = new TraceIdLogger(this);
+  }
+
+  public String getTransportName() {
+    if (endpoint == null || endpoint.getTransport() == null) {
+      return null;
+    }
+    return endpoint.getTransport().getName();
   }
 
   public Transport getTransport() {
@@ -288,7 +296,26 @@ public class Invocation extends SwaggerInvocation {
     return operationMeta.getOperationId();
   }
 
+  public String getProviderTransportName() {
+    final Map<String, Object> operationVendorExtensions = operationMeta.getSwaggerOperation().getVendorExtensions();
+    if (operationVendorExtensions != null) {
+      final String operationTransportName = (String) operationVendorExtensions.get(Const.TRANSPORT_NAME);
+      if (operationTransportName != null) {
+        return operationTransportName;
+      }
+    }
+    final Map<String, Object> schemaVendorExtensions = schemaMeta.getSwagger().getVendorExtensions();
+    if (schemaVendorExtensions == null) {
+      return null;
+    }
+    return (String) schemaVendorExtensions.get(Const.TRANSPORT_NAME);
+  }
+
   public String getConfigTransportName() {
+    final String providerTransportName = getProviderTransportName();
+    if (providerTransportName != null) {
+      return providerTransportName;
+    }
     return referenceConfig.getTransport();
   }
 
