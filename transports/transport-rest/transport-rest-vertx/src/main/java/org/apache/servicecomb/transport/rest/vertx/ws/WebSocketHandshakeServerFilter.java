@@ -80,6 +80,8 @@ public class WebSocketHandshakeServerFilter implements HttpServerFilter {
                     (ServerWebSocket) result,
                     ws));
       }
+      // WebSocket operation may also return an HTTP response, for example, rejecting WebSocket handshake.
+      // Therefore, we don't throw Exception here, just let it pass and act like REST transport mode.
     }
 
     return HttpServerFilter.super.beforeSendResponseAsync(invocation, responseEx);
