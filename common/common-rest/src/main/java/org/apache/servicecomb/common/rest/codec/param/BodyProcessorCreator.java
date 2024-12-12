@@ -169,8 +169,10 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
 
       // edge support convert from form-data or x-www-form-urlencoded to json automatically
       String contentType = validContentType(request.getContentType());
-      if (contentType.equals(MediaType.MULTIPART_FORM_DATA)
-          || contentType.equals(MediaType.APPLICATION_FORM_URLENCODED)) {
+
+      // support RFC 7231, ignore case for content-type
+      if (StringUtils.equalsIgnoreCase(contentType, MediaType.MULTIPART_FORM_DATA)
+          || StringUtils.equalsIgnoreCase(contentType, MediaType.APPLICATION_FORM_URLENCODED)) {
         return convertValue(request.getParameterMap(), targetType);
       }
 
@@ -182,7 +184,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return null;
       }
 
-      if (MediaType.APPLICATION_JSON.equals(contentType)) {
+      if (StringUtils.equalsIgnoreCase(contentType, MediaType.APPLICATION_JSON)) {
         try {
           ObjectReader reader = serialViewClass != null
               ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
@@ -202,7 +204,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         }
       }
 
-      if (SwaggerConst.PROTOBUF_TYPE.equals(contentType)) {
+      if (StringUtils.equalsIgnoreCase(contentType, SwaggerConst.PROTOBUF_TYPE)) {
         ProtoMapper protoMapper = scopedProtobufSchemaManager
             .getOrCreateProtoMapper(openAPI, operationMeta.getSchemaId(),
                 REQUEST_BODY_NAME,
@@ -214,7 +216,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator<RequestB
         return result.getValue();
       }
 
-      if (MediaType.TEXT_PLAIN.equals(contentType)) {
+      if (StringUtils.equalsIgnoreCase(contentType, MediaType.TEXT_PLAIN)) {
         try {
           if (targetType != null && String.class.equals(targetType.getRawClass())) {
             return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
