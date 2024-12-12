@@ -23,7 +23,7 @@ import org.slf4j.MDC;
 import org.slf4j.Marker;
 
 public class TraceIdLogger {
-  private static final Logger LOGGER = LoggerFactory.getLogger("scb-trace-id");
+  private static final Logger LOGGER = LoggerFactory.getLogger(TraceIdLogger.class);
 
   private static final Marker MARKER = new ScbMarker();
 
