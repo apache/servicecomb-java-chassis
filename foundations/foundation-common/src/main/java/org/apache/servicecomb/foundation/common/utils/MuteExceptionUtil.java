@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.config.etcd;
+package org.apache.servicecomb.foundation.common.utils;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
 
 public class MuteExceptionUtil {
 
-  interface FunctionWithException<T, R> {
+  public interface FunctionWithException<T, R> {
     R apply(T t) throws Exception;
   }
 
-  interface FunctionWithDoubleParam<T1, T2, R> {
+  public interface FunctionWithDoubleParam<T1, T2, R> {
     R apply(T1 t1, T2 t2) throws Exception;
   }
 

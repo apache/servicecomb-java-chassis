@@ -26,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import org.apache.servicecomb.foundation.common.utils.MuteExceptionUtil;
 import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;

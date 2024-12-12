@@ -18,9 +18,12 @@
 package org.apache.servicecomb.samples;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.foundation.common.utils.ConditionWaiter.SleepUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -71,8 +74,10 @@ public class EtcdConfigIT implements CategorizedTestCase {
         "test1=env");
     putValue("/servicecomb/config/environment/production/application.properties",
         "test1=env1");
+
     testGetConfig("test1", "env1");
   }
+
 
   private void testApplication() {
 
@@ -119,7 +124,7 @@ public class EtcdConfigIT implements CategorizedTestCase {
           ByteSequence.from(value, StandardCharsets.UTF_8)
       ).get();
 
-      LOGGER.info("Value set successfully");
+      LOGGER.info("Value set successfully:{}", value);
     } catch (Exception e) {
       e.printStackTrace();
     }
@@ -129,6 +134,13 @@ public class EtcdConfigIT implements CategorizedTestCase {
 
     String result = template
         .getForObject(Config.GATEWAY_URL + "/getConfig?key=" + key, String.class);
-    TestMgr.check(expectValue, result);
+
+    for (int i = 0; i < 4; i++) {
+      if (StringUtils.equals(expectValue, result)) {
+        TestMgr.check(expectValue, result);
+        break;
+      }
+      SleepUtil.sleep(500, TimeUnit.MILLISECONDS);
+    }
   }
 }
