@@ -30,6 +30,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.etcd.EtcdDynamicPropertiesSource.UpdateHandler;
+import org.apache.servicecomb.foundation.common.utils.MuteExceptionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
