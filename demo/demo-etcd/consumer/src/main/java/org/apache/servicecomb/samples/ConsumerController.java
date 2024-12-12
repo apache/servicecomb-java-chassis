@@ -19,9 +19,13 @@ package org.apache.servicecomb.samples;
 
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @RestSchema(schemaId = "ConsumerController")
 @RequestMapping(path = "/")
@@ -38,5 +42,11 @@ public class ConsumerController {
   @GetMapping("/getConfig")
   public String getConfig(@RequestParam("key") String key) {
     return providerService.getConfig(key);
+  }
+
+  @PostMapping(path = "/testContentType", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseBody
+  public User testContentType(@RequestBody User user) {
+    return providerService.testContentType(user);
   }
 }

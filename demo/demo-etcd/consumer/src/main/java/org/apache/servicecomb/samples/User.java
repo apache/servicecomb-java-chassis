@@ -14,13 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.samples;
 
-public interface ProviderService {
-  String sayHello(String name);
 
-  String getConfig(String key);
+public class User {
 
-  User testContentType(User user);
+  private Long id;
+
+  private String name;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
 }
