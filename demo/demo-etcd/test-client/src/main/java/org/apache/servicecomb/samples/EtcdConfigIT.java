@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.foundation.common.utils.ConditionWaiter;
 import org.apache.servicecomb.foundation.common.utils.ConditionWaiter.SleepUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
