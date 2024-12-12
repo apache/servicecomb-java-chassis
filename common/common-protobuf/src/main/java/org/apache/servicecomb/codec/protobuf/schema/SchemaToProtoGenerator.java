@@ -357,7 +357,6 @@ public class SchemaToProtoGenerator {
     appendLine(msgStringBuilder, "message %s {", schema.getName());
     List<Map.Entry<String, Schema>> sortedProperties = new ArrayList<>(schema.getProperties().entrySet());
     sortedProperties.sort(Comparator.comparing(Map.Entry::getKey));
-    
     int tag = 1;
     for (Entry<String, Schema> entry : sortedProperties) {
       Schema property = entry.getValue();
