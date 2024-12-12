@@ -32,10 +32,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
-/**
- * @author sweetwuxiaomei@qq.com
- * @date 2024/12/12
- */
 @Component
 public class ProviderIT implements CategorizedTestCase {
 

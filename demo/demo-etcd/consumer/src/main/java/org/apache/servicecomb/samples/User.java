@@ -16,10 +16,6 @@
  */
 package org.apache.servicecomb.samples;
 
-/**
- * @author sweetwuxiaomei@qq.com
- * @date 2024/12/12
- */
 
 public class User {
 
