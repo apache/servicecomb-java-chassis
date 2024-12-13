@@ -32,6 +32,8 @@ public class WebSocketTransportClientOptionsSPI extends WebSocketClientOptionsSP
 
   public static final String CLIENT_TAG = "websocket.consumer";
 
+  public static final boolean DEFAULT_CLIENT_COMPRESSION_SUPPORT = false;
+
   private static final int DEFAULT_IDLE_TIME_OUT = 150;
 
   @Override
@@ -198,7 +200,7 @@ public class WebSocketTransportClientOptionsSPI extends WebSocketClientOptionsSP
   public boolean getTryUsePerFrameCompression() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.websocket.client.tryUsePerFrameCompression",
-            HttpClientOptions.DEFAULT_TRY_USE_PER_FRAME_WEBSOCKET_COMPRESSION)
+            DEFAULT_CLIENT_COMPRESSION_SUPPORT)
         .get();
   }
 
@@ -206,7 +208,7 @@ public class WebSocketTransportClientOptionsSPI extends WebSocketClientOptionsSP
   public boolean getTryUsePerMessageCompression() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.websocket.client.tryUsePerMessageCompression",
-            HttpClientOptions.DEFAULT_TRY_USE_PER_MESSAGE_WEBSOCKET_COMPRESSION)
+            DEFAULT_CLIENT_COMPRESSION_SUPPORT)
         .get();
   }
 

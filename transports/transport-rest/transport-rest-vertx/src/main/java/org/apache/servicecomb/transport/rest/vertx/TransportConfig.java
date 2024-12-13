@@ -283,14 +283,14 @@ public final class TransportConfig {
   public static boolean getPerFrameWebSocketCompressionSupported() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.websocket.server.perFrameCompressionSupported",
-            HttpServerOptions.DEFAULT_PER_FRAME_WEBSOCKET_COMPRESSION_SUPPORTED)
+            DEFAULT_SERVER_COMPRESSION_SUPPORT)
         .get();
   }
 
   public static boolean getPerMessageWebSocketCompressionSupported() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.websocket.server.perMessageCompressionSupported",
-            HttpServerOptions.DEFAULT_PER_MESSAGE_WEBSOCKET_COMPRESSION_SUPPORTED)
+            DEFAULT_SERVER_COMPRESSION_SUPPORT)
         .get();
   }
 }
