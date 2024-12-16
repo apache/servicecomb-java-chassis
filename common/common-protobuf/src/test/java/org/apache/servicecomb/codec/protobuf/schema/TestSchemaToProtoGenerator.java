@@ -220,15 +220,15 @@ public class TestSchemaToProtoGenerator {
        }
 
        message DeptInfo {
-         string name = 1;
-         string code = 2;
+         string code = 1;
+         string name = 2;
          repeated ScoreInfo scores = 3;
        }
 
        message UserInfo {
-         repeated DeptInfo subDeptInfos = 1;
-         repeated MapString extraInfos = 2;
-         repeated ListListString nestedLists = 3;
+         repeated MapString extraInfos = 1;
+         repeated ListListString nestedLists = 2;
+         repeated DeptInfo subDeptInfos = 3;
        }
 
        //@WrapProperty
