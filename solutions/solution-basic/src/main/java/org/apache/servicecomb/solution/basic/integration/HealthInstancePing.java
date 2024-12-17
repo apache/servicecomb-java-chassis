@@ -59,7 +59,7 @@ public class HealthInstancePing implements InstancePing {
 
   @Autowired
   @Lazy
-  public void setTelnetInstancePing(@Qualifier("telnetInstancePing") TelnetInstancePing telnetInstancePing) {
+  public void setTelnetInstancePing(@Qualifier("scbTelnetInstancePing") TelnetInstancePing telnetInstancePing) {
     this.telnetInstancePing = telnetInstancePing;
   }
 
