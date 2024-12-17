@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.converter;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -66,10 +68,14 @@ public final class ConverterMgr {
         TypeFactory.defaultInstance().constructType(Integer.class));
     TYPE_FORMAT_MAP.put(genTypeFormatKey("integer", "int64"),
         TypeFactory.defaultInstance().constructType(Long.class));
+    TYPE_FORMAT_MAP.put(genTypeFormatKey("integer", ""),
+        TypeFactory.defaultInstance().constructType(BigInteger.class));
     TYPE_FORMAT_MAP.put(genTypeFormatKey("number", "float"),
         TypeFactory.defaultInstance().constructType(Float.class));
     TYPE_FORMAT_MAP.put(genTypeFormatKey("number", "double"),
         TypeFactory.defaultInstance().constructType(Double.class));
+    TYPE_FORMAT_MAP.put(genTypeFormatKey("number", ""),
+        TypeFactory.defaultInstance().constructType(BigDecimal.class));
     TYPE_FORMAT_MAP.put(genTypeFormatKey("string", ""),
         TypeFactory.defaultInstance().constructType(String.class));
     TYPE_FORMAT_MAP.put(genTypeFormatKey("string", "date"),

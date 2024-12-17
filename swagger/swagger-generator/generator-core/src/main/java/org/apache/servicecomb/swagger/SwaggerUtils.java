@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -404,6 +406,8 @@ public final class SwaggerUtils {
         && cls != LocalDateTime.class
         && cls != byte[].class
         && cls != File.class
+        && cls != BigInteger.class
+        && cls != BigDecimal.class
         && !cls.getName().equals("org.springframework.web.multipart.MultipartFile")
         && !Part.class.isAssignableFrom(cls));
   }
