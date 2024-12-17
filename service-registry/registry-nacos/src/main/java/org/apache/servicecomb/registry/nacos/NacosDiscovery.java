@@ -74,25 +74,24 @@ public class NacosDiscovery implements Discovery<NacosDiscoveryInstance> {
   @Override
   public List<NacosDiscoveryInstance> findServiceInstances(String application, String serviceName) {
     try {
+      // Get the instance first, and the Listener will not be executed for the first subscribe.
+      List<Instance> instances = namingService.getAllInstances(serviceName, application, true);
+
       AtomicBoolean result = SUBSCRIBES.computeIfAbsent(application,
           k -> new HashMap<>()).computeIfAbsent(serviceName, k -> new AtomicBoolean(true));
       if (result.get()) {
         synchronized (lock) {
           if (result.get()) {
             namingService.subscribe(serviceName, application, (event) -> {
-              if (result.getAndSet(false)) {
-                // ignore the first event.
-                return;
-              }
               if (event instanceof NamingEvent) {
                 this.instanceChangedListener.onInstanceChanged(name(), application, serviceName,
                     convertServiceInstanceList(((NamingEvent) event).getInstances(), application, serviceName));
               }
             });
+            result.set(false);
           }
         }
       }
-      List<Instance> instances = namingService.getAllInstances(serviceName, application, true);
       return convertServiceInstanceList(instances, application, serviceName);
     } catch (Exception e) {
       throw new IllegalStateException(e);
