@@ -22,6 +22,7 @@ import static org.apache.servicecomb.foundation.common.utils.StringBuilderUtils.
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -354,8 +355,10 @@ public class SchemaToProtoGenerator {
     messages.add(schema.getName());
 
     appendLine(msgStringBuilder, "message %s {", schema.getName());
+    List<Map.Entry<String, Schema>> sortedProperties = new ArrayList<>(schema.getProperties().entrySet());
+    sortedProperties.sort(Comparator.comparing(Map.Entry::getKey));
     int tag = 1;
-    for (Entry<String, Schema> entry : schema.getProperties().entrySet()) {
+    for (Entry<String, Schema> entry : sortedProperties) {
       Schema property = entry.getValue();
       String propertyType = findSchemaType(property);
 
