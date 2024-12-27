@@ -30,23 +30,23 @@ import io.vertx.core.http.WebSocket;
 @RestSchema(schemaId = "ClientWebsocketController")
 @RequestMapping(path = "/ws")
 public class ClientWebsocketController {
-    interface ProviderService {
-        WebSocket websocket();
-    }
+  interface ProviderService {
+    WebSocket websocket();
+  }
 
-    @RpcReference(schemaId = "WebsocketController", microserviceName = "provider")
-    private ProviderService providerService;
+  @RpcReference(schemaId = "WebsocketController", microserviceName = "provider")
+  private ProviderService providerService;
 
-    @PostMapping("/websocket")
-    @Transport(name = CoreConst.WEBSOCKET)
-    public void websocket(ServerWebSocket serverWebsocket) {
-        WebSocket providerWebSocket = providerService.websocket();
-        providerWebSocket.closeHandler(v -> serverWebsocket.close());
-        providerWebSocket.textMessageHandler(m -> {
-            serverWebsocket.writeTextMessage(m);
-        });
-        serverWebsocket.textMessageHandler(m -> {
-            providerWebSocket.writeTextMessage(m);
-        });
-    }
+  @PostMapping("/websocket")
+  @Transport(name = CoreConst.WEBSOCKET)
+  public void websocket(ServerWebSocket serverWebsocket) {
+    WebSocket providerWebSocket = providerService.websocket();
+    providerWebSocket.closeHandler(v -> serverWebsocket.close());
+    providerWebSocket.textMessageHandler(m -> {
+      serverWebsocket.writeTextMessage(m);
+    });
+    serverWebsocket.textMessageHandler(m -> {
+      providerWebSocket.writeTextMessage(m);
+    });
+  }
 }

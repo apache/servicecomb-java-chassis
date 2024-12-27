@@ -18,15 +18,16 @@
 package org.apache.servicecomb.config.consul;
 
 public class ConsulConfigProperties {
-  private String host;
 
-  private Integer port;
+  private String host = "localhost";
 
-  private String scheme;
+  private Integer port = 8500;
+
+  private String scheme = "http";
 
   private String aclToken;
 
-  private Integer delayTime;
+  private Integer delayTime = 30000;
 
   public String getHost() {
     return host;

@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.config.consul;
 
 import com.ecwid.consul.v1.ConsulClient;
@@ -46,7 +47,7 @@ import static org.apache.servicecomb.config.consul.ConsulConfig.PATH_TAG;
 import static org.apache.servicecomb.config.consul.ConsulConfig.PATH_VERSION;
 
 public class ConsulConfigClient {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConsulConfigClient.class);
+  private static final Logger logger = LoggerFactory.getLogger(ConsulConfigClient.class);
 
   public class GetDataRunnable implements Runnable {
 
@@ -131,14 +132,14 @@ public class ConsulConfigClient {
   }
 
   public void destroy() {
-    LOGGER.info("consul client destroy");
+    logger.info("ConsulConfigClient destroy");
     if (watchFuture != null) {
       watchFuture.cancel(true);
     }
   }
 
   private void addTagConfig(String env) {
-    if (StringUtils.isEmpty(consulConfig.getInstanceTag())) {
+    if (StringUtils.isBlank(consulConfig.getInstanceTag())) {
       return;
     }
     String path = String.format(PATH_TAG, env,
@@ -187,7 +188,7 @@ public class ConsulConfigClient {
     try {
       return getValues(path);
     } catch (Exception e) {
-      LOGGER.error(e.getMessage(), e);
+      logger.error(e.getMessage(), e);
     }
     return new HashMap<>();
   }
@@ -214,7 +215,7 @@ public class ConsulConfigClient {
       try {
         properties.load(new StringReader(decodedValue));
       } catch (IOException e) {
-        LOGGER.error("load error");
+        logger.error(e.getMessage(), e);
       }
       values.putAll(toMap(properties));
     } else {

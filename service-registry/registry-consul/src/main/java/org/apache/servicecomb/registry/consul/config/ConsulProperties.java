@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.registry.consul.config;
 
 import jakarta.validation.constraints.NotNull;
@@ -26,7 +27,7 @@ public class ConsulProperties {
   @NotNull
   private String host = "localhost";
 
-  private String scheme;
+  private String scheme = "http";
 
   @NotNull
   private int port = 8500;

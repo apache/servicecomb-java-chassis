@@ -24,28 +24,28 @@ import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "HeaderParamWithListSchema", schemaInterface = IHeaderParamWithListSchemaSpringMvc.class)
 public class HeaderParamWithListSchema implements IHeaderParamWithListSchemaSpringMvc {
-    @Override
-    public String headerListDefault(List<String> headerList) {
-        return headerList == null ? "null" : headerList.size() + ":" + headerList;
-    }
+  @Override
+  public String headerListDefault(List<String> headerList) {
+    return headerList == null ? "null" : headerList.size() + ":" + headerList;
+  }
 
-    @Override
-    public String headerListCSV(List<String> headerList) {
-        return headerList == null ? "null" : headerList.size() + ":" + headerList;
-    }
+  @Override
+  public String headerListCSV(List<String> headerList) {
+    return headerList == null ? "null" : headerList.size() + ":" + headerList;
+  }
 
-    @Override
-    public String headerListMULTI(List<String> headerList) {
-        return headerList == null ? "null" : headerList.size() + ":" + headerList;
-    }
+  @Override
+  public String headerListMULTI(List<String> headerList) {
+    return headerList == null ? "null" : headerList.size() + ":" + headerList;
+  }
 
-    @Override
-    public String headerListSSV(List<String> headerList) {
-        return headerList == null ? "null" : headerList.size() + ":" + headerList;
-    }
+  @Override
+  public String headerListSSV(List<String> headerList) {
+    return headerList == null ? "null" : headerList.size() + ":" + headerList;
+  }
 
-    @Override
-    public String headerListPIPES(List<String> headerList) {
-        return headerList == null ? "null" : headerList.size() + ":" + headerList;
-    }
+  @Override
+  public String headerListPIPES(List<String> headerList) {
+    return headerList == null ? "null" : headerList.size() + ":" + headerList;
+  }
 }

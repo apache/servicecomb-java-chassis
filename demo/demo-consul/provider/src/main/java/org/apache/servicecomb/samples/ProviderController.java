@@ -32,32 +32,32 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RestSchema(schemaId = "ProviderController")
 @RequestMapping(path = "/")
 public class ProviderController implements InitializingBean {
-    private Environment environment;
+  private Environment environment;
 
-    @Autowired
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
+  @Autowired
+  public void setEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
-    // a very simple service to echo the request parameter
-    @GetMapping("/sayHello")
-    public String sayHello(@RequestParam("name") String name) {
+  // a very simple service to echo the request parameter
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
 //    return "Hello " + environment.getProperty("servicecomb.rest.address");
-        return "Hello " + name;
-    }
+    return "Hello " + name;
+  }
 
-    @GetMapping("/getConfig")
-    public String getConfig(@RequestParam("key") String key) {
-        return environment.getProperty(key);
-    }
+  @GetMapping("/getConfig")
+  public String getConfig(@RequestParam("key") String key) {
+    return environment.getProperty(key);
+  }
 
-    @PostMapping(path = "/testContentType", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public User testContentType(@RequestBody User user) {
-        return user;
-    }
+  @PostMapping(path = "/testContentType", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseBody
+  public User testContentType(@RequestBody User user) {
+    return user;
+  }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-    }
+  @Override
+  public void afterPropertiesSet() throws Exception {
+  }
 }

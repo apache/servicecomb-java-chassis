@@ -32,47 +32,47 @@ import io.reactivex.rxjava3.core.Flowable;
 @RequestMapping(path = "/")
 @Transport(name = CoreConst.RESTFUL)
 public class ReactiveStreamController {
-    public static class Model {
-        private String name;
+  public static class Model {
+    private String name;
 
-        private int age;
+    private int age;
 
-        public Model() {
+    public Model() {
 
-        }
-
-        public Model(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        public int getAge() {
-            return age;
-        }
-
-        public Model setAge(int age) {
-            this.age = age;
-            return this;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Model setName(String name) {
-            this.name = name;
-            return this;
-        }
     }
 
-    @GetMapping("/sseString")
-    public Publisher<String> sseString() {
-        return Flowable.fromArray("a", "b", "c");
+    public Model(String name, int age) {
+      this.name = name;
+      this.age = age;
     }
 
-    @GetMapping("/sseModel")
-    public Publisher<Model> sseModel() {
-        return Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
-                .map(item -> new Model("jack", item.intValue()));
+    public int getAge() {
+      return age;
     }
+
+    public Model setAge(int age) {
+      this.age = age;
+      return this;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public Model setName(String name) {
+      this.name = name;
+      return this;
+    }
+  }
+
+  @GetMapping("/sseString")
+  public Publisher<String> sseString() {
+    return Flowable.fromArray("a", "b", "c");
+  }
+
+  @GetMapping("/sseModel")
+  public Publisher<Model> sseModel() {
+    return Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
+        .map(item -> new Model("jack", item.intValue()));
+  }
 }

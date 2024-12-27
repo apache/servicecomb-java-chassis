@@ -30,23 +30,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RestSchema(schemaId = "ConsumerController")
 @RequestMapping(path = "/")
 public class ConsumerController {
-    @RpcReference(schemaId = "ProviderController", microserviceName = "provider")
-    private ProviderService providerService;
+  @RpcReference(schemaId = "ProviderController", microserviceName = "provider")
+  private ProviderService providerService;
 
-    // consumer service which delegate the implementation to provider service.
-    @GetMapping("/sayHello")
-    public String sayHello(@RequestParam("name") String name) {
-        return providerService.sayHello(name);
-    }
+  // consumer service which delegate the implementation to provider service.
+  @GetMapping("/sayHello")
+  public String sayHello(@RequestParam("name") String name) {
+    return providerService.sayHello(name);
+  }
 
-    @GetMapping("/getConfig")
-    public String getConfig(@RequestParam("key") String key) {
-        return providerService.getConfig(key);
-    }
+  @GetMapping("/getConfig")
+  public String getConfig(@RequestParam("key") String key) {
+    return providerService.getConfig(key);
+  }
 
-    @PostMapping(path = "/testContentType", consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public User testContentType(@RequestBody User user) {
-        return providerService.testContentType(user);
-    }
+  @PostMapping(path = "/testContentType", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @ResponseBody
+  public User testContentType(@RequestBody User user) {
+    return providerService.testContentType(user);
+  }
 }

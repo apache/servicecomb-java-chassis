@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.registry.consul;
 
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;

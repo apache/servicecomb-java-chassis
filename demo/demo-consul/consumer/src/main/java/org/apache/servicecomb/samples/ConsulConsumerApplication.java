@@ -23,11 +23,11 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 public class ConsulConsumerApplication {
-    public static void main(String[] args) throws Exception {
-        try {
-            new SpringApplicationBuilder().web(WebApplicationType.NONE).sources(ConsulConsumerApplication.class).run(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+  public static void main(String[] args) throws Exception {
+    try {
+      new SpringApplicationBuilder().web(WebApplicationType.NONE).sources(ConsulConsumerApplication.class).run(args);
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 }

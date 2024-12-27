@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.registry.consul;
 
 import com.ecwid.consul.v1.ConsulClient;
@@ -105,6 +106,7 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
 
   @Override
   public void init() {
+    logger.info("ConsulRegistration init");
     String serverPort;
     if (restAddress.contains("?")) {
       serverPort = restAddress.substring(restAddress.indexOf(":") + 1, restAddress.indexOf("?"));
@@ -147,6 +149,7 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
 
   @Override
   public void run() {
+    logger.info("ConsulRegistration run");
     Map<String, String> meta = new HashMap<>();
     meta.put("serviceName", consulInstance.getServiceName());
     meta.put("version", consulInstance.getVersion());
@@ -167,5 +170,6 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
 
   @Override
   public void destroy() {
+    logger.info("ConsulRegistration destroy");
   }
 }

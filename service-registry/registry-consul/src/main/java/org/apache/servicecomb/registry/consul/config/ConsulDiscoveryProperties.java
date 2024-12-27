@@ -50,7 +50,7 @@ public class ConsulDiscoveryProperties {
 
   private ConsistencyMode consistencyMode = ConsistencyMode.DEFAULT;
 
-  private Integer delayTime = 10000;
+  private Integer delayTime = 30000;
 
   public ConsulDiscoveryProperties(InetUtils inetUtils) {
     this.hostInfo = inetUtils.findFirstNonLoopbackHostInfo();

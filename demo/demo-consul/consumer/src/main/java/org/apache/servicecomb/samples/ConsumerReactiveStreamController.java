@@ -28,57 +28,57 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RestSchema(schemaId = "ReactiveStreamController")
 @RequestMapping(path = "/")
 public class ConsumerReactiveStreamController {
-    interface ProviderReactiveStreamController {
-        Publisher<String> sseString();
+  interface ProviderReactiveStreamController {
+    Publisher<String> sseString();
 
-        Publisher<Model> sseModel();
+    Publisher<Model> sseModel();
+  }
+
+  @RpcReference(microserviceName = "provider", schemaId = "ReactiveStreamController")
+  ProviderReactiveStreamController controller;
+
+  public static class Model {
+    private String name;
+
+    private int age;
+
+    public Model() {
+
     }
 
-    @RpcReference(microserviceName = "provider", schemaId = "ReactiveStreamController")
-    ProviderReactiveStreamController controller;
-
-    public static class Model {
-        private String name;
-
-        private int age;
-
-        public Model() {
-
-        }
-
-        public Model(String name, int age) {
-            this.name = name;
-            this.age = age;
-        }
-
-        public int getAge() {
-            return age;
-        }
-
-        public Model setAge(int age) {
-            this.age = age;
-            return this;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public Model setName(String name) {
-            this.name = name;
-            return this;
-        }
+    public Model(String name, int age) {
+      this.name = name;
+      this.age = age;
     }
 
-    @GetMapping("/sseString")
-    @Transport(name = CoreConst.RESTFUL)
-    public Publisher<String> sseString() {
-        return controller.sseString();
+    public int getAge() {
+      return age;
     }
 
-    @GetMapping("/sseModel")
-    @Transport(name = CoreConst.RESTFUL)
-    public Publisher<Model> sseModel() {
-        return controller.sseModel();
+    public Model setAge(int age) {
+      this.age = age;
+      return this;
     }
+
+    public String getName() {
+      return name;
+    }
+
+    public Model setName(String name) {
+      this.name = name;
+      return this;
+    }
+  }
+
+  @GetMapping("/sseString")
+  @Transport(name = CoreConst.RESTFUL)
+  public Publisher<String> sseString() {
+    return controller.sseString();
+  }
+
+  @GetMapping("/sseModel")
+  @Transport(name = CoreConst.RESTFUL)
+  public Publisher<Model> sseModel() {
+    return controller.sseModel();
+  }
 }

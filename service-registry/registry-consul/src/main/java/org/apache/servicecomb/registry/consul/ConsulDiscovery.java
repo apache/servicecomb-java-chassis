@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.registry.consul;
 
 import com.ecwid.consul.v1.ConsulClient;
@@ -31,7 +32,6 @@ import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
-import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.consul.config.ConsulDiscoveryProperties;
 import org.apache.servicecomb.registry.consul.config.ConsulProperties;
@@ -66,9 +66,6 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
   private Environment environment;
 
   @Resource
-  private RegistrationId registrationId;
-
-  @Resource
   private TaskScheduler taskScheduler;
 
   @Value("${servicecomb.rest.address:127.0.0.1:8080}")
@@ -94,14 +91,14 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
 
   @Override
   public List<ConsulDiscoveryInstance> findServiceInstances(String application, String serviceName) {
-    logger.info("findServiceInstances application: {}, serviceName: {}", application, serviceName);
+    logger.info("findServiceInstances application:{}, serviceName:{}", application, serviceName);
     consulDiscoveryInstanceList = getInstances(serviceName, new QueryParams(consulDiscoveryProperties.getConsistencyMode()));
     return consulDiscoveryInstanceList;
   }
 
   @Override
   public List<String> findServices(String application) {
-    logger.info("ConsulDiscovery.findServices(application={})", application);
+    logger.info("ConsulDiscovery findServices(application={})", application);
     CatalogServicesRequest.Builder builder = CatalogServicesRequest.newBuilder()
         .setQueryParams(QueryParams.DEFAULT);
     if (StringUtils.isNotBlank(consulDiscoveryProperties.getAclToken())) {
@@ -123,6 +120,7 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
 
   @Override
   public void init() {
+    logger.info("ConsulDiscovery init");
     if (restAddress.contains("?")) {
       serverPort = restAddress.substring(restAddress.indexOf(":") + 1, restAddress.indexOf("?"));
     } else {
@@ -132,7 +130,7 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
 
   @Override
   public void run() {
-    logger.info("ConsulDiscovery.run");
+    logger.info("ConsulDiscovery run");
     String serviceName = BootStrapProperties.readServiceName(environment);
     scheduledFuture = taskScheduler.scheduleWithFixedDelay(
         () -> instanceChangedListener.onInstanceChanged(
@@ -162,7 +160,7 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
           ConsulClient clearClient = new ConsulClient(consulProperties.getHost(), consulProperties.getPort());
           service.getChecks().forEach(check -> {
             if (check.getStatus() != Check.CheckStatus.PASSING) {
-              logger.info("unregister : {}", check.getServiceId());
+              logger.info("unregister:{}", check.getServiceId());
               if (StringUtils.isNotBlank(consulDiscoveryProperties.getAclToken())) {
                 clearClient.agentServiceDeregister(check.getServiceId(), consulDiscoveryProperties.getAclToken());
               } else {

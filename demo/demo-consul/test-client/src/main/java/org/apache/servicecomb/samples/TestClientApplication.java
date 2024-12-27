@@ -27,23 +27,23 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 public class TestClientApplication {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TestClientApplication.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestClientApplication.class);
 
-    public static void main(String[] args) throws Exception {
-        try {
-            new SpringApplicationBuilder().web(WebApplicationType.NONE).sources(TestClientApplication.class).run(args);
+  public static void main(String[] args) throws Exception {
+    try {
+      new SpringApplicationBuilder().web(WebApplicationType.NONE).sources(TestClientApplication.class).run(args);
 
-            run();
-        } catch (Exception e) {
-            TestMgr.failed("test case run failed", e);
-            LOGGER.error("-------------- test failed -------------");
-            LOGGER.error("", e);
-            LOGGER.error("-------------- test failed -------------");
-        }
-        TestMgr.summary();
+      run();
+    } catch (Exception e) {
+      TestMgr.failed("test case run failed", e);
+      LOGGER.error("-------------- test failed -------------");
+      LOGGER.error("", e);
+      LOGGER.error("-------------- test failed -------------");
     }
+    TestMgr.summary();
+  }
 
-    public static void run() throws Exception {
-        CategorizedTestCaseRunner.runCategorizedTestCase("consumer");
-    }
+  public static void run() throws Exception {
+    CategorizedTestCaseRunner.runCategorizedTestCase("consumer");
+  }
 }
