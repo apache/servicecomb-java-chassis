@@ -92,6 +92,7 @@
     <zipkin.version>3.4.2</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.4</jetcd-core.version>
+	<consul-api.version>1.4.5</consul-api.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -548,6 +549,12 @@
         <groupId>io.etcd</groupId>
         <artifactId>jetcd-core</artifactId>
         <version>${jetcd-core.version}</version>
+      </dependency>
+	  
+	  <dependency>
+        <groupId>com.ecwid.consul</groupId>
+        <artifactId>consul-api</artifactId>
+        <version>${consul-api.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

@@ -38,5 +38,6 @@
     <module>registry-nacos</module>
     <module>registry-zookeeper</module>
     <module>registry-etcd</module>
+	<module>registry-consul</module>
   </modules>
 </project>

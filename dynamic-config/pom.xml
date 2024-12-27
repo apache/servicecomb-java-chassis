@@ -38,6 +38,7 @@
     <module>config-kie</module>
     <module>config-zookeeper</module>
     <module>config-etcd</module>
+	<module>config-consul</module>
   </modules>
 
 </project>

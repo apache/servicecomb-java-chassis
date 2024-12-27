@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-parent</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>demo-consul</artifactId>
+  <name>Java Chassis::Demo::Consul</name>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>provider</module>
+    <module>consumer</module>
+    <module>gateway</module>
+    <module>test-client</module>
+  </modules>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>solution-basic</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+  </dependencies>
+</project>

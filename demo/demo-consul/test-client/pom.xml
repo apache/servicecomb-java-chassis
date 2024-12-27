@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-consul</artifactId>
+    <version>3.3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>consul-test-client</artifactId>
+  <name>Java Chassis::Demo::Consul::TEST-CLIENT</name>
+  <packaging>jar</packaging>
+
+  <properties>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-local</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.ecwid.consul</groupId>
+      <artifactId>consul-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>3.25.5</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <images>
+                  <image>
+                    <name>hashicorp/consul</name>
+                    <alias>consul</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <wait>
+                        <log>consulserver</log>
+                        <tcp>
+                          <ports>
+                            <port>8500</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>8500:8500</port>
+                      </ports>
+                      <env>
+                        <ALLOW_NONE_AUTHENTICATION>yes</ALLOW_NONE_AUTHENTICATION>
+                      </env>
+                    </run>
+                  </image>
+                  <image>
+                    <name>consul-provider:${project.version}</name>
+                    <alias>consul-provider</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.registry.consul.enabled=true
+                          -Dservicecomb.registry.consul.scheme=http
+                          -Dservicecomb.registry.consul.host=127.0.0.1
+                          -Dservicecomb.registry.consul.port=8500
+                          -Dservicecomb.config.consul.enabled=true
+                          -Dservicecomb.config.consul.scheme=http
+                          -Dservicecomb.config.consul.host=127.0.0.1
+                          -Dservicecomb.config.consul.port=8500
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/consul-provider-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>consul:consul</link>
+                      </links>
+                      <wait>
+                        <log>ServiceComb is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>9094</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>9094:9094</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>consul-consumer:${project.version}</name>
+                    <alias>consul-consumer</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.registry.consul.enabled=true
+                          -Dservicecomb.registry.consul.scheme=http
+                          -Dservicecomb.registry.consul.host=127.0.0.1
+                          -Dservicecomb.registry.consul.port=8500
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/consul-consumer-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>consul:consul</link>
+                      </links>
+                      <wait>
+                        <log>ServiceComb is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>9092</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>9092:9092</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>consul-gateway:${project.version}</name>
+                    <alias>consul-gateway</alias>
+                    <run>
+                      <namingStrategy>alias</namingStrategy>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.registry.consul.enabled=true
+                          -Dservicecomb.registry.consul.scheme=http
+                          -Dservicecomb.registry.consul.host=127.0.0.1
+                          -Dservicecomb.registry.consul.port=8500
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/consul-gateway-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>consul:consul</link>
+                      </links>
+                      <wait>
+                        <log>ServiceComb is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>9090</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>9090:9090</port>
+                      </ports>
+                    </run>
+                  </image>
+                </images>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>com.github.odavid.maven.plugins</groupId>
+            <artifactId>mixin-maven-plugin</artifactId>
+            <configuration>
+              <mixins>
+                <mixin>
+                  <groupId>org.apache.servicecomb.demo</groupId>
+                  <artifactId>docker-run-config</artifactId>
+                  <version>${project.version}</version>
+                </mixin>
+              </mixins>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
