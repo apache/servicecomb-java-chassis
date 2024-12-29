@@ -17,7 +17,7 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb</groupId>
@@ -92,7 +92,7 @@
     <zipkin.version>3.4.2</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.4</jetcd-core.version>
-	<consul-api.version>1.4.5</consul-api.version>
+    <consul-api.version>1.4.5</consul-api.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -550,8 +550,8 @@
         <artifactId>jetcd-core</artifactId>
         <version>${jetcd-core.version}</version>
       </dependency>
-	  
-	  <dependency>
+
+      <dependency>
         <groupId>com.ecwid.consul</groupId>
         <artifactId>consul-api</artifactId>
         <version>${consul-api.version}</version>

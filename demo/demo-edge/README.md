@@ -15,5 +15,3 @@
     * 2.0.0: /business/v1/add, /business/v1/dec, /business/v2/add, /business/v2/dec
 
     Together with router, /business/v1/add will go correctly to 1.0.0 or 1.1.0, and /business/v2/add will go correctly to 2.0.0. Without router, /business/v2/add may route to 1.0.0 or 1.1.0 and NOT FOUND is reported.
-
-

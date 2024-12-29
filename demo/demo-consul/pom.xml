@@ -59,5 +59,4 @@
     <module>gateway</module>
     <module>test-client</module>
   </modules>
-
 </project>

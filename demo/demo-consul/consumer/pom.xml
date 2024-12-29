@@ -35,12 +35,6 @@
       <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>3.25.5</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-consul</artifactId>
     </dependency>
