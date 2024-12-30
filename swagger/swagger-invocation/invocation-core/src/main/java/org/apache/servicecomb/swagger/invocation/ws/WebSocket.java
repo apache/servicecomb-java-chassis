@@ -56,4 +56,15 @@ public interface WebSocket {
   boolean writeQueueFull();
 
   void onWriteQueueDrain();
+
+  Status getStatus();
+
+  enum Status {
+    CREATED,
+    RUNNING,
+    PAUSED,
+    WAITING_TO_CLOSE,
+    CLOSING,
+    CLOSED
+  }
 }

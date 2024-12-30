@@ -19,11 +19,21 @@ package org.apache.servicecomb.swagger.invocation.ws;
 
 import java.util.concurrent.CompletableFuture;
 
+import io.netty.handler.codec.http.websocketx.WebSocketCloseStatus;
+
 /**
  * AbstractBaseWebSocket
  */
 public abstract class AbstractBaseWebSocket implements WebSocket {
   private WebSocketAdapter webSocketAdapter;
+
+  private Status status = Status.CREATED;
+
+  private CompletableFuture<Void> closeFuture;
+
+  private Short closeStatusCode;
+
+  private String closeReason;
 
   @Override
   public CompletableFuture<Void> sendMessage(WebSocketMessage<?> message) {
@@ -37,21 +47,39 @@ public abstract class AbstractBaseWebSocket implements WebSocket {
 
   @Override
   public CompletableFuture<Void> close() {
-    return webSocketAdapter.close((short) 1000, "NORMAL");
+    return this.close((short) WebSocketCloseStatus.NORMAL_CLOSURE.code(),
+        WebSocketCloseStatus.NORMAL_CLOSURE.reasonText());
   }
 
   @Override
   public CompletableFuture<Void> close(Short closeStatusCode, String closeReason) {
-    return webSocketAdapter.close(closeStatusCode, closeReason);
+    synchronized (this) {
+      if (status == Status.WAITING_TO_CLOSE || status == Status.CLOSING || status == Status.CLOSED) {
+        return CompletableFuture.completedFuture(null);
+      }
+      status = Status.WAITING_TO_CLOSE;
+      this.closeStatusCode = closeStatusCode;
+      this.closeReason = closeReason;
+      if (webSocketAdapter == null) {
+        // the case that close when WebSocket still not complete handshake
+        closeFuture = new CompletableFuture<>();
+        return closeFuture;
+      }
+    }
+    status = Status.CLOSING;
+    return webSocketAdapter.close(closeStatusCode, closeReason)
+        .whenComplete((v, t) -> status = Status.CLOSED);
   }
 
   @Override
   public void pause() {
+    status = Status.PAUSED;
     webSocketAdapter.pause();
   }
 
   @Override
   public void resume() {
+    status = Status.RUNNING;
     webSocketAdapter.resume();
   }
 
@@ -77,5 +105,30 @@ public abstract class AbstractBaseWebSocket implements WebSocket {
 
   public void setWebSocketAdapter(WebSocketAdapter webSocketAdapter) {
     this.webSocketAdapter = webSocketAdapter;
+  }
+
+  public void startWorking() {
+    synchronized (this) {
+      if (status == Status.WAITING_TO_CLOSE) {
+        status = Status.CLOSING;
+        webSocketAdapter.close(closeStatusCode, closeReason)
+            .whenComplete((v, t) -> {
+              status = Status.CLOSED;
+              if (t != null) {
+                closeFuture.completeExceptionally(t);
+              } else {
+                closeFuture.complete(null);
+              }
+            });
+        return;
+      }
+      status = Status.RUNNING;
+    }
+    onConnectionReady();
+  }
+
+  @Override
+  public Status getStatus() {
+    return status;
   }
 }
