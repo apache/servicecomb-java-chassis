@@ -162,7 +162,7 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   private void startWorking() {
     scheduleTask(
-        bizWebSocket::onConnectionReady);
+        bizWebSocket::startWorking);
   }
 
   private void scheduleTask(Runnable task) {
