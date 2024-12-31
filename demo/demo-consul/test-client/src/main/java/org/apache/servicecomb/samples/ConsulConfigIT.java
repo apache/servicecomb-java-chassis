@@ -17,18 +17,19 @@
 
 package org.apache.servicecomb.samples;
 
-import java.util.concurrent.TimeUnit;
-
-import com.ecwid.consul.v1.ConsulClient;
+import com.google.common.net.HostAndPort;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.ConditionWaiter.SleepUtil;
+import org.kiwiproject.consul.Consul;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class ConsulConfigIT implements CategorizedTestCase {
@@ -114,8 +115,9 @@ public class ConsulConfigIT implements CategorizedTestCase {
 
   public void putValue(String key, String value) {
     try {
-      ConsulClient client = new ConsulClient("127.0.0.1", 8500);
-      client.setKVValue(key, value);
+      Consul.Builder builder = Consul.builder().withHostAndPort(HostAndPort.fromParts("127.0.0.1", 8500));
+      Consul consulClient = builder.build();
+      consulClient.keyValueClient().putValue(key, value);
       LOGGER.info("Value set successfully:{}", value);
     } catch (Exception e) {
       e.printStackTrace();

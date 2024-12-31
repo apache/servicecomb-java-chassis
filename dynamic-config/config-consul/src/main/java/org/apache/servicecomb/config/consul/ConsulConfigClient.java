@@ -17,28 +17,29 @@
 
 package org.apache.servicecomb.config.consul;
 
-import com.ecwid.consul.v1.ConsulClient;
-import com.ecwid.consul.v1.kv.model.GetValue;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.jetbrains.annotations.NotNull;
+import org.kiwiproject.consul.Consul;
+import org.kiwiproject.consul.KeyValueClient;
+import org.kiwiproject.consul.cache.KVCache;
+import org.kiwiproject.consul.model.kv.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.scheduling.TaskScheduler;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
-import java.util.concurrent.ScheduledFuture;
 
 import static org.apache.servicecomb.config.consul.ConsulConfig.PATH_APPLICATION;
 import static org.apache.servicecomb.config.consul.ConsulConfig.PATH_ENVIRONMENT;
@@ -53,21 +54,27 @@ public class ConsulConfigClient {
 
     private Map<String, Object> dataMap;
 
-    private ConsulConfigClient consulConfigClient;
-
     private String path;
 
-    public GetDataRunnable(Map<String, Object> dataMap, ConsulConfigClient consulConfigClient, String path) {
+    public GetDataRunnable(String path, Map<String, Object> dataMap) {
       this.dataMap = dataMap;
-      this.consulConfigClient = consulConfigClient;
       this.path = path;
     }
 
     @Override
     public void run() {
       try {
-        dataMap.clear();
-        dataMap.putAll(consulConfigClient.parseData(path));
+        if (path.equals("tagData")) {
+          tagData = dataMap;
+        } else if (path.equals("versionData")) {
+          versionData = dataMap;
+        } else if (path.equals("serviceData")) {
+          serviceData = dataMap;
+        } else if (path.equals("applicationData")) {
+          applicationData = dataMap;
+        } else {
+          environmentData = dataMap;
+        }
         refreshConfigItems();
       } catch (Exception e) {
         throw new RuntimeException(e);
@@ -76,24 +83,18 @@ public class ConsulConfigClient {
   }
 
   @Resource
-  private TaskScheduler taskScheduler;
-
-  private ScheduledFuture<?> watchFuture;
-
-  @Resource
   private UpdateHandler updateHandler;
 
   private ConsulConfig consulConfig;
 
-  @Resource
   private Environment environment;
 
   private final Object lock = new Object();
 
-  @Resource
-  private ConsulClient consulClient;
+  private Consul consulClient;
 
-  @Resource
+  private KeyValueClient kvClient;
+
   private ConsulConfigProperties consulConfigProperties;
 
   private Map<String, Object> environmentData = new HashMap<>();
@@ -108,13 +109,13 @@ public class ConsulConfigClient {
 
   private Map<String, Object> allLast = new HashMap<>();
 
-  public ConsulConfigClient(UpdateHandler updateHandler, Environment environment, ConsulConfigProperties consulConfigProperties, ConsulClient consulClient, TaskScheduler taskScheduler) {
+  public ConsulConfigClient(UpdateHandler updateHandler, Environment environment, ConsulConfigProperties consulConfigProperties, Consul consulClient) {
     this.updateHandler = updateHandler;
     this.consulConfig = new ConsulConfig(environment);
     this.environment = environment;
     this.consulConfigProperties = consulConfigProperties;
     this.consulClient = consulClient;
-    this.taskScheduler = taskScheduler;
+    this.kvClient = consulClient.keyValueClient();
   }
 
   public void refreshConsulConfig() {
@@ -131,13 +132,6 @@ public class ConsulConfigClient {
     refreshConfigItems();
   }
 
-  public void destroy() {
-    logger.info("ConsulConfigClient destroy");
-    if (watchFuture != null) {
-      watchFuture.cancel(true);
-    }
-  }
-
   private void addTagConfig(String env) {
     if (StringUtils.isBlank(consulConfig.getInstanceTag())) {
       return;
@@ -148,8 +142,20 @@ public class ConsulConfigClient {
         BootStrapProperties.readServiceVersion(environment),
         consulConfig.getInstanceTag());
 
-    runTask(tagData, path);
     this.tagData = parseData(path);
+    try (KVCache cache = KVCache.newCache(kvClient, path, consulConfig.getConsulWatchSeconds())) {
+      cache.addListener(newValues -> {
+        Optional<Value> newValue = newValues.values().stream()
+            .filter(value -> value.getKey().equals(path))
+            .findAny();
+
+        newValue.ifPresent(value -> {
+          Optional<String> decodedValue = newValue.get().getValueAsString();
+          decodedValue.ifPresent(v -> new Thread(new GetDataRunnable("tagData", getValues(path))).start());
+        });
+      });
+      cache.start();
+    }
   }
 
   private void addVersionConfig(String env) {
@@ -158,8 +164,20 @@ public class ConsulConfigClient {
         BootStrapProperties.readServiceName(environment),
         BootStrapProperties.readServiceVersion(environment));
 
-    runTask(versionData, path);
     this.versionData = parseData(path);
+    try (KVCache cache = KVCache.newCache(kvClient, path, consulConfig.getConsulWatchSeconds())) {
+      cache.addListener(newValues -> {
+        Optional<Value> newValue = newValues.values().stream()
+            .filter(value -> value.getKey().equals(path))
+            .findAny();
+
+        newValue.ifPresent(value -> {
+          Optional<String> decodedValue = newValue.get().getValueAsString();
+          decodedValue.ifPresent(v -> new Thread(new GetDataRunnable("versionData", getValues(path))).start());
+        });
+      });
+      cache.start();
+    }
   }
 
   private void addServiceConfig(String env) {
@@ -167,21 +185,57 @@ public class ConsulConfigClient {
         BootStrapProperties.readApplication(environment),
         BootStrapProperties.readServiceName(environment));
 
-    runTask(serviceData, path);
     this.serviceData = parseData(path);
+    try (KVCache cache = KVCache.newCache(kvClient, path, consulConfig.getConsulWatchSeconds())) {
+      cache.addListener(newValues -> {
+        Optional<Value> newValue = newValues.values().stream()
+            .filter(value -> value.getKey().equals(path))
+            .findAny();
+
+        newValue.ifPresent(value -> {
+          Optional<String> decodedValue = newValue.get().getValueAsString();
+          decodedValue.ifPresent(v -> new Thread(new GetDataRunnable("serviceData", getValues(path))).start());
+        });
+      });
+      cache.start();
+    }
   }
 
   private void addApplicationConfig(String env) {
     String path = String.format(PATH_APPLICATION, env, BootStrapProperties.readApplication(environment));
-    runTask(applicationData, path);
     this.applicationData = parseData(path);
+    try (KVCache cache = KVCache.newCache(kvClient, path, consulConfig.getConsulWatchSeconds())) {
+      cache.addListener(newValues -> {
+        Optional<Value> newValue = newValues.values().stream()
+            .filter(value -> value.getKey().equals(path))
+            .findAny();
+
+        newValue.ifPresent(value -> {
+          Optional<String> decodedValue = newValue.get().getValueAsString();
+          decodedValue.ifPresent(v -> new Thread(new GetDataRunnable("applicationData", getValues(path))).start());
+        });
+      });
+      cache.start();
+    }
   }
 
   private void addEnvironmentConfig(String env) {
     String path = String.format(PATH_ENVIRONMENT, env);
 
-    runTask(environmentData, path);
     this.environmentData = parseData(path);
+    try (KVCache cache = KVCache.newCache(kvClient, path, consulConfig.getConsulWatchSeconds())) {
+      cache.addListener(newValues -> {
+        Optional<Value> newValue = newValues.values().stream()
+            .filter(value -> value.getKey().equals(path))
+            .findAny();
+
+        newValue.ifPresent(value -> {
+          Optional<String> decodedValue = newValue.get().getValueAsString();
+          decodedValue.ifPresent(v -> new Thread(new GetDataRunnable("environmentData", getValues(path))).start());
+        });
+      });
+      cache.start();
+    }
   }
 
   public Map<String, Object> parseData(String path) {
@@ -195,22 +249,21 @@ public class ConsulConfigClient {
 
   private Map<String, Object> getValues(String path) {
     Map<String, Object> values = new HashMap<>();
-    GetValue getValue;
-    if (StringUtils.isNotBlank(consulConfigProperties.getAclToken())) {
-      getValue = consulClient.getKVValue(path, consulConfigProperties.getAclToken()).getValue();
-    } else {
-      getValue = consulClient.getKVValue(path).getValue();
-    }
-    if (getValue == null || StringUtils.isEmpty(getValue.getValue())) {
+    KeyValueClient keyValueClient = consulClient.keyValueClient();
+    String decodedValue = keyValueClient.getValueAsString(path).orElseThrow();
+    if (StringUtils.isBlank(decodedValue)) {
       return values;
     }
-    String key = getValue.getKey();
-    String decodedValue = getValue.getDecodedValue(StandardCharsets.UTF_8);
-    if (key.endsWith(".yaml") || key.endsWith(".yml")) {
+    return getValues(path, decodedValue);
+  }
+
+  private @NotNull Map<String, Object> getValues(String path, String decodedValue) {
+    Map<String, Object> values = new HashMap<>();
+    if (path.endsWith(".yaml") || path.endsWith(".yml")) {
       YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
       yamlFactory.setResources(new ByteArrayResource(decodedValue.getBytes(StandardCharsets.UTF_8)));
       values.putAll(toMap(yamlFactory.getObject()));
-    } else if (key.endsWith(".properties")) {
+    } else if (path.endsWith(".properties")) {
       Properties properties = new Properties();
       try {
         properties.load(new StringReader(decodedValue));
@@ -219,7 +272,7 @@ public class ConsulConfigClient {
       }
       values.putAll(toMap(properties));
     } else {
-      values.put(key, decodedValue);
+      values.put(path, decodedValue);
     }
     return values;
   }
@@ -250,10 +303,5 @@ public class ConsulConfigClient {
       result.put(key, value);
     }
     return result;
-  }
-
-  private void runTask(Map<String, Object> serviceData, String path) {
-    watchFuture = taskScheduler.scheduleWithFixedDelay(new GetDataRunnable(serviceData, this, path),
-        Duration.ofMillis(consulConfigProperties.getDelayTime()));
   }
 }

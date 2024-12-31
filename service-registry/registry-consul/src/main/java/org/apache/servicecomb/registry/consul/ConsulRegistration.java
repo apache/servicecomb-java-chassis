@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.registry.consul;
 
-import com.ecwid.consul.v1.ConsulClient;
-import com.ecwid.consul.v1.agent.model.NewService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import jakarta.annotation.Resource;
@@ -30,10 +28,14 @@ import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.consul.config.ConsulDiscoveryProperties;
+import org.kiwiproject.consul.AgentClient;
+import org.kiwiproject.consul.Consul;
+import org.kiwiproject.consul.model.agent.ImmutableRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,13 +49,13 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
 
   private ConsulInstance consulInstance;
 
-  private NewService newService;
+  private ImmutableRegistration.Builder registrationBuilder;
 
   @Resource
   private ConsulDiscoveryProperties consulDiscoveryProperties;
 
   @Resource
-  private ConsulClient consulClient;
+  private Consul consulClient;
 
   @Resource
   private Environment environment;
@@ -139,12 +141,12 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
 
     List<String> tags = new ArrayList<>();
     tags.add(consulInstance.getServiceName());
-    newService = new NewService();
-    newService.setId(consulInstance.getServiceId());
-    newService.setName(consulInstance.getServiceName());
-    newService.setTags(tags);
-    newService.setAddress(consulDiscoveryProperties.getIpAddress());
-    newService.setPort(Integer.valueOf(serverPort));
+    registrationBuilder = ImmutableRegistration.builder()
+        .id(consulInstance.getServiceId())
+        .name(consulInstance.getServiceName())
+        .address(consulDiscoveryProperties.getIpAddress())
+        .port(Integer.parseInt(serverPort))
+        .tags(tags);
   }
 
   @Override
@@ -156,16 +158,14 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
     meta.put("instanceId", registrationId.getInstanceId());
     meta.put("env", consulInstance.getEnvironment());
     meta.put("application", consulInstance.getApplication());
-    meta.put("alias", consulInstance.getAlias());
+    meta.put("alias", consulInstance.getAlias() != null ? consulInstance.getAlias() : "");
     Gson gson = new GsonBuilder().disableHtmlEscaping().create();
     meta.put("endpoints", gson.toJson(consulInstance.getEndpoints()));
-    meta.put("properties", gson.toJson(consulInstance.getProperties()));
-    newService.setMeta(meta);
-    if (StringUtils.isNotBlank(consulDiscoveryProperties.getAclToken())) {
-      consulClient.agentServiceRegister(newService, consulDiscoveryProperties.getAclToken());
-    } else {
-      consulClient.agentServiceRegister(newService);
-    }
+    meta.put("properties", !CollectionUtils.isEmpty(consulInstance.getProperties()) ? gson.toJson(consulInstance.getProperties()) : "");
+    registrationBuilder.meta(meta);
+    ImmutableRegistration newService = registrationBuilder.build();
+    AgentClient agentClient = consulClient.agentClient();
+    agentClient.register(newService);
   }
 
   @Override

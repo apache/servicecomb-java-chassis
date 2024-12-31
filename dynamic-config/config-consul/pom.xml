@@ -43,8 +43,8 @@
       <artifactId>java-chassis-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.ecwid.consul</groupId>
-      <artifactId>consul-api</artifactId>
+      <groupId>org.kiwiproject</groupId>
+      <artifactId>consul-client</artifactId>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

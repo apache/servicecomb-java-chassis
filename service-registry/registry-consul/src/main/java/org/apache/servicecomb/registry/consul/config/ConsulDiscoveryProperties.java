@@ -17,13 +17,11 @@
 
 package org.apache.servicecomb.registry.consul.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.ecwid.consul.v1.ConsistencyMode;
-
 import org.apache.servicecomb.registry.consul.utils.InetUtils;
 import org.springframework.core.style.ToStringCreator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class ConsulDiscoveryProperties {
@@ -48,9 +46,7 @@ public class ConsulDiscoveryProperties {
 
   private boolean preferAgentAddress = false;
 
-  private ConsistencyMode consistencyMode = ConsistencyMode.DEFAULT;
-
-  private Integer delayTime = 30000;
+  private Integer watchSeconds = 8;
 
   public ConsulDiscoveryProperties(InetUtils inetUtils) {
     this.hostInfo = inetUtils.findFirstNonLoopbackHostInfo();
@@ -152,14 +148,6 @@ public class ConsulDiscoveryProperties {
     this.enableTagOverride = enableTagOverride;
   }
 
-  public ConsistencyMode getConsistencyMode() {
-    return consistencyMode;
-  }
-
-  public void setConsistencyMode(ConsistencyMode consistencyMode) {
-    this.consistencyMode = consistencyMode;
-  }
-
   public boolean isEnableSwaggerRegistration() {
     return enableSwaggerRegistration;
   }
@@ -168,12 +156,12 @@ public class ConsulDiscoveryProperties {
     this.enableSwaggerRegistration = enableSwaggerRegistration;
   }
 
-  public Integer getDelayTime() {
-    return delayTime;
+  public Integer getWatchSeconds() {
+    return watchSeconds;
   }
 
-  public void setDelayTime(Integer delayTime) {
-    this.delayTime = delayTime;
+  public void setWatchSeconds(Integer watchSeconds) {
+    this.watchSeconds = watchSeconds;
   }
 
   @Override

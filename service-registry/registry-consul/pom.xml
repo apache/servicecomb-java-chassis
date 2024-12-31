@@ -31,8 +31,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.ecwid.consul</groupId>
-      <artifactId>consul-api</artifactId>
+      <groupId>org.kiwiproject</groupId>
+      <artifactId>consul-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

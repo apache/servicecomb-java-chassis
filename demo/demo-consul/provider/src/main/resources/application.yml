@@ -33,6 +33,7 @@ servicecomb:
       discovery:
         enabled: true
         acl-token: ''
+        watch-seconds: 8
 
   config:
     consul:
@@ -40,7 +41,7 @@ servicecomb:
       host: 127.0.0.1
       scheme: http
       acl-token: ''
-      delay-time: 3000
+      watch-seconds: 8
 
   rest:
     address: 0.0.0.0:9094?websocketEnabled=true

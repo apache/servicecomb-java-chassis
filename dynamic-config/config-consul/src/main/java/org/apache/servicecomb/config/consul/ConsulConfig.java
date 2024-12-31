@@ -33,7 +33,7 @@ public class ConsulConfig {
 
   public static final String PROPERTY_CONSUL_ACL_TOKEN = "servicecomb.config.consul.acl-token";
 
-  public static final String PROPERTY_CONSUL_DELAY_TIME = "servicecomb.config.consul.delay-time";
+  public static final String PROPERTY_CONSUL_WATCH_SECONDS = "servicecomb.config.consul.watch-seconds";
 
   public static final String PROPERTY_INSTANCE_TAG = "servicecomb.config.consul.instance-tag";
 
@@ -69,8 +69,8 @@ public class ConsulConfig {
     return environment.getProperty(PROPERTY_CONSUL_ACL_TOKEN);
   }
 
-  public int getConsulDelayTime() {
-    return environment.getProperty(PROPERTY_CONSUL_DELAY_TIME, int.class, 1000);
+  public int getConsulWatchSeconds() {
+    return environment.getProperty(PROPERTY_CONSUL_WATCH_SECONDS, int.class, 8);
   }
 
   public String getInstanceTag() {

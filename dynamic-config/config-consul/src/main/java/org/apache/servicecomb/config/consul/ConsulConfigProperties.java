@@ -27,7 +27,7 @@ public class ConsulConfigProperties {
 
   private String aclToken;
 
-  private Integer delayTime = 30000;
+  private Integer watchSeconds = 8;
 
   public String getHost() {
     return host;
@@ -61,11 +61,11 @@ public class ConsulConfigProperties {
     this.aclToken = aclToken;
   }
 
-  public Integer getDelayTime() {
-    return delayTime;
+  public Integer getWatchSeconds() {
+    return watchSeconds;
   }
 
-  public void setDelayTime(Integer delayTime) {
-    this.delayTime = delayTime;
+  public void setWatchSeconds(Integer watchSeconds) {
+    this.watchSeconds = watchSeconds;
   }
 }

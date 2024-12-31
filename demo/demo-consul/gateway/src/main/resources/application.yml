@@ -30,6 +30,7 @@ servicecomb:
       discovery:
         enabled: true
         acl-token: ''
+        watch-seconds: 8
 
   rest:
     address: 0.0.0.0:9090?websocketEnabled=true

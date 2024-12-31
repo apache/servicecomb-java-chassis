@@ -17,54 +17,31 @@
 
 package org.apache.servicecomb.config.consul;
 
-import com.ecwid.consul.v1.ConsulClient;
-import com.ecwid.consul.v1.ConsulRawClient;
+import com.google.common.net.HostAndPort;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
+import org.kiwiproject.consul.Consul;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
-import org.springframework.scheduling.TaskScheduler;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.util.StringUtils;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
 
-@ConditionalOnProperty(prefix = "servicecomb.config.consul", name = "enabled", matchIfMissing = true)
-public class ConsulDynamicPropertiesSource implements ApplicationContextAware, DynamicPropertiesSource {
+public class ConsulDynamicPropertiesSource implements DynamicPropertiesSource {
   public static final String SOURCE_NAME = "consul";
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(ConsulDynamicPropertiesSource.class);
 
   private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
 
-  public static final String CONFIG_WATCH_TASK_SCHEDULER_NAME = "configWatchTaskScheduler";
-
   private ConsulConfigClient consulConfigClient;
-
-  private ApplicationContext applicationContext;
 
   public ConsulDynamicPropertiesSource() {
   }
 
-  @Bean
-  @ConditionalOnMissingBean
   public UpdateHandler updateHandler() {
     return new UpdateHandler();
   }
 
-  @Bean
-  @ConditionalOnMissingBean
   public ConsulConfigProperties consulConfigProperties(Environment environment) {
     ConsulConfig consulConfig = new ConsulConfig(environment);
     ConsulConfigProperties consulConfigProperties = new ConsulConfigProperties();
@@ -72,72 +49,29 @@ public class ConsulDynamicPropertiesSource implements ApplicationContextAware, D
     consulConfigProperties.setPort(consulConfig.getConsulPort());
     consulConfigProperties.setScheme(consulConfig.getConsulScheme());
     consulConfigProperties.setAclToken(consulConfig.getConsulAclToken());
-    consulConfigProperties.setDelayTime(consulConfig.getConsulDelayTime());
+    consulConfigProperties.setWatchSeconds(consulConfig.getConsulWatchSeconds());
     return consulConfigProperties;
   }
 
-  @Bean
-  @ConditionalOnMissingBean(value = ConsulRawClient.Builder.class, parameterizedContainer = Supplier.class)
-  public Supplier<ConsulRawClient.Builder> consulRawClientBuilderSupplier() {
-    return createConsulRawClientBuilder();
+  public Consul consulClient(ConsulConfigProperties consulConfigProperties) {
+    Consul.Builder builder = Consul.builder().withHostAndPort(HostAndPort.fromParts(consulConfigProperties.getHost(), consulConfigProperties.getPort()));
+    if (StringUtils.isNotBlank(consulConfigProperties.getAclToken())) {
+      builder.withAclToken(consulConfigProperties.getAclToken());
+    }
+    return builder.build();
   }
 
-  @Bean
-  @ConditionalOnMissingBean
-  public ConsulClient consulClient(ConsulConfigProperties consulConfigProperties,
-                                   Supplier<ConsulRawClient.Builder> consulRawClientBuilderSupplier) {
-    return createConsulClient(consulConfigProperties, consulRawClientBuilderSupplier);
-  }
-
-  public static Supplier<ConsulRawClient.Builder> createConsulRawClientBuilder() {
-    return ConsulRawClient.Builder::builder;
-  }
-
-  public static ConsulClient createConsulClient(ConsulConfigProperties consulConfigProperties,
-                                                Supplier<ConsulRawClient.Builder> consulRawClientBuilderSupplier) {
-    ConsulRawClient.Builder builder = consulRawClientBuilderSupplier.get();
-    final String agentHost = StringUtils.hasLength(consulConfigProperties.getScheme())
-        ? consulConfigProperties.getScheme() + "://" + consulConfigProperties.getHost() : consulConfigProperties.getHost();
-    builder.setHost(agentHost).setPort(consulConfigProperties.getPort());
-
-    return new ConsulClient(builder.build());
-  }
-
-  @Bean(name = CONFIG_WATCH_TASK_SCHEDULER_NAME)
-  @ConditionalOnMissingBean
-  public TaskScheduler configWatchTaskScheduler() {
-    ThreadPoolTaskScheduler threadPoolTaskScheduler = new ThreadPoolTaskScheduler();
-    threadPoolTaskScheduler.setPoolSize(8);
-    threadPoolTaskScheduler.setRemoveOnCancelPolicy(true);
-    threadPoolTaskScheduler.setThreadNamePrefix("consul-config-");
-
-    threadPoolTaskScheduler.initialize();
-    return threadPoolTaskScheduler;
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
   public ConsulConfigClient consulConfigClient(Environment environment) {
     ConsulConfigProperties consulConfigProperties = consulConfigProperties(environment);
-    ConsulClient consulClient = consulClient(consulConfigProperties, consulRawClientBuilderSupplier());
+    Consul consulClient = consulClient(consulConfigProperties);
     UpdateHandler updateHandler = updateHandler();
-    TaskScheduler taskScheduler = configWatchTaskScheduler();
-    return new ConsulConfigClient(updateHandler, environment, consulConfigProperties, consulClient, taskScheduler);
-  }
-
-  @Bean
-  @ConditionalOnMissingBean
-  @ConditionalOnBean(ConsulConfigClient.class)
-  public ConsulConfigClientClear consulConfigClear() {
-    return new ConsulConfigClientClear();
+    return new ConsulConfigClient(updateHandler, environment, consulConfigProperties, consulClient);
   }
 
   @Override
   public PropertySource<?> create(Environment environment) {
     try {
       consulConfigClient = consulConfigClient(environment);
-      ConsulConfigClientClear consulConfigClientClear = consulConfigClear();
-      LOGGER.info("consulConfigClientClear getPhase:{}", consulConfigClientClear.getPhase());
       consulConfigClient.refreshConsulConfig();
     } catch (Exception e) {
       throw new IllegalStateException("Set up consul config failed.", e);
@@ -148,10 +82,5 @@ public class ConsulDynamicPropertiesSource implements ApplicationContextAware, D
   @Override
   public int getOrder() {
     return 0;
-  }
-
-  @Override
-  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    this.applicationContext = applicationContext;
   }
 }
