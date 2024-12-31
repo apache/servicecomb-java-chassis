@@ -19,12 +19,18 @@ package org.apache.servicecomb.swagger.invocation.ws;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.handler.codec.http.websocketx.WebSocketCloseStatus;
 
 /**
  * AbstractBaseWebSocket
  */
 public abstract class AbstractBaseWebSocket implements WebSocket {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractBaseWebSocket.class);
+
   private WebSocketAdapter webSocketAdapter;
 
   private Status status = Status.CREATED;
@@ -53,6 +59,11 @@ public abstract class AbstractBaseWebSocket implements WebSocket {
 
   @Override
   public CompletableFuture<Void> close(Short closeStatusCode, String closeReason) {
+    if (closeStatusCode == null || closeReason == null) {
+      LOGGER.error("a WebSocket is closed by null closeStatusCode or closeReason");
+      closeStatusCode = (short) WebSocketCloseStatus.INTERNAL_SERVER_ERROR.code();
+      closeReason = WebSocketCloseStatus.INTERNAL_SERVER_ERROR.reasonText();
+    }
     synchronized (this) {
       if (status == Status.WAITING_TO_CLOSE || status == Status.CLOSING || status == Status.CLOSED) {
         return CompletableFuture.completedFuture(null);
@@ -65,8 +76,8 @@ public abstract class AbstractBaseWebSocket implements WebSocket {
         closeFuture = new CompletableFuture<>();
         return closeFuture;
       }
+      status = Status.CLOSING;
     }
-    status = Status.CLOSING;
     return webSocketAdapter.close(closeStatusCode, closeReason)
         .whenComplete((v, t) -> status = Status.CLOSED);
   }
