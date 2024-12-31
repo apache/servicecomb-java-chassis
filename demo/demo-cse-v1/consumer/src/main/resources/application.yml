@@ -135,4 +135,3 @@ servicecomb:
     secretKey: ${CREDENTIALS_SK}
     akskCustomCipher: default
     project: cn-south-1
-
