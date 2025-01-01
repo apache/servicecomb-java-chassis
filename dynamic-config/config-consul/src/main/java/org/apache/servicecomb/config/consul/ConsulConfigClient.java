@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.config.consul;
 
-import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.jetbrains.annotations.NotNull;
@@ -82,7 +81,6 @@ public class ConsulConfigClient {
     }
   }
 
-  @Resource
   private UpdateHandler updateHandler;
 
   private ConsulConfig consulConfig;

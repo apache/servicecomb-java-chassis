@@ -166,6 +166,7 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
     ImmutableRegistration newService = registrationBuilder.build();
     AgentClient agentClient = consulClient.agentClient();
     agentClient.register(newService);
+    logger.info("ConsulRegistration newService");
   }
 
   @Override

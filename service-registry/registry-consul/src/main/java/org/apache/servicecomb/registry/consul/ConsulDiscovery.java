@@ -123,10 +123,8 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
     String serviceName = BootStrapProperties.readServiceName(environment);
     HealthClient healthClient = consulClient.healthClient();
     svHealth = ServiceHealthCache.newCache(healthClient, serviceName, true, Options.BLANK_QUERY_OPTIONS, consulDiscoveryProperties.getWatchSeconds());
-    svHealth.addListener((Map<ServiceHealthKey, ServiceHealth> newValues) -> {
-      instanceChangedListener.onInstanceChanged(
-          name(), BootStrapProperties.readApplication(environment), serviceName, getInstances(serviceName));
-    });
+    svHealth.addListener((Map<ServiceHealthKey, ServiceHealth> newValues) -> instanceChangedListener.onInstanceChanged(
+        name(), BootStrapProperties.readApplication(environment), serviceName, getInstances(serviceName)));
     svHealth.start();
   }
 
@@ -139,6 +137,7 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
     String serviceId = serviceName + "-" + serverPort;
     logger.info("ConsulDiscovery destroy consul service id={}", serviceId);
     if (consulClient != null) {
+      logger.info("ConsulDiscovery consulClient destroy");
       consulClient.agentClient().deregister(serviceId);
       consulClient.destroy();
     }

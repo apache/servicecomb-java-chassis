@@ -38,11 +38,7 @@ public class ConsulDynamicPropertiesSource implements DynamicPropertiesSource {
   public ConsulDynamicPropertiesSource() {
   }
 
-  public UpdateHandler updateHandler() {
-    return new UpdateHandler();
-  }
-
-  public ConsulConfigProperties consulConfigProperties(Environment environment) {
+  private ConsulConfigProperties consulConfigProperties(Environment environment) {
     ConsulConfig consulConfig = new ConsulConfig(environment);
     ConsulConfigProperties consulConfigProperties = new ConsulConfigProperties();
     consulConfigProperties.setHost(consulConfig.getConsulHost());
@@ -53,7 +49,7 @@ public class ConsulDynamicPropertiesSource implements DynamicPropertiesSource {
     return consulConfigProperties;
   }
 
-  public Consul consulClient(ConsulConfigProperties consulConfigProperties) {
+  private Consul consulClient(ConsulConfigProperties consulConfigProperties) {
     Consul.Builder builder = Consul.builder().withHostAndPort(HostAndPort.fromParts(consulConfigProperties.getHost(), consulConfigProperties.getPort()));
     if (StringUtils.isNotBlank(consulConfigProperties.getAclToken())) {
       builder.withAclToken(consulConfigProperties.getAclToken());
@@ -61,11 +57,10 @@ public class ConsulDynamicPropertiesSource implements DynamicPropertiesSource {
     return builder.build();
   }
 
-  public ConsulConfigClient consulConfigClient(Environment environment) {
+  private ConsulConfigClient consulConfigClient(Environment environment) {
     ConsulConfigProperties consulConfigProperties = consulConfigProperties(environment);
     Consul consulClient = consulClient(consulConfigProperties);
-    UpdateHandler updateHandler = updateHandler();
-    return new ConsulConfigClient(updateHandler, environment, consulConfigProperties, consulClient);
+    return new ConsulConfigClient(new UpdateHandler(), environment, consulConfigProperties, consulClient);
   }
 
   @Override
