@@ -30,9 +30,9 @@ public class ConsulProperties {
   private String scheme = "http";
 
   @NotNull
-  private int port = 8500;
+  private Integer port = 8500;
 
-  private boolean enabled = true;
+  private Boolean enabled = true;
 
   public String getHost() {
     return this.host;
@@ -42,19 +42,19 @@ public class ConsulProperties {
     this.host = host;
   }
 
-  public int getPort() {
+  public Integer getPort() {
     return this.port;
   }
 
-  public void setPort(int port) {
+  public void setPort(Integer port) {
     this.port = port;
   }
 
-  public boolean isEnabled() {
+  public Boolean isEnabled() {
     return this.enabled;
   }
 
-  public void setEnabled(boolean enabled) {
+  public void setEnabled(Boolean enabled) {
     this.enabled = enabled;
   }
 

@@ -47,7 +47,7 @@ import static org.apache.servicecomb.config.consul.ConsulConfig.PATH_TAG;
 import static org.apache.servicecomb.config.consul.ConsulConfig.PATH_VERSION;
 
 public class ConsulConfigClient {
-  private static final Logger logger = LoggerFactory.getLogger(ConsulConfigClient.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsulConfigClient.class);
 
   public class GetDataRunnable implements Runnable {
 
@@ -81,7 +81,7 @@ public class ConsulConfigClient {
     }
   }
 
-  private UpdateHandler updateHandler;
+  private ConsulDynamicPropertiesSource.UpdateHandler updateHandler;
 
   private ConsulConfig consulConfig;
 
@@ -107,7 +107,7 @@ public class ConsulConfigClient {
 
   private Map<String, Object> allLast = new HashMap<>();
 
-  public ConsulConfigClient(UpdateHandler updateHandler, Environment environment, ConsulConfigProperties consulConfigProperties, Consul consulClient) {
+  public ConsulConfigClient(ConsulDynamicPropertiesSource.UpdateHandler updateHandler, Environment environment, ConsulConfigProperties consulConfigProperties, Consul consulClient) {
     this.updateHandler = updateHandler;
     this.consulConfig = new ConsulConfig(environment);
     this.environment = environment;
@@ -240,7 +240,7 @@ public class ConsulConfigClient {
     try {
       return getValues(path);
     } catch (Exception e) {
-      logger.error(e.getMessage(), e);
+      LOGGER.error(e.getMessage(), e);
     }
     return new HashMap<>();
   }
@@ -266,7 +266,7 @@ public class ConsulConfigClient {
       try {
         properties.load(new StringReader(decodedValue));
       } catch (IOException e) {
-        logger.error(e.getMessage(), e);
+        LOGGER.error(e.getMessage(), e);
       }
       values.putAll(toMap(properties));
     } else {

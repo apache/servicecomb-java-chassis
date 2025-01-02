@@ -19,8 +19,12 @@ package org.apache.servicecomb.config.consul;
 
 import com.google.common.net.HostAndPort;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.DynamicPropertiesSource;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.kiwiproject.consul.Consul;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
@@ -29,6 +33,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConsulDynamicPropertiesSource implements DynamicPropertiesSource {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsulDynamicPropertiesSource.class);
+
   public static final String SOURCE_NAME = "consul";
 
   private final Map<String, Object> valueCache = new ConcurrentHashMap<>();
@@ -36,6 +42,18 @@ public class ConsulDynamicPropertiesSource implements DynamicPropertiesSource {
   private ConsulConfigClient consulConfigClient;
 
   public ConsulDynamicPropertiesSource() {
+  }
+
+  private final UpdateHandler updateHandler = new UpdateHandler();
+  public class UpdateHandler {
+    public void handle(Map<String, Object> current, Map<String, Object> last) {
+      ConfigurationChangedEvent event = ConfigurationChangedEvent.createIncremental(current, last);
+      LOGGER.info("Dynamic configuration changed: {}", event.getChanged());
+      valueCache.putAll(event.getAdded());
+      valueCache.putAll(event.getUpdated());
+      event.getDeleted().forEach((k, v) -> valueCache.remove(k));
+      EventManager.post(event);
+    }
   }
 
   private ConsulConfigProperties consulConfigProperties(Environment environment) {
@@ -60,7 +78,7 @@ public class ConsulDynamicPropertiesSource implements DynamicPropertiesSource {
   private ConsulConfigClient consulConfigClient(Environment environment) {
     ConsulConfigProperties consulConfigProperties = consulConfigProperties(environment);
     Consul consulClient = consulClient(consulConfigProperties);
-    return new ConsulConfigClient(new UpdateHandler(), environment, consulConfigProperties, consulClient);
+    return new ConsulConfigClient(updateHandler, environment, consulConfigProperties, consulClient);
   }
 
   @Override

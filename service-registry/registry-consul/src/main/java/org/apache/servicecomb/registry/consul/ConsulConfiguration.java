@@ -23,7 +23,6 @@ import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.registry.RegistrationId;
 import org.apache.servicecomb.registry.consul.config.ConsulDiscoveryProperties;
 import org.apache.servicecomb.registry.consul.config.ConsulProperties;
-import org.apache.servicecomb.registry.consul.utils.InetUtils;
 import org.kiwiproject.consul.Consul;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -48,7 +47,7 @@ public class ConsulConfiguration {
   @ConfigurationProperties(prefix = ConsulConst.CONSUL_DISCOVERY_REGISTRY_PREFIX)
   @ConditionalOnMissingBean
   public ConsulDiscoveryProperties consulDiscoveryProperties() {
-    return new ConsulDiscoveryProperties(new InetUtils());
+    return new ConsulDiscoveryProperties();
   }
 
   @Bean
@@ -65,7 +64,7 @@ public class ConsulConfiguration {
   @Bean
   @ConditionalOnBean(value = {Consul.class, Environment.class, RegistrationId.class, DataCenterProperties.class})
   @ConditionalOnMissingBean
-  public ConsulDiscovery etcdDiscovery() {
+  public ConsulDiscovery consulDiscovery() {
     return new ConsulDiscovery();
   }
 

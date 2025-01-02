@@ -20,10 +20,8 @@ package org.apache.servicecomb.registry.consul;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.consul.config.ConsulDiscoveryProperties;
@@ -37,18 +35,16 @@ import org.kiwiproject.consul.model.health.ServiceHealth;
 import org.kiwiproject.consul.option.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
 
-  private static final Logger logger = LoggerFactory.getLogger(ConsulDiscovery.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConsulDiscovery.class);
 
   @Resource
   private ConsulProperties consulProperties;
@@ -61,11 +57,6 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
 
   @Resource
   private Environment environment;
-
-  @Value("${servicecomb.rest.address:127.0.0.1:8080}")
-  private String restAddress;
-
-  private String serverPort = "";
 
   private List<ConsulDiscoveryInstance> consulDiscoveryInstanceList;
 
@@ -85,14 +76,14 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
 
   @Override
   public List<ConsulDiscoveryInstance> findServiceInstances(String application, String serviceName) {
-    logger.info("findServiceInstances application:{}, serviceName:{}", application, serviceName);
+    LOGGER.info("findServiceInstances application:{}, serviceName:{}", application, serviceName);
     consulDiscoveryInstanceList = getInstances(serviceName);
     return consulDiscoveryInstanceList;
   }
 
   @Override
   public List<String> findServices(String application) {
-    logger.info("ConsulDiscovery findServices(application={})", application);
+    LOGGER.info("ConsulDiscovery findServices(application={})", application);
     Map<String, Service> services = consulClient.agentClient().getServices();
     return Lists.newArrayList(services.keySet());
   }
@@ -109,17 +100,12 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
 
   @Override
   public void init() {
-    logger.info("ConsulDiscovery init");
-    if (restAddress.contains("?")) {
-      serverPort = restAddress.substring(restAddress.indexOf(":") + 1, restAddress.indexOf("?"));
-    } else {
-      serverPort = restAddress.substring(restAddress.indexOf(":") + 1);
-    }
+    LOGGER.info("ConsulDiscovery init");
   }
 
   @Override
   public void run() {
-    logger.info("ConsulDiscovery run");
+    LOGGER.info("ConsulDiscovery run");
     String serviceName = BootStrapProperties.readServiceName(environment);
     HealthClient healthClient = consulClient.healthClient();
     svHealth = ServiceHealthCache.newCache(healthClient, serviceName, true, Options.BLANK_QUERY_OPTIONS, consulDiscoveryProperties.getWatchSeconds());
@@ -133,11 +119,10 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
     if (svHealth != null) {
       svHealth.stop();
     }
-    String serviceName = BootStrapProperties.readServiceName(environment);
-    String serviceId = serviceName + "-" + serverPort;
-    logger.info("ConsulDiscovery destroy consul service id={}", serviceId);
+    String serviceId = consulDiscoveryProperties.getServiceId();
+    LOGGER.info("ConsulDiscovery destroy consul service id={}", serviceId);
     if (consulClient != null) {
-      logger.info("ConsulDiscovery consulClient destroy");
+      LOGGER.info("ConsulDiscovery consulClient destroy");
       consulClient.agentClient().deregister(serviceId);
       consulClient.destroy();
     }
@@ -154,24 +139,8 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
     if (!CollectionUtils.isEmpty(healthServices)) {
       for (ServiceHealth serviceHealth : healthServices) {
         Service service = serviceHealth.getService();
-        logger.info("healthService:{}", service.getId());
-        Map<String, String> meta = service.getMeta();
-        ConsulInstance consulInstance = new ConsulInstance();
-        consulInstance.setServiceId(service.getId());
-        consulInstance.setServiceName(meta.get("serviceName"));
-        consulInstance.setInstanceId(meta.get("instanceId"));
-        consulInstance.setApplication(meta.get("application"));
-        consulInstance.setEnvironment(meta.get("env"));
-        consulInstance.setAlias(meta.get("alias"));
-        consulInstance.setVersion(meta.get("version"));
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        String[] endpoints = gson.fromJson(meta.get("endpoints"), String[].class);
-        consulInstance.setEndpoints(Lists.newArrayList(endpoints));
-        if (StringUtils.isNotBlank(meta.get("properties"))) {
-          Type type = new TypeToken<Map<String, String>>() {
-          }.getType();
-          consulInstance.setProperties(gson.fromJson(meta.get("properties"), type));
-        }
+        ConsulInstance consulInstance = gson.fromJson(service.getMeta().get("meta"), ConsulInstance.class);
         instances.add(new ConsulDiscoveryInstance(consulInstance));
       }
     }
