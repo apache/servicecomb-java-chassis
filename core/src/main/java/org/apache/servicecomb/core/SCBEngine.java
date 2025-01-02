@@ -371,7 +371,7 @@ public class SCBEngine {
     registrationManager.run();
     discoveryManager.run();
     // ensure can invoke services in AFTER_REGISTRY
-    registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.UP);
+//    registrationManager.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.UP);
     status = SCBStatus.UP;
     triggerEvent(EventType.AFTER_REGISTRY);
 

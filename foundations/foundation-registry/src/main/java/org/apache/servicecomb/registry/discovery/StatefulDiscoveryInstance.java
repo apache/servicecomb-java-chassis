@@ -62,6 +62,7 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
 
   public StatefulDiscoveryInstance(DiscoveryInstance discoveryInstance) {
     this.discoveryInstance = discoveryInstance;
+    this.microserviceInstanceStatus = discoveryInstance.getStatus();
   }
 
   public MicroserviceInstanceStatus getMicroserviceInstanceStatus() {

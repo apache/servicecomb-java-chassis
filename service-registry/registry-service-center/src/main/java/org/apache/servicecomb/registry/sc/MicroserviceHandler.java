@@ -142,7 +142,11 @@ public class MicroserviceHandler {
     properties.putAll(BootStrapProperties.readServiceProperties(environment));
     properties.putAll(genCasProperties(environment));
     microserviceInstance.setProperties(properties);
-    microserviceInstance.setStatus(MicroserviceInstanceStatus.valueOf(scConfigurationProperties.getInitialStatus()));
+    if (scConfigurationProperties.isEnableElegantUpDown()){
+      microserviceInstance.setStatus(MicroserviceInstanceStatus.STARTING);
+    }else {
+      microserviceInstance.setStatus(MicroserviceInstanceStatus.UP);
+    }
     return microserviceInstance;
   }
 

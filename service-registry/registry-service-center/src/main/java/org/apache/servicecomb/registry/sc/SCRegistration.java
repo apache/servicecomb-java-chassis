@@ -195,4 +195,10 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
   public MicroserviceInstance getBackendMicroserviceInstance() {
     return microserviceInstance;
   }
+  public MicroserviceInstance getLatestMicroserviceInstance() {
+    MicroserviceInstance latestInstance = serviceCenterClient.getMicroserviceInstance(microserviceInstance.getServiceId(),
+            microserviceInstance.getInstanceId());
+    microserviceInstance.setStatus(latestInstance.getStatus());
+    return latestInstance;
+  }
 }
