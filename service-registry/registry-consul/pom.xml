@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -18,27 +17,38 @@
   -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
+    <artifactId>service-registry-parent</artifactId>
     <version>3.3.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>dynamic-config</artifactId>
-  <name>Java Chassis::Dynamic Config</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>config-apollo</module>
-    <module>config-cc</module>
-    <module>config-nacos</module>
-    <module>config-kie</module>
-    <module>config-zookeeper</module>
-    <module>config-etcd</module>
-    <module>config-consul</module>
-  </modules>
+  <artifactId>registry-consul</artifactId>
+  <name>Java Chassis::Service Registry::Consul</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.kiwiproject</groupId>
+      <artifactId>consul-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-registry</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+    </dependency>
+  </dependencies>
 </project>
