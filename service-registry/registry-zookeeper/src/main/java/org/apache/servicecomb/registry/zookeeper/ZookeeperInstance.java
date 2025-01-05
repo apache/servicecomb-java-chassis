@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 public class ZookeeperInstance implements MicroserviceInstance {
   private String serviceId;
@@ -49,6 +50,8 @@ public class ZookeeperInstance implements MicroserviceInstance {
 
   private Map<String, String> properties = new HashMap<>();
 
+  private MicroserviceInstanceStatus status;
+
   public ZookeeperInstance() {
 
   }
@@ -66,6 +69,8 @@ public class ZookeeperInstance implements MicroserviceInstance {
     this.endpoints = other.endpoints;
     this.schemas = other.schemas;
     this.properties = other.properties;
+    this.status = other.status;
+
   }
 
   public void setServiceId(String serviceId) {
@@ -186,5 +191,13 @@ public class ZookeeperInstance implements MicroserviceInstance {
   @Override
   public String getServiceId() {
     return serviceId;
+  }
+
+  public MicroserviceInstanceStatus getStatus() {
+    return status;
+  }
+
+  public void setStatus(MicroserviceInstanceStatus status) {
+    this.status = status;
   }
 }

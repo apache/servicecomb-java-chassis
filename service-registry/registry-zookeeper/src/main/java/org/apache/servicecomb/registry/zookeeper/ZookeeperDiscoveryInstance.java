@@ -26,7 +26,7 @@ public class ZookeeperDiscoveryInstance extends ZookeeperInstance implements Dis
 
   @Override
   public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
+    return super.getStatus();
   }
 
   @Override

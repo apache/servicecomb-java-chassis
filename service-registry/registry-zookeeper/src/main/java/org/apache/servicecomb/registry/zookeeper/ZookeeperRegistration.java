@@ -79,6 +79,8 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   private RegistrationId registrationId;
 
+  private ServiceDiscovery<ZookeeperInstance> dis;
+
   @Autowired
   @SuppressWarnings("unused")
   public void setEnvironment(Environment environment) {
@@ -125,6 +127,12 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     }
     zookeeperInstance.setProperties(BootStrapProperties.readServiceProperties(environment));
     zookeeperInstance.setVersion(BootStrapProperties.readServiceVersion(environment));
+
+    if (zookeeperRegistryProperties.isEnableElegantUpDown()){
+      zookeeperInstance.setStatus(MicroserviceInstanceStatus.STARTING);
+    }else {
+      zookeeperInstance.setStatus(MicroserviceInstanceStatus.UP);
+    }
     try {
       this.instance = ServiceInstance.<ZookeeperInstance>builder().name(zookeeperInstance.getServiceName())
           .id(zookeeperInstance.getInstanceId()).payload(zookeeperInstance).build();
@@ -155,7 +163,7 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     client.start();
     JsonInstanceSerializer<ZookeeperInstance> serializer =
         new JsonInstanceSerializer<>(ZookeeperInstance.class);
-    ServiceDiscovery<ZookeeperInstance> dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
+    dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
         .client(client)
         .basePath(basePath + "/" + BootStrapProperties.readApplication(environment))
         .serializer(serializer)
@@ -187,8 +195,19 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    // not support yet
-    return true;
+      this.instance.getPayload().setStatus(status);
+      try {
+          if (status == MicroserviceInstanceStatus.UP){
+              dis.updateService(instance);
+          }
+          if (status == MicroserviceInstanceStatus.DOWN){
+              dis.registerService(instance);
+          }
+      } catch (Exception e){
+          throw new IllegalStateException(e);
+      }
+
+      return true;
   }
 
   @Override
@@ -212,4 +231,17 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   public boolean enabled() {
     return zookeeperRegistryProperties.isEnabled();
   }
+
+  public ZookeeperInstance getZookeeperInstance(){
+    try {
+      ServiceInstance<ZookeeperInstance> zkInstance = dis.queryForInstance(instance.getName(), instance.getId());
+      if (zkInstance != null){
+        return zkInstance.getPayload();
+      }
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+    return null;
+  }
+
 }

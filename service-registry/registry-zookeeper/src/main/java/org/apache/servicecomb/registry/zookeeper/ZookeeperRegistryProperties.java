@@ -33,6 +33,8 @@ public class ZookeeperRegistryProperties {
 
   private boolean enableSwaggerRegistration = false;
 
+  private boolean enableElegantUpDown = false;
+
   public boolean isEnabled() {
     return enabled;
   }
@@ -95,5 +97,13 @@ public class ZookeeperRegistryProperties {
 
   public void setAuthenticationInfo(String authenticationInfo) {
     this.authenticationInfo = authenticationInfo;
+  }
+
+  public boolean isEnableElegantUpDown() {
+    return enableElegantUpDown;
+  }
+
+  public void setEnableElegantUpDown(boolean enableElegantUpDown) {
+    this.enableElegantUpDown = enableElegantUpDown;
   }
 }
