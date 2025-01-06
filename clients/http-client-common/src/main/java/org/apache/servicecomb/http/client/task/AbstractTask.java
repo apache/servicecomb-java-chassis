@@ -31,7 +31,7 @@ public class AbstractTask {
   public class BackOffSleepTask implements Task {
     private static final long BASE = 3000;
 
-    private static final long MAX = 10 * 60 * 10000;
+    private static final long MAX = 10 * 60 * 1000;
 
     long waitTime;
 
