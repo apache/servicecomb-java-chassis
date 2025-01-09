@@ -121,6 +121,10 @@ public class ZookeeperInstance implements MicroserviceInstance {
     this.properties = properties;
   }
 
+  public void setStatus(MicroserviceInstanceStatus status) {
+    this.status = status;
+  }
+
   @Override
   public String getEnvironment() {
     return this.environment;
@@ -193,11 +197,8 @@ public class ZookeeperInstance implements MicroserviceInstance {
     return serviceId;
   }
 
+  @Override
   public MicroserviceInstanceStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(MicroserviceInstanceStatus status) {
-    this.status = status;
+    return this.status;
   }
 }

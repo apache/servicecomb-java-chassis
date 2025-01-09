@@ -49,6 +49,8 @@ public class NacosDiscoveryProperties {
 
   private boolean enableSwaggerRegistration = false;
 
+  private String initialStatus = "UP";
+
   public String getServerAddr() {
     return serverAddr;
   }
@@ -159,5 +161,13 @@ public class NacosDiscoveryProperties {
 
   public void setEnableSwaggerRegistration(boolean enableSwaggerRegistration) {
     this.enableSwaggerRegistration = enableSwaggerRegistration;
+  }
+
+  public String getInitialStatus() {
+    return initialStatus;
+  }
+
+  public void setInitialStatus(String initialStatus) {
+    this.initialStatus = initialStatus;
   }
 }

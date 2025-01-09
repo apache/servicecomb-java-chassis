@@ -25,11 +25,6 @@ public class ZookeeperDiscoveryInstance extends ZookeeperInstance implements Dis
   }
 
   @Override
-  public MicroserviceInstanceStatus getStatus() {
-    return super.getStatus();
-  }
-
-  @Override
   public String getRegistryName() {
     return ZookeeperConst.ZOOKEEPER_REGISTRY_NAME;
   }

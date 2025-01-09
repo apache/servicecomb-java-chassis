@@ -128,11 +128,7 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     zookeeperInstance.setProperties(BootStrapProperties.readServiceProperties(environment));
     zookeeperInstance.setVersion(BootStrapProperties.readServiceVersion(environment));
 
-    if (zookeeperRegistryProperties.isEnableElegantUpDown()){
-      zookeeperInstance.setStatus(MicroserviceInstanceStatus.STARTING);
-    }else {
-      zookeeperInstance.setStatus(MicroserviceInstanceStatus.UP);
-    }
+    zookeeperInstance.setStatus(MicroserviceInstanceStatus.valueOf(zookeeperRegistryProperties.getInitialStatus()));
     try {
       this.instance = ServiceInstance.<ZookeeperInstance>builder().name(zookeeperInstance.getServiceName())
           .id(zookeeperInstance.getInstanceId()).payload(zookeeperInstance).build();
@@ -197,16 +193,10 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
       this.instance.getPayload().setStatus(status);
       try {
-          if (status == MicroserviceInstanceStatus.UP){
-              dis.updateService(instance);
-          }
-          if (status == MicroserviceInstanceStatus.DOWN){
-              dis.registerService(instance);
-          }
+        dis.updateService(instance);
       } catch (Exception e){
           throw new IllegalStateException(e);
       }
-
       return true;
   }
 
@@ -232,6 +222,10 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     return zookeeperRegistryProperties.isEnabled();
   }
 
+  /**
+   * Returns the latest instance for checking when updating the instance status from STARTING to UP.
+   * @return ZookeeperInstance
+   */
   public ZookeeperInstance getZookeeperInstance(){
     try {
       ServiceInstance<ZookeeperInstance> zkInstance = dis.queryForInstance(instance.getName(), instance.getId());

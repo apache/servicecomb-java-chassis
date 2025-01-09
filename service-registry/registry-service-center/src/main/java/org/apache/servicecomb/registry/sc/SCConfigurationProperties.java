@@ -28,8 +28,6 @@ public class SCConfigurationProperties {
 
   private boolean enableSwaggerRegistration = false;
 
-  private boolean enableElegantUpDown = false;
-
   /**
    * for registration service
    * when swagger is different between local with remote serviceCenter. if ignoreSwaggerDifferent is true.
@@ -51,7 +49,7 @@ public class SCConfigurationProperties {
 
   private boolean autoDiscovery = false;
 
-  private String initialStatus = "STARTING";
+  private String initialStatus = "UP";
 
   private boolean watch = false;
 
@@ -172,13 +170,5 @@ public class SCConfigurationProperties {
 
   public void setEnableSwaggerRegistration(boolean enableSwaggerRegistration) {
     this.enableSwaggerRegistration = enableSwaggerRegistration;
-  }
-
-  public boolean isEnableElegantUpDown() {
-    return enableElegantUpDown;
-  }
-
-  public void setEnableElegantUpDown(boolean enableElegantUpDown) {
-    this.enableElegantUpDown = enableElegantUpDown;
   }
 }

@@ -113,13 +113,13 @@ public class MicroserviceHandler {
     }
     microserviceInstance.setHostName(hostName);
 
+    DataCenterInfo dataCenterInfo = new DataCenterInfo();
     if (StringUtils.isNotEmpty(dataCenterProperties.getName())) {
-      DataCenterInfo dataCenterInfo = new DataCenterInfo();
       dataCenterInfo.setName(dataCenterProperties.getName());
       dataCenterInfo.setRegion(dataCenterProperties.getRegion());
       dataCenterInfo.setAvailableZone(dataCenterProperties.getAvailableZone());
-      microserviceInstance.setDataCenterInfo(dataCenterInfo);
     }
+    microserviceInstance.setDataCenterInfo(dataCenterInfo);
 
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.push);
@@ -142,11 +142,7 @@ public class MicroserviceHandler {
     properties.putAll(BootStrapProperties.readServiceProperties(environment));
     properties.putAll(genCasProperties(environment));
     microserviceInstance.setProperties(properties);
-    if (scConfigurationProperties.isEnableElegantUpDown()){
-      microserviceInstance.setStatus(MicroserviceInstanceStatus.STARTING);
-    }else {
-      microserviceInstance.setStatus(MicroserviceInstanceStatus.UP);
-    }
+    microserviceInstance.setStatus(MicroserviceInstanceStatus.valueOf(scConfigurationProperties.getInitialStatus()));
     return microserviceInstance;
   }
 

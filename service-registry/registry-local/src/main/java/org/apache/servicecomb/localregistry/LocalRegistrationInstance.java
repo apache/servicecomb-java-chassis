@@ -119,6 +119,11 @@ public class LocalRegistrationInstance implements RegistrationInstance {
   }
 
   @Override
+  public MicroserviceInstanceStatus getStatus() {
+    return MicroserviceInstanceStatus.UP;
+  }
+
+  @Override
   public MicroserviceInstanceStatus getInitialStatus() {
     return MicroserviceInstanceStatus.STARTING;
   }

@@ -104,6 +104,11 @@ public class NacosRegistrationInstance implements RegistrationInstance {
   }
 
   @Override
+  public MicroserviceInstanceStatus getStatus() {
+    return MicroserviceInstanceStatus.valueOf(instance.getMetadata().get(NacosConst.NACOS_STATUS));
+  }
+
+  @Override
   public MicroserviceInstanceStatus getInitialStatus() {
     return MicroserviceInstanceStatus.STARTING;
   }

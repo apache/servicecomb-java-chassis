@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 public class EtcdInstance implements MicroserviceInstance {
   private String serviceId;
@@ -186,6 +187,11 @@ public class EtcdInstance implements MicroserviceInstance {
   @Override
   public String getServiceId() {
     return serviceId;
+  }
+
+  @Override
+  public MicroserviceInstanceStatus getStatus() {
+    return MicroserviceInstanceStatus.UP;
   }
 
   @Override

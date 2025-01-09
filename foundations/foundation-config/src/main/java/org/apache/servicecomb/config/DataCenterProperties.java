@@ -19,11 +19,11 @@ package org.apache.servicecomb.config;
 public class DataCenterProperties {
   public static final String PREFIX = "servicecomb.datacenter";
 
-  private String name;
+  private String name = "local";
 
-  private String region;
+  private String region = "local";
 
-  private String availableZone;
+  private String availableZone = "local";
 
   public String getName() {
     return name;
