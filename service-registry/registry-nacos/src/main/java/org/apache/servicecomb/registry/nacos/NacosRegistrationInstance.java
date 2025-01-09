@@ -24,13 +24,13 @@ import java.util.Map;
 
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
+import org.apache.servicecomb.registry.api.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.springframework.core.env.Environment;
 
 import com.alibaba.nacos.api.naming.pojo.Instance;
 
-public class NacosRegistrationInstance implements RegistrationInstance {
+public class NacosRegistrationInstance implements MicroserviceInstance {
   private final Instance instance;
 
   private final Map<String, String> schemas = new HashMap<>();
@@ -106,16 +106,6 @@ public class NacosRegistrationInstance implements RegistrationInstance {
   @Override
   public MicroserviceInstanceStatus getStatus() {
     return MicroserviceInstanceStatus.valueOf(instance.getMetadata().get(NacosConst.NACOS_STATUS));
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 
   public void addSchema(String schemaId, String content) {

@@ -16,21 +16,9 @@
  */
 package org.apache.servicecomb.registry.zookeeper;
 
-import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.RegistrationInstance;
 
-public class ZookeeperRegistrationInstance extends ZookeeperInstance implements RegistrationInstance {
+public class ZookeeperRegistrationInstance extends ZookeeperInstance {
   public ZookeeperRegistrationInstance(ZookeeperInstance instance) {
     super(instance);
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 }
