@@ -222,20 +222,4 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     return zookeeperRegistryProperties.isEnabled();
   }
 
-  /**
-   * Returns the latest instance for checking when updating the instance status from STARTING to UP.
-   * @return ZookeeperInstance
-   */
-  public ZookeeperInstance getZookeeperInstance(){
-    try {
-      ServiceInstance<ZookeeperInstance> zkInstance = dis.queryForInstance(instance.getName(), instance.getId());
-      if (zkInstance != null){
-        return zkInstance.getPayload();
-      }
-    } catch (Exception e) {
-      throw new RuntimeException(e);
-    }
-    return null;
-  }
-
 }

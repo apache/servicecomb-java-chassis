@@ -195,15 +195,4 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
   public MicroserviceInstance getBackendMicroserviceInstance() {
     return microserviceInstance;
   }
-
-  /**
-   * Returns the latest instance for checking when updating the instance status from STARTING to UP.
-   * @return MicroserviceInstance
-   */
-  public MicroserviceInstance getLatestMicroserviceInstance() {
-    MicroserviceInstance latestInstance = serviceCenterClient.getMicroserviceInstance(microserviceInstance.getServiceId(),
-            microserviceInstance.getInstanceId());
-    microserviceInstance.setStatus(latestInstance.getStatus());
-    return latestInstance;
-  }
 }
