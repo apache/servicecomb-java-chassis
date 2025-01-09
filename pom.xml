@@ -46,12 +46,12 @@
     <!-- sort by alpha -->
     <checkstyle-maven-plugin.version>3.6.0</checkstyle-maven-plugin.version>
     <coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
-    <dependency-check-maven-plugin.version>11.1.0</dependency-check-maven-plugin.version>
+    <dependency-check-maven-plugin.version>11.1.1</dependency-check-maven-plugin.version>
     <docker-maven-plugin.version>0.45.1</docker-maven-plugin.version>
     <exec-maven-plugin.version>3.5.0</exec-maven-plugin.version>
     <gpg-maven-plugin.version>3.2.7</gpg-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.12</jacoco-maven-plugin.version>
-    <javadoc-maven-plugin.version>3.11.1</javadoc-maven-plugin.version>
+    <javadoc-maven-plugin.version>3.11.2</javadoc-maven-plugin.version>
     <jxr-maven-plugin.version>2.5</jxr-maven-plugin.version>
     <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
     <maven-failsafe-plugin.version>3.5.2</maven-failsafe-plugin.version>
@@ -62,7 +62,7 @@
     <protobuf-maven-plugin.version>0.6.1</protobuf-maven-plugin.version>
     <protoc3-maven-plugin.version>3.19.2</protoc3-maven-plugin.version>
     <protoc-gen-grpc-java-plugin.version>1.47.0</protoc-gen-grpc-java-plugin.version>
-    <puppycrawl-checkstyle.version>10.20.2</puppycrawl-checkstyle.version>
+    <puppycrawl-checkstyle.version>10.21.1</puppycrawl-checkstyle.version>
     <release-maven-plugin.version>3.1.1</release-maven-plugin.version>
     <site-maven-plugin.version>3.21.0</site-maven-plugin.version>
     <source-maven-plugin.version>3.3.0</source-maven-plugin.version>
