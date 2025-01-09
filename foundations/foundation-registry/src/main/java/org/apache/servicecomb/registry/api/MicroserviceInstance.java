@@ -96,7 +96,7 @@ public interface MicroserviceInstance {
 
   /**
    * Service status(Required): status of this microservice.
-   * @return
+   *
    */
-  public MicroserviceInstanceStatus getStatus();
+  MicroserviceInstanceStatus getStatus();
 }

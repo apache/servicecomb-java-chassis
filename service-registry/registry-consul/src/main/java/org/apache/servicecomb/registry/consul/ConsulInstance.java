@@ -19,6 +19,7 @@ package org.apache.servicecomb.registry.consul;
 
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -187,5 +188,10 @@ public class ConsulInstance implements MicroserviceInstance {
   @Override
   public String getServiceId() {
     return serviceId;
+  }
+
+  @Override
+  public MicroserviceInstanceStatus getStatus() {
+    return MicroserviceInstanceStatus.UP;
   }
 }
