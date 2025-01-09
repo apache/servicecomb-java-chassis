@@ -46,8 +46,6 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
 
   private final DiscoveryInstance discoveryInstance;
 
-  private MicroserviceInstanceStatus microserviceInstanceStatus = MicroserviceInstanceStatus.UP;
-
   private IsolationStatus isolationStatus = IsolationStatus.NORMAL;
 
   private long isolatedTime;
@@ -62,16 +60,6 @@ public class StatefulDiscoveryInstance extends AbstractDiscoveryInstance {
 
   public StatefulDiscoveryInstance(DiscoveryInstance discoveryInstance) {
     this.discoveryInstance = discoveryInstance;
-    this.microserviceInstanceStatus = discoveryInstance.getStatus();
-  }
-
-  public MicroserviceInstanceStatus getMicroserviceInstanceStatus() {
-    return microserviceInstanceStatus;
-  }
-
-  public void setMicroserviceInstanceStatus(
-      MicroserviceInstanceStatus microserviceInstanceStatus) {
-    this.microserviceInstanceStatus = microserviceInstanceStatus;
   }
 
   public IsolationStatus getIsolationStatus() {

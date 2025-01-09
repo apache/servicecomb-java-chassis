@@ -178,13 +178,12 @@ public class DiscoveryManager implements LifeCycle {
         -> new ConcurrentHashMapEx<>());
     List<StatefulDiscoveryInstance> result = new ArrayList<>();
     for (StatefulDiscoveryInstance instance : statefulInstances.values()) {
-      if (instance.getHistoryStatus() == HistoryStatus.CURRENT
-              && instance.getMicroserviceInstanceStatus() == MicroserviceInstanceStatus.UP) {
+      if (instance.getHistoryStatus() == HistoryStatus.CURRENT) {
         result.add(instance);
         continue;
       }
       if (instance.getHistoryStatus() == HistoryStatus.HISTORY
-          && instance.getMicroserviceInstanceStatus() == MicroserviceInstanceStatus.UP
+          && instance.getStatus() == MicroserviceInstanceStatus.UP
           && instance.getPingStatus() == PingStatus.OK
           && instance.getIsolationStatus() == IsolationStatus.NORMAL) {
         result.add(instance);
