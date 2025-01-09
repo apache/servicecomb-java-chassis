@@ -113,13 +113,13 @@ public class MicroserviceHandler {
     }
     microserviceInstance.setHostName(hostName);
 
-    DataCenterInfo dataCenterInfo = new DataCenterInfo();
     if (StringUtils.isNotEmpty(dataCenterProperties.getName())) {
+      DataCenterInfo dataCenterInfo = new DataCenterInfo();
       dataCenterInfo.setName(dataCenterProperties.getName());
       dataCenterInfo.setRegion(dataCenterProperties.getRegion());
       dataCenterInfo.setAvailableZone(dataCenterProperties.getAvailableZone());
+      microserviceInstance.setDataCenterInfo(dataCenterInfo);
     }
-    microserviceInstance.setDataCenterInfo(dataCenterInfo);
 
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.push);
