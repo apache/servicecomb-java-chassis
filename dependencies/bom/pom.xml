@@ -116,6 +116,11 @@
         <artifactId>config-zookeeper</artifactId>
         <version>${project.version}</version>
       </dependency>
+	  <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>config-consul</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
       <!-- ServiceComb： edge -->
       <dependency>
@@ -286,6 +291,11 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>config-etcd</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+	  <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-consul</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- ServiceComb： solutions -->

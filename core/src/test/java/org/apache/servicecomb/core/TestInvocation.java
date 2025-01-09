@@ -17,7 +17,6 @@
 package org.apache.servicecomb.core;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -49,7 +48,6 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestInvocation {
-  Invocation invocation;
 
   @Mocked
   Endpoint endpoint;
@@ -59,9 +57,6 @@ public class TestInvocation {
 
   @Mocked
   InvocationRuntimeType invocationRuntimeType;
-
-  @Mocked
-  Map<String, Object> arguments;
 
   static long nanoTime = 123;
 
@@ -95,7 +90,7 @@ public class TestInvocation {
     };
     EventManager.register(subscriber);
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
     invocation.onStart();
 
     Assertions.assertSame(invocation, result.value);
@@ -115,7 +110,7 @@ public class TestInvocation {
     };
     EventManager.register(subscriber);
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
     Assertions.assertFalse(invocation.isFinished());
     Response response = Response.succResp(null);
     invocation.onFinish(response);
@@ -134,19 +129,19 @@ public class TestInvocation {
 
   @Test
   public void isConsumer_yes() {
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
     Assertions.assertFalse(invocation.isConsumer());
   }
 
   @Test
   public void isConsumer_no(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, null);
     Assertions.assertTrue(invocation.isConsumer());
   }
 
   @Test
   public void localContext(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, null);
 
     invocation.addLocalContext("k", 1);
     Assertions.assertSame(invocation.getHandlerContext(), invocation.getLocalContext());
@@ -155,7 +150,7 @@ public class TestInvocation {
 
   @Test
   public void traceId_fromContext(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, null);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
 
     invocation.onStart();
@@ -173,7 +168,7 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, null);
 
     invocation.onStart();
 
@@ -189,7 +184,7 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
 
     invocation.onStart(requestEx);
 
@@ -199,6 +194,7 @@ public class TestInvocation {
 
   @Test
   public void traceId_producerCreateTraceId(@Mocked Endpoint endpoint, @Mocked HttpServletRequestEx requestEx) {
+
     TraceIdGenerator generator = SPIServiceUtils.getTargetService(TraceIdGenerator.class, BraveTraceIdGenerator.class);
     new Expectations(generator) {
       {
@@ -206,7 +202,7 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
 
     invocation.onStart(requestEx);
 
@@ -250,7 +246,7 @@ public class TestInvocation {
       }
     };
     EventManager.getEventBus().register(listener);
-    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
     mockNonaTime();
     invocation.onBusinessMethodStart();
     EventManager.getEventBus().unregister(listener);
@@ -265,12 +261,12 @@ public class TestInvocation {
   public void marker(@Mocked ReferenceConfig referenceConfig) {
     Invocation.INVOCATION_ID.set(0);
 
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, null);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
     invocation.onStart();
     Assertions.assertEquals("abc", invocation.getTraceIdLogger().getName());
 
-    invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, arguments);
+    invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, null);
     invocation.addContext(CoreConst.TRACE_ID_NAME, "abc");
     invocation.onStart();
     Assertions.assertEquals("abc", invocation.getTraceIdLogger().getName());

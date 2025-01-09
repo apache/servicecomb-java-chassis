@@ -58,6 +58,7 @@
     <module>demo-nacos</module>
     <module>demo-etcd</module>
     <module>demo-zookeeper</module>
+    <module>demo-consul</module>
   </modules>
 
   <dependencyManagement>
