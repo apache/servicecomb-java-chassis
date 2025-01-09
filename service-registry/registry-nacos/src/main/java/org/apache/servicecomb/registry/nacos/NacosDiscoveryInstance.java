@@ -57,10 +57,14 @@ public class NacosDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public MicroserviceInstanceStatus getStatus() {
-    if (instance.isEnabled()){
-      return MicroserviceInstanceStatus.valueOf(instance.getMetadata().get(NacosConst.NACOS_STATUS));
+    if (instance.isEnabled()) {
+      String instanceStatus = instance.getMetadata().get(NacosConst.NACOS_STATUS);
+      if (StringUtils.isBlank(instanceStatus)) {
+        return MicroserviceInstanceStatus.UP;
+      }
+      return MicroserviceInstanceStatus.valueOf(instanceStatus);
     } else {
-      return  MicroserviceInstanceStatus.DOWN;
+      return MicroserviceInstanceStatus.DOWN;
     }
   }
 
