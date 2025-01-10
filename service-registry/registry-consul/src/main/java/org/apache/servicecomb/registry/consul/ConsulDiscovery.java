@@ -84,8 +84,11 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
   @Override
   public List<String> findServices(String application) {
     LOGGER.info("ConsulDiscovery findServices(application={})", application);
-    Map<String, Service> services = consulClient.agentClient().getServices();
-    return Lists.newArrayList(services.keySet());
+    Map<String, List<String>> response = consulClient.catalogClient().getServices().getResponse();
+    if (!CollectionUtils.isEmpty(response)) {
+      return Lists.newArrayList(response.keySet());
+    }
+    return Lists.newArrayList();
   }
 
   @Override
