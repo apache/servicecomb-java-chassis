@@ -137,15 +137,9 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
     try {
-      if (MicroserviceInstanceStatus.DOWN == status) {
-        instance.getMetadata().put(NacosConst.NACOS_STATUS, MicroserviceInstanceStatus.DOWN.name());
-        namingService.deregisterInstance(nacosRegistrationInstance.getServiceName(),
-            nacosRegistrationInstance.getApplication(), instance);
-      } else {
-        instance.getMetadata().put(NacosConst.NACOS_STATUS, status.name());
-        namingService.registerInstance(nacosRegistrationInstance.getServiceName(),
-            nacosRegistrationInstance.getApplication(), instance);
-      }
+      instance.getMetadata().put(NacosConst.NACOS_STATUS, status.name());
+      namingService.registerInstance(nacosRegistrationInstance.getServiceName(),
+          nacosRegistrationInstance.getApplication(), instance);
       return true;
     } catch (Exception e) {
       throw new RuntimeException(e);
