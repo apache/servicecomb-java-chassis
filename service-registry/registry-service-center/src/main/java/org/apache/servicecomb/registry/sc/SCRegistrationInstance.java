@@ -22,12 +22,11 @@ import java.util.Map;
 
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.service.center.client.ServiceCenterRegistration;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 
-public class SCRegistrationInstance implements RegistrationInstance {
+public class SCRegistrationInstance implements org.apache.servicecomb.registry.api.MicroserviceInstance {
   private final Microservice microservice;
 
   private final MicroserviceInstance microserviceInstance;
@@ -108,16 +107,6 @@ public class SCRegistrationInstance implements RegistrationInstance {
   @Override
   public MicroserviceInstanceStatus getStatus() {
     return MicroserviceInstanceStatus.valueOf(microserviceInstance.getStatus().name());
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.valueOf(microserviceInstance.getStatus().name());
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 
   public Microservice getBackendMicroservice() {
