@@ -21,8 +21,8 @@ import java.util.List;
 
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
+import org.apache.servicecomb.registry.api.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.Registration;
-import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
 import org.apache.servicecomb.registry.discovery.InstancePing;
 import org.apache.servicecomb.registry.discovery.InstanceStatusDiscoveryFilter;
@@ -37,7 +37,7 @@ import org.springframework.context.annotation.Configuration;
 public class RegistryConfiguration {
   @Bean
   public RegistrationManager scbRegistrationManager(
-      List<Registration<? extends RegistrationInstance>> registrationList) {
+      List<Registration<? extends MicroserviceInstance>> registrationList) {
     return new RegistrationManager(registrationList);
   }
 
