@@ -33,8 +33,6 @@ public class ZookeeperRegistryProperties {
 
   private boolean enableSwaggerRegistration = false;
 
-  private String initialStatus = "UP";
-
   public boolean isEnabled() {
     return enabled;
   }
@@ -97,13 +95,5 @@ public class ZookeeperRegistryProperties {
 
   public void setAuthenticationInfo(String authenticationInfo) {
     this.authenticationInfo = authenticationInfo;
-  }
-
-  public String getInitialStatus() {
-    return initialStatus;
-  }
-
-  public void setInitialStatus(String initialStatus) {
-    this.initialStatus = initialStatus;
   }
 }

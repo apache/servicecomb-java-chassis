@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.registry.RegistrationId;
+import org.apache.servicecomb.registry.ServiceInstanceProperties;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceInstanceRegistrationEvent;
@@ -59,6 +60,8 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
 
   private DataCenterProperties dataCenterProperties;
 
+  private ServiceInstanceProperties serviceInstanceProperties;
+
   private Environment environment;
 
   private RegistrationId registrationId;
@@ -88,6 +91,11 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
     this.environment = environment;
   }
 
+  @Autowired
+  public void setServiceInstanceProperties(ServiceInstanceProperties serviceInstanceProperties) {
+    this.serviceInstanceProperties = serviceInstanceProperties;
+  }
+
 
   @Override
   public void init() {
@@ -96,7 +104,8 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
     microserviceInstance = MicroserviceHandler.createMicroserviceInstance(
         environment,
         configurationProperties,
-        dataCenterProperties);
+        dataCenterProperties,
+        serviceInstanceProperties);
     microserviceInstance.setInstanceId(registrationId.getInstanceId());
     serviceCenterRegistration = new ServiceCenterRegistration(serviceCenterClient,
         new ServiceCenterConfiguration().setCanOverwriteSwagger(

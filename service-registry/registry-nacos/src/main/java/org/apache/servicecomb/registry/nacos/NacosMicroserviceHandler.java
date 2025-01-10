@@ -63,7 +63,6 @@ public class NacosMicroserviceHandler {
     metadata.put(NacosConst.PROPERTY_DATACENTER, dataCenterProperties.getName());
     metadata.put(NacosConst.PROPERTY_REGION, dataCenterProperties.getRegion());
     metadata.put(NacosConst.PROPERTY_ZONE, dataCenterProperties.getAvailableZone());
-    metadata.put(NacosConst.NACOS_STATUS, properties.getInitialStatus());
     if (!StringUtils.isEmpty(environment.getProperty(VERSION_MAPPING)) &&
         !StringUtils.isEmpty(environment.getProperty(environment.getProperty(VERSION_MAPPING)))) {
       metadata.put("version", environment.getProperty(environment.getProperty(VERSION_MAPPING)));
