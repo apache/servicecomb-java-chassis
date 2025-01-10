@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.registry.api.DataCenterInfo;
+import org.apache.servicecomb.registry.api.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.lightweight.Self;
 
-public class ZeroConfigRegistrationInstance implements RegistrationInstance {
+public class ZeroConfigRegistrationInstance implements MicroserviceInstance {
   private final Self self;
 
   public ZeroConfigRegistrationInstance(Self self) {
@@ -88,16 +88,6 @@ public class ZeroConfigRegistrationInstance implements RegistrationInstance {
 
   @Override
   public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
     return MicroserviceInstanceStatus.UP;
   }
 

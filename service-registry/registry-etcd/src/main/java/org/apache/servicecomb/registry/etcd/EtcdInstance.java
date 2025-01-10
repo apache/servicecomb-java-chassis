@@ -144,7 +144,7 @@ public class EtcdInstance implements MicroserviceInstance {
 
   @Override
   public DataCenterInfo getDataCenterInfo() {
-    return dataCenterInfo;
+    return dataCenterInfo == null ? new DataCenterInfo() : dataCenterInfo;
   }
 
   @Override

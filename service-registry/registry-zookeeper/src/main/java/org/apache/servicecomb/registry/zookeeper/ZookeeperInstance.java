@@ -70,7 +70,6 @@ public class ZookeeperInstance implements MicroserviceInstance {
     this.schemas = other.schemas;
     this.properties = other.properties;
     this.status = other.status;
-
   }
 
   public void setServiceId(String serviceId) {
@@ -152,7 +151,7 @@ public class ZookeeperInstance implements MicroserviceInstance {
 
   @Override
   public DataCenterInfo getDataCenterInfo() {
-    return dataCenterInfo;
+    return dataCenterInfo == null ? new DataCenterInfo() : dataCenterInfo;
   }
 
   @Override

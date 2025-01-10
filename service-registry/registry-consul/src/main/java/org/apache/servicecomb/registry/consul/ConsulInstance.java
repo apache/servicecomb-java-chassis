@@ -145,7 +145,7 @@ public class ConsulInstance implements MicroserviceInstance {
 
   @Override
   public DataCenterInfo getDataCenterInfo() {
-    return dataCenterInfo;
+    return dataCenterInfo == null ? new DataCenterInfo() : dataCenterInfo;
   }
 
   @Override

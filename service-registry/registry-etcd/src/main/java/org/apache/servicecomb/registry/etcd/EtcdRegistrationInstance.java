@@ -16,21 +16,8 @@
  */
 package org.apache.servicecomb.registry.etcd;
 
-import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.RegistrationInstance;
-
-public class EtcdRegistrationInstance extends EtcdInstance implements RegistrationInstance {
+public class EtcdRegistrationInstance extends EtcdInstance {
   public EtcdRegistrationInstance(EtcdInstance instance) {
     super(instance);
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 }
