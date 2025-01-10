@@ -22,7 +22,6 @@ import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.registry.api.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.RegistrationInstance;
@@ -33,7 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("UnstableApiUsage")
-public abstract class AbstractLightweightRegistration<R extends MicroserviceInstance> implements Registration<R> {
+public abstract class AbstractLightweightRegistration<R extends RegistrationInstance> implements Registration<R> {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractLightweightRegistration.class);
 
   protected EventBus eventBus;

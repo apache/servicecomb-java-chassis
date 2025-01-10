@@ -25,17 +25,17 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaUtils;
 import org.apache.servicecomb.registry.api.LifeCycle;
-import org.apache.servicecomb.registry.api.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.springframework.util.CollectionUtils;
 
 import io.vertx.core.json.jackson.JacksonFactory;
 
 public class RegistrationManager {
-  private final List<Registration<? extends MicroserviceInstance>> registrationList;
+  private final List<Registration<? extends RegistrationInstance>> registrationList;
 
-  public RegistrationManager(List<Registration<? extends MicroserviceInstance>> registrationList) {
+  public RegistrationManager(List<Registration<? extends RegistrationInstance>> registrationList) {
     if (registrationList == null) {
       this.registrationList = Collections.emptyList();
       return;
@@ -50,7 +50,7 @@ public class RegistrationManager {
     if (CollectionUtils.isEmpty(registrationList)) {
       return "";
     }
-    Optional<Registration<? extends MicroserviceInstance>> registration =
+    Optional<Registration<? extends RegistrationInstance>> registration =
         registrationList.stream().filter(r -> registryName.equals(r.name())).collect(Collectors.toList())
             .stream().findFirst();
     if (!registration.isPresent()) {
@@ -66,7 +66,7 @@ public class RegistrationManager {
     if (CollectionUtils.isEmpty(registrationList)) {
       return "";
     }
-    Optional<Registration<? extends MicroserviceInstance>> registration =
+    Optional<Registration<? extends RegistrationInstance>> registration =
         registrationList.stream().filter(r -> registryName.equals(r.name())).collect(Collectors.toList())
             .stream().findFirst();
     if (!registration.isPresent()) {
@@ -75,7 +75,7 @@ public class RegistrationManager {
     return registration.get().getMicroserviceInstance().getServiceId();
   }
 
-  public Registration<? extends MicroserviceInstance> getPrimaryRegistration() {
+  public Registration<? extends RegistrationInstance> getPrimaryRegistration() {
     return registrationList.get(0);
   }
 

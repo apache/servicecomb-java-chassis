@@ -39,7 +39,8 @@ public class NacosConfiguration {
       DataCenterProperties dataCenterProperties,
       @Qualifier("nacosDiscoveryProperties") NacosDiscoveryProperties nacosDiscoveryProperties,
       Environment environment, RegistrationId registrationId, ServiceInstanceProperties serviceInstanceProperties) {
-    return new NacosRegistration(dataCenterProperties, nacosDiscoveryProperties, environment, registrationId,serviceInstanceProperties);
+    return new NacosRegistration(dataCenterProperties, nacosDiscoveryProperties, environment, registrationId,
+        serviceInstanceProperties);
   }
 
   @Bean

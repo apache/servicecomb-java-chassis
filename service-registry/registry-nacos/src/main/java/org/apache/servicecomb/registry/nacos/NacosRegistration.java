@@ -55,7 +55,7 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Autowired
   public NacosRegistration(DataCenterProperties dataCenterProperties, NacosDiscoveryProperties nacosDiscoveryProperties,
-      Environment environment, RegistrationId registrationId,ServiceInstanceProperties serviceInstanceProperties) {
+      Environment environment, RegistrationId registrationId, ServiceInstanceProperties serviceInstanceProperties) {
     this.instanceId = registrationId.getInstanceId();
     this.dataCenterProperties = dataCenterProperties;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;

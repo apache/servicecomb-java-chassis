@@ -22,11 +22,12 @@ import java.util.Map;
 
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.service.center.client.ServiceCenterRegistration;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 
-public class SCRegistrationInstance implements org.apache.servicecomb.registry.api.MicroserviceInstance {
+public class SCRegistrationInstance implements RegistrationInstance {
   private final Microservice microservice;
 
   private final MicroserviceInstance microserviceInstance;

@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.registry.api.DataCenterInfo;
-import org.apache.servicecomb.registry.api.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.RegistrationInstance;
 import org.apache.servicecomb.registry.lightweight.Self;
 
-public class ZeroConfigRegistrationInstance implements MicroserviceInstance {
+public class ZeroConfigRegistrationInstance implements RegistrationInstance {
   private final Self self;
 
   public ZeroConfigRegistrationInstance(Self self) {

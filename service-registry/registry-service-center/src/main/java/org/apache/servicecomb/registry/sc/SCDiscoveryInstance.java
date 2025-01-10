@@ -76,7 +76,7 @@ public class SCDiscoveryInstance extends AbstractDiscoveryInstance {
 
   @Override
   public DataCenterInfo getDataCenterInfo() {
-    if(microserviceInstance.getDataCenterInfo() != null) {
+    if (microserviceInstance.getDataCenterInfo() != null) {
       return new DataCenterInfo(microserviceInstance.getDataCenterInfo().getName(),
           microserviceInstance.getDataCenterInfo().getRegion(),
           microserviceInstance.getDataCenterInfo().getAvailableZone());

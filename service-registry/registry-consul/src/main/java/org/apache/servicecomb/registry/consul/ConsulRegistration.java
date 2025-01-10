@@ -19,7 +19,9 @@ package org.apache.servicecomb.registry.consul;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import jakarta.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;

@@ -18,7 +18,9 @@
 package org.apache.servicecomb.registry.consul;
 
 
-public class ConsulRegistrationInstance extends ConsulInstance {
+import org.apache.servicecomb.registry.api.RegistrationInstance;
+
+public class ConsulRegistrationInstance extends ConsulInstance implements RegistrationInstance {
 
   public ConsulRegistrationInstance(ConsulInstance instance) {
     super(instance);

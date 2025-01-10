@@ -199,13 +199,13 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-      this.instance.getPayload().setStatus(status);
-      try {
-        dis.updateService(instance);
-      } catch (Exception e){
-          throw new IllegalStateException(e);
-      }
-      return true;
+    this.instance.getPayload().setStatus(status);
+    try {
+      dis.updateService(instance);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
+    return true;
   }
 
   @Override
@@ -229,5 +229,4 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   public boolean enabled() {
     return zookeeperRegistryProperties.isEnabled();
   }
-
 }

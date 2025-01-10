@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.alibaba.nacos.api.exception.NacosException;
+
 import org.apache.servicecomb.registry.api.Discovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;

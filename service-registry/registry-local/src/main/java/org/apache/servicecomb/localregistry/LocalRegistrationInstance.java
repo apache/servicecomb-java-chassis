@@ -123,16 +123,6 @@ public class LocalRegistrationInstance implements RegistrationInstance {
     return MicroserviceInstanceStatus.UP;
   }
 
-  @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
-    return MicroserviceInstanceStatus.UP;
-  }
-
   public void addEndpoint(String endpoint) {
     this.endpoints.add(endpoint);
   }

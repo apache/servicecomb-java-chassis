@@ -24,7 +24,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 /**
  * This is the core service registration interface. <br/>
  */
-public interface Registration<R extends MicroserviceInstance> extends SPIEnabled, SPIOrder, LifeCycle {
+public interface Registration<R extends RegistrationInstance> extends SPIEnabled, SPIOrder, LifeCycle {
   String name();
 
   /**

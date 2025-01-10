@@ -16,7 +16,9 @@
  */
 package org.apache.servicecomb.registry.zookeeper;
 
-public class ZookeeperRegistrationInstance extends ZookeeperInstance {
+import org.apache.servicecomb.registry.api.RegistrationInstance;
+
+public class ZookeeperRegistrationInstance extends ZookeeperInstance implements RegistrationInstance {
   public ZookeeperRegistrationInstance(ZookeeperInstance instance) {
     super(instance);
   }

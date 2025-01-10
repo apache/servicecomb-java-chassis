@@ -16,7 +16,9 @@
  */
 package org.apache.servicecomb.registry.etcd;
 
-public class EtcdRegistrationInstance extends EtcdInstance {
+import org.apache.servicecomb.registry.api.RegistrationInstance;
+
+public class EtcdRegistrationInstance extends EtcdInstance implements RegistrationInstance {
   public EtcdRegistrationInstance(EtcdInstance instance) {
     super(instance);
   }
