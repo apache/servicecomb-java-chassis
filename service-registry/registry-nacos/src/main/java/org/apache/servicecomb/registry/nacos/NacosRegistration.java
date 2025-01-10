@@ -20,12 +20,12 @@ package org.apache.servicecomb.registry.nacos;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.registry.RegistrationId;
-import org.apache.servicecomb.registry.ServiceInstanceProperties;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,16 +51,13 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   private NamingService namingService;
 
-  private ServiceInstanceProperties serviceInstanceProperties;
-
   @Autowired
   public NacosRegistration(DataCenterProperties dataCenterProperties, NacosDiscoveryProperties nacosDiscoveryProperties,
-      Environment environment, RegistrationId registrationId, ServiceInstanceProperties serviceInstanceProperties) {
+      Environment environment, RegistrationId registrationId) {
     this.instanceId = registrationId.getInstanceId();
     this.dataCenterProperties = dataCenterProperties;
     this.nacosDiscoveryProperties = nacosDiscoveryProperties;
     this.environment = environment;
-    this.serviceInstanceProperties = serviceInstanceProperties;
   }
 
   @Override
@@ -69,7 +66,8 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
         environment);
     instance.setInstanceId(instanceId);
     nacosRegistrationInstance = new NacosRegistrationInstance(instance, environment);
-    instance.getMetadata().put(NacosConst.NACOS_STATUS, serviceInstanceProperties.getInitialStatus());
+    instance.getMetadata()
+        .put(NacosConst.NACOS_STATUS, BootStrapProperties.readServiceInstanceInitialStatus(environment));
     namingService = NamingServiceManager.buildNamingService(environment, nacosDiscoveryProperties);
   }
 

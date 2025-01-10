@@ -27,7 +27,6 @@ import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.registry.ServiceInstanceProperties;
 import org.apache.servicecomb.service.center.client.model.DataCenterInfo;
 import org.apache.servicecomb.service.center.client.model.Framework;
 import org.apache.servicecomb.service.center.client.model.HealthCheck;
@@ -105,8 +104,7 @@ public class MicroserviceHandler {
   public static MicroserviceInstance createMicroserviceInstance(
       Environment environment,
       SCConfigurationProperties scConfigurationProperties,
-      DataCenterProperties dataCenterProperties,
-      ServiceInstanceProperties serviceInstanceProperties) {
+      DataCenterProperties dataCenterProperties) {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     String hostName = StringUtils.isEmpty(scConfigurationProperties.getHostname()) ? NetUtils.getHostName()
         : scConfigurationProperties.getHostname();
@@ -144,7 +142,8 @@ public class MicroserviceHandler {
     properties.putAll(BootStrapProperties.readServiceProperties(environment));
     properties.putAll(genCasProperties(environment));
     microserviceInstance.setProperties(properties);
-    microserviceInstance.setStatus(MicroserviceInstanceStatus.valueOf(serviceInstanceProperties.getInitialStatus()));
+    microserviceInstance.setStatus(
+        MicroserviceInstanceStatus.valueOf(BootStrapProperties.readServiceInstanceInitialStatus(environment)));
     return microserviceInstance;
   }
 

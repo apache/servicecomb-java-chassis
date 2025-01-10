@@ -34,7 +34,6 @@ import org.apache.curator.x.discovery.details.JsonInstanceSerializer;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.registry.RegistrationId;
-import org.apache.servicecomb.registry.ServiceInstanceProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
@@ -82,8 +81,6 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   private ServiceDiscovery<ZookeeperInstance> dis;
 
-  private ServiceInstanceProperties serviceInstanceProperties;
-
   @Autowired
   @SuppressWarnings("unused")
   public void setEnvironment(Environment environment) {
@@ -105,11 +102,6 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
   @SuppressWarnings("unused")
   public void setDataCenterProperties(DataCenterProperties dataCenterProperties) {
     this.dataCenterProperties = dataCenterProperties;
-  }
-
-  @Autowired
-  public void setServiceInstanceProperties(ServiceInstanceProperties serviceInstanceProperties) {
-    this.serviceInstanceProperties = serviceInstanceProperties;
   }
 
   @Override
@@ -136,7 +128,8 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     zookeeperInstance.setProperties(BootStrapProperties.readServiceProperties(environment));
     zookeeperInstance.setVersion(BootStrapProperties.readServiceVersion(environment));
 
-    zookeeperInstance.setStatus(MicroserviceInstanceStatus.valueOf(serviceInstanceProperties.getInitialStatus()));
+    zookeeperInstance.setStatus(
+        MicroserviceInstanceStatus.valueOf(BootStrapProperties.readServiceInstanceInitialStatus(environment)));
     try {
       this.instance = ServiceInstance.<ZookeeperInstance>builder().name(zookeeperInstance.getServiceName())
           .id(zookeeperInstance.getInstanceId()).payload(zookeeperInstance).build();

@@ -28,7 +28,6 @@ import org.apache.servicecomb.registry.discovery.InstancePing;
 import org.apache.servicecomb.registry.discovery.InstanceStatusDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.MicroserviceInstanceCache;
 import org.apache.servicecomb.registry.discovery.TelnetInstancePing;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -71,11 +70,5 @@ public class RegistryConfiguration {
   @Bean
   public RegistrationId scbRegistrationId() {
     return new RegistrationId();
-  }
-
-  @Bean
-  @ConfigurationProperties(prefix = InstanceConst.SERVICE_INSTANCE_STATUS_PREFIX)
-  public ServiceInstanceProperties serviceInstanceProperties() {
-    return new ServiceInstanceProperties();
   }
 }
