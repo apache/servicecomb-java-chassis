@@ -34,8 +34,7 @@ public class SCRegistrationInstance implements RegistrationInstance {
 
   private final ServiceCenterRegistration serviceCenterRegistration;
 
-  public SCRegistrationInstance(Microservice microservice,
-      MicroserviceInstance microserviceInstance,
+  public SCRegistrationInstance(Microservice microservice, MicroserviceInstance microserviceInstance,
       ServiceCenterRegistration serviceCenterRegistration) {
     this.microservice = microservice;
     this.microserviceInstance = microserviceInstance;
@@ -107,13 +106,8 @@ public class SCRegistrationInstance implements RegistrationInstance {
   }
 
   @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
+  public MicroserviceInstanceStatus getStatus() {
     return MicroserviceInstanceStatus.valueOf(microserviceInstance.getStatus().name());
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 
   public Microservice getBackendMicroservice() {

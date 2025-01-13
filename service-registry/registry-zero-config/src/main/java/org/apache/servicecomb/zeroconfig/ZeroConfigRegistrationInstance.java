@@ -87,12 +87,7 @@ public class ZeroConfigRegistrationInstance implements RegistrationInstance {
   }
 
   @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
+  public MicroserviceInstanceStatus getStatus() {
     return MicroserviceInstanceStatus.UP;
   }
 

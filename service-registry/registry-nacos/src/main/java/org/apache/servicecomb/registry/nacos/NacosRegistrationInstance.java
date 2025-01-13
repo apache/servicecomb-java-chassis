@@ -104,13 +104,8 @@ public class NacosRegistrationInstance implements RegistrationInstance {
   }
 
   @Override
-  public MicroserviceInstanceStatus getInitialStatus() {
-    return MicroserviceInstanceStatus.STARTING;
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getReadyStatus() {
-    return MicroserviceInstanceStatus.UP;
+  public MicroserviceInstanceStatus getStatus() {
+    return MicroserviceInstanceStatus.valueOf(instance.getMetadata().get(NacosConst.NACOS_STATUS));
   }
 
   public void addSchema(String schemaId, String content) {

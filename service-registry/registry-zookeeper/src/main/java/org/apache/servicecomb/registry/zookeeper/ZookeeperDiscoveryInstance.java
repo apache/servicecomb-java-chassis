@@ -17,16 +17,10 @@
 package org.apache.servicecomb.registry.zookeeper;
 
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
-import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 public class ZookeeperDiscoveryInstance extends ZookeeperInstance implements DiscoveryInstance {
   public ZookeeperDiscoveryInstance(ZookeeperInstance other) {
     super(other);
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 
   @Override

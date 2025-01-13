@@ -22,17 +22,17 @@ import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 public class ConsulDiscoveryInstance extends ConsulInstance implements DiscoveryInstance {
 
-    public ConsulDiscoveryInstance(ConsulInstance consulInstance) {
-        super(consulInstance);
-    }
+  public ConsulDiscoveryInstance(ConsulInstance consulInstance) {
+    super(consulInstance);
+  }
 
-    @Override
-    public MicroserviceInstanceStatus getStatus() {
-        return MicroserviceInstanceStatus.UP;
-    }
+  @Override
+  public MicroserviceInstanceStatus getStatus() {
+    return MicroserviceInstanceStatus.UP;
+  }
 
-    @Override
-    public String getRegistryName() {
-        return ConsulConst.CONSUL_REGISTRY_NAME;
-    }
+  @Override
+  public String getRegistryName() {
+    return ConsulConst.CONSUL_REGISTRY_NAME;
+  }
 }

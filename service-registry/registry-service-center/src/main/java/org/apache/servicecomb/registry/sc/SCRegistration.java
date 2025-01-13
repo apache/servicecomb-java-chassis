@@ -88,7 +88,6 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
     this.environment = environment;
   }
 
-
   @Override
   public void init() {
     microservice = MicroserviceHandler.createMicroservice(

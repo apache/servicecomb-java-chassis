@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry.consul;
 
 import com.google.common.net.HostAndPort;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.registry.RegistrationId;
@@ -54,7 +55,8 @@ public class ConsulConfiguration {
   @ConditionalOnBean(value = {ConsulProperties.class, ConsulDiscoveryProperties.class})
   @ConditionalOnMissingBean
   public Consul consulClient(ConsulProperties consulProperties, ConsulDiscoveryProperties consulDiscoveryProperties) {
-    Consul.Builder builder = Consul.builder().withHostAndPort(HostAndPort.fromParts(consulProperties.getHost(), consulProperties.getPort()));
+    Consul.Builder builder = Consul.builder()
+        .withHostAndPort(HostAndPort.fromParts(consulProperties.getHost(), consulProperties.getPort()));
     if (StringUtils.isNotBlank(consulDiscoveryProperties.getAclToken())) {
       builder.withAclToken(consulDiscoveryProperties.getAclToken());
     }

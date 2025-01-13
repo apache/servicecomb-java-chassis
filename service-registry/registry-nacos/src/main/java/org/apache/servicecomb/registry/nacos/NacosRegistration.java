@@ -20,6 +20,7 @@ package org.apache.servicecomb.registry.nacos;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DataCenterProperties;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
@@ -65,7 +66,8 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
         environment);
     instance.setInstanceId(instanceId);
     nacosRegistrationInstance = new NacosRegistrationInstance(instance, environment);
-
+    instance.getMetadata()
+        .put(NacosConst.NACOS_STATUS, BootStrapProperties.readServiceInstanceInitialStatus(environment));
     namingService = NamingServiceManager.buildNamingService(environment, nacosDiscoveryProperties);
   }
 
@@ -132,9 +134,14 @@ public class NacosRegistration implements Registration<NacosRegistrationInstance
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    // Do not support Nacos update status now. Because update status will fail
-    // due to some unknown reasons(Maybe different constrains in register and maintain api).
-    return true;
+    try {
+      instance.getMetadata().put(NacosConst.NACOS_STATUS, status.name());
+      namingService.registerInstance(nacosRegistrationInstance.getServiceName(),
+          nacosRegistrationInstance.getApplication(), instance);
+      return true;
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

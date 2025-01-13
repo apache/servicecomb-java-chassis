@@ -16,14 +16,14 @@
     under the License.
 -->
 <Configuration status="INFO">
-    <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d][%t][%p][%c:%L] %m%n" />
-        </Console>
-    </Appenders>
-    <Loggers>
-        <Root level="INFO">
-            <AppenderRef ref="Console" />
-        </Root>
-    </Loggers>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%d][%t][%p][%c:%L] %m%n"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="INFO">
+      <AppenderRef ref="Console"/>
+    </Root>
+  </Loggers>
 </Configuration>

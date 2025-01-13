@@ -69,21 +69,21 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
 
     for (StatefulDiscoveryInstance instance : instances) {
       if (HistoryStatus.CURRENT == instance.getHistoryStatus() &&
-          MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus() &&
+          MicroserviceInstanceStatus.UP == instance.getStatus() &&
           PingStatus.OK == instance.getPingStatus() &&
           IsolationStatus.NORMAL == instance.getIsolationStatus()) {
         level0.add(instance);
         continue;
       }
       if (HistoryStatus.CURRENT == instance.getHistoryStatus() &&
-          MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus() &&
+          MicroserviceInstanceStatus.UP == instance.getStatus() &&
           PingStatus.UNKNOWN == instance.getPingStatus() &&
           IsolationStatus.NORMAL == instance.getIsolationStatus()) {
         level1.add(instance);
         continue;
       }
       if (HistoryStatus.HISTORY == instance.getHistoryStatus() &&
-          MicroserviceInstanceStatus.UP == instance.getMicroserviceInstanceStatus() &&
+          MicroserviceInstanceStatus.UP == instance.getStatus() &&
           PingStatus.OK == instance.getPingStatus() &&
           IsolationStatus.NORMAL == instance.getIsolationStatus()) {
         level2.add(instance);

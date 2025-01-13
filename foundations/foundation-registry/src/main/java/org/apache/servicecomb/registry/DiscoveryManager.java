@@ -183,7 +183,7 @@ public class DiscoveryManager implements LifeCycle {
         continue;
       }
       if (instance.getHistoryStatus() == HistoryStatus.HISTORY
-          && instance.getMicroserviceInstanceStatus() == MicroserviceInstanceStatus.UP
+          && instance.getStatus() == MicroserviceInstanceStatus.UP
           && instance.getPingStatus() == PingStatus.OK
           && instance.getIsolationStatus() == IsolationStatus.NORMAL) {
         result.add(instance);

@@ -20,8 +20,10 @@ package org.apache.servicecomb.registry.consul;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
 import jakarta.annotation.Resource;
 import jakarta.validation.constraints.NotNull;
+
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.consul.config.ConsulDiscoveryProperties;
@@ -111,7 +113,8 @@ public class ConsulDiscovery implements Discovery<ConsulDiscoveryInstance> {
     LOGGER.info("ConsulDiscovery run");
     String serviceName = BootStrapProperties.readServiceName(environment);
     HealthClient healthClient = consulClient.healthClient();
-    svHealth = ServiceHealthCache.newCache(healthClient, serviceName, true, Options.BLANK_QUERY_OPTIONS, consulDiscoveryProperties.getWatchSeconds());
+    svHealth = ServiceHealthCache.newCache(healthClient, serviceName, true, Options.BLANK_QUERY_OPTIONS,
+        consulDiscoveryProperties.getWatchSeconds());
     svHealth.addListener((Map<ServiceHealthKey, ServiceHealth> newValues) -> instanceChangedListener.onInstanceChanged(
         name(), BootStrapProperties.readApplication(environment), serviceName, getInstances(serviceName)));
     svHealth.start();

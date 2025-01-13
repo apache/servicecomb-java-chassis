@@ -49,8 +49,6 @@ public class SCConfigurationProperties {
 
   private boolean autoDiscovery = false;
 
-  private String initialStatus = "STARTING";
-
   private boolean watch = false;
 
   private long registrationWaitTimeInMillis = 30000;
@@ -138,14 +136,6 @@ public class SCConfigurationProperties {
 
   public void setHealthCheckTimes(int healthCheckTimes) {
     this.healthCheckTimes = healthCheckTimes;
-  }
-
-  public String getInitialStatus() {
-    return initialStatus;
-  }
-
-  public void setInitialStatus(String initialStatus) {
-    this.initialStatus = initialStatus;
   }
 
   public boolean isWatch() {

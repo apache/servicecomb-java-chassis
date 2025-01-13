@@ -93,4 +93,10 @@ public interface MicroserviceInstance {
   default String getServiceId() {
     return "";
   }
+
+  /**
+   * Service status(Required): status of this microservice.
+   *
+   */
+  MicroserviceInstanceStatus getStatus();
 }

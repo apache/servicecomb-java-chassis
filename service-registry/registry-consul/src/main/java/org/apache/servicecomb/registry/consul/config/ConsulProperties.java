@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry.consul.config;
 
 import jakarta.validation.constraints.NotNull;
+
 import org.springframework.validation.annotation.Validated;
 
 

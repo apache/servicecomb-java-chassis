@@ -79,6 +79,8 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   private RegistrationId registrationId;
 
+  private ServiceDiscovery<ZookeeperInstance> dis;
+
   @Autowired
   @SuppressWarnings("unused")
   public void setEnvironment(Environment environment) {
@@ -125,6 +127,9 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     }
     zookeeperInstance.setProperties(BootStrapProperties.readServiceProperties(environment));
     zookeeperInstance.setVersion(BootStrapProperties.readServiceVersion(environment));
+
+    zookeeperInstance.setStatus(
+        MicroserviceInstanceStatus.valueOf(BootStrapProperties.readServiceInstanceInitialStatus(environment)));
     try {
       this.instance = ServiceInstance.<ZookeeperInstance>builder().name(zookeeperInstance.getServiceName())
           .id(zookeeperInstance.getInstanceId()).payload(zookeeperInstance).build();
@@ -155,7 +160,7 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
     client.start();
     JsonInstanceSerializer<ZookeeperInstance> serializer =
         new JsonInstanceSerializer<>(ZookeeperInstance.class);
-    ServiceDiscovery<ZookeeperInstance> dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
+    dis = ServiceDiscoveryBuilder.builder(ZookeeperInstance.class)
         .client(client)
         .basePath(basePath + "/" + BootStrapProperties.readApplication(environment))
         .serializer(serializer)
@@ -187,7 +192,12 @@ public class ZookeeperRegistration implements Registration<ZookeeperRegistration
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    // not support yet
+    this.instance.getPayload().setStatus(status);
+    try {
+      dis.updateService(instance);
+    } catch (Exception e) {
+      throw new IllegalStateException(e);
+    }
     return true;
   }
 
