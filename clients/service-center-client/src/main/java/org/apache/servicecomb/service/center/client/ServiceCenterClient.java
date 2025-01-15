@@ -69,10 +69,11 @@ public class ServiceCenterClient implements ServiceCenterOperation {
 
   private EventBus eventBus;
 
-  private ServiceCenterAddressManager addressManager;
+  private final ServiceCenterAddressManager addressManager;
 
-  public ServiceCenterClient(ServiceCenterRawClient httpClient) {
+  public ServiceCenterClient(ServiceCenterRawClient httpClient, ServiceCenterAddressManager addressManager) {
     this.httpClient = httpClient;
+    this.addressManager = addressManager;
   }
 
   public ServiceCenterClient setEventBus(EventBus eventBus) {
