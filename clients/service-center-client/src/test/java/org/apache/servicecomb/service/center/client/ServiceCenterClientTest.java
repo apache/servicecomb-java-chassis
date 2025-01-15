@@ -19,6 +19,7 @@ package org.apache.servicecomb.service.center.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -41,11 +42,18 @@ import org.mockito.ArgumentMatchers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.google.common.eventbus.EventBus;
 
 /**
  * Created by   on 2019/10/17.
  */
 public class ServiceCenterClientTest {
+  private final ServiceCenterAddressManager addressManager;
+
+  public ServiceCenterClientTest() {
+    this.addressManager = new ServiceCenterAddressManager("default", Arrays.asList("http://127.0.0.1:30100"),
+        new EventBus());
+  }
 
   @Test
   public void TestGetServiceCenterInstances() throws IOException {
@@ -92,7 +100,7 @@ public class ServiceCenterClientTest {
 
     Mockito.when(serviceCenterRawClient.getHttpRequest("/registry/health", null, null)).thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     MicroserviceInstancesResponse serviceCenterInstances = serviceCenterClient.getServiceCenterInstances();
 
     Assertions.assertNotNull(serviceCenterInstances);
@@ -121,7 +129,7 @@ public class ServiceCenterClientTest {
         Mockito.anyString()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     RegisteredMicroserviceResponse actualResponse = serviceCenterClient.registerMicroservice(microservice);
 
     Assertions.assertNotNull(actualResponse);
@@ -179,7 +187,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.getHttpRequest("/registry/microservices/111111", null, null))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     Microservice microservices = serviceCenterClient.getMicroserviceByServiceId("111111");
 
     Assertions.assertNotNull(microservices);
@@ -207,7 +215,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     MicroservicesResponse actualMicroservicesResponse = serviceCenterClient.getMicroserviceList();
 
     Assertions.assertNotNull(actualMicroservicesResponse);
@@ -228,7 +236,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     Microservice microservice = new Microservice("Test111");
     RegisteredMicroserviceResponse actualServiceId = serviceCenterClient.queryServiceId(microservice);
 
@@ -257,7 +265,7 @@ public class ServiceCenterClientTest {
         Mockito.anyString()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     RegisteredMicroserviceInstanceResponse actualResponse = serviceCenterClient.registerMicroserviceInstance(instance);
 
     Assertions.assertNotNull(actualResponse);
@@ -276,7 +284,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.deleteHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     serviceCenterClient.deleteMicroserviceInstance("111", "222");
   }
 
@@ -310,7 +318,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.getHttpRequest("/registry/microservices/222222/instances", null, null))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     MicroserviceInstancesResponse serviceCenterInstances = serviceCenterClient
         .getMicroserviceInstanceList("222222");
 
@@ -364,7 +372,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     MicroserviceInstance responseInstance = serviceCenterClient
         .getMicroserviceInstance("111", "222");
 
@@ -394,7 +402,7 @@ public class ServiceCenterClientTest {
         Mockito.anyString()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     serviceCenterClient.sendHeartBeats(heartbeatsRequest);
   }
 
@@ -410,7 +418,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.putHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     Boolean result = serviceCenterClient
         .updateMicroserviceInstanceStatus("111", "222", MicroserviceInstanceStatus.UP);
 
@@ -440,7 +448,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     List<SchemaInfo> schemaResponse = serviceCenterClient
         .getServiceSchemasList("111", false);
 
@@ -468,7 +476,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     String schemaContext = serviceCenterClient
         .getServiceSchemaContext("111", "222");
 
@@ -488,7 +496,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.putHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
         .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     boolean result = serviceCenterClient
         .updateServiceSchemaContext("111", new SchemaInfo());
 
@@ -506,7 +514,7 @@ public class ServiceCenterClientTest {
     Mockito.when(serviceCenterRawClient.putHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
             .thenReturn(httpResponse);
 
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     boolean result = serviceCenterClient
             .updateMicroserviceProperties("111", new HashMap<String, String>());
 
