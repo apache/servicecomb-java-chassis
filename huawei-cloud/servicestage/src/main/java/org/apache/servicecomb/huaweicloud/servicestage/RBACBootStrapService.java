@@ -81,7 +81,7 @@ public class RBACBootStrapService implements BootStrapService {
         new ServiceCenterClient(new ServiceCenterRawClient.Builder()
             .setTenantName("default")
             .setAddressManager(addressManager)
-            .setHttpTransport(createHttpTransport(environment, sslProperties)).build());
+            .setHttpTransport(createHttpTransport(environment, sslProperties)).build(), addressManager);
 
     Map<String, ServiceCenterClient> clients = new HashMap<>(1);
     clients.put(DEFAULT_REGISTRY_NAME, serviceCenterClient);
