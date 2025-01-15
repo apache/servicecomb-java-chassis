@@ -66,7 +66,7 @@ public class SCClientUtils {
     return new ServiceCenterClient(new ServiceCenterRawClient.Builder()
         .setTenantName("default")
         .setAddressManager(addressManager)
-        .setHttpTransport(createHttpTransport(environment, sslProperties)).build());
+        .setHttpTransport(createHttpTransport(environment, sslProperties)).build(), addressManager);
   }
 
   private static HttpTransport createHttpTransport(Environment environment, SSLProperties sslProperties) {
