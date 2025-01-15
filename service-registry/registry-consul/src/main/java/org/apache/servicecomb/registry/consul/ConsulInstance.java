@@ -51,6 +51,8 @@ public class ConsulInstance implements MicroserviceInstance {
 
   private Map<String, String> properties = new HashMap<>();
 
+  private MicroserviceInstanceStatus status;
+
   public ConsulInstance() {
 
   }
@@ -68,6 +70,7 @@ public class ConsulInstance implements MicroserviceInstance {
     this.endpoints = other.endpoints;
     this.schemas = other.schemas;
     this.properties = other.properties;
+    this.status = other.status;
   }
 
   public void setServiceId(String serviceId) {
@@ -116,6 +119,10 @@ public class ConsulInstance implements MicroserviceInstance {
 
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
+  }
+
+  public void setStatus(MicroserviceInstanceStatus status) {
+    this.status = status;
   }
 
   @Override
@@ -192,6 +199,6 @@ public class ConsulInstance implements MicroserviceInstance {
 
   @Override
   public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
+    return this.status;
   }
 }

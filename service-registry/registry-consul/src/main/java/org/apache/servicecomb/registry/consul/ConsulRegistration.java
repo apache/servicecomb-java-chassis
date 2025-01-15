@@ -71,6 +71,8 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
   @Value("${servicecomb.rest.address:127.0.0.1:8080}")
   private String restAddress;
 
+  private ImmutableRegistration.Builder registrationBuilder;
+
   @Override
   public String name() {
     return ConsulConst.CONSUL_REGISTRY_NAME;
@@ -83,6 +85,14 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
+    consulInstance.setStatus(status);
+    Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+    Map<String, String> meta = new HashMap<>();
+    meta.put("meta", gson.toJson(consulInstance));
+    registrationBuilder.meta(meta);
+    ImmutableRegistration newService = registrationBuilder.build();
+    AgentClient agentClient = consulClient.agentClient();
+    agentClient.register(newService);
     return true;
   }
 
@@ -132,12 +142,14 @@ public class ConsulRegistration implements Registration<ConsulRegistrationInstan
     }
     consulInstance.setProperties(BootStrapProperties.readServiceProperties(environment));
     consulInstance.setVersion(BootStrapProperties.readServiceVersion(environment));
+    consulInstance.setStatus(
+        MicroserviceInstanceStatus.valueOf(BootStrapProperties.readServiceInstanceInitialStatus(environment)));
   }
 
   @Override
   public void run() {
     LOGGER.info("ConsulRegistration run");
-    ImmutableRegistration.Builder registrationBuilder = ImmutableRegistration.builder()
+    registrationBuilder = ImmutableRegistration.builder()
         .name(consulInstance.getServiceName());
     List<String> endpoints = consulInstance.getEndpoints();
     for (String endpoint : endpoints) {
