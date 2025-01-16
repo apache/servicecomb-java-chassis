@@ -26,11 +26,6 @@ public class EtcdDiscoveryInstance extends EtcdInstance implements DiscoveryInst
   }
 
   @Override
-  public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
-  }
-
-  @Override
   public String getRegistryName() {
     return EtcdConst.ETCD_REGISTRY_NAME;
   }

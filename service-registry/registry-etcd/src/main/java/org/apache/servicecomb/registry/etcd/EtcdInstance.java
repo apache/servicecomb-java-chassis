@@ -50,6 +50,8 @@ public class EtcdInstance implements MicroserviceInstance {
 
   private Map<String, String> properties = new HashMap<>();
 
+  private MicroserviceInstanceStatus status;
+
   public EtcdInstance() {
 
   }
@@ -67,6 +69,7 @@ public class EtcdInstance implements MicroserviceInstance {
     this.endpoints = other.endpoints;
     this.schemas = other.schemas;
     this.properties = other.properties;
+    this.status = other.status;
   }
 
   public void setServiceId(String serviceId) {
@@ -115,6 +118,10 @@ public class EtcdInstance implements MicroserviceInstance {
 
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
+  }
+
+  public void setStatus(MicroserviceInstanceStatus status) {
+    this.status = status;
   }
 
   @Override
@@ -191,7 +198,7 @@ public class EtcdInstance implements MicroserviceInstance {
 
   @Override
   public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
+    return this.status;
   }
 
   @Override
