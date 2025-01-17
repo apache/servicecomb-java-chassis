@@ -35,8 +35,7 @@ public interface KieConfigOperation {
   /**
    * Check kie isolation address available
    *
-   * @param configurationsRequest configurationsRequest
    * @param address isolation address
    */
-  void checkAddressAvailable(ConfigurationsRequest configurationsRequest, String address);
+  void checkAddressAvailable(String address);
 }

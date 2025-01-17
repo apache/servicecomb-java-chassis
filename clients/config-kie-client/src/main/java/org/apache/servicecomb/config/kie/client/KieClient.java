@@ -19,7 +19,6 @@ package org.apache.servicecomb.config.kie.client;
 
 import com.google.common.eventbus.EventBus;
 
-import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -45,6 +44,7 @@ import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.apache.servicecomb.http.client.utils.ServerAddressHealthCheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
@@ -53,6 +53,8 @@ import org.springframework.core.io.ByteArrayResource;
 public class KieClient implements KieConfigOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KieClient.class);
+
+  private static final String ADDRESS_CHECK_PATH = "/v1/health";
 
   protected HttpTransport httpTransport;
 
@@ -115,18 +117,8 @@ public class KieClient implements KieConfigOperation {
   }
 
   @Override
-  public void checkAddressAvailable(ConfigurationsRequest request, String address) {
-    String url = buildUrl(request, address);
-    HttpRequest httpRequest = new HttpRequest(url, null, null, HttpRequest.GET);
-    try {
-      HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
-      if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED
-          || httpResponse.getStatusCode() == HttpStatus.SC_OK) {
-        addressManager.recoverIsolatedAddress(address);
-      }
-    } catch (IOException e) {
-      LOGGER.error("check kie config isolation address {} available error!", address);
-    }
+  public void checkAddressAvailable(String address) {
+    ServerAddressHealthCheckUtils.checkAddressAvailable(addressManager, address, httpTransport, ADDRESS_CHECK_PATH);
   }
 
   private String buildUrl(ConfigurationsRequest request, String currentAddress) {

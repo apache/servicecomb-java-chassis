@@ -562,7 +562,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       return;
     }
     for (String address : isolationAddresses) {
-      httpClient.checkAddressAvailable("/registry/microservices", null, null, address);
+      httpClient.checkAddressAvailable(address);
     }
   }
 }

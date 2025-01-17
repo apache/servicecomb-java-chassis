@@ -30,6 +30,7 @@ import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.apache.servicecomb.http.client.utils.ServerAddressHealthCheckUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +49,8 @@ public class ConfigCenterClient implements ConfigCenterOperation {
   public static final String APPLICATION_CONFIG = "application";
 
   public static final String DARK_LAUNCH = "darklaunch@";
+
+  private static final String ADDRESS_CHECK_PATH = "/v3/default/configuration/health?mode=readiness";
 
   private final HttpTransport httpTransport;
 
@@ -133,25 +136,8 @@ public class ConfigCenterClient implements ConfigCenterOperation {
   }
 
   @Override
-  public void checkAddressAvailable(QueryConfigurationsRequest request, String address) {
-    String dimensionsInfo = buildDimensionsInfo(request, true);
-    try {
-      String uri = address + "/configuration/items?dimensionsInfo="
-          + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision();
-
-      Map<String, String> headers = new HashMap<>();
-      headers.put("x-environment", request.getEnvironment());
-      HttpRequest httpRequest = new HttpRequest(uri, headers, null,
-          HttpRequest.GET);
-
-      HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
-      if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED
-          || httpResponse.getStatusCode() == HttpStatus.SC_OK) {
-        addressManager.recoverIsolatedAddress(address);
-      }
-    } catch (Exception e) {
-      LOGGER.error("check config center isolation address {} available error!", address);
-    }
+  public void checkAddressAvailable(String address) {
+    ServerAddressHealthCheckUtils.checkAddressAvailable(addressManager, address, httpTransport, ADDRESS_CHECK_PATH);
   }
 
   private String buildDimensionsInfo(QueryConfigurationsRequest request, boolean withVersion) {
