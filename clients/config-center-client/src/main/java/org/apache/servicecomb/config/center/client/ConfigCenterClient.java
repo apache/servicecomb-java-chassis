@@ -30,7 +30,7 @@ import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpUtils;
-import org.apache.servicecomb.http.client.utils.ServerAddressHealthCheckUtils;
+import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,7 +137,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
   @Override
   public void checkAddressAvailable(String address) {
-    ServerAddressHealthCheckUtils.checkAddressAvailable(addressManager, address, httpTransport, ADDRESS_CHECK_PATH);
+    ServiceCombServiceAvailableUtils.checkAddressAvailable(addressManager, address, httpTransport, ADDRESS_CHECK_PATH);
   }
 
   private String buildDimensionsInfo(QueryConfigurationsRequest request, boolean withVersion) {

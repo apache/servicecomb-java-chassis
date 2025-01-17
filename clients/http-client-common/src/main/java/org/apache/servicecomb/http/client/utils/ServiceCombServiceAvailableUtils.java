@@ -31,8 +31,8 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class ServerAddressHealthCheckUtils {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServerAddressHealthCheckUtils.class);
+public class ServiceCombServiceAvailableUtils {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCombServiceAvailableUtils.class);
 
   public static void checkAddressAvailable(AbstractAddressManager addressManager, String address,
       HttpTransport httpTransport, String path) {

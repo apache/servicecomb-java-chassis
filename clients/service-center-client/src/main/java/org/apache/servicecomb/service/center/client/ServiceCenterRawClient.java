@@ -24,7 +24,7 @@ import java.util.Map;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
-import org.apache.servicecomb.http.client.utils.ServerAddressHealthCheckUtils;
+import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +97,7 @@ public class ServiceCenterRawClient {
   }
 
   public void checkAddressAvailable(String address) {
-    ServerAddressHealthCheckUtils.checkAddressAvailable(addressManager, address, httpTransport, ADDRESS_CHECK_PATH);
+    ServiceCombServiceAvailableUtils.checkAddressAvailable(addressManager, address, httpTransport, ADDRESS_CHECK_PATH);
   }
 
   private HttpRequest buildHttpRequest(String url, Map<String, String> headers, String content, String method) {
