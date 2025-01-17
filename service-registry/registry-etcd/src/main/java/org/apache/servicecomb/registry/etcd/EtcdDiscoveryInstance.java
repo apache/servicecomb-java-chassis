@@ -17,8 +17,6 @@
 package org.apache.servicecomb.registry.etcd;
 
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
-import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-
 public class EtcdDiscoveryInstance extends EtcdInstance implements DiscoveryInstance {
 
   public EtcdDiscoveryInstance(EtcdInstance other) {
