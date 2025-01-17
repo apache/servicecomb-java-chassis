@@ -17,17 +17,10 @@
 package org.apache.servicecomb.registry.etcd;
 
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
-import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
-
 public class EtcdDiscoveryInstance extends EtcdInstance implements DiscoveryInstance {
 
   public EtcdDiscoveryInstance(EtcdInstance other) {
     super(other);
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 
   @Override

@@ -98,6 +98,11 @@ public class EtcdRegistration implements Registration<EtcdRegistrationInstance> 
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
+    this.etcdInstance.setStatus(status);
+    String valueJson = MuteExceptionUtil.builder().withLog("to json, key:{}, value:{}", keyPath, etcdInstance)
+        .executeFunction(JsonUtils::writeValueAsString, etcdInstance);
+    register(ByteSequence.from(keyPath, Charset.defaultCharset()),
+        ByteSequence.from(valueJson, Charset.defaultCharset()));
     return true;
   }
 
@@ -146,6 +151,8 @@ public class EtcdRegistration implements Registration<EtcdRegistrationInstance> 
     }
     etcdInstance.setProperties(BootStrapProperties.readServiceProperties(environment));
     etcdInstance.setVersion(BootStrapProperties.readServiceVersion(environment));
+    etcdInstance.setStatus(
+        MicroserviceInstanceStatus.valueOf(BootStrapProperties.readServiceInstanceInitialStatus(environment)));
   }
 
   @Override

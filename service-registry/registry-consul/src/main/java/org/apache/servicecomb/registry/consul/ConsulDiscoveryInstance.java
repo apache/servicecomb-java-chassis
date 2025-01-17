@@ -18,17 +18,11 @@
 package org.apache.servicecomb.registry.consul;
 
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
-import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 
 public class ConsulDiscoveryInstance extends ConsulInstance implements DiscoveryInstance {
 
   public ConsulDiscoveryInstance(ConsulInstance consulInstance) {
     super(consulInstance);
-  }
-
-  @Override
-  public MicroserviceInstanceStatus getStatus() {
-    return MicroserviceInstanceStatus.UP;
   }
 
   @Override
