@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
+import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,8 @@ public class ServiceCenterRawClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRawClient.class);
 
   private static final String HEADER_TENANT_NAME = "x-domain-name";
+
+  private static final String ADDRESS_CHECK_PATH = "/v4/default/registry/health/readiness";
 
   private final String tenantName;
 
@@ -93,16 +96,8 @@ public class ServiceCenterRawClient {
     }
   }
 
-  public void checkAddressAvailable(String url, Map<String, String> headers, String content,
-      String address) {
-    String formatUrl = addressManager.formatUrl(url, false, address);
-    HttpRequest httpRequest = buildHttpRequest(formatUrl, headers, content, HttpRequest.GET);
-    try {
-      httpTransport.doRequest(httpRequest);
-      addressManager.recoverIsolatedAddress(address);
-    } catch (IOException e) {
-      LOGGER.error("check service center isolation address {} available error!", address);
-    }
+  public void checkAddressAvailable(String address) {
+    ServiceCombServiceAvailableUtils.checkAddressAvailable(addressManager, address, httpTransport, ADDRESS_CHECK_PATH);
   }
 
   private HttpRequest buildHttpRequest(String url, Map<String, String> headers, String content, String method) {
