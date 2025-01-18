@@ -101,7 +101,7 @@ public class AbstractAddressManagerTest {
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
 
     // test fail 2 times ,it will not be isolated
-    addressManager.recordSuccessState(address);
+    addressManager.resetFailureStatus(address);
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
 
     // test recodeStatus times
@@ -115,7 +115,7 @@ public class AbstractAddressManagerTest {
     Assertions.assertEquals("http://127.0.0.4:30100", addressManager.address());
 
     // test restore isolation
-    addressManager.recoverIsolatedAddress("http://127.0.0.3:30100");
+    addressManager.recordSuccessState("http://127.0.0.3:30100");
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
     Assertions.assertEquals("http://127.0.0.3:30100", addressManager.address());
   }
