@@ -103,7 +103,7 @@ public class ConfigCenterManager extends AbstractTask {
         return;
       }
       for (String address : isolationAddresses) {
-        configCenterClient.checkAddressAvailable(queryConfigurationsRequest, address);
+        configCenterClient.checkAddressAvailable(address);
       }
     }
   }

@@ -34,8 +34,7 @@ public interface ConfigCenterOperation {
   /**
    * Check config center isolation address available
    *
-   * @param request queryConfigurationsRequest
    * @param address isolation address
    */
-  void checkAddressAvailable(QueryConfigurationsRequest request, String address);
+  void checkAddressAvailable(String address);
 }

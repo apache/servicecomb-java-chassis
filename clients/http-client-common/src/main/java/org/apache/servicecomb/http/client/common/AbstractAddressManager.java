@@ -194,8 +194,8 @@ public class AbstractAddressManager {
     return results;
   }
 
-  public void recoverIsolatedAddress(String address) {
-    recordSuccessState(address);
+  public void recordSuccessState(String address) {
+    resetFailureStatus(address);
     if (addressAutoRefreshed) {
       if (isolationZoneAddress.remove(address)) {
         LOGGER.warn("restore same region address [{}]", address);
@@ -217,7 +217,7 @@ public class AbstractAddressManager {
     }
   }
 
-  public void recordSuccessState(String address) {
+  public void resetFailureStatus(String address) {
     addressFailureStatus.put(address, 0);
   }
 
