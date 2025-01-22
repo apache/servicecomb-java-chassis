@@ -22,11 +22,21 @@ import java.util.Map;
 public class UpdatePropertiesRequest {
   private Map<String, String> properties;
 
+  private Framework framework;
+
   public Map<String, String> getProperties() {
     return properties;
   }
 
   public void setProperties(Map<String, String> properties) {
     this.properties = properties;
+  }
+
+  public Framework getFramework() {
+    return framework;
+  }
+
+  public void setFramework(Framework framework) {
+    this.framework = framework;
   }
 }

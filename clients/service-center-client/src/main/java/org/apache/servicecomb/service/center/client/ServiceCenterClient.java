@@ -39,6 +39,7 @@ import org.apache.servicecomb.service.center.client.model.CreateMicroserviceRequ
 import org.apache.servicecomb.service.center.client.model.CreateSchemaRequest;
 import org.apache.servicecomb.service.center.client.model.ErrorMessage;
 import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
+import org.apache.servicecomb.service.center.client.model.Framework;
 import org.apache.servicecomb.service.center.client.model.GetSchemaListResponse;
 import org.apache.servicecomb.service.center.client.model.GetSchemaResponse;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
@@ -534,10 +535,11 @@ public class ServiceCenterClient implements ServiceCenterOperation {
   }
 
   @Override
-  public boolean updateMicroserviceProperties(String serviceId, Map<String, String> serviceProperties) {
+  public boolean updateMicroserviceProperties(String serviceId, Map<String, String> serviceProperties, Framework framework) {
     try {
       UpdatePropertiesRequest request = new UpdatePropertiesRequest();
       request.setProperties(serviceProperties);
+      request.setFramework(framework);
       HttpResponse response = httpClient.putHttpRequest(
               "/registry/microservices/" + serviceId + "/properties", null, HttpUtils.serialize(request));
       if (response.getStatusCode() == HttpStatus.SC_OK) {

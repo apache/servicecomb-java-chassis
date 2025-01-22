@@ -201,7 +201,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   @Override
   public boolean updateMicroserviceProperties(Map<String, String> properties) {
     boolean success = srClient.updateMicroserviceProperties(microservice.getServiceId(),
-        properties);
+        properties, microservice.getFramework());
     if (success) {
       microservice.setProperties(properties);
     }

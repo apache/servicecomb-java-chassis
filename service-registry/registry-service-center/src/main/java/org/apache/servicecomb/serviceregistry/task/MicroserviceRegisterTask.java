@@ -90,20 +90,19 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       // Need to update microservice properties if we have modified or added properties of microservices.
       Microservice microserviceTemp = new Microservice();
       EnvAdapterManager.INSTANCE.processMicroserviceWithAdapters(microserviceTemp);
-      if (!microserviceTemp.getProperties().isEmpty()) {
-        Map<String, String> propertiesTemp = microserviceTemp.getProperties();
-        Microservice srClientMicroservice = srClient.getMicroservice(serviceId);
-        if (srClientMicroservice != null) {
-          microserviceTemp.setProperties(srClientMicroservice.getProperties());
-          microserviceTemp.getProperties().putAll(propertiesTemp);
-        }
-        if (srClient.updateMicroserviceProperties(serviceId, microserviceTemp.getProperties())) {
-          LOGGER.info("microservice is already registered. Update microservice properties successfully. properties=[{}]",
-                  microserviceTemp.getProperties());
-        } else {
-          LOGGER.error("microservice is already registered. Update microservice properties failed. properties=[{}]",
-                  microserviceTemp.getProperties());
-        }
+      Map<String, String> propertiesTemp = microserviceTemp.getProperties();
+      Microservice srClientMicroservice = srClient.getMicroservice(serviceId);
+      if (srClientMicroservice != null) {
+        microserviceTemp.setProperties(srClientMicroservice.getProperties());
+        microserviceTemp.getProperties().putAll(propertiesTemp);
+      }
+      if (srClient.updateMicroserviceProperties(serviceId, microserviceTemp.getProperties(),
+          microservice.getFramework())) {
+        LOGGER.info("microservice is already registered. Update microservice properties successfully. properties=[{}]",
+            microserviceTemp.getProperties());
+      } else {
+        LOGGER.error("microservice is already registered. Update microservice properties failed. properties=[{}]",
+            microserviceTemp.getProperties());
       }
       LOGGER.info(
           "Microservice exists in service center, no need to register. id=[{}] appId=[{}], name=[{}], version=[{}], env=[{}]",
