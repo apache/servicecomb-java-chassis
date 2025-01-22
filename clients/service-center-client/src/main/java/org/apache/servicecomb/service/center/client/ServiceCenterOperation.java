@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.model.CreateSchemaRequest;
 import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
+import org.apache.servicecomb.service.center.client.model.Framework;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
@@ -192,7 +193,8 @@ public interface ServiceCenterOperation {
    * @return if update is successful
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
-  boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties);
+  boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties,
+      Framework framework);
 
   /**
    * Check serviceCenter isolation address available

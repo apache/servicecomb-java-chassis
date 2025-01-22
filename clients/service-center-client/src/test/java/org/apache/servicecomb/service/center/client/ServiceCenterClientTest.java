@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.HttpResponse;
+import org.apache.servicecomb.service.center.client.model.Framework;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.InstancesRequest;
 import org.apache.servicecomb.service.center.client.model.Microservice;
@@ -516,7 +517,7 @@ public class ServiceCenterClientTest {
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient, addressManager);
     boolean result = serviceCenterClient
-            .updateMicroserviceProperties("111", new HashMap<String, String>());
+            .updateMicroserviceProperties("111", new HashMap<String, String>(), new Framework());
 
     Assertions.assertTrue(result);
   }
