@@ -37,6 +37,7 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
+import org.apache.servicecomb.registry.api.registry.Framework;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
@@ -815,13 +816,15 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
+  public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties,
+      Framework framework) {
     Holder<HttpClientResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
     try {
       UpdatePropertiesRequest request = new UpdatePropertiesRequest();
       request.setProperties(serviceProperties);
+      request.setFramework(framework);
       byte[] body = JsonUtils.writeValueAsBytes(request);
 
       if (LOGGER.isDebugEnabled()) {

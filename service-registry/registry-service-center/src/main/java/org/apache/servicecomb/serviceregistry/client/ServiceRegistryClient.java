@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.registry.Framework;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
@@ -69,7 +70,7 @@ public interface ServiceRegistryClient {
   /**
    * 更新微服务properties
    */
-  boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties);
+  boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties, Framework framework);
 
   /**
    *

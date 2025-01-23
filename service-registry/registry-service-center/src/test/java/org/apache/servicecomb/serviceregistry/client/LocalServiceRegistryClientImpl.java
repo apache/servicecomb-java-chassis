@@ -35,6 +35,7 @@ import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
+import org.apache.servicecomb.registry.api.registry.Framework;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
@@ -382,7 +383,8 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties) {
+  public boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties,
+      Framework framework) {
     Microservice microservice = microserviceIdMap.get(microserviceId);
     if (microservice == null) {
       throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
