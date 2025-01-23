@@ -150,11 +150,11 @@ public class ServiceCenterRegistration extends AbstractTask {
           if (serviceCenterClient.updateMicroserviceProperties(serviceResponse.getServiceId(),
               microservice.getProperties(), microservice.getFramework())) {
             LOGGER.info(
-                "microservice is already registered. Update microservice properties successfully. properties=[{}]",
-                microservice.getProperties());
+                "microservice is already registered. Update microservice properties successfully. properties=[{}], "
+                    + "frameworkVersion [{}]", microservice.getProperties(), microservice.getFramework().getVersion());
           } else {
-            LOGGER.error("microservice is already registered. Update microservice properties failed. properties=[{}]",
-                microservice.getProperties());
+            LOGGER.error("microservice is already registered. Update microservice properties failed. properties=[{}], "
+                    + "frameworkVersion [{}]", microservice.getProperties(), microservice.getFramework().getVersion());
           }
 
           microservice.setServiceId(serviceResponse.getServiceId());
