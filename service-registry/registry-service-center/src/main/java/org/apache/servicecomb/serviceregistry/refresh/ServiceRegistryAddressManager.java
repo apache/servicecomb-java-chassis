@@ -45,7 +45,7 @@ public class ServiceRegistryAddressManager extends AbstractAddressManager {
     return new URIEndpointObject(endpoint).toString();
   }
 
-  private IpPort transformIpPort(String address) {
+  public IpPort transformIpPort(String address) {
     URI uri = URI.create(URI_PREFIX + address);
     return new IpPort(uri.getHost(), uri.getPort());
   }

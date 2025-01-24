@@ -55,7 +55,7 @@ public class ServiceCombServiceAvailableUtils {
     }
   }
 
-  private static boolean telnetCheckAddress(String address) {
+  public static boolean telnetCheckAddress(String address) {
     URI ipPort = parseIpPortFromURI(address);
     if (ipPort == null) {
       return false;
@@ -71,7 +71,8 @@ public class ServiceCombServiceAvailableUtils {
 
   private static URI parseIpPortFromURI(String address) {
     try {
-      return new URI(address);
+      String newAddress = address.startsWith("http") ? address : "https://" + address;
+      return new URI(newAddress);
     } catch (URISyntaxException e) {
       LOGGER.error("build uri error with address [{}].", address);
       return null;

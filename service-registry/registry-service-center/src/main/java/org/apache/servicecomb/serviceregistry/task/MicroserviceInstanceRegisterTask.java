@@ -16,6 +16,10 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -36,6 +40,10 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
 
   private final MicroserviceInstance microserviceInstance;
 
+  private final ScheduledExecutorService addrCheckExecutor;
+
+  private boolean isAddrCheckInit = false;
+
   public MicroserviceInstanceRegisterTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       ServiceRegistryClient srClient,
       Microservice microservice) {
@@ -43,6 +51,7 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
 
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.microserviceInstance = microservice.getInstance();
+    addrCheckExecutor = Executors.newScheduledThreadPool(1, (t) -> new Thread(t, "sc-addr-check"));
   }
 
   @Subscribe
@@ -90,6 +99,18 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
         microserviceInstance.getEndpoints(),
         microserviceInstance.getHealthCheck().getTTL());
 
+    if (!isAddrCheckInit) {
+      addrCheckExecutor.scheduleWithFixedDelay(new CheckAddressTask(), 0,
+          serviceRegistryConfig.getHeartbeatInterval(), TimeUnit.SECONDS);
+      isAddrCheckInit = true;
+    }
     return true;
+  }
+
+  class CheckAddressTask implements Runnable {
+    @Override
+    public void run() {
+      srClient.checkIsolationAddressAvailable();
+    }
   }
 }

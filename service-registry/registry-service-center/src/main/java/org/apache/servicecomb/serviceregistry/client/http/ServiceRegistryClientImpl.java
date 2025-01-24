@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
+import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Framework;
@@ -89,6 +90,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final String ERR_SERVICE_NOT_EXISTS = "400012";
 
   private static final String ERR_SCHEMA_NOT_EXISTS = "400016";
+
+  private static final String ADDRESS_CHECK_PATH = "/v4/default/registry/health/readiness";
 
   private final IpPortManager ipPortManager;
 
@@ -275,11 +278,13 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               switch (response.statusCode()) {
                 case 304:
                   mInstances.setNeedRefresh(false);
+                  ipPortManager.recordSuccessState(requestContext.getIpPort().toString());
                   break;
                 case 200:
                   mInstances
                       .setInstancesResponse(JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class));
                   mInstances.setNeedRefresh(true);
+                  ipPortManager.recordSuccessState(requestContext.getIpPort().toString());
                   break;
                 case 400: {
                   @SuppressWarnings("unchecked")
@@ -289,6 +294,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                     mInstances.setNeedRefresh(false);
                   }
                   LOGGER.warn("failed to findInstances: " + bodyBuffer);
+                  ipPortManager.recordState(requestContext.getIpPort().toString());
                 }
                 break;
                 default:
@@ -963,6 +969,47 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           e);
     }
     return false;
+  }
+
+  @Override
+  public void checkIsolationAddressAvailable() {
+    Holder<GetAllServicesResponse> holder = new Holder<>();
+    List<String> isolationAddresses = ipPortManager.getIsolationAddresses();
+    for (String address : isolationAddresses) {
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      restClientUtil.get(ipPortManager.transformIpPort(address),
+          ADDRESS_CHECK_PATH,
+          new RequestParam(),
+          addressSyncHandler(countDownLatch, GetAllServicesResponse.class, holder));
+      try {
+        countDownLatch.await();
+        if (holder.statusCode == 200) {
+          ipPortManager.recordSuccessState(address);
+          return;
+        }
+        if (holder.statusCode == 404 && ServiceCombServiceAvailableUtils.telnetCheckAddress(address)) {
+          ipPortManager.recordSuccessState(address);
+          return;
+        }
+      } catch (Exception e) {
+        LOGGER.error("check service center isolation address [{}] failed", address);
+      }
+    }
+  }
+
+  public <T> Handler<RestResponse> addressSyncHandler(CountDownLatch countDownLatch, Class<T> cls,
+      Holder<T> holder) {
+    return restResponse -> {
+      HttpClientResponse response = restResponse.getResponse();
+      if (response == null) {
+        countDownLatch.countDown();
+        holder.setStatusCode(500);
+        return;
+      }
+      holder.setStatusCode(response.statusCode());
+      sendUnAuthorizedEvent(response);
+      countDownLatch.countDown();
+    };
   }
 
   @Subscribe
