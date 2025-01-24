@@ -51,7 +51,7 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
 
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.microserviceInstance = microservice.getInstance();
-    addrCheckExecutor = Executors.newScheduledThreadPool(1, (t) -> new Thread(t, "sc-addr-check"));
+    this.addrCheckExecutor = Executors.newScheduledThreadPool(1, (t) -> new Thread(t, "sc-addr-check"));
   }
 
   @Subscribe
