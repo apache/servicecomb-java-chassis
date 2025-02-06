@@ -53,7 +53,6 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   private String propertyName = "servicecomb.loadbalance.filter.priorityInstanceProperty.key";
 
-  ;
 
   @Autowired
   public void setEnvironment(Environment environment) {
