@@ -32,7 +32,7 @@
   <properties>
     <!-- Dependency versions: sort by alphabetic order -->
     <activation.version>1.2.2</activation.version>
-    <assertj.version>3.27.0</assertj.version>
+    <assertj.version>3.27.3</assertj.version>
     <awaitility.version>4.2.2</awaitility.version>
     <brave.version>6.0.3</brave.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
@@ -88,11 +88,11 @@
     <snakeyaml.version>2.3</snakeyaml.version>
     <spring.version>6.1.10</spring.version>
     <swagger.version>2.2.27</swagger.version>
-    <vertx.version>4.5.11</vertx.version>
-    <zipkin.version>3.4.3</zipkin.version>
+    <vertx.version>4.5.12</vertx.version>
+    <zipkin.version>3.4.4</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.4</jetcd-core.version>
-    <consul-client.version>1.4.2</consul-client.version>
+    <consul-client.version>1.4.5</consul-client.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
