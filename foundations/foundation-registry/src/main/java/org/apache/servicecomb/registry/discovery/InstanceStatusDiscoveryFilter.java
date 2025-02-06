@@ -52,12 +52,13 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
   @Override
   public boolean enabled() {
 
-    if (filterStatusEnabled == null) {
-      filterStatusEnabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.status.enabled",
-          value -> filterStatusEnabled = value,
-          true);
-    }
-    return filterStatusEnabled;
+//    if (filterStatusEnabled == null) {
+//      filterStatusEnabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.status.enabled",
+//          value -> filterStatusEnabled = value,
+//          true);
+//    }
+//    return filterStatusEnabled;
+    return true;
   }
 
   @Override

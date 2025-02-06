@@ -67,12 +67,13 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   @Override
   public boolean enabled() {
 
-    if (configEnabled == null) {
-      configEnabled = dynamicProperties.getBooleanProperty(CONFIG_ENABLED,
-          value -> configEnabled = value,
-          true);
-    }
-    return configEnabled;
+//    if (configEnabled == null) {
+//      configEnabled = dynamicProperties.getBooleanProperty(CONFIG_ENABLED,
+//          value -> configEnabled = value,
+//          true);
+//    }
+//    return configEnabled;
+    return true;
   }
 
   private int getRatio() {
