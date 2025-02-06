@@ -26,7 +26,6 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
-import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
@@ -52,14 +51,9 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   private Environment environment;
 
-  private Boolean enabled;
+  private String propertyName = "servicecomb.loadbalance.filter.priorityInstanceProperty.key";
 
-  private DynamicProperties dynamicProperties;
-
-  @Autowired
-  public void setDynamicProperties(DynamicProperties dynamicProperties) {
-    this.dynamicProperties = dynamicProperties;
-  }
+  ;
 
   @Autowired
   public void setEnvironment(Environment environment) {
@@ -68,8 +62,10 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   @Override
   protected void init(DiscoveryContext context, DiscoveryTreeNode parent) {
-    propertyKey = environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key",
-        String.class, "environment");
+
+    propertyKey = dynamicProperties.getStringProperty(propertyName,
+        value -> propertyKey = value,
+        "environment");
 
     // group all instance by property
     List<StatefulDiscoveryInstance> instances = parent.data();

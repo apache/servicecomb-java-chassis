@@ -20,12 +20,10 @@ package org.apache.servicecomb.registry.discovery;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.HistoryStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.IsolationStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.PingStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   public static final String PARAMETER = "status_level";
@@ -34,14 +32,7 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
 
   public static final String GROUP_SIZE = "status_group_size";
 
-  private Boolean enabled;
-
-  private DynamicProperties dynamicProperties;
-
-  @Autowired
-  public void setDynamicProperties(DynamicProperties dynamicProperties) {
-    this.dynamicProperties = dynamicProperties;
-  }
+  private String filterEnabledPropertyKey;
 
   @Override
   public int getOrder() {
@@ -52,7 +43,8 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
   public boolean enabled() {
 
     if (enabled == null) {
-      enabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.status.enabled",
+      filterEnabledPropertyKey = "servicecomb.loadbalance.filter.status.enabled";
+      enabled = dynamicProperties.getBooleanProperty(filterEnabledPropertyKey,
           value -> enabled = value,
           true);
     }

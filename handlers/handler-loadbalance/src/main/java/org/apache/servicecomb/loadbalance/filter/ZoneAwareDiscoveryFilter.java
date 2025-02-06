@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.config.DataCenterProperties;
-import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.registry.discovery.AbstractGroupDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
@@ -43,14 +42,10 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   private DataCenterProperties dataCenterProperties;
 
-  private Boolean enabled;
+  private Integer ratio = 30;
 
-  private DynamicProperties dynamicProperties;
+  private Integer ratioCeiling = 100 - ratio;
 
-  @Autowired
-  public void setDynamicProperties(DynamicProperties dynamicProperties) {
-    this.dynamicProperties = dynamicProperties;
-  }
 
   @Autowired
   @SuppressWarnings("unused")
@@ -75,13 +70,23 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   }
 
   private int getRatio() {
-    return environment.getProperty(CONFIG_RATIO,
-        int.class, 30);
+
+    if (ratio == null) {
+      ratio = dynamicProperties.getIntProperty(CONFIG_RATIO,
+          value -> ratio = value,
+          30);
+    }
+    return ratio;
   }
 
   private int getRatioCeiling(int defaultValue) {
-    return environment.getProperty(CONFIG_RATIO_CEILING,
-        int.class, defaultValue);
+
+    if (ratioCeiling == null) {
+      ratioCeiling = dynamicProperties.getIntProperty(CONFIG_RATIO_CEILING,
+          value -> ratioCeiling = value,
+          defaultValue);
+    }
+    return ratioCeiling;
   }
 
   @Override
