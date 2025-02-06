@@ -24,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -40,6 +41,8 @@ public class TestDiscoveryTree {
   DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent");
 
   DiscoveryTreeNode result;
+
+  Boolean enabled = false;
 
   @BeforeEach
   public void before() {
@@ -238,11 +241,12 @@ public class TestDiscoveryTree {
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     DiscoveryContext discoveryContext = new DiscoveryContext();
     InstanceStatusDiscoveryFilter filter = new InstanceStatusDiscoveryFilter();
-    Environment environment = Mockito.mock(Environment.class);
-    Mockito.when(environment
-            .getProperty("servicecomb.loadbalance.filter.status.enabled", Boolean.class, true))
+    DynamicProperties dynamicProperties = Mockito.mock(DynamicProperties.class);
+    Mockito.when(dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.status.enabled",
+        value -> enabled = value,
+        true))
         .thenReturn(true);
-    filter.setEnvironment(environment);
+    filter.setDynamicProperties(dynamicProperties);
     discoveryTree.setDiscoveryFilters(List.of(filter));
 
     StatefulDiscoveryInstance instance1 = Mockito.mock(StatefulDiscoveryInstance.class);
