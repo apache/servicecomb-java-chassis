@@ -26,7 +26,6 @@ import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.Histo
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.IsolationStatus;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance.PingStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   public static final String PARAMETER = "status_level";
@@ -35,7 +34,7 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
 
   public static final String GROUP_SIZE = "status_group_size";
 
-  private Boolean filterStatusEnabled;
+  private Boolean enabled;
 
   private DynamicProperties dynamicProperties;
 
@@ -52,13 +51,12 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
   @Override
   public boolean enabled() {
 
-//    if (filterStatusEnabled == null) {
-//      filterStatusEnabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.status.enabled",
-//          value -> filterStatusEnabled = value,
-//          true);
-//    }
-//    return filterStatusEnabled;
-    return true;
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.status.enabled",
+          value -> enabled = value,
+          true);
+    }
+    return enabled;
   }
 
   @Override

@@ -40,7 +40,7 @@ public class EtcdConfig {
   }
 
   public String getConnectString() {
-    return environment.getProperty(PROPERTY_CONNECT_STRING, "127.0.0.1:2181");
+    return environment.getProperty(PROPERTY_CONNECT_STRING, "http://127.0.0.1:2181");
   }
 
   public int getSessionTimeoutMillis() {

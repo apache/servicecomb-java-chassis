@@ -25,7 +25,6 @@ import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 /**
  * configuration items
- *
  */
 public final class Configuration {
   //// 2.1 configuration items
@@ -70,25 +69,23 @@ public final class Configuration {
   }
 
   public RuleType getRuleStrategyName(Invocation invocation) {
-//    String value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
-//        invocation.getSchemaId() + "." + invocation.getOperationName() + "." + RULE_STRATEGY_NAME);
-//    if (value != null) {
-//      return new RuleType(RuleType.TYPE_OPERATION, value);
-//    }
-//    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
-//        invocation.getSchemaId() + "." + RULE_STRATEGY_NAME);
-//    if (value != null) {
-//      return new RuleType(RuleType.TYPE_SCHEMA, value);
-//    }
-//    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
-//        RULE_STRATEGY_NAME);
-//    if (value != null) {
-//      return new RuleType(RuleType.TYPE_SCHEMA, value);
-//    }
-//    return new RuleType(RuleType.TYPE_SCHEMA,
-//        getStringProperty("RoundRobin", RULE_STRATEGY_GLOBAL));
+    String value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
+        invocation.getSchemaId() + "." + invocation.getOperationName() + "." + RULE_STRATEGY_NAME);
+    if (value != null) {
+      return new RuleType(RuleType.TYPE_OPERATION, value);
+    }
+    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
+        invocation.getSchemaId() + "." + RULE_STRATEGY_NAME);
+    if (value != null) {
+      return new RuleType(RuleType.TYPE_SCHEMA, value);
+    }
+    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
+        RULE_STRATEGY_NAME);
+    if (value != null) {
+      return new RuleType(RuleType.TYPE_SCHEMA, value);
+    }
     return new RuleType(RuleType.TYPE_SCHEMA,
-        "RoundRobin");
+        getStringProperty("RoundRobin", RULE_STRATEGY_GLOBAL));
   }
 
   public int getSessionTimeoutInSeconds(String microservice) {

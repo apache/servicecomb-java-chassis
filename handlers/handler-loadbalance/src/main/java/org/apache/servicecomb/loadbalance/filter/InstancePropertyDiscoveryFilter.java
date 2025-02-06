@@ -22,18 +22,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.Configuration;
 import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *  Instance property based filter
  */
 public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
   private static final String MATCHED = "matched";
+
+  private Boolean enabled;
+
+  private DynamicProperties dynamicProperties;
+
+  @Autowired
+  public void setDynamicProperties(DynamicProperties dynamicProperties) {
+    this.dynamicProperties = dynamicProperties;
+  }
 
   @Override
   public int getOrder() {
@@ -42,8 +53,13 @@ public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return environment.getProperty("servicecomb.loadbalance.filter.instanceProperty.enabled",
-        boolean.class, true);
+
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.instanceProperty.enabled",
+          value -> enabled = value,
+          true);
+    }
+    return enabled;
   }
 
   @Override

@@ -26,6 +26,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
@@ -50,6 +51,15 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
   private String propertyKey;
 
   private Environment environment;
+
+  private Boolean enabled;
+
+  private DynamicProperties dynamicProperties;
+
+  @Autowired
+  public void setDynamicProperties(DynamicProperties dynamicProperties) {
+    this.dynamicProperties = dynamicProperties;
+  }
 
   @Autowired
   public void setEnvironment(Environment environment) {
@@ -115,8 +125,13 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   @Override
   public boolean enabled() {
-    return environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled",
-        boolean.class, false);
+
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled",
+          value -> enabled = value,
+          false);
+    }
+    return enabled;
   }
 
   @Override
@@ -136,7 +151,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
     /**
      * Constructor
      *
-     * @param key property key
+     * @param key   property key
      * @param value property value
      */
     public PriorityInstanceProperty(@NotNull String key, String value) {
@@ -153,7 +168,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
     /**
      * Constructor
      *
-     * @param key property key
+     * @param key                  property key
      * @param microserviceInstance instance
      */
     public PriorityInstanceProperty(@NotNull String key, @NotNull StatefulDiscoveryInstance microserviceInstance) {

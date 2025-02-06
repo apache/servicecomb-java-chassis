@@ -27,7 +27,6 @@ import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   public static final String PARAMETER = "zone_aware_level";
@@ -44,7 +43,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   private DataCenterProperties dataCenterProperties;
 
-  private Boolean configEnabled;
+  private Boolean enabled;
 
   private DynamicProperties dynamicProperties;
 
@@ -67,13 +66,12 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   @Override
   public boolean enabled() {
 
-//    if (configEnabled == null) {
-//      configEnabled = dynamicProperties.getBooleanProperty(CONFIG_ENABLED,
-//          value -> configEnabled = value,
-//          true);
-//    }
-//    return configEnabled;
-    return true;
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty(CONFIG_ENABLED,
+          value -> enabled = value,
+          true);
+    }
+    return enabled;
   }
 
   private int getRatio() {
