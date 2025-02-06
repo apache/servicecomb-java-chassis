@@ -43,7 +43,12 @@ servicecomb:
     allowedMethod: "*"
     maxAge: 3600
 
-
+  loadbalance:
+    filter:
+      zoneaware:
+        enabled: true
+      status:
+        enabled: true
 key1: 1
 key2: 3
 key3: 5
@@ -53,3 +58,179 @@ test2: applition
 test3: service
 test4: version
 test5: tag
+
+
+### 随机生成的配置项
+# 系统配置
+system:
+  name: "MyApplication"
+  environment: "production"
+  version: "1.0.0"
+  debug: false
+  max_threads: 16
+
+# 数据库配置
+database:
+  host: "127.0.0.1"
+  port: 5432
+  name: "app_db"
+  user: "admin"
+  password: "password123"
+  connection_pool_size: 20
+  retry_attempts: 3
+  ssl_enabled: true
+
+# 缓存配置
+cache:
+  provider: "redis"
+  host: "localhost"
+  port: 6379
+  timeout: 5000
+  max_entries: 1000
+
+# 消息队列配置
+message_queue:
+  provider: "RabbitMQ"
+  host: "mq.example.com"
+  port: 5672
+  username: "mq_user"
+  password: "mq_password"
+  exchange: "app_exchange"
+  queue: "app_queue"
+
+# 日志配置
+loggings:
+  level: "INFO"
+  file: "/var/log/app.log"
+  max_file_size: "10MB"
+  max_backup_files: 5
+  pattern: "%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n"
+
+# 邮件服务配置
+mail_service:
+  enabled: true
+  smtp_server: "smtp.example.com"
+  port: 587
+  username: "noreply@example.com"
+  password: "mail_password"
+  from_address: "noreply@example.com"
+  to_addresses:
+    - "admin@example.com"
+    - "support@example.com"
+
+# 身份验证配置
+authentication:
+  jwt_secret: "mysecretkey123"
+  token_expiry_minutes: 60
+  refresh_token_expiry_days: 7
+
+# 外部服务配置
+external_services:
+  payment_gateway:
+    url: "https://api.payment.com"
+    api_key: "payment-api-key-123"
+  notification_service:
+    url: "https://api.notify.com"
+    api_key: "notify-api-key-456"
+
+# 特性开关
+feature_flags:
+  enable_beta_features: false
+  enable_new_ui: true
+
+# API 配置
+api:
+  base_url: "https://api.myapp.com"
+  timeout: 5000
+  max_retries: 3
+  headers:
+    user_agent: "MyApp/1.0"
+
+# 缓存策略
+caching_policy:
+  default_ttl: 3600
+  max_cache_size: "500MB"
+  eviction_policy: "LRU"
+
+# 安全配置
+security:
+  cors:
+    allowed_origins:
+      - "https://myapp.com"
+      - "https://admin.myapp.com"
+  rate_limiting:
+    max_requests_per_minute: 100
+
+# 文件存储配置
+file_storage:
+  provider: "S3"
+  bucket_name: "myapp-bucket"
+  region: "us-east-1"
+  access_key: "ACCESS_KEY"
+  secret_key: "SECRET_KEY"
+
+# 定时任务配置
+schedulers:
+  job1:
+    cron: "0 0 * * *"
+    enabled: true
+    description: "Daily data processing job"
+  job2:
+    cron: "*/5 * * * *"
+    enabled: true
+    description: "Check system health"
+
+# 本地化配置
+localization:
+  default_language: "en"
+  supported_languages:
+    - "en"
+    - "zh"
+    - "es"
+  currency_format: "$%.2f"
+
+# 用户配置
+user_preferences:
+  theme: "dark"
+  notifications_enabled: true
+  language: "en"
+
+# 客户端配置
+client:
+  app_version: "2.0.1"
+  supported_versions:
+    - "1.0.0"
+    - "2.0.0"
+    - "2.0.1"
+
+# 网络配置
+network:
+  proxy:
+    host: "proxy.example.com"
+    port: 8080
+  timeout: 3000
+
+# 监控配置
+monitoring:
+  enabled: true
+  endpoint: "https://monitoring.myapp.com"
+  api_key: "monitoring-api-key-789"
+
+# 开发者模式配置
+development:
+  hot_reload: true
+  mock_data: true
+
+# 访问控制配置
+access_control:
+  roles:
+    - "admin"
+    - "user"
+    - "guest"
+  permissions:
+    admin:
+      - "read"
+      - "write"
+      - "delete"
+    user:
+      - "read"

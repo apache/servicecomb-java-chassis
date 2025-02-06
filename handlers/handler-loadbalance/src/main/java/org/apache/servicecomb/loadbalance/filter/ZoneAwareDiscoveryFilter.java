@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.config.DataCenterProperties;
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.registry.discovery.AbstractGroupDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
   public static final String PARAMETER = "zone_aware_level";
@@ -42,6 +44,15 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   private DataCenterProperties dataCenterProperties;
 
+  private Boolean configEnabled;
+
+  private DynamicProperties dynamicProperties;
+
+  @Autowired
+  public void setDynamicProperties(DynamicProperties dynamicProperties) {
+    this.dynamicProperties = dynamicProperties;
+  }
+
   @Autowired
   @SuppressWarnings("unused")
   public void setDataCenterProperties(DataCenterProperties dataCenterProperties) {
@@ -55,8 +66,13 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return environment.getProperty(CONFIG_ENABLED,
-        Boolean.class, true);
+
+    if (configEnabled == null) {
+      configEnabled = dynamicProperties.getBooleanProperty(CONFIG_ENABLED,
+          value -> configEnabled = value,
+          true);
+    }
+    return configEnabled;
   }
 
   private int getRatio() {

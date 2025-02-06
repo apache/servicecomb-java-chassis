@@ -70,23 +70,25 @@ public final class Configuration {
   }
 
   public RuleType getRuleStrategyName(Invocation invocation) {
-    String value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
-        invocation.getSchemaId() + "." + invocation.getOperationName() + "." + RULE_STRATEGY_NAME);
-    if (value != null) {
-      return new RuleType(RuleType.TYPE_OPERATION, value);
-    }
-    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
-        invocation.getSchemaId() + "." + RULE_STRATEGY_NAME);
-    if (value != null) {
-      return new RuleType(RuleType.TYPE_SCHEMA, value);
-    }
-    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
-        RULE_STRATEGY_NAME);
-    if (value != null) {
-      return new RuleType(RuleType.TYPE_SCHEMA, value);
-    }
+//    String value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
+//        invocation.getSchemaId() + "." + invocation.getOperationName() + "." + RULE_STRATEGY_NAME);
+//    if (value != null) {
+//      return new RuleType(RuleType.TYPE_OPERATION, value);
+//    }
+//    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
+//        invocation.getSchemaId() + "." + RULE_STRATEGY_NAME);
+//    if (value != null) {
+//      return new RuleType(RuleType.TYPE_SCHEMA, value);
+//    }
+//    value = getStringProperty(null, ROOT + invocation.getMicroserviceName() + "." +
+//        RULE_STRATEGY_NAME);
+//    if (value != null) {
+//      return new RuleType(RuleType.TYPE_SCHEMA, value);
+//    }
+//    return new RuleType(RuleType.TYPE_SCHEMA,
+//        getStringProperty("RoundRobin", RULE_STRATEGY_GLOBAL));
     return new RuleType(RuleType.TYPE_SCHEMA,
-        getStringProperty("RoundRobin", RULE_STRATEGY_GLOBAL));
+        "RoundRobin");
   }
 
   public int getSessionTimeoutInSeconds(String microservice) {
