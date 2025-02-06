@@ -181,4 +181,9 @@ public interface ServiceRegistryClient {
    * @return whether this operation success
    */
   boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId, MicroserviceInstanceStatus status);
+
+  /**
+   * Check service center isolation addresses
+   */
+  void checkIsolationAddressAvailable();
 }

@@ -88,4 +88,16 @@ public class IpPortManager {
   public void recordState(String address) {
     addressManger.recordFailState(address);
   }
+
+  public void recordSuccessState(String address) {
+    addressManger.recordSuccessState(address);
+  }
+
+  public List<String> getIsolationAddresses() {
+    return addressManger.getIsolationAddresses();
+  }
+
+  public IpPort transformIpPort(String address) {
+    return addressManger.transformIpPort(address);
+  }
 }

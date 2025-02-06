@@ -458,4 +458,9 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     microserviceInstance.setStatus(status);
     return true;
   }
+
+  @Override
+  public void checkIsolationAddressAvailable() {
+    // NOT SUPPORT
+  }
 }
