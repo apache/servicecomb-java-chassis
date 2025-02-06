@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.apache.servicecomb.config.DataCenterProperties;
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.NonSwaggerInvocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -35,6 +36,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -54,18 +56,30 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.Operation;
 
 public class TestLoadBalanceFilter2 {
+  DynamicProperties dynamicProperties = Mockito.mock(DynamicProperties.class);
+
   Environment environment = Mockito.mock(Environment.class);
 
   @BeforeEach
   public void setUp() {
+
     Mockito.when(environment.getProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled",
         boolean.class, false)).thenReturn(false);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
-        Boolean.class, true)).thenReturn(true);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
-        int.class, 30)).thenReturn(0);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratioCeiling",
-        int.class, 100)).thenReturn(100);
+
+    Mockito.when(dynamicProperties.getBooleanProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.enabled"),
+            Mockito.any(),
+            Mockito.eq(true)))
+        .thenReturn(true);
+    Mockito.when(dynamicProperties.getIntProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.ratio"),
+            Mockito.any(),
+            Mockito.eq(30)))
+        .thenReturn(0);
+    Mockito.when(dynamicProperties.getIntProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.ratioCeiling"),
+            Mockito.any(),
+            Mockito.eq(100)))
+        .thenReturn(100);
+
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
@@ -148,7 +162,7 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDynamicProperties(dynamicProperties);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
@@ -239,7 +253,7 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDynamicProperties(dynamicProperties);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
@@ -339,7 +353,7 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDynamicProperties(dynamicProperties);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
@@ -437,7 +451,7 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDynamicProperties(dynamicProperties);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);
@@ -534,7 +548,7 @@ public class TestLoadBalanceFilter2 {
         .thenReturn(parent);
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     ZoneAwareDiscoveryFilter zoneAwareDiscoveryFilter = new ZoneAwareDiscoveryFilter();
-    zoneAwareDiscoveryFilter.setEnvironment(environment);
+    zoneAwareDiscoveryFilter.setDynamicProperties(dynamicProperties);
     zoneAwareDiscoveryFilter.setDataCenterProperties(myself);
     ServerDiscoveryFilter serverDiscoveryFilter = new ServerDiscoveryFilter();
     serverDiscoveryFilter.setScbEngine(scbEngine);

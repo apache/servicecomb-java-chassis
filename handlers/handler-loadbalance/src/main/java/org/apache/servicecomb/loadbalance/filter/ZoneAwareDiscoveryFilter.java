@@ -42,9 +42,9 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   private DataCenterProperties dataCenterProperties;
 
-  private Integer ratio = 30;
+  private Integer ratio;
 
-  private Integer ratioCeiling = 100 - ratio;
+  private Integer ratioCeiling;
 
 
   @Autowired

@@ -33,7 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
 
 public class TestDiscoveryTree {
   DiscoveryContext context = new DiscoveryContext();
@@ -41,8 +40,6 @@ public class TestDiscoveryTree {
   DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent");
 
   DiscoveryTreeNode result;
-
-  Boolean enabled = false;
 
   @BeforeEach
   public void before() {
@@ -242,9 +239,9 @@ public class TestDiscoveryTree {
     DiscoveryContext discoveryContext = new DiscoveryContext();
     InstanceStatusDiscoveryFilter filter = new InstanceStatusDiscoveryFilter();
     DynamicProperties dynamicProperties = Mockito.mock(DynamicProperties.class);
-    Mockito.when(dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.status.enabled",
-        value -> enabled = value,
-        true))
+    Mockito.when(dynamicProperties.getBooleanProperty(Mockito.eq("servicecomb.loadbalance.filter.status.enabled"),
+            Mockito.any(),
+            Mockito.eq(true)))
         .thenReturn(true);
     filter.setDynamicProperties(dynamicProperties);
     discoveryTree.setDiscoveryFilters(List.of(filter));
