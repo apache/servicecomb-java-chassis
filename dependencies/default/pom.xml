@@ -35,7 +35,7 @@
     <assertj.version>3.27.3</assertj.version>
     <awaitility.version>4.2.2</awaitility.version>
     <brave.version>6.0.3</brave.version>
-    <commons-beanutils.version>1.9.4</commons-beanutils.version>
+    <commons-beanutils.version>1.10.0</commons-beanutils.version>
     <commons-io.version>2.18.0</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.17.0</commons-lang3.version>
@@ -66,7 +66,7 @@
     <log4j2.version>2.24.3</log4j2.version>
     <maven-model.version>3.9.9</maven-model.version>
     <micrometer.version>1.14.2</micrometer.version>
-    <mockito.version>5.14.2</mockito.version>
+    <mockito.version>5.15.2</mockito.version>
     <mockito-inline.version>5.2.0</mockito-inline.version>
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>2.4.3</nacos-client.version>
