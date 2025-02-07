@@ -43,6 +43,7 @@ servicecomb:
     allowedMethod: "*"
     maxAge: 3600
 
+
 key1: 1
 key2: 3
 key3: 5

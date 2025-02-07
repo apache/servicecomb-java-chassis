@@ -47,12 +47,11 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   private static final String ALL_INSTANCE = "allInstance";
 
+  public static final String SERVICECOMB_LOADBALANCE_FILTER_PRIORITY_INSTANCE_PROPERTY_KEY = "servicecomb.loadbalance.filter.priorityInstanceProperty.key";
+
   private String propertyKey;
 
   private Environment environment;
-
-  private String propertyName = "servicecomb.loadbalance.filter.priorityInstanceProperty.key";
-
 
   @Autowired
   public void setEnvironment(Environment environment) {
@@ -62,7 +61,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
   @Override
   protected void init(DiscoveryContext context, DiscoveryTreeNode parent) {
 
-    propertyKey = dynamicProperties.getStringProperty(propertyName,
+    propertyKey = dynamicProperties.getStringProperty(SERVICECOMB_LOADBALANCE_FILTER_PRIORITY_INSTANCE_PROPERTY_KEY,
         value -> propertyKey = value,
         "environment");
 
