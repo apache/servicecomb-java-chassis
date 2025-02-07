@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
@@ -59,6 +60,8 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
 
   EnumerablePropertySource propertySource;
 
+  DynamicProperties dynamicProperties = Mockito.mock(DynamicProperties.class);
+
   @Before
   public void setUp() {
     propertySource = Mockito.mock(EnumerablePropertySource.class);
@@ -71,8 +74,10 @@ public class PriorityInstancePropertyDiscoveryFilterTest {
 
     filter = new PriorityInstancePropertyDiscoveryFilter();
     filter.setEnvironment(environment);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key",
-        String.class, "environment")).thenReturn("environment");
+    filter.setDynamicProperties(dynamicProperties);
+    Mockito.when(dynamicProperties.getStringProperty(Mockito.eq("servicecomb.loadbalance.filter.priorityInstanceProperty.key"),
+        Mockito.any(),
+        Mockito.eq("environment"))).thenReturn("environment");
     instances = new ArrayList<>();
     filter.setEnvironment(environment);
     DiscoveryInstance discoveryInstance1 = Mockito.mock(DiscoveryInstance.class);

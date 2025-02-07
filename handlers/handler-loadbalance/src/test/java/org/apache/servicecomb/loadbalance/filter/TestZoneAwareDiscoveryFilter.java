@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.servicecomb.config.DataCenterProperties;
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.registry.api.DataCenterInfo;
 import org.apache.servicecomb.registry.api.DiscoveryInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
@@ -30,26 +31,33 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
 
 public class TestZoneAwareDiscoveryFilter {
-  Environment environment = Mockito.mock(Environment.class);
+  DynamicProperties dynamicProperties = Mockito.mock(DynamicProperties.class);
 
   @BeforeEach
   public void setUp() {
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.enabled",
-        Boolean.class, true)).thenReturn(true);
+
+    Mockito.when(dynamicProperties.getBooleanProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.enabled"),
+            Mockito.any(),
+            Mockito.eq(true)))
+        .thenReturn(true);
   }
 
   @Test
   public void test_not_enough_instance() {
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
-        int.class, 30)).thenReturn(50);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratioCeiling",
-        int.class, 50)).thenReturn(70);
+
+    Mockito.when(dynamicProperties.getIntProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.ratio"),
+            Mockito.any(),
+            Mockito.eq(30)))
+        .thenReturn(50);
+    Mockito.when(dynamicProperties.getIntProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.ratioCeiling"),
+            Mockito.any(),
+            Mockito.eq(50)))
+        .thenReturn(70);
 
     ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
-    filter.setEnvironment(environment);
+    filter.setDynamicProperties(dynamicProperties);
 
     // set up data
     DataCenterProperties myself = new DataCenterProperties();
@@ -113,13 +121,18 @@ public class TestZoneAwareDiscoveryFilter {
 
   @Test
   public void test_not_enough_instance_both_ceiling_floor() {
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratio",
-        int.class, 30)).thenReturn(40);
-    Mockito.when(environment.getProperty("servicecomb.loadbalance.filter.zoneaware.ratioCeiling",
-        int.class, 60)).thenReturn(60);
+
+    Mockito.when(dynamicProperties.getIntProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.ratio"),
+            Mockito.any(),
+            Mockito.eq(30)))
+        .thenReturn(40);
+    Mockito.when(dynamicProperties.getIntProperty(Mockito.eq("servicecomb.loadbalance.filter.zoneaware.ratioCeiling"),
+            Mockito.any(),
+            Mockito.eq(60)))
+        .thenReturn(60);
 
     ZoneAwareDiscoveryFilter filter = new ZoneAwareDiscoveryFilter();
-    filter.setEnvironment(environment);
+    filter.setDynamicProperties(dynamicProperties);
 
     // set up data
     DataCenterProperties myself = new DataCenterProperties();

@@ -19,19 +19,21 @@ package org.apache.servicecomb.registry.discovery;
 
 import java.util.ArrayList;
 
+import org.apache.servicecomb.config.DynamicProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 
 public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDiscoveryFilter.class);
 
-  protected Environment environment;
+  protected Boolean enabled;
+
+  protected DynamicProperties dynamicProperties;
 
   @Autowired
-  public void setEnvironment(Environment environment) {
-    this.environment = environment;
+  public void setDynamicProperties(DynamicProperties dynamicProperties) {
+    this.dynamicProperties = dynamicProperties;
   }
 
   @Override

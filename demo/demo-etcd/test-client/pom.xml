@@ -128,6 +128,7 @@
                       <env>
                         <JAVA_OPTS>
                           -Dservicecomb.registry.etcd.connectString=http://etcd:2379
+                          -Dservicecomb.config.etcd.connectString=http://etcd:2379
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/etcd-consumer-${project.version}.jar</JAR_PATH>
                       </env>

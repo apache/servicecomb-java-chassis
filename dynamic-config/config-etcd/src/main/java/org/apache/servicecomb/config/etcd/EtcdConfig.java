@@ -21,17 +21,17 @@ import org.springframework.core.env.Environment;
 public class EtcdConfig {
   public static final String ZOOKEEPER_DEFAULT_ENVIRONMENT = "production";
 
-  public static final String PROPERTY_CONNECT_STRING = "servicecomb.config.etcd.connect-string";
+  public static final String PROPERTY_CONNECT_STRING = "servicecomb.config.etcd.connectString";
 
-  public static final String PROPERTY_SESSION_TIMEOUT = "servicecomb.config.etcd.session-timeout-millis";
+  public static final String PROPERTY_SESSION_TIMEOUT = "servicecomb.config.etcd.sessionTimeoutMillis";
 
-  public static final String PROPERTY_CONNECTION_TIMEOUT = "servicecomb.config.etcd.connection-timeout-mills";
+  public static final String PROPERTY_CONNECTION_TIMEOUT = "servicecomb.config.etcd.connectionTimeoutMills";
 
-  public static final String PROPERTY_AUTH_SCHEMA = "servicecomb.config.etcd.authentication-schema";
+  public static final String PROPERTY_AUTH_SCHEMA = "servicecomb.config.etcd.authenticationSchema";
 
-  public static final String PROPERTY_AUTH_INFO = "servicecomb.config.etcd.authentication-info";
+  public static final String PROPERTY_AUTH_INFO = "servicecomb.config.etcd.authenticationInfo";
 
-  public static final String PROPERTY_INSTANCE_TAG = "servicecomb.config.etcd.instance-tag";
+  public static final String PROPERTY_INSTANCE_TAG = "servicecomb.config.etcd.instanceTag";
 
   private final Environment environment;
 
@@ -40,7 +40,7 @@ public class EtcdConfig {
   }
 
   public String getConnectString() {
-    return environment.getProperty(PROPERTY_CONNECT_STRING, "127.0.0.1:2181");
+    return environment.getProperty(PROPERTY_CONNECT_STRING, "http://127.0.0.1:2379");
   }
 
   public int getSessionTimeoutMillis() {

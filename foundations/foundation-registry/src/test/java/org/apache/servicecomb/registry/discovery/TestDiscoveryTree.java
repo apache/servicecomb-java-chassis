@@ -24,6 +24,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -32,7 +33,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.core.env.Environment;
 
 public class TestDiscoveryTree {
   DiscoveryContext context = new DiscoveryContext();
@@ -238,11 +238,12 @@ public class TestDiscoveryTree {
     DiscoveryTree discoveryTree = new DiscoveryTree(discoveryManager);
     DiscoveryContext discoveryContext = new DiscoveryContext();
     InstanceStatusDiscoveryFilter filter = new InstanceStatusDiscoveryFilter();
-    Environment environment = Mockito.mock(Environment.class);
-    Mockito.when(environment
-            .getProperty("servicecomb.loadbalance.filter.status.enabled", Boolean.class, true))
+    DynamicProperties dynamicProperties = Mockito.mock(DynamicProperties.class);
+    Mockito.when(dynamicProperties.getBooleanProperty(Mockito.eq("servicecomb.loadbalance.filter.status.enabled"),
+            Mockito.any(),
+            Mockito.eq(true)))
         .thenReturn(true);
-    filter.setEnvironment(environment);
+    filter.setDynamicProperties(dynamicProperties);
     discoveryTree.setDiscoveryFilters(List.of(filter));
 
     StatefulDiscoveryInstance instance1 = Mockito.mock(StatefulDiscoveryInstance.class);

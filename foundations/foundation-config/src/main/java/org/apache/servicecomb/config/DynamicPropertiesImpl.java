@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.config;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.IntConsumer;
@@ -44,17 +44,17 @@ public class DynamicPropertiesImpl implements DynamicProperties {
     }
   }
 
-  private final Map<String, Set<Holder<Consumer<String>, String>>> stringCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<Consumer<String>, String>>> stringCallbacks = new ConcurrentHashMap<>();
 
-  private final Map<String, Set<Holder<IntConsumer, Integer>>> intCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<IntConsumer, Integer>>> intCallbacks = new ConcurrentHashMap<>();
 
-  private final Map<String, Set<Holder<LongConsumer, Long>>> longCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<LongConsumer, Long>>> longCallbacks = new ConcurrentHashMap<>();
 
-  private final Map<String, Set<Holder<DoubleConsumer, Float>>> floatCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<DoubleConsumer, Float>>> floatCallbacks = new ConcurrentHashMap<>();
 
-  private final Map<String, Set<Holder<DoubleConsumer, Double>>> doubleCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<DoubleConsumer, Double>>> doubleCallbacks = new ConcurrentHashMap<>();
 
-  private final Map<String, Set<Holder<Consumer<Boolean>, Boolean>>> booleanCallbacks = new HashMap<>();
+  private final Map<String, Set<Holder<Consumer<Boolean>, Boolean>>> booleanCallbacks = new ConcurrentHashMap<>();
 
   private final Environment environment;
 

@@ -42,6 +42,11 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   private DataCenterProperties dataCenterProperties;
 
+  private Integer ratio;
+
+  private Integer ratioCeiling;
+
+
   @Autowired
   @SuppressWarnings("unused")
   public void setDataCenterProperties(DataCenterProperties dataCenterProperties) {
@@ -55,18 +60,33 @@ public class ZoneAwareDiscoveryFilter extends AbstractGroupDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return environment.getProperty(CONFIG_ENABLED,
-        Boolean.class, true);
+
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty(CONFIG_ENABLED,
+          value -> enabled = value,
+          true);
+    }
+    return enabled;
   }
 
   private int getRatio() {
-    return environment.getProperty(CONFIG_RATIO,
-        int.class, 30);
+
+    if (ratio == null) {
+      ratio = dynamicProperties.getIntProperty(CONFIG_RATIO,
+          value -> ratio = value,
+          30);
+    }
+    return ratio;
   }
 
   private int getRatioCeiling(int defaultValue) {
-    return environment.getProperty(CONFIG_RATIO_CEILING,
-        int.class, defaultValue);
+
+    if (ratioCeiling == null) {
+      ratioCeiling = dynamicProperties.getIntProperty(CONFIG_RATIO_CEILING,
+          value -> ratioCeiling = value,
+          defaultValue);
+    }
+    return ratioCeiling;
   }
 
   @Override

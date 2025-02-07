@@ -25,7 +25,6 @@ import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 
 /**
  * configuration items
- *
  */
 public final class Configuration {
   //// 2.1 configuration items

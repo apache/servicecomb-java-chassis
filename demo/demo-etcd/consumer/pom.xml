@@ -44,6 +44,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-etcd</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>config-etcd</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

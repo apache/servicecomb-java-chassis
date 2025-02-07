@@ -25,6 +25,9 @@ servicecomb:
   registry:
     etcd:
       connectString: http://127.0.0.1:2379
+  config:
+    etcd:
+      connectString: http://127.0.0.1:2379
 
   rest:
     address: 0.0.0.0:9092?websocketEnabled=true

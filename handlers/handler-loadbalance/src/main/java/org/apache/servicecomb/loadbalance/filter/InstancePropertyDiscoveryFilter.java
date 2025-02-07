@@ -30,10 +30,13 @@ import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.registry.discovery.StatefulDiscoveryInstance;
 
 /**
- *  Instance property based filter
+ * Instance property based filter
  */
 public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
+
   private static final String MATCHED = "matched";
+
+  public static final String SERVICECOMB_LOADBALANCE_FILTER_INSTANCE_PROPERTY_ENABLED = "servicecomb.loadbalance.filter.instanceProperty.enabled";
 
   @Override
   public int getOrder() {
@@ -42,8 +45,13 @@ public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   public boolean enabled() {
-    return environment.getProperty("servicecomb.loadbalance.filter.instanceProperty.enabled",
-        boolean.class, true);
+
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty(SERVICECOMB_LOADBALANCE_FILTER_INSTANCE_PROPERTY_ENABLED,
+          value -> enabled = value,
+          true);
+    }
+    return enabled;
   }
 
   @Override

@@ -47,6 +47,8 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   private static final String ALL_INSTANCE = "allInstance";
 
+  public static final String SERVICECOMB_LOADBALANCE_FILTER_PRIORITY_INSTANCE_PROPERTY_KEY = "servicecomb.loadbalance.filter.priorityInstanceProperty.key";
+
   private String propertyKey;
 
   private Environment environment;
@@ -58,8 +60,10 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   @Override
   protected void init(DiscoveryContext context, DiscoveryTreeNode parent) {
-    propertyKey = environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.key",
-        String.class, "environment");
+
+    propertyKey = dynamicProperties.getStringProperty(SERVICECOMB_LOADBALANCE_FILTER_PRIORITY_INSTANCE_PROPERTY_KEY,
+        value -> propertyKey = value,
+        "environment");
 
     // group all instance by property
     List<StatefulDiscoveryInstance> instances = parent.data();
@@ -115,8 +119,13 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
 
   @Override
   public boolean enabled() {
-    return environment.getProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled",
-        boolean.class, false);
+
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty("servicecomb.loadbalance.filter.priorityInstanceProperty.enabled",
+          value -> enabled = value,
+          false);
+    }
+    return enabled;
   }
 
   @Override
@@ -136,7 +145,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
     /**
      * Constructor
      *
-     * @param key property key
+     * @param key   property key
      * @param value property value
      */
     public PriorityInstanceProperty(@NotNull String key, String value) {
@@ -153,7 +162,7 @@ public class PriorityInstancePropertyDiscoveryFilter extends AbstractDiscoveryFi
     /**
      * Constructor
      *
-     * @param key property key
+     * @param key                  property key
      * @param microserviceInstance instance
      */
     public PriorityInstanceProperty(@NotNull String key, @NotNull StatefulDiscoveryInstance microserviceInstance) {

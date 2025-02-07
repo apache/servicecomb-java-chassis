@@ -32,6 +32,8 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
 
   public static final String GROUP_SIZE = "status_group_size";
 
+  public static final String SERVICECOMB_LOADBALANCE_FILTER_STATUS_ENABLED = "servicecomb.loadbalance.filter.status.enabled";
+
   @Override
   public int getOrder() {
     return -10000;
@@ -39,7 +41,13 @@ public class InstanceStatusDiscoveryFilter extends AbstractGroupDiscoveryFilter 
 
   @Override
   public boolean enabled() {
-    return environment.getProperty("servicecomb.loadbalance.filter.status.enabled", Boolean.class, true);
+
+    if (enabled == null) {
+      enabled = dynamicProperties.getBooleanProperty(SERVICECOMB_LOADBALANCE_FILTER_STATUS_ENABLED,
+          value -> enabled = value,
+          true);
+    }
+    return enabled;
   }
 
   @Override
