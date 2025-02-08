@@ -192,10 +192,7 @@
     <profile>
       <id>build-docker-image</id>
       <activation>
-        <property>
-          <name>build.enable.docker.image</name>
-          <value>true</value>
-        </property>
+        <activeByDefault>false</activeByDefault>
       </activation>
       <build>
         <pluginManagement>
