@@ -45,23 +45,59 @@
         <demo.service.name>demo-local-registry-server</demo.service.name>
       </properties>
       <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <images>
+                  <image>
+                    <name>${demo.service.name}:${project.version}</name>
+                    <alias>${demo.service.name}</alias>
+                    <run>
+                      <env>
+                        <JAR_PATH>/maven/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <wait>
+                        <log>ServiceComb is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>8080</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8080:8080</port>
+                      </ports>
+                    </run>
+                  </image>
+                </images>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
         <plugins>
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-          </plugin>
-          <plugin>
-            <groupId>com.github.odavid.maven.plugins</groupId>
-            <artifactId>mixin-maven-plugin</artifactId>
-            <configuration>
-              <mixins>
-                <mixin>
-                  <groupId>org.apache.servicecomb.demo</groupId>
-                  <artifactId>docker-run-config-local</artifactId>
-                  <version>${project.version}</version>
-                </mixin>
-              </mixins>
-            </configuration>
           </plugin>
         </plugins>
       </build>
