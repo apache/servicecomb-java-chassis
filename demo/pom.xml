@@ -190,10 +190,7 @@
 
   <profiles>
     <profile>
-      <id>build-docker-image</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
+      <id>docker</id>
       <build>
         <pluginManagement>
           <plugins>
