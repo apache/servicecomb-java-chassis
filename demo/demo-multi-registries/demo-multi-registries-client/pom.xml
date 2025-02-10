@@ -45,23 +45,87 @@
         <demo.service.name>demo-multi-registries-server</demo.service.name>
       </properties>
       <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <images>
+                  <image>
+                    <name>servicecomb/service-center</name>
+                    <alias>service-center</alias>
+                    <run>
+                      <wait>
+                        <log>server is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>30100</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>30100:30100</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>${demo.service.name}:${project.version}</name>
+                    <alias>${demo.service.name}</alias>
+                    <run>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.registry.sc.address=http://sc.servicecomb.io:30100
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service-center:sc.servicecomb.io</link>
+                      </links>
+                      <wait>
+                        <log>ServiceComb is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>8080</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>7070:7070</port>
+                        <port>8080:8080</port>
+                      </ports>
+                      <dependsOn>
+                        <container>service-center</container>
+                      </dependsOn>
+                    </run>
+                  </image>
+                </images>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
         <plugins>
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
-          </plugin>
-          <plugin>
-            <groupId>com.github.odavid.maven.plugins</groupId>
-            <artifactId>mixin-maven-plugin</artifactId>
-            <configuration>
-              <mixins>
-                <mixin>
-                  <groupId>org.apache.servicecomb.demo</groupId>
-                  <artifactId>docker-run-config</artifactId>
-                  <version>${project.version}</version>
-                </mixin>
-              </mixins>
-            </configuration>
           </plugin>
         </plugins>
       </build>

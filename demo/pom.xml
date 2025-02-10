@@ -35,9 +35,6 @@
 
   <packaging>pom</packaging>
   <modules>
-    <module>docker-run-config</module>
-    <module>docker-run-config-edge</module>
-    <module>docker-run-config-local</module>
     <module>demo-schema</module>
     <module>demo-pojo</module>
     <module>demo-filter</module>
@@ -142,12 +139,6 @@
     <pluginManagement>
       <plugins>
         <plugin>
-          <groupId>com.github.odavid.maven.plugins</groupId>
-          <artifactId>mixin-maven-plugin</artifactId>
-          <version>0.1-alpha-40</version>
-          <extensions>true</extensions>
-        </plugin>
-        <plugin>
           <groupId>org.commonjava.maven.plugins</groupId>
           <artifactId>directory-maven-plugin</artifactId>
           <version>1.0</version>
@@ -212,4 +203,30 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${maven-failsafe-plugin.version}</version>
+            <configuration>
+              <argLine>${jacoco.failsafe.argLine}</argLine>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
