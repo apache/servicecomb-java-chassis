@@ -35,7 +35,6 @@
 
   <packaging>pom</packaging>
   <modules>
-    <module>docker-build-config</module>
     <module>docker-run-config</module>
     <module>docker-run-config-edge</module>
     <module>docker-run-config-local</module>

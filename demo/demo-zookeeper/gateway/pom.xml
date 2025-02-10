@@ -54,12 +54,6 @@
 
   <profiles>
     <profile>
-      <id>build-docker-image</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-    </profile>
-    <profile>
       <id>docker</id>
       <build>
         <pluginManagement>
