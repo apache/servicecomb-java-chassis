@@ -1,6 +1,6 @@
 blank_issues_enabled: false
 contact_links:
-  - name: "Contact Support"
+  - name: "Doc Support"
     url: "https://servicecomb.apache.org/references/java-chassis/zh_CN/index.html"
 #    url: "mailto:support@myproject.com"
     about: "If you need help, please contact us."
