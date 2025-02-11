@@ -5,16 +5,16 @@ body:
   - type: "markdown"
     attributes:
       value: "### Description\nPlease describe the issue you are encountering."
-  - type: "input"
+  - type: "markdown"
     attributes:
       label: "Steps to reproduce"
       description: "Please provide the steps to reproduce the bug."
       placeholder: "Step 1, Step 2, etc."
-  - type: "input"
+  - type: "markdown"
     attributes:
       label: "Expected behavior"
       description: "Please describe the expected behavior."
-  - type: "input"
+  - type: "markdown"
     attributes:
       label: "Actual behavior"
       description: "Please describe the actual behavior."

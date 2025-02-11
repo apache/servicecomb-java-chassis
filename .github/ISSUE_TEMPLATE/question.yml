@@ -5,12 +5,12 @@ body:
   - type: "markdown"
     attributes:
       value: "### Question\nPlease describe your question."
-  - type: "input"
+  - type: "markdown"
     attributes:
       label: "What are you trying to achieve?"
       description: "Provide context on what you're trying to do."
       placeholder: "e.g., I'm trying to integrate this project with X..."
-  - type: "input"
+  - type: "markdown"
     attributes:
       label: "Have you checked the documentation?"
       description: "Please confirm if you've already checked the documentation for the answer."

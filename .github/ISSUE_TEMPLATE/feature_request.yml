@@ -5,12 +5,12 @@ body:
   - type: "markdown"
     attributes:
       value: "### Documentation Issue\nPlease describe the issue with the documentation."
-  - type: "input"
+  - type: "markdown"
     attributes:
       label: "Page or section"
       description: "Please specify the page or section where the issue is found."
       placeholder: "e.g., Installation guide, API docs..."
-  - type: "input"
+  - type: "markdown"
     attributes:
       label: "What is wrong with the documentation?"
       description: "Describe the issue or the missing information."
