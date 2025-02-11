@@ -1,0 +1,17 @@
+name: "Documentation Issue"
+description: "Report an issue with the documentation"
+labels: ["documentation"]
+body:
+  - type: "markdown"
+    attributes:
+      value: "### Documentation Issue\nPlease describe the issue with the documentation."
+  - type: "input"
+    attributes:
+      label: "Page or section"
+      description: "Please specify the page or section where the issue is found."
+      placeholder: "e.g., Installation guide, API docs..."
+  - type: "input"
+    attributes:
+      label: "What is wrong with the documentation?"
+      description: "Describe the issue or the missing information."
+      placeholder: "e.g., Outdated instructions, missing examples..."

@@ -1,0 +1,17 @@
+name: "Feature Request"
+description: "Request a new feature or improvement"
+labels: ["enhancement"]
+body:
+  - type: "markdown"
+    attributes:
+      value: "### Feature Request\nPlease describe the feature or enhancement you are requesting."
+  - type: "input"
+    attributes:
+      label: "Why is this feature needed?"
+      description: "Explain the problem or need that this feature will solve."
+      placeholder: "e.g., To improve user experience..."
+  - type: "input"
+    attributes:
+      label: "How would you like it to work?"
+      description: "Describe how you envision the feature working."
+      placeholder: "e.g., The user can do X by clicking Y..."

@@ -1,0 +1,19 @@
+blank_issues_enabled: false
+contact_links:
+  - name: "Contact Support"
+    url: "https://servicecomb.apache.org/references/java-chassis/zh_CN/index.html"
+#    url: "mailto:support@myproject.com"
+    about: "If you need help, please contact us."
+templates:
+  - name: "Bug Report"
+    description: "Report a bug or issue."
+    filename: "bug_report.yml"
+  - name: "Feature Request"
+    description: "Request a new feature or improvement."
+    filename: "feature_request.yml"
+  - name: "Documentation Issue"
+    description: "Report an issue with documentation."
+    filename: "documentation_issue.yml"
+  - name: "Question"
+    description: "Ask a question or seek help."
+    filename: "question.yml"
