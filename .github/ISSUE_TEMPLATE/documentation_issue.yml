@@ -1,17 +1,32 @@
-name: "Feature Request"
-description: "Request a new feature or improvement"
-labels: ["enhancement"]
+name: Documentation Issue
+description: Report an issue with the documentation
+title: "[DOCUMENTATION] - Documentation Issue Title"
+labels: documentation
+assignees: ''
+
 body:
-  - type: "markdown"
+  - type: markdown
+    content: |
+      ## Describe the documentation issue
+      A clear and concise description of the issue with the documentation.
+
+  - type: textarea
     attributes:
-      value: "### Feature Request\nPlease describe the feature or enhancement you are requesting."
-  - type: "markdown"
+      label: Location in documentation
+      description: "Please provide the URL or section where the issue appears."
+      placeholder: "e.g. https://docs.example.com/section"
+      required: true
+
+  - type: textarea
     attributes:
-      label: "Why is this feature needed?"
-      description: "Explain the problem or need that this feature will solve."
-      placeholder: "e.g., To improve user experience..."
-  - type: "markdown"
+      label: What should be changed?
+      description: "Please describe what changes or improvements should be made to the documentation."
+      placeholder: "Explain how we can improve the content."
+      required: true
+
+  - type: textarea
     attributes:
-      label: "How would you like it to work?"
-      description: "Describe how you envision the feature working."
-      placeholder: "e.g., The user can do X by clicking Y..."
+      label: Additional Context
+      description: "Provide any other context or examples here."
+      placeholder: "Additional comments or suggestions for the documentation."
+      required: false

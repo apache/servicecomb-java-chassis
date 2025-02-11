@@ -1,17 +1,32 @@
-name: "Question"
-description: "Ask a question or seek help"
-labels: ["question"]
+name: General Question
+description: Ask a general question related to the project
+title: "[QUESTION] - Question Title"
+labels: question
+assignees: ''
+
 body:
-  - type: "markdown"
+  - type: markdown
+    content: |
+      ## What is your question?
+      Describe the question or issue you are facing. Be as specific as possible.
+
+  - type: textarea
     attributes:
-      value: "### Question\nPlease describe your question."
-  - type: "markdown"
+      label: Steps to reproduce (if applicable)
+      description: "If your question is about a specific problem or bug, please include steps to reproduce it."
+      placeholder: "Provide steps, if applicable."
+      required: false
+
+  - type: textarea
     attributes:
-      label: "What are you trying to achieve?"
-      description: "Provide context on what you're trying to do."
-      placeholder: "e.g., I'm trying to integrate this project with X..."
-  - type: "markdown"
+      label: What have you tried so far?
+      description: "Please explain what you have already tried to resolve the issue or answer the question."
+      placeholder: "Describe the steps you've taken."
+      required: true
+
+  - type: textarea
     attributes:
-      label: "Have you checked the documentation?"
-      description: "Please confirm if you've already checked the documentation for the answer."
-      placeholder: "e.g., Yes, I checked the installation guide..."
+      label: Additional context
+      description: "Provide any other context or information related to the question."
+      placeholder: "Include any relevant links or background information."
+      required: false

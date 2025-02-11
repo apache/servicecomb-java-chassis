@@ -1,20 +1,46 @@
-name: "Bug Report"
-description: "Report a bug or issue with the project"
-labels: ["bug"]
+name: Bug Report
+description: Create a report to help us improve
+title: "[BUG] - Issue Title"
+labels: bug
+assignees: ''
+
 body:
-  - type: "markdown"
+  - type: markdown
+    content: |
+      ## Describe the bug
+      A clear and concise description of what the bug is.
+
+  - type: textarea
     attributes:
-      value: "### Description\nPlease describe the issue you are encountering."
-  - type: "markdown"
+      label: Steps to Reproduce
+      description: "List the steps to reproduce the bug."
+      placeholder: "1. Go to '...'\n2. Click on '...'\n3. See error"
+      required: true
+
+  - type: textarea
     attributes:
-      label: "Steps to reproduce"
-      description: "Please provide the steps to reproduce the bug."
-      placeholder: "Step 1, Step 2, etc."
-  - type: "markdown"
+      label: Expected Behavior
+      description: "Describe the behavior you expected to see."
+      placeholder: "A clear and concise description of what you expected to happen."
+      required: true
+
+  - type: input
     attributes:
-      label: "Expected behavior"
-      description: "Please describe the expected behavior."
-  - type: "markdown"
+      label: Environment (OS, Version, etc.)
+      description: "Please provide your operating system, version, and any relevant environment details."
+      placeholder: "e.g. Windows 10, Node.js v14"
+      required: true
+
+  - type: textarea
     attributes:
-      label: "Actual behavior"
-      description: "Please describe the actual behavior."
+      label: Additional Context
+      description: "Add any other context about the problem here."
+      placeholder: "Any additional information that might help us debug the issue."
+
+  - type: checkboxes
+    attributes:
+      label: Attachments (Optional)
+      options:
+        - label: "Screenshots"
+        - label: "Log files"
+        - label: "Error messages"

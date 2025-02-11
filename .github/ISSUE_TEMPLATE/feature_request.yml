@@ -1,17 +1,39 @@
-name: "Documentation Issue"
-description: "Report an issue with the documentation"
-labels: ["documentation"]
+name: Feature Request
+description: Suggest an idea or feature for this project
+title: "[FEATURE] - Feature Title"
+labels: enhancement
+assignees: ''
+
 body:
-  - type: "markdown"
+  - type: markdown
+    content: |
+      ## Describe the feature request
+      A clear and concise description of what you want to be added to the project.
+
+  - type: textarea
     attributes:
-      value: "### Documentation Issue\nPlease describe the issue with the documentation."
-  - type: "markdown"
+      label: Problem this feature would solve
+      description: "Please describe the problem or challenge you're facing."
+      placeholder: "Explain why this feature would be helpful."
+      required: true
+
+  - type: textarea
     attributes:
-      label: "Page or section"
-      description: "Please specify the page or section where the issue is found."
-      placeholder: "e.g., Installation guide, API docs..."
-  - type: "markdown"
+      label: Describe the solution
+      description: "How do you envision this feature working?"
+      placeholder: "Provide a description of how the feature would solve the problem."
+      required: true
+
+  - type: textarea
     attributes:
-      label: "What is wrong with the documentation?"
-      description: "Describe the issue or the missing information."
-      placeholder: "e.g., Outdated instructions, missing examples..."
+      label: Alternatives considered
+      description: "Have you considered other solutions or alternatives? If yes, describe them."
+      placeholder: "Provide any alternative solutions you've thought about."
+      required: false
+
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: "Any other context or information that might help us implement this feature."
+      placeholder: "Include any links, mockups, or additional details."
+      required: false
