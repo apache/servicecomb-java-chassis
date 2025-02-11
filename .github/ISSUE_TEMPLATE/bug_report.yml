@@ -6,8 +6,7 @@ labels: bug
 body:
   - type: markdown
     attributes:
-      value: '''## Describe the bug
-      A clear and concise description of what the bug is.'''
+      value: "## Describe the bug\nA clear and concise description of what the bug is."
 
   - type: textarea
     attributes:

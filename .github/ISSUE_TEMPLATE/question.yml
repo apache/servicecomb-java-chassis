@@ -6,8 +6,7 @@ labels: question
 body:
   - type: markdown
     attributes:
-      value: '''## What is your question?
-      Describe the question or issue you are facing. Be as specific as possible.'''
+      value: "## What is your question?\nDescribe the question or issue you are facing. Be as specific as possible."
 
   - type: textarea
     attributes:
