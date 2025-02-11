@@ -2,31 +2,27 @@ name: General Question
 description: Ask a general question related to the project
 title: "[QUESTION] - Question Title"
 labels: question
-assignees: ''
 
 body:
   - type: markdown
-    content: |
-      ## What is your question?
-      Describe the question or issue you are facing. Be as specific as possible.
+    attributes:
+      value: '''## What is your question?
+      Describe the question or issue you are facing. Be as specific as possible.'''
 
   - type: textarea
     attributes:
       label: Steps to reproduce (if applicable)
       description: "If your question is about a specific problem or bug, please include steps to reproduce it."
       placeholder: "Provide steps, if applicable."
-      required: false
 
   - type: textarea
     attributes:
       label: What have you tried so far?
       description: "Please explain what you have already tried to resolve the issue or answer the question."
       placeholder: "Describe the steps you've taken."
-      required: true
 
   - type: textarea
     attributes:
       label: Additional context
       description: "Provide any other context or information related to the question."
       placeholder: "Include any relevant links or background information."
-      required: false

@@ -2,31 +2,27 @@ name: Documentation Issue
 description: Report an issue with the documentation
 title: "[DOCUMENTATION] - Documentation Issue Title"
 labels: documentation
-assignees: ''
 
 body:
   - type: markdown
-    content: |
-      ## Describe the documentation issue
-      A clear and concise description of the issue with the documentation.
+    attributes:
+      value: '''## Describe the documentation issue
+      A clear and concise description of the issue with the documentation.'''
 
   - type: textarea
     attributes:
       label: Location in documentation
       description: "Please provide the URL or section where the issue appears."
       placeholder: "e.g. https://docs.example.com/section"
-      required: true
 
   - type: textarea
     attributes:
       label: What should be changed?
       description: "Please describe what changes or improvements should be made to the documentation."
       placeholder: "Explain how we can improve the content."
-      required: true
 
   - type: textarea
     attributes:
       label: Additional Context
       description: "Provide any other context or examples here."
       placeholder: "Additional comments or suggestions for the documentation."
-      required: false
