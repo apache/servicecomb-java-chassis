@@ -22,20 +22,12 @@ body:
 
   - type: input
     attributes:
-      label: Environment (OS, Version, etc.)
-      description: "Please provide your operating system, version, and any relevant environment details."
-      placeholder: "e.g. Windows 10, Node.js v14"
+      label: Servicecomb Version
+      description: "Please provide your Servicecomb version"
+      placeholder: "3.2.4"
 
   - type: textarea
     attributes:
       label: Additional Context
       description: "Add any other context about the problem here."
       placeholder: "Any additional information that might help us debug the issue."
-
-  - type: checkboxes
-    attributes:
-      label: Attachments (Optional)
-      options:
-        - label: "Screenshots"
-        - label: "Log files"
-        - label: "Error messages"
