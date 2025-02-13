@@ -1,0 +1,33 @@
+name: Bug Report
+description: Create a report to help us improve
+title: "[BUG] - Issue Title"
+labels: bug
+
+body:
+  - type: markdown
+    attributes:
+      value: "## Describe the bug\nA clear and concise description of what the bug is."
+
+  - type: textarea
+    attributes:
+      label: Steps to Reproduce
+      description: "List the steps to reproduce the bug."
+      placeholder: "1. Go to '...'\n2. Click on '...'\n3. See error"
+
+  - type: textarea
+    attributes:
+      label: Expected Behavior
+      description: "Describe the behavior you expected to see."
+      placeholder: "A clear and concise description of what you expected to happen."
+
+  - type: input
+    attributes:
+      label: Servicecomb Version
+      description: "Please provide your Servicecomb version"
+      placeholder: "3.2.4"
+
+  - type: textarea
+    attributes:
+      label: Additional Context
+      description: "Add any other context about the problem here."
+      placeholder: "Any additional information that might help us debug the issue."
