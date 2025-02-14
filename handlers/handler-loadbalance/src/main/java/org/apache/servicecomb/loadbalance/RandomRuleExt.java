@@ -28,7 +28,7 @@ import org.apache.servicecomb.core.Invocation;
 public class RandomRuleExt implements RuleExt {
   @Override
   public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
-    if (servers == null || servers.isEmpty()) {
+    if (servers.isEmpty()) {
       return null;
     }
     int index = ThreadLocalRandom.current().nextInt(servers.size());
