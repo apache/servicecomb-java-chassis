@@ -31,7 +31,7 @@ public class RandomRuleExt implements RuleExt {
     if (servers.isEmpty()) {
       return null;
     }
-    int index = Math.abs(ThreadLocalRandom.current().nextInt()) % servers.size();
+    int index = ThreadLocalRandom.current().nextInt(servers.size());
     return servers.get(index);
   }
 }
