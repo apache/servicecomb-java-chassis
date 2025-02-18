@@ -87,6 +87,11 @@ public class SyncContext extends ContextBase implements ContextInternal {
   }
 
   @Override
+  public Future<Void> close() {
+    return Future.succeededFuture();
+  }
+
+  @Override
   public void reportException(Throwable throwable) {
 
   }
