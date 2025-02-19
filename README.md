@@ -10,10 +10,10 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 | Java Chassis 2 | 2.8.20         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
 | Java Chassis 1 | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
 
->>>NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not
+> NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not
 > work together with Java Chassis 3. All related consumers, providers and edge service need use Java Chassis 3 when upgrading.
 
->>>NOTICE: Java Chassis 1 reached its end of support now after it's first release from 2018.
+> NOTICE: Java Chassis 1 reached its end of support now after it's first release from 2018.
 
 # Quick Start
 
