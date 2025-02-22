@@ -102,7 +102,7 @@ public class RestOperationMeta {
       }
     }
 
-    setAbsolutePath(concatPath(SwaggerUtils.getBasePath(swagger), operationMeta.getOperationPath()));
+    setAbsolutePath(SwaggerUtils.concatAbsolutePath(swagger, operationMeta.getOperationPath()));
   }
 
   private void addRestParamByName(OperationMeta operationMeta, String name, Operation operation) {
@@ -166,21 +166,6 @@ public class RestOperationMeta {
 
   public void setOperationMeta(OperationMeta operationMeta) {
     this.operationMeta = operationMeta;
-  }
-
-  /**
-   * Concat the two paths to an absolute path, end of '/' added.
-   *
-   * e.g. "/" + "/ope" = /ope/
-   * e.g. "/prefix" + "/ope" = /prefix/ope/
-   */
-  private String concatPath(String basePath, String operationPath) {
-    return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath))
-        .replaceAll("/{2,}", "/");
-  }
-
-  private String nonNullify(String path) {
-    return path == null ? "" : path;
   }
 
   public String getAbsolutePath() {

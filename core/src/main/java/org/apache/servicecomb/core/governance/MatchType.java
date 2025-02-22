@@ -36,7 +36,7 @@ public final class MatchType {
     public String apiPath() {
       if (MatchType.REST.equalsIgnoreCase(invocation.getOperationMeta().getConfig().getGovernanceMatchType())) {
         if (!invocation.isProducer()) {
-          return concatAbsolutePath(SwaggerUtils.getBasePath(invocation.getSchemaMeta().getSwagger()),
+          return SwaggerUtils.concatAbsolutePath(invocation.getSchemaMeta().getSwagger(),
               invocation.getOperationMeta().getOperationPath());
         }
         // not highway
@@ -113,20 +113,5 @@ public final class MatchType {
 
   public static GovernanceRequestExtractor createGovHttpRequest(Invocation invocation) {
     return new GovernanceRequestExtractorImpl(invocation);
-  }
-
-  /**
-   * Concat the two paths to an absolute path, without end of '/'.
-   *
-   * e.g. "/" + "/ope" = /ope
-   * e.g. "/prefix" + "/ope" = /prefix/ope
-   */
-  private static String concatAbsolutePath(String basePath, String operationPath) {
-    return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath))
-        .replaceAll("/{2,}", "/");
-  }
-
-  private static String nonNullify(String path) {
-    return path == null ? "" : path;
   }
 }
