@@ -49,7 +49,7 @@ public class TestPathCheckUtils {
         .thenReturn("/api/v1/public");
 
     String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/public");
-    assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment), 
+    assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
         "Should not require auth for excluded path with exact match");
   }
 
