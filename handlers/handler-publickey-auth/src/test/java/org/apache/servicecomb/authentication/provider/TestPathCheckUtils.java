@@ -29,8 +29,16 @@ import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class TestPathCheckUtils {
+  private static final String KEY_INCLUDE_PATH = "servicecomb.publicKey.accessControl.includePathPatterns";
+
+  private static final String KEY_EXCLUDE_PATH = "servicecomb.publicKey.accessControl.excludePathPatterns";
+
+  private static final String BASE_PATH = "/api/v1";
+
   private Environment environment;
 
   private OpenAPI swagger;
@@ -40,23 +48,22 @@ public class TestPathCheckUtils {
     environment = Mockito.mock(Environment.class);
     swagger = new OpenAPI();
     swagger.setServers(new ArrayList<>());
-    swagger.getServers().add(new Server().url("/api/v1"));
+    swagger.getServers().add(new Server().url(BASE_PATH));
   }
 
   @Test
   public void testExcludePathWithBasePathAndExactMatch() {
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("/api/v1/public");
+    String operationPath = "/public";
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn(BASE_PATH + operationPath);
 
-    String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/public");
+    String fullPath = SwaggerUtils.concatAbsolutePath(swagger, operationPath);
     assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
         "Should not require auth for excluded path with exact match");
   }
 
   @Test
   public void testExcludePathWithBasePathAndWildcard() {
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("/api/v1/public/*");
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn(BASE_PATH + "/public/*");
 
     String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/public/test");
     assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
@@ -69,10 +76,8 @@ public class TestPathCheckUtils {
 
   @Test
   public void testIncludePathWithBasePath() {
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("");
-    when(environment.getProperty("servicecomb.publicKey.accessControl.includePathPatterns", ""))
-        .thenReturn("/api/v1/private/*");
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn("");
+    when(environment.getProperty(KEY_INCLUDE_PATH, "")).thenReturn(BASE_PATH + "/private/*");
 
     String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/private/resource");
     assertFalse(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
@@ -85,10 +90,8 @@ public class TestPathCheckUtils {
 
   @Test
   public void testExcludeOverrideIncludePath() {
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("/api/v1/resource");
-    when(environment.getProperty("servicecomb.publicKey.accessControl.includePathPatterns", ""))
-        .thenReturn("/api/v1/*");
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn(BASE_PATH + "/resource");
+    when(environment.getProperty(KEY_INCLUDE_PATH, "")).thenReturn(BASE_PATH + "/*");
 
     String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/resource");
     assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
@@ -97,8 +100,8 @@ public class TestPathCheckUtils {
 
   @Test
   public void testMultipleExcludePaths() {
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("/api/v1/public,/api/v1/health,/api/v1/metrics/*");
+    List<String> operationPaths = List.of("/public", "/health", "/metrics/*");
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn(concatPath(BASE_PATH, operationPaths));
 
     String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/public");
     assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
@@ -115,42 +118,44 @@ public class TestPathCheckUtils {
 
   @Test
   public void testDifferentBasePath() {
+    String basePath = "/different/base";
+    String publicOperationPath = "/public";
+    String privateOperationPath = "/private";
     swagger.getServers().clear();
-    swagger.getServers().add(new Server().url("/different/base"));
+    swagger.getServers().add(new Server().url(basePath));
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn(basePath + publicOperationPath);
 
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("/different/base/public");
-
-    String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/public");
+    String fullPath = SwaggerUtils.concatAbsolutePath(swagger, publicOperationPath);
     assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
         "Should not require auth with different base path");
 
-    fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/private");
+    fullPath = SwaggerUtils.concatAbsolutePath(swagger, privateOperationPath);
     assertFalse(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
         "Should require auth for non-excluded path with different base path");
   }
 
   @Test
   public void testNoBasePath() {
+    String operationPath = "/public";
     swagger.setServers(null);
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn(operationPath);
 
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("/public");
-
-    String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/public");
+    String fullPath = SwaggerUtils.concatAbsolutePath(swagger, operationPath);
     assertTrue(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
         "Should not require auth when no base path is set");
   }
 
   @Test
   public void testEmptyConfiguration() {
-    when(environment.getProperty("servicecomb.publicKey.accessControl.excludePathPatterns", ""))
-        .thenReturn("");
-    when(environment.getProperty("servicecomb.publicKey.accessControl.includePathPatterns", ""))
-        .thenReturn("");
+    when(environment.getProperty(KEY_EXCLUDE_PATH, "")).thenReturn("");
+    when(environment.getProperty(KEY_INCLUDE_PATH, "")).thenReturn("");
 
     String fullPath = SwaggerUtils.concatAbsolutePath(swagger, "/any/path");
     assertFalse(PathCheckUtils.isNotRequiredAuth(fullPath, environment),
         "Should require auth by default when no patterns are configured");
+  }
+
+  private String concatPath(String basePath, List<String> paths) {
+    return paths.stream().map(path -> basePath + path).collect(Collectors.joining(","));
   }
 }
