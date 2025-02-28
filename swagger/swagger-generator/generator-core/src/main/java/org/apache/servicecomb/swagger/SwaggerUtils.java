@@ -445,4 +445,24 @@ public final class SwaggerUtils {
       default -> false;
     };
   }
+
+  public static String concatAbsolutePath(OpenAPI swagger, String operationPath) {
+    String basePath = getBasePath(swagger);
+    return concatPath(basePath, operationPath);
+  }
+
+  /**
+   * Concat the two paths to an absolute path, without end of '/'.
+   * <p>
+   * e.g. "/" + "/ope" = /ope
+   * e.g. "/prefix" + "/ope" = /prefix/ope
+   */
+  public static String concatPath(String basePath, String operationPath) {
+    return ("/" + nonNullify(basePath) + "/" + nonNullify(operationPath))
+            .replaceAll("/{2,}", "/");
+  }
+
+  private static String nonNullify(String path) {
+    return path == null ? "" : path;
+  }
 }

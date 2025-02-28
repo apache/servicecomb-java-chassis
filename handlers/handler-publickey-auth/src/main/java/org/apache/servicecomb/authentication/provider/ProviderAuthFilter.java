@@ -24,6 +24,7 @@ import org.apache.servicecomb.core.filter.AbstractFilter;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.filter.ProviderFilter;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +55,9 @@ public class ProviderAuthFilter extends AbstractFilter implements ProviderFilter
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    if (PathCheckUtils.isNotRequiredAuth(invocation.getOperationMeta().getOperationPath(), env)) {
+    String requestFullPath = SwaggerUtils.concatAbsolutePath(invocation.getSchemaMeta().getSwagger(),
+            invocation.getOperationMeta().getOperationPath());
+    if (PathCheckUtils.isNotRequiredAuth(requestFullPath, env)) {
       return nextNode.onFilter(invocation);
     }
     String token = invocation.getContext(CoreConst.AUTH_TOKEN);
