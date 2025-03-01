@@ -89,7 +89,7 @@
     <spring.version>6.1.10</spring.version>
     <swagger.version>2.2.28</swagger.version>
     <vertx.version>4.5.13</vertx.version>
-    <zipkin.version>3.4.4</zipkin.version>
+    <zipkin.version>3.5.0</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.4</jetcd-core.version>
     <consul-client.version>1.4.5</consul-client.version>
