@@ -34,7 +34,7 @@
     <activation.version>1.2.2</activation.version>
     <assertj.version>3.27.3</assertj.version>
     <awaitility.version>4.2.2</awaitility.version>
-    <brave.version>6.0.3</brave.version>
+    <brave.version>6.1.0</brave.version>
     <commons-beanutils.version>1.10.0</commons-beanutils.version>
     <commons-io.version>2.18.0</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
