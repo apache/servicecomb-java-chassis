@@ -171,7 +171,7 @@ public class ServiceCombLoadBalancerStats {
           allServers.forEach((server, stats) -> {
             MicroserviceVersions microserviceVersions=DiscoveryManager.INSTANCE.getOrCreateMicroserviceVersions(
               RegistrationManager.INSTANCE.getAppId(),server.getMicroserviceName());
-            List<MicroserviceInstance> microserviceInstanceList=microserviceVersions.getPulledInstances();
+            List<MicroserviceInstance> microserviceInstanceList=microserviceVersions.getInstances();
             for(MicroserviceInstance instance:microserviceInstanceList){
               if (server.getInstance().getInstanceId().equals(instance.getInstanceId())){
                 if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) 

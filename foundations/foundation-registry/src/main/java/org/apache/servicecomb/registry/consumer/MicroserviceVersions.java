@@ -148,6 +148,10 @@ public class MicroserviceVersions {
     return pulledInstances;
   }
 
+  public List<MicroserviceInstance> getInstances() {
+    return instances;
+  }
+
   public long getLastPullTime() {
     return lastPullTime;
   }
