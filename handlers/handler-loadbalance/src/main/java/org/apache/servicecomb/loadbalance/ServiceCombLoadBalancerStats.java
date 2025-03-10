@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -28,7 +29,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.registry.RegisterManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 
 import org.slf4j.Logger;
