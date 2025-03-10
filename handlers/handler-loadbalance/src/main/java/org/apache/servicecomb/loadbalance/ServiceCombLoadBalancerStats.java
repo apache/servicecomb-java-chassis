@@ -27,6 +27,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegisterManager;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,10 +168,16 @@ public class ServiceCombLoadBalancerStats {
         try {
           Map<ServiceCombServer, ServiceCombServerStats> allServers = pingView;
           allServers.forEach((server, stats) -> {
-            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) && !ping
-                .ping(server.getInstance())) {
-              LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
-              stats.markFailure();
+            MicroserviceVersions microserviceVersions=DiscoveryManager.INSTANCE.getOrCreateMicroserviceVersions(
+              RegistrationManager.INSTANCE.getAppId(),server.getMicroserviceName());
+            List<MicroserviceInstance> microserviceInstanceList=microserviceVersions.getPulledInstances();
+            for(MicroserviceInstance instance:microserviceInstanceList){
+              if (server.getInstance().getInstanceId().equals(instance.getInstanceId())
+                    && (System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) 
+                    && !ping.ping(server.getInstance())) {
+                LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
+                stats.markFailure();
+              }
             }
           });
           serverStatsCache.cleanUp();
