@@ -173,11 +173,13 @@ public class ServiceCombLoadBalancerStats {
               RegistrationManager.INSTANCE.getAppId(),server.getMicroserviceName());
             List<MicroserviceInstance> microserviceInstanceList=microserviceVersions.getPulledInstances();
             for(MicroserviceInstance instance:microserviceInstanceList){
-              if (server.getInstance().getInstanceId().equals(instance.getInstanceId())
-                    && (System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) 
-                    && !ping.ping(server.getInstance())) {
-                LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
-                stats.markFailure();
+              if (server.getInstance().getInstanceId().equals(instance.getInstanceId())){
+                if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) 
+                    && !ping.ping(server.getInstance())){
+                  LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
+                  stats.markFailure();
+                }
+                break;
               }
             }
           });
