@@ -25,9 +25,9 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
@@ -185,9 +185,8 @@ public class TestVertxServerResponseToHttpServletResponse {
   @SuppressWarnings("deprecation")
   @Test
   public void setStatus() {
-    response.setStatus(222, "test");
+    response.setStatus(222);
     Assertions.assertEquals(222, httpStatus.getStatusCode());
-    Assertions.assertEquals("test", httpStatus.getReasonPhrase());
   }
 
   @Test
@@ -196,7 +195,6 @@ public class TestVertxServerResponseToHttpServletResponse {
 
     Assertions.assertSame(status, response.getStatusType());
     Assertions.assertEquals(123, httpStatus.getStatusCode());
-    Assertions.assertEquals("default", httpStatus.getReasonPhrase());
   }
 
   @Test

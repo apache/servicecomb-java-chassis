@@ -23,8 +23,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -141,11 +141,6 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   @Override
   public HttpMethod getMethod() {
     return method;
-  }
-
-  @Override
-  public String getMethodValue() {
-    return method.name();
   }
 
   @Override

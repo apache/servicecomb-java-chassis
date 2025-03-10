@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;

@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
-import static javax.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
+import static jakarta.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;

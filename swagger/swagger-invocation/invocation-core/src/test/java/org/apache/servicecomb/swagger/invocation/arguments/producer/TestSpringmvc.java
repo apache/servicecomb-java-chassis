@@ -29,7 +29,7 @@ import org.apache.servicecomb.swagger.invocation.schemas.models.AddWrapperV1;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class TestSpringmvc {
+public class  TestSpringmvc {
   @Test
   public void add() {
     SwaggerProducer swaggerProducer = new SwaggerEnvironment().createProducer(new SpringmvcAddV1(), null);

@@ -39,8 +39,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.inject.PlaceholderResolver;
@@ -53,6 +53,7 @@ import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.apache.servicecomb.swagger.jakarta.ParameterProcessorAdapterJakarta;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
@@ -406,7 +407,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
 
     if (parameter instanceof AbstractSerializableParameter) {
-      io.swagger.util.ParameterProcessor.applyAnnotations(swagger, parameter, type, annotations);
+      ParameterProcessorAdapterJakarta.applyAnnotations(swagger, parameter, type, annotations);
       annotations.stream().forEach(annotation -> {
         if (NOT_NULL_ANNOTATIONS.contains(annotation.annotationType().getSimpleName())) {
           parameter.setRequired(true);
@@ -422,7 +423,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     // so strange, for bodyParameter, swagger return a new instance
     // that will cause lost some information
     // so we must merge them
-    BodyParameter newBodyParameter = (BodyParameter) io.swagger.util.ParameterProcessor.applyAnnotations(
+    BodyParameter newBodyParameter = (BodyParameter) ParameterProcessorAdapterJakarta.applyAnnotations(
         swagger, parameter, type, annotations);
 
     // swagger missed enum data, fix it

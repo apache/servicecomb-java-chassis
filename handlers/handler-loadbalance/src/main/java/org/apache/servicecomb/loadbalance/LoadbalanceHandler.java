@@ -21,7 +21,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang3.StringUtils;

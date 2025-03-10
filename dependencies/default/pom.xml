@@ -37,7 +37,7 @@
     <aspectj.version>1.9.19</aspectj.version>
     <assertj.version>3.23.1</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
-    <brave.version>5.14.1</brave.version>
+    <brave.version>6.0.3</brave.version>
     <bytebuddy.version>1.12.20</bytebuddy.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
@@ -56,7 +56,7 @@
     <guice.version>5.1.0</guice.version>
     <hamcrest.version>1.3</hamcrest.version>
     <hdr-histogram.version>2.1.12</hdr-histogram.version>
-    <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
+    <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
     <httpcomponents.version>4.5.14</httpcomponents.version>
     <hystrix.version>1.5.18</hystrix.version>
     <jackson.version>2.15.0</jackson.version>
@@ -64,13 +64,13 @@
     <javax-annotation.version>1.3.2</javax-annotation.version>
     <javax-inject.version>1</javax-inject.version>
     <javax-resource.version>1.5</javax-resource.version>
-    <jakarta.ws.rs.version>2.1.6</jakarta.ws.rs.version>
-    <jersey.version>2.38</jersey.version>
+    <jakarta.ws.rs.version>3.1.0</jakarta.ws.rs.version>
+    <jersey.version>3.1.4</jersey.version>
     <jmockit.version>1.34</jmockit.version>
     <junit.version>4.13.2</junit.version>
-    <junit5.version>5.9.1</junit5.version>
+    <junit5.version>5.11.4</junit5.version>
     <log4j.version>1.2.17</log4j.version>
-    <log4j2.version>2.19.0</log4j2.version>
+    <log4j2.version>2.24.3</log4j2.version>
     <logback.version>1.2.11</logback.version>
     <maven-model.version>3.8.6</maven-model.version>
     <micrometer.version>1.10.2</micrometer.version>
@@ -90,17 +90,23 @@
     <rxnetty.version>0.4.20</rxnetty.version>
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
-    <servlet-api.version>4.0.4</servlet-api.version>
+    <servlet-api.version>6.0.0</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>2.2</snakeyaml.version>
     <spectator.version>1.4.2</spectator.version>
-    <spring.version>5.3.36</spring.version>
-    <spring-boot.version>2.7.18</spring-boot.version>
+    <spring.version>6.1.0</spring.version>
+    <spring-boot.version>3.3.5</spring-boot.version>
     <swagger.version>1.6.9</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
-    <vertx.version>4.5.13</vertx.version>
-    <zipkin.version>2.24.0</zipkin.version>
-    <zipkin-reporter.version>2.16.3</zipkin-reporter.version>
+    <vertx.version>4.5.11</vertx.version>
+    <zipkin.version>3.4.3</zipkin.version>
+    <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
+    <jakarta.validation.version>3.0.2</jakarta.validation.version>
+    <jakarta.activation.version>2.1.3</jakarta.activation.version>
+    <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
+    <jakarta.xml.bind.version>4.0.2</jakarta.xml.bind.version>
+    <jaxb-api.version>2.3.1</jaxb-api.version>
+    <groovy.version>3.0.9</groovy.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -520,16 +526,36 @@
         <artifactId>zipkin</artifactId>
         <version>${zipkin.version}</version>
       </dependency>
-      <dependency>
-        <groupId>io.zipkin.zipkin2</groupId>
-        <artifactId>zipkin-junit</artifactId>
-        <version>${zipkin.version}</version>
-      </dependency>
 
+      <dependency>
+        <groupId>jakarta.xml.bind</groupId>
+        <artifactId>jakarta.xml.bind-api</artifactId>
+        <version>${jakarta.xml.bind.version}</version>
+      </dependency>
       <dependency>
         <groupId>jakarta.servlet</groupId>
         <artifactId>jakarta.servlet-api</artifactId>
         <version>${servlet-api.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.validation</groupId>
+        <artifactId>jakarta.validation-api</artifactId>
+        <version>${jakarta.validation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.activation</groupId>
+        <artifactId>jakarta.activation-api</artifactId>
+        <version>${jakarta.activation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.annotation</groupId>
+        <artifactId>javax.annotation-api</artifactId>
+        <version>${javax-annotation.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>jakarta.annotation</groupId>
+        <artifactId>jakarta.annotation-api</artifactId>
+        <version>${jakarta.annotation-api.version}</version>
       </dependency>
       <dependency>
         <groupId>com.sun.activation</groupId>
@@ -537,9 +563,9 @@
         <version>${activation.version}</version>
       </dependency>
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>${javax-annotation.version}</version>
+        <groupId>org.codehaus.groovy</groupId>
+        <artifactId>groovy</artifactId>
+        <version>${groovy.version}</version>
       </dependency>
 
       <dependency>
@@ -772,6 +798,12 @@
         <groupId>org.java-websocket</groupId>
         <artifactId>Java-WebSocket</artifactId>
         <version>${java-websocket.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.xml.bind</groupId>
+        <artifactId>jaxb-api</artifactId>
+        <version>${jaxb-api.version}</version>
       </dependency>
 
       <dependency>

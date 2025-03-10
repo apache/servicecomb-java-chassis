@@ -31,11 +31,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
@@ -88,7 +88,6 @@ import io.vertx.core.buffer.Buffer;
 
 @SuppressWarnings("deprecation")
 public class TestAbstractRestInvocation {
-
   HttpServletRequestEx requestEx = Mockito.mock(HttpServletRequestEx.class);
 
   final HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);
@@ -529,7 +528,7 @@ public class TestAbstractRestInvocation {
       result.put("statusCode", 123);
       result.put("reasonPhrase", "reason");
       return null;
-    }).when(responseEx).setStatus(123, "reason");
+    }).when(responseEx).setStatus(123);
     Mockito.doAnswer(invocationOnMock -> {
       result.put("contentType", "application/json; charset=utf-8");
       return null;
@@ -913,9 +912,8 @@ public class TestAbstractRestInvocation {
     responseEx = new AbstractHttpServletResponse() {
       @SuppressWarnings("deprecation")
       @Override
-      public void setStatus(int sc, String sm) {
+      public void setStatus(int sc) {
         status.value = sc;
-        reasonPhrase.value = sm;
       }
 
       @Override
@@ -934,7 +932,6 @@ public class TestAbstractRestInvocation {
     restInvocation.scheduleInvocation();
 
     Assertions.assertEquals(Integer.valueOf(590), status.value);
-    Assertions.assertEquals("Unexpected producer error, please check logs for details", reasonPhrase.value);
     Assertions.assertEquals(Integer.valueOf(1), endCount.value);
   }
 
@@ -955,9 +952,8 @@ public class TestAbstractRestInvocation {
     responseEx = new AbstractHttpServletResponse() {
       @SuppressWarnings("deprecation")
       @Override
-      public void setStatus(int sc, String sm) {
+      public void setStatus(int sc) {
         status.value = sc;
-        reasonPhrase.value = sm;
       }
 
       @Override
@@ -979,7 +975,6 @@ public class TestAbstractRestInvocation {
     restInvocation.scheduleInvocation();
 
     Assertions.assertEquals(Integer.valueOf(429), status.value);
-    Assertions.assertEquals("Too Many Requests", reasonPhrase.value);
     Assertions.assertEquals("{\"message\":\"rejected by qps flowcontrol\"}", responseBody.value);
     Assertions.assertEquals(Integer.valueOf(1), endCount.value);
   }

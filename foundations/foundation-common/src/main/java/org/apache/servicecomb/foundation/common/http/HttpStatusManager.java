@@ -19,10 +19,10 @@ package org.apache.servicecomb.foundation.common.http;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
-
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public class HttpStatusManager {
   private final Map<Integer, StatusType> statusMap = new ConcurrentHashMap<>();

@@ -20,7 +20,7 @@ package org.apache.servicecomb.springboot.springmvc.server;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.provider.rest.common.RestSchema;

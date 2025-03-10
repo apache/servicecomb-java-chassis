@@ -19,7 +19,7 @@ package org.apache.servicecomb.demo.jaxrs.client.validation;
 
 import java.util.ArrayList;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.jaxrs.server.validation.ValidationModel;

@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
-import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
+import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static jakarta.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -28,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
-
-import javax.servlet.http.Part;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -54,6 +51,8 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.MediaType;
 
 public class RestClientRequestImpl implements RestClientRequest {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientRequestImpl.class);

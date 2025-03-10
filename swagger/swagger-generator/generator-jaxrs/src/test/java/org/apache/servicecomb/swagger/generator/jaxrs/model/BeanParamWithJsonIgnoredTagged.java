@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

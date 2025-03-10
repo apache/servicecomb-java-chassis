@@ -25,10 +25,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl implements HttpServletResponseEx {
   private final Map<String, Object> attributes = new HashMap<>();
@@ -85,7 +85,7 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
 
   @Override
   public void flushBuffer() throws IOException {
-    throw new Error("not supported method");
+    // for vert.x do noting
   }
 
   @Override
@@ -130,18 +130,6 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
 
   @Override
   public String encodeRedirectURL(String url) {
-    throw new Error("not supported method");
-  }
-
-  @Override
-  @Deprecated
-  public String encodeUrl(String url) {
-    throw new Error("not supported method");
-  }
-
-  @Override
-  @Deprecated
-  public String encodeRedirectUrl(String url) {
     throw new Error("not supported method");
   }
 
@@ -192,12 +180,6 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
 
   @Override
   public void setStatus(int sc) {
-    throw new Error("not supported method");
-  }
-
-  @Override
-  @Deprecated
-  public void setStatus(int sc, String sm) {
     throw new Error("not supported method");
   }
 

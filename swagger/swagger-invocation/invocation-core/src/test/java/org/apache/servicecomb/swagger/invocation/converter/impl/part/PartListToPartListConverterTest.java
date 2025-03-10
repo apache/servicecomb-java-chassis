@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.junit.jupiter.api.Assertions;
@@ -30,12 +30,12 @@ public class PartListToPartListConverterTest {
 
   @Test
   public void getSrcType() {
-    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
+    Assertions.assertEquals("java.util.List<jakarta.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
   @Test
   public void getTargetType() {
-    Assertions.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getTargetType().getTypeName());
+    Assertions.assertEquals("java.util.List<jakarta.servlet.http.Part>", converter.getTargetType().getTypeName());
   }
 
   @Test

@@ -19,7 +19,7 @@ package org.apache.servicecomb.demo.multiServiceCenterServerB;
 
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.slf4j.Logger;

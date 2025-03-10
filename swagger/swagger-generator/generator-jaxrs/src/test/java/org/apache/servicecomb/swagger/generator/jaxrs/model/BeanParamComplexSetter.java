@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model;
 
-import javax.ws.rs.HeaderParam;
+import jakarta.ws.rs.HeaderParam;
 
 public class BeanParamComplexSetter {
   private AggregatedParam complex;

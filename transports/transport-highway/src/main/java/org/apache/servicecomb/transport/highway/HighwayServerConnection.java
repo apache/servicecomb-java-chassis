@@ -18,7 +18,7 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Const;
