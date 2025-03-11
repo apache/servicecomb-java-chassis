@@ -149,7 +149,7 @@ public class MicroserviceVersions {
   }
 
   public List<MicroserviceInstance> getInstances() {
-    return instances;
+    return new ArrayList<MicroserviceInstance>(instances);
   }
 
   public long getLastPullTime() {
