@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -27,6 +28,10 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -164,10 +169,18 @@ public class ServiceCombLoadBalancerStats {
         try {
           Map<ServiceCombServer, ServiceCombServerStats> allServers = pingView;
           allServers.forEach((server, stats) -> {
-            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) && !ping
-                .ping(server.getInstance())) {
-              LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
-              stats.markFailure();
+            MicroserviceVersions microserviceVersions=DiscoveryManager.INSTANCE.getOrCreateMicroserviceVersions(
+              RegistrationManager.INSTANCE.getAppId(),server.getMicroserviceName());
+            List<MicroserviceInstance> microserviceInstanceList=microserviceVersions.getInstances();
+            for(MicroserviceInstance instance:microserviceInstanceList){
+              if (server.getInstance().getInstanceId().equals(instance.getInstanceId())){
+                if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) 
+                    && !ping.ping(server.getInstance())){
+                  LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
+                  stats.markFailure();
+                }
+                break;
+              }
             }
           });
           serverStatsCache.cleanUp();
