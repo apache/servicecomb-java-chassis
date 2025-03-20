@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.transport.rest.vertx.ws.WebSocketHandshakeServerFilter
+org.apache.servicecomb.transport.rest.vertx.ws.ServerWebSocketArgsFilter
