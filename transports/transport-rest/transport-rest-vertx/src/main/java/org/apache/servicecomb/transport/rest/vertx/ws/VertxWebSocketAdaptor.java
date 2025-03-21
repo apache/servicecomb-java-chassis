@@ -21,18 +21,25 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.event.WebSocketActionEvent;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
+import org.apache.servicecomb.core.tracing.BraveTraceIdGenerator;
+import org.apache.servicecomb.core.tracing.TraceIdGenerator;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.ws.AbstractBaseWebSocket;
 import org.apache.servicecomb.swagger.invocation.ws.BinaryBytesWebSocketMessage;
 import org.apache.servicecomb.swagger.invocation.ws.SerialExecutorWrapper;
 import org.apache.servicecomb.swagger.invocation.ws.TextWebSocketMessage;
+import org.apache.servicecomb.swagger.invocation.ws.WebSocketActionType;
 import org.apache.servicecomb.swagger.invocation.ws.WebSocketAdapter;
 import org.apache.servicecomb.swagger.invocation.ws.WebSocketFrame;
 import org.apache.servicecomb.swagger.invocation.ws.WebSocketMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.EventBus;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.buffer.Buffer;
@@ -44,6 +51,8 @@ import io.vertx.core.http.WebSocketBase;
 public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxWebSocketAdaptor.class);
+
+  private static final TraceIdGenerator CONNECTION_ID_GENERATOR = new BraveTraceIdGenerator();
 
   private static final int DEFAULT_ADAPTER_QUEUE_MAX_SIZE = 100;
 
@@ -63,30 +72,37 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   private final Object pauseLock = new Object();
 
+  private final Invocation invocation;
+
+  private final long creationTimestamp;
+
+  private final EventBus eventBus;
+
   private boolean inPauseStatus;
 
-  private final String websocketSessionId;
+  private final String connectionId;
 
   private final InvocationType invocationType;
 
   public VertxWebSocketAdaptor(
-      InvocationType invocationType,
-      String websocketSessionId,
-      Executor workerPool,
+      Invocation invocation,
+      InvocationType invocationType, Executor workerPool,
       AbstractBaseWebSocket bizWebSocket,
       WebSocketBase vertxWebSocket) {
-    Objects.requireNonNull(invocationType, "VertxWebSocketAdaptor invocationType is null");
-    Objects.requireNonNull(websocketSessionId, "VertxWebSocketAdaptor websocketSessionId is null");
+    Objects.requireNonNull(invocation, "VertxWebSocketAdaptor invocation is null");
     Objects.requireNonNull(workerPool, "VertxWebSocketAdaptor workerPool is null");
     Objects.requireNonNull(bizWebSocket, "VertxWebSocketAdaptor bizWebSocket is null");
     Objects.requireNonNull(vertxWebSocket, "VertxWebSocketAdaptor vertxWebSocket is null");
+    creationTimestamp = System.currentTimeMillis();
+    this.invocation = invocation;
     this.invocationType = invocationType;
-    this.websocketSessionId = websocketSessionId;
+    this.connectionId = CONNECTION_ID_GENERATOR.generate();
     this.executor = workerPool instanceof ReactiveExecutor ?
         workerPool // for reactive case, no need to wrap it into a serial queue model
         : prepareSerialExecutorWrapper(workerPool);
     this.bizWebSocket = bizWebSocket;
     this.vertxWebSocket = vertxWebSocket;
+    eventBus = EventManager.getEventBus();
     inPauseStatus = true;
     vertxWebSocket.pause(); // make sure the vert.x WebSocket pause status keep consistent with inPauseStatus flag
 
@@ -104,7 +120,7 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
   private SerialExecutorWrapper prepareSerialExecutorWrapper(Executor workerPool) {
     final SerialExecutorWrapper wrapper = new SerialExecutorWrapper(
         invocationType,
-        websocketSessionId,
+        connectionId,
         workerPool,
         DynamicPropertyFactory.getInstance()
             .getIntProperty("servicecomb.websocket.adapter.queue.maxSize",
@@ -130,11 +146,14 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   private void linkVertxCloseHandler() {
     vertxWebSocket.closeHandler(v ->
-        scheduleTask(() -> bizWebSocket.onClose(vertxWebSocket.closeStatusCode(), vertxWebSocket.closeReason())));
+        scheduleTask(createWebSocketActionEvent(WebSocketActionType.ON_CLOSE),
+            () -> bizWebSocket.onClose(vertxWebSocket.closeStatusCode(), vertxWebSocket.closeReason())));
   }
 
   private void linkVertxExceptionHandler() {
-    vertxWebSocket.exceptionHandler(t -> scheduleTask(() -> bizWebSocket.onError(t)));
+    vertxWebSocket.exceptionHandler(t -> scheduleTask(
+        createWebSocketActionEvent(WebSocketActionType.ON_ERROR),
+        () -> bizWebSocket.onError(t)));
   }
 
   private void linkVertxFrameHandler() {
@@ -145,48 +164,92 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
   private void linkVertxBinaryMessageHandler() {
     vertxWebSocket.binaryMessageHandler(buffer -> {
       final byte[] bytes = buffer.getBytes();
-      scheduleTask(
+      scheduleTask(createWebSocketActionEvent(WebSocketActionType.ON_MESSAGE_BINARY)
+              .setDataSize(buffer.length()),
           () -> bizWebSocket.onMessage(new BinaryBytesWebSocketMessage(bytes)));
     });
   }
 
   private void linkVertxTextMessageHandler() {
     vertxWebSocket.textMessageHandler(s ->
-        scheduleTask(
+        scheduleTask(createWebSocketActionEvent(WebSocketActionType.ON_MESSAGE_TEXT)
+                .setDataSize(s.length()),
             () -> bizWebSocket.onMessage(new TextWebSocketMessage(s))));
   }
 
   private void linkVertxDrainHandler() {
     vertxWebSocket.drainHandler(v ->
-        scheduleTask(bizWebSocket::onWriteQueueDrain));
+        scheduleTask(createWebSocketActionEvent(WebSocketActionType.ON_SEND_QUEUE_DRAIN),
+            bizWebSocket::onWriteQueueDrain));
   }
 
   private void startWorking() {
+    WebSocketActionEvent event = createWebSocketActionEventInSyncMode(WebSocketActionType.CONNECTION_PREPARE);
     scheduleTask(
+        createWebSocketActionEvent(WebSocketActionType.ON_OPEN),
         bizWebSocket::startWorking);
+    eventBus.post(event.setActionEndTimestamp(System.currentTimeMillis()));
   }
 
-  private void scheduleTask(Runnable task) {
+  private WebSocketActionEvent createWebSocketActionEvent(WebSocketActionType actionType) {
+    return new WebSocketActionEvent()
+        .setActionType(actionType)
+        .setConnectionStartTimestamp(creationTimestamp)
+        .setInvocationType(invocationType)
+        .setHandleThreadName(Thread.currentThread().getName())
+        .setOperationMeta(invocation.getOperationMeta())
+        .setConnectionId(connectionId)
+        .setTraceId(invocation.getTraceId())
+        .setScheduleStartTimestamp(System.currentTimeMillis());
+  }
+
+  private WebSocketActionEvent createWebSocketActionEventInSyncMode(WebSocketActionType actionType) {
+    return createWebSocketActionEvent(actionType)
+        .setActionStartTimestamp(System.currentTimeMillis())
+        .setHandleThreadName(Thread.currentThread().getName());
+  }
+
+  private void scheduleTask(WebSocketActionEvent event, Runnable task) {
     try {
-      executor.execute(task);
+      executor.execute(() -> {
+        event.setActionStartTimestamp(System.currentTimeMillis())
+            .setHandleThreadName(Thread.currentThread().getName());
+        try {
+          task.run();
+        } catch (Throwable e) {
+          LOGGER.error("[{}]-[{}] error occurs while executing task, actionType is {}",
+              invocationType, connectionId, event.getActionType());
+        } finally {
+          eventBus.post(
+              event.setActionEndTimestamp(System.currentTimeMillis())
+          );
+        }
+      });
     } catch (Throwable e) {
-      LOGGER.error("[{}]-[{}] error occurs in scheduleTask", invocationType, websocketSessionId, e);
+      LOGGER.error("[{}]-[{}] error occurs in scheduleTask", invocationType, connectionId, e);
     }
   }
 
   @Override
   public CompletableFuture<Void> sendMessage(WebSocketMessage<?> message) {
     if (message instanceof TextWebSocketMessage) {
-      return vertxWebSocket.writeTextMessage(((TextWebSocketMessage) message).getPayload())
-          .toCompletionStage()
-          .toCompletableFuture();
+      String payload = ((TextWebSocketMessage) message).getPayload();
+      return decorateSenderAction(WebSocketActionType.DO_SEND_TEXT,
+          payload.length(),
+          vertxWebSocket.writeTextMessage(
+                  payload)
+              .toCompletionStage()
+              .toCompletableFuture());
     }
 
     if (message instanceof BinaryBytesWebSocketMessage) {
-      return vertxWebSocket.writeBinaryMessage(Buffer.buffer(
-              ((BinaryBytesWebSocketMessage) message).getPayload()))
-          .toCompletionStage()
-          .toCompletableFuture();
+      byte[] payload = ((BinaryBytesWebSocketMessage) message).getPayload();
+      return decorateSenderAction(WebSocketActionType.DO_SEND_BINARY,
+          payload.length,
+          vertxWebSocket.writeBinaryMessage(Buffer.buffer(
+                  payload))
+              .toCompletionStage()
+              .toCompletableFuture());
     }
 
     throw new IllegalStateException("impossible case, unrecognized WebSocketMessage type!");
@@ -200,37 +263,52 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   @Override
   public CompletableFuture<Void> close(short statusCode, String reason) {
-    return vertxWebSocket.close(statusCode, reason)
-        .toCompletionStage()
-        .toCompletableFuture();
+    return decorateSenderAction(WebSocketActionType.DO_CLOSE, 0,
+        vertxWebSocket.close(statusCode, reason)
+            .toCompletionStage()
+            .toCompletableFuture());
   }
 
   @Override
   public void pause() {
+    WebSocketActionEvent event = createWebSocketActionEventInSyncMode(WebSocketActionType.DO_PAUSE);
     synchronized (pauseLock) {
       if (inPauseStatus) {
         return;
       }
       vertxWebSocket.pause();
       inPauseStatus = true;
-      LOGGER.info("[{}]-[{}] pause websocket", invocationType, websocketSessionId);
+      LOGGER.info("[{}]-[{}] pause websocket", invocationType, connectionId);
     }
+    eventBus.post(event.setActionEndTimestamp(System.currentTimeMillis()));
   }
 
   @Override
   public void resume() {
+    WebSocketActionEvent event = createWebSocketActionEventInSyncMode(WebSocketActionType.DO_RESUME);
     synchronized (pauseLock) {
       if (!inPauseStatus) {
         return;
       }
       vertxWebSocket.resume();
       inPauseStatus = false;
-      LOGGER.info("[{}]-[{}] resume websocket", invocationType, websocketSessionId);
+      LOGGER.info("[{}]-[{}] resume websocket", invocationType, connectionId);
     }
+    eventBus.post(event.setActionEndTimestamp(System.currentTimeMillis()));
   }
 
   @Override
   public boolean writeQueueFull() {
     return vertxWebSocket.writeQueueFull();
+  }
+
+  private <T> CompletableFuture<T> decorateSenderAction(WebSocketActionType actionType,
+      int dataSize,
+      CompletableFuture<T> actionFuture) {
+    WebSocketActionEvent event = createWebSocketActionEventInSyncMode(actionType).setDataSize(dataSize);
+    actionFuture
+        .whenComplete((v, t) ->
+            eventBus.post(event.setActionEndTimestamp(System.currentTimeMillis())));
+    return actionFuture;
   }
 }

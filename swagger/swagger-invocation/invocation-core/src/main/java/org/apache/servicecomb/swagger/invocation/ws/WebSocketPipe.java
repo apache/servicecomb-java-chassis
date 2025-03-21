@@ -58,6 +58,10 @@ public class WebSocketPipe {
     return serverWebSocket;
   }
 
+  /**
+   * Be careful to adjust the order of the existing elements or to add new element!
+   * The order of status indicates the lifecycle sequence of a websocket connection.
+   */
   private enum PipeWebSocketStatus {
     CREATED,
     PEER_CONNECTED,

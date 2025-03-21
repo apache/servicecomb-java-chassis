@@ -25,6 +25,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionCodes;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.ws.VertxClientWebSocketResponseToHttpServletResponse;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ClientWebSocketArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -68,8 +69,8 @@ public class WebSocketResponseWrapClientFilter implements HttpClientFilter {
         .getOperationMeta()
         .getExecutor();
     final VertxWebSocketAdaptor webSocketAdaptor = new VertxWebSocketAdaptor(
-        invocation.getInvocationType(),
-        invocation.getTraceId(),
+        invocation,
+        InvocationType.CONSUMER, // must set it manually, or it's not correct in edge situation
         executor,
         clientWebSocket,
         webSocketResponseEx.getVertxClientWebSocket());

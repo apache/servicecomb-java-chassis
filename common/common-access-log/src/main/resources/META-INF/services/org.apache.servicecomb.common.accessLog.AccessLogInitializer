@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.common.accessLog.client.ClientDefaultInitializer
 org.apache.servicecomb.common.accessLog.server.ServerDefaultInitializer
+org.apache.servicecomb.common.accessLog.ws.WebSocketAccessLogInitializer
