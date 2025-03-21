@@ -20,7 +20,6 @@ package org.apache.servicecomb.transport.rest.vertx.ws;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -62,7 +61,9 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
    */
   private final WebSocketBase vertxWebSocket;
 
-  private final AtomicBoolean inPauseStatus;
+  private final Object pauseLock = new Object();
+
+  private boolean inPauseStatus;
 
   private final String websocketSessionId;
 
@@ -86,7 +87,7 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
         : prepareSerialExecutorWrapper(workerPool);
     this.bizWebSocket = bizWebSocket;
     this.vertxWebSocket = vertxWebSocket;
-    inPauseStatus = new AtomicBoolean(true);
+    inPauseStatus = true;
     vertxWebSocket.pause(); // make sure the vert.x WebSocket pause status keep consistent with inPauseStatus flag
 
     // make sure the bi-direction message stream is established
@@ -206,25 +207,25 @@ public class VertxWebSocketAdaptor implements WebSocketAdapter {
 
   @Override
   public void pause() {
-    if (!inPauseStatus.compareAndSet(false, true)) {
-      return;
-    }
-    LOGGER.info("[{}]-[{}] pause websocket", invocationType, websocketSessionId);
-    synchronized (this) {
+    synchronized (pauseLock) {
+      if (inPauseStatus) {
+        return;
+      }
       vertxWebSocket.pause();
-      inPauseStatus.set(true);
+      inPauseStatus = true;
+      LOGGER.info("[{}]-[{}] pause websocket", invocationType, websocketSessionId);
     }
   }
 
   @Override
   public void resume() {
-    if (!inPauseStatus.compareAndSet(true, false)) {
-      return;
-    }
-    LOGGER.info("[{}]-[{}] resume websocket", invocationType, websocketSessionId);
-    synchronized (this) {
+    synchronized (pauseLock) {
+      if (!inPauseStatus) {
+        return;
+      }
       vertxWebSocket.resume();
-      inPauseStatus.set(false);
+      inPauseStatus = false;
+      LOGGER.info("[{}]-[{}] resume websocket", invocationType, websocketSessionId);
     }
   }
 
