@@ -26,6 +26,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ClientWebSocketArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.ws.ServerWebSocket;
@@ -74,8 +75,8 @@ public class WebSocketHandshakeServerFilter implements HttpServerFilter {
             .toWebSocket()
             .whenComplete((ws, t) ->
                 new VertxWebSocketAdaptor(
-                    invocation.getInvocationType(),
-                    invocation.getTraceId(),
+                    invocation,
+                    InvocationType.PRODUCER, // must set it manually, or it's not correct in edge situation
                     invocation.getOperationMeta().getExecutor(),
                     (ServerWebSocket) result,
                     ws));
