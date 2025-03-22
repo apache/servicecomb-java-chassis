@@ -169,12 +169,15 @@ public class ServiceCombLoadBalancerStats {
         try {
           Map<ServiceCombServer, ServiceCombServerStats> allServers = pingView;
           allServers.forEach((server, stats) -> {
-            MicroserviceVersions microserviceVersions=DiscoveryManager.INSTANCE.getOrCreateMicroserviceVersions(
-              RegistrationManager.INSTANCE.getAppId(),server.getMicroserviceName());
-            List<MicroserviceInstance> microserviceInstanceList=microserviceVersions.getInstances();
-            for(MicroserviceInstance instance:microserviceInstanceList){
+            //get all microservice instances
+            MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE.getOrCreateMicroserviceVersions(
+              RegistrationManager.INSTANCE.getAppId() , server.getMicroserviceName());
+            List<MicroserviceInstance> microserviceInstanceList = microserviceVersions.getInstances();
+            for (MicroserviceInstance instance:microserviceInstanceList){
+              //check if the instance still up
               if (server.getInstance().getInstanceId().equals(instance.getInstanceId())){
-                if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) 
+                //check test interval
+                if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis)
                     && !ping.ping(server.getInstance())){
                   LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
                   stats.markFailure();
