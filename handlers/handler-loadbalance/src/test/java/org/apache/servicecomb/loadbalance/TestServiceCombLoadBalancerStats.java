@@ -29,6 +29,7 @@ import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -47,7 +48,7 @@ import org.junit.jupiter.api.Assertions;
 
 public class TestServiceCombLoadBalancerStats {
 
-  List<MicroserviceInstance> instanceList=new ArrayList<>();
+  List<MicroserviceInstance> instanceList = new ArrayList<>();
 
   @Before
   public void before() {
@@ -63,24 +64,24 @@ public class TestServiceCombLoadBalancerStats {
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("instance2");
     instanceList.add(instance2);
-    MockUp mockUpRegistrationManager=new MockUp<RegistrationManager>() {
+    MockUp mockUpRegistrationManager = new MockUp<RegistrationManager>() {
       @Mock
       public String getAppId() {
         return "test_app";
       }
     };
-    MockUp mockUpMicroserviceVersions=new MockUp<MicroserviceVersions>() {
+    MockUp mockUpMicroserviceVersions = new MockUp<MicroserviceVersions>() {
       @Mock
-      public List<MicroserviceInstance> getInstances(){
+      public List<MicroserviceInstance> getInstances() {
         return instanceList;
       }
     };
-    AppManager appManager=new AppManager();
-    MicroserviceVersions microserviceVersions=new MicroserviceVersions(appManager,"test_app","test_microservice");
-    MockUp mockUpDiscoveryManager=new MockUp<DiscoveryManager>() {
+    AppManager appManager = new AppManager();
+    MicroserviceVersions microserviceVersions = new MicroserviceVersions(appManager, "test_app", "test_microservice");
+    MockUp mockUpDiscoveryManager = new MockUp<DiscoveryManager>() {
 
       @Mock
-      public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName){
+      public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {
         return microserviceVersions;
       }
     };
@@ -218,7 +219,7 @@ public class TestServiceCombLoadBalancerStats {
     //clear instances to mock instance2 down in cse
     instanceList.clear();
     ServiceCombServer serviceCombServer = new ServiceCombServer("test_microservice", transport,
-            new CacheEndpoint("rest://localhost:8080", instance));
+        new CacheEndpoint("rest://localhost:8080", instance));
 
     CountDownLatch latch = new CountDownLatch(10);
     for (int i = 0; i < 10; i++) {
@@ -232,23 +233,23 @@ public class TestServiceCombLoadBalancerStats {
     }
     latch.await(30, TimeUnit.SECONDS);
     Assertions.assertEquals(
-            ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getTotalRequests(),
-            4 * 10);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getTotalRequests(),
+        4 * 10);
     Assertions.assertEquals(
-            ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRate(), 50);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRate(), 50);
     Assertions.assertEquals(
-            ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getSuccessRate(), 50);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getSuccessRate(), 50);
     Assertions.assertEquals(
-            ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getSuccessRequests(), 20);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getSuccessRequests(), 20);
     Assertions.assertTrue(
-            ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime() <= System
-                    .currentTimeMillis()
-                    && ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime()
-                    >= time);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime() <= System
+            .currentTimeMillis()
+            && ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime()
+            >= time);
 
     // time consuming test for timers, taking about 20 seconds. ping timer will not update instance status because instance2 is out of up instances
     Assertions.assertTrue(
-            ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRate() <= 50);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRate() <= 50);
     long beginTime = System.currentTimeMillis();
     long rate = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRequests();
     while (System.currentTimeMillis() - beginTime <= 22000) {
@@ -256,6 +257,7 @@ public class TestServiceCombLoadBalancerStats {
       System.out.println("failedRequests: " + rate);
     }
 
-    Assertions.assertEquals(20, ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRequests());
+    Assertions.assertEquals(20,
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRequests());
   }
 }

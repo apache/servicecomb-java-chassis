@@ -162,7 +162,8 @@ public class ServiceCombLoadBalancerStats {
 
     timer = new Timer("LoadBalancerStatsTimer", true);
     timer.schedule(new TimerTask() {
-      private final MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
+      private final MicroserviceInstancePing ping = SPIServiceUtils
+          .getPriorityHighestService(MicroserviceInstancePing.class);
 
       @Override
       public void run() {
@@ -171,14 +172,14 @@ public class ServiceCombLoadBalancerStats {
           allServers.forEach((server, stats) -> {
             //get all microservice instances
             MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE.getOrCreateMicroserviceVersions(
-              RegistrationManager.INSTANCE.getAppId() , server.getMicroserviceName());
+                RegistrationManager.INSTANCE.getAppId(), server.getMicroserviceName());
             List<MicroserviceInstance> microserviceInstanceList = microserviceVersions.getInstances();
-            for (MicroserviceInstance instance:microserviceInstanceList){
+            for (MicroserviceInstance instance : microserviceInstanceList) {
               //check if the instance still up
-              if (server.getInstance().getInstanceId().equals(instance.getInstanceId())){
+              if (server.getInstance().getInstanceId().equals(instance.getInstanceId())) {
                 //check test interval
                 if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis)
-                    && !ping.ping(server.getInstance())){
+                    && !ping.ping(server.getInstance())) {
                   LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
                   stats.markFailure();
                 }
