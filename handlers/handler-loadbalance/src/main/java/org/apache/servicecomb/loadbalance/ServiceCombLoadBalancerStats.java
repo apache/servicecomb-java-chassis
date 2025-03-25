@@ -32,6 +32,7 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 
+import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +173,8 @@ public class ServiceCombLoadBalancerStats {
           allServers.forEach((server, stats) -> {
             //get all microservice instances
             MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE.getOrCreateMicroserviceVersions(
-                RegistrationManager.INSTANCE.getAppId(), server.getMicroserviceName());
+                new MicroserviceNameParser(RegistrationManager.INSTANCE.getAppId(), server.getMicroserviceName())
+                    .getAppId(), server.getMicroserviceName());
             List<MicroserviceInstance> microserviceInstanceList = microserviceVersions.getInstances();
             for (MicroserviceInstance instance : microserviceInstanceList) {
               //check if the instance still up
