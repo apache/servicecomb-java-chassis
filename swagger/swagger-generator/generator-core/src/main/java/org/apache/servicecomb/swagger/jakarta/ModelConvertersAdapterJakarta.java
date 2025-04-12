@@ -41,7 +41,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * replace io.swagger.converter.ModelConverters to adapter JAVAEE9 jakarta API
- * modifying content: javax API dependency changing to the jakarta API dependency.
+ * modifying content: converters add ModelResolverAdapterJakarta to adapter jakarta.
  */
 public class ModelConvertersAdapterJakarta {
   private static final ModelConvertersAdapterJakarta SINGLETON = new ModelConvertersAdapterJakarta();
@@ -117,7 +117,7 @@ public class ModelConvertersAdapterJakarta {
           converters);
       context.setJsonView(annotation);
 
-      LOGGER.debug("ModelConverters readAll with JsonView annotation from " + type);
+      LOGGER.debug("ModelConvertersAdapterJakarta readAll with JsonView annotation from " + type);
       context.resolve(type);
       return context.getDefinedModels();
     }

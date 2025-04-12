@@ -33,10 +33,10 @@ import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.apache.servicecomb.swagger.jakarta.ModelConvertersAdapterJakarta;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.RefModel;
 import io.swagger.models.Swagger;
@@ -90,7 +90,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
       scanMethodParameter(parameterGenerator);
 
-      Property property = ModelConverters.getInstance().readAsProperty(parameterGenerator.getGenericType());
+      Property property = ModelConvertersAdapterJakarta.getInstance().readAsProperty(parameterGenerator.getGenericType());
       property.setDescription(parameterGenerator.getGeneratedParameter().getDescription());
       bodyModel.addProperty(parameterGenerator.getParameterName(), property);
 

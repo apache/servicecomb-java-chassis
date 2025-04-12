@@ -47,7 +47,7 @@ import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  * replace io.swagger.jackson.AbstractModelConverter to adapter JAVAEE9 jakarta API
- * modifying content: javax API dependency changing to the jakarta API dependency.
+ * modifying content: mapper register model change to SwaggerAnnotationIntrospectorAdapterJakarta to adapter jakarta.
  */
 public abstract class AbstractModelConverterAdapterJakarta implements ModelConverter {
   protected final ObjectMapper _mapper;

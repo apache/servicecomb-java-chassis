@@ -53,6 +53,7 @@ import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.apache.servicecomb.swagger.jakarta.ModelConvertersAdapterJakarta;
 import org.apache.servicecomb.swagger.jakarta.ParameterProcessorAdapterJakarta;
 
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -64,7 +65,6 @@ import com.google.common.reflect.TypeToken;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiParam;
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
@@ -429,7 +429,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     // swagger missed enum data, fix it
     ModelImpl model = SwaggerUtils.getModelImpl(swagger, newBodyParameter);
     if (model != null) {
-      Property property = ModelConverters.getInstance().readAsProperty(type);
+      Property property = ModelConvertersAdapterJakarta.getInstance().readAsProperty(type);
       if (property instanceof StringProperty) {
         model.setEnum(((StringProperty) property).getEnum());
       }
