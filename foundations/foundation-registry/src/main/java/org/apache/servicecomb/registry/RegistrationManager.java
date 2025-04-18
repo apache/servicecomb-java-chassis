@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.registry.api.LifeCycle;
 import org.apache.servicecomb.registry.api.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.Registration;
@@ -40,7 +41,7 @@ public class RegistrationManager {
       this.registrationList = Collections.emptyList();
       return;
     }
-    this.registrationList = registrationList;
+    this.registrationList = registrationList.stream().filter(SPIEnabled::enabled).collect(Collectors.toList());
   }
 
   /**
