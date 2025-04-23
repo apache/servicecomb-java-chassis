@@ -824,7 +824,6 @@ public class TestAbstractRestInvocation {
     Executor executor = new ReactiveExecutor();
     requestEx = new AbstractHttpServletRequestForTest();
     requestEx = Mockito.spy(requestEx);
-    responseEx = Mockito.spy(responseEx);
     restOperation = Mockito.spy(restOperation);
     operationMeta = Mockito.spy(operationMeta);
     Mockito.when(restOperation.getOperationMeta()).thenReturn(operationMeta);
