@@ -38,7 +38,7 @@
     <assertj.version>3.23.1</assertj.version>
     <awaitility.version>4.2.0</awaitility.version>
     <brave.version>6.0.3</brave.version>
-    <bytebuddy.version>1.12.20</bytebuddy.version>
+    <bytebuddy.version>1.15.11</bytebuddy.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.11.0</commons-io.version>
@@ -74,7 +74,7 @@
     <logback.version>1.2.11</logback.version>
     <maven-model.version>3.8.6</maven-model.version>
     <micrometer.version>1.10.2</micrometer.version>
-    <mockito.version>4.11.0</mockito.version>
+    <mockito.version>5.17.0</mockito.version>
     <mock-server.version>5.14.0</mock-server.version>
     <nacos-client.version>2.2.0</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
@@ -731,12 +731,6 @@
         <groupId>net.bytebuddy</groupId>
         <artifactId>byte-buddy</artifactId>
         <version>${bytebuddy.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.mockito</groupId>
-        <artifactId>mockito-inline</artifactId>
-        <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
 
