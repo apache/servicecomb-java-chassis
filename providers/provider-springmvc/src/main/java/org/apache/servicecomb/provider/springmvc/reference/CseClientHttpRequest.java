@@ -20,6 +20,7 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,6 +75,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   private RequestMeta requestMeta;
 
   private Type responseType;
+
+  private final Map<String, Object> attributes = new HashMap<>();
 
   public CseClientHttpRequest() {
   }
@@ -156,6 +159,11 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   @Override
   public OutputStream getBody() {
     return null;
+  }
+
+  @Override
+  public Map<String, Object> getAttributes() {
+    return attributes;
   }
 
   @Override
