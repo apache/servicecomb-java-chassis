@@ -284,4 +284,12 @@
         <Class name="org.apache.servicecomb.swagger.jakarta.SwaggerAnnotationIntrospectorAdapterJakarta"/>
     </Match>
 
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Or>
+            <Class name="org.apache.servicecomb.registry.DiscoveryManager"/>
+            <Class name="org.apache.servicecomb.registry.RegistrationManager"/>
+        </Or>
+    </Match>
+
 </FindBugsFilter>
