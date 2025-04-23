@@ -89,7 +89,7 @@ public class TestHighwayCodec {
 
     lByteBuf = Mockito.mock(ByteBuf.class);
 
-    nioBuffer = Mockito.mock(ByteBuffer.class);
+    nioBuffer = ByteBuffer.allocate(0);
 
     invocation = Mockito.mock(Invocation.class);
   }
