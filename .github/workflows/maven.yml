@@ -21,9 +21,9 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ 2.8.x ]
+    branches: [ 2.9.x ]
   pull_request:
-    branches: [ 2.8.x ]
+    branches: [ 2.9.x ]
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
     - name: Set up jdk
       uses: actions/setup-java@v3
       with:
-        java-version: '8'
+        java-version: '21'
         distribution: 'temurin'
     - name: Set up Maven
       uses: stCarolas/setup-maven@v4.5
