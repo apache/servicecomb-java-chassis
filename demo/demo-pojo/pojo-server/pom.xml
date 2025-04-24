@@ -52,6 +52,9 @@
   <profiles>
     <profile>
       <id>docker</id>
+      <properties>
+        <demo.service.name>pojo-server</demo.service.name>
+      </properties>
       <build>
         <plugins>
           <plugin>

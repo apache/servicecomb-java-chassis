@@ -55,7 +55,7 @@
     <profile>
       <id>docker</id>
       <properties>
-        <demo.service.name>pojo-server</demo.service.name>
+        <demo.service.name>pojo-client</demo.service.name>
       </properties>
       <build>
         <plugins>
