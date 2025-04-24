@@ -23,8 +23,6 @@ import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarge
 import org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget_ValueOverWritePath;
 import org.apache.servicecomb.swagger.generator.springmvc.model.TestProducer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 public class TestSpringmvc {
   @Test
