@@ -91,7 +91,7 @@
     <vertx.version>4.5.13</vertx.version>
     <zipkin.version>3.5.0</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
-    <jetcd-core.version>0.8.4</jetcd-core.version>
+    <jetcd-core.version>0.8.5</jetcd-core.version>
     <consul-client.version>1.5.0</consul-client.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
