@@ -164,12 +164,13 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
         property = new MapProperty().additionalProperties(context.resolveProperty(valueType, new Annotation[]{}));
       } else if (valueType != null) {
         Property items = context.resolveProperty(valueType, new Annotation[]{});
+
         // If property is XmlElement annotated, then use the name provided by annotation | https://github.com/swagger-api/swagger-core/issues/2047
-        if(annotations != null && annotations.length > 0) {
+        if (annotations != null && annotations.length > 0) {
           for (Annotation annotation : annotations) {
-            if(annotation instanceof XmlElement) {
-              XmlElement xmlElement =   (XmlElement)annotation;
-              if(xmlElement != null && xmlElement.name() != null && !"".equals(xmlElement.name()) && !"##default".equals(xmlElement.name())) {
+            if (annotation instanceof XmlElement) {
+              XmlElement xmlElement = (XmlElement) annotation;
+              if (xmlElement != null && xmlElement.name() != null && !"".equals(xmlElement.name()) && !"##default".equals(xmlElement.name())) {
                 Xml xml = items.getXml() != null ? items.getXml() : new Xml();
                 xml.setName(xmlElement.name());
                 items.setXml(xml);
@@ -348,13 +349,12 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
       Xml xml = new Xml().name(rootAnnotation.name());
       if (rootAnnotation.namespace() != null && !"".equals(rootAnnotation.namespace()) && !"##default".equals(rootAnnotation.namespace())) {
         xml.namespace(rootAnnotation.namespace());
-      }
-      else {
+      } else {
         // If namespace was not given in the annotation, look for it in package-info
         Package pkg = type.getRawClass().getPackage();
-        if(pkg != null) {
+        if (pkg != null) {
           XmlSchema xmlSchma = pkg.getAnnotation(XmlSchema.class);
-          if(xmlSchma != null) {
+          if (xmlSchma != null) {
             xml.namespace(xmlSchma.namespace());
           }
         }
@@ -423,7 +423,7 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
       PropertyMetadata md = propDef.getMetadata();
 
       boolean hasSetter = false, hasGetter = false;
-      try{
+      try {
         if (propDef.getSetter() == null) {
           hasSetter = false;
         } else {
@@ -459,7 +459,7 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
         }
 
         annotations = annotationList.toArray(new Annotation[annotationList.size()]);
-        if(hiddenByJsonView(annotations, context)) {
+        if (hiddenByJsonView(annotations, context)) {
           continue;
         }
 
@@ -471,8 +471,7 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
 
         if (mp != null && mp.allowEmptyValue()) {
           allowEmptyValue = mp.allowEmptyValue();
-        }
-        else {
+        } else {
           allowEmptyValue = null;
         }
 
@@ -571,7 +570,7 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
           property.setDefault(_findDefaultValue(member));
           property.setExample(_findExampleValue(member));
           property.setReadOnly(_findReadOnly(member));
-          if(allowEmptyValue != null) {
+          if (allowEmptyValue != null) {
             property.setAllowEmptyValue(allowEmptyValue);
           }
 
@@ -710,12 +709,12 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
   protected String decorateModelName(ModelConverterContext context, String originalName) {
     String name = originalName;
     if (context.getJsonView() != null && context.getJsonView().value().length > 0) {
-      String COMBINER = "-or-";
+      String combiner = "-or-";
       StringBuffer sb = new StringBuffer();
       for (Class<?> view : context.getJsonView().value()) {
-        sb.append(view.getSimpleName()).append(COMBINER);
+        sb.append(view.getSimpleName()).append(combiner);
       }
-      String suffix = sb.toString().substring(0, sb.length() - COMBINER.length());
+      String suffix = sb.toString().substring(0, sb.length() - combiner.length());
       name = originalName + "_" + suffix;
     }
     return name;
@@ -724,9 +723,9 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
   private boolean hiddenByJsonView(Annotation[] annotations,
       ModelConverterContext context) {
     JsonView jsonView = context.getJsonView();
-    if (jsonView == null)
+    if (jsonView == null) {
       return false;
-
+    }
     Class<?>[] filters = jsonView.value();
     boolean containsJsonViewAnnotation = false;
     for (Annotation ant : annotations) {
@@ -1055,9 +1054,9 @@ public class ModelResolverAdapterJakarta extends AbstractModelConverterAdapterJa
   }
 
   private void removeSelfFromSubTypes(List<NamedType> types, BeanDescription bean) {
-    Class<?> beanClass= bean.getType().getRawClass();
+    Class<?> beanClass = bean.getType().getRawClass();
     ListIterator<NamedType> iter = types.listIterator();
-    while(iter.hasNext()){
+    while (iter.hasNext()) {
       if (beanClass.equals(iter.next().getType())) {
         iter.remove();
       }

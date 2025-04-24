@@ -81,10 +81,10 @@ public class ParameterProcessorAdapterJakarta {
       if (param.isRequired()) {
         p.setRequired(true);
       }
-      if(param.getReadOnly()) {
+      if (param.getReadOnly()) {
         p.readOnly(param.getReadOnly());
       }
-      if(param.getAllowEmptyValue()) {
+      if (param.getAllowEmptyValue()) {
         p.allowEmptyValue(param.getAllowEmptyValue());
       }
       if (StringUtils.isNotEmpty(param.getName())) {
@@ -99,13 +99,13 @@ public class ParameterProcessorAdapterJakarta {
       if (StringUtils.isNotEmpty(param.getAccess())) {
         p.setAccess(param.getAccess());
       }
-      if(StringUtils.isNoneEmpty(param.getCollectionFormat())) {
+      if (StringUtils.isNoneEmpty(param.getCollectionFormat())) {
         p.setCollectionFormat(param.getCollectionFormat());
       }
       if (StringUtils.isNotEmpty(param.getDataType())) {
         if ("java.io.File".equalsIgnoreCase(param.getDataType())) {
           p.setProperty(new FileProperty());
-        } else if("long".equalsIgnoreCase(param.getDataType())) {
+        } else if ("long".equalsIgnoreCase(param.getDataType())) {
           p.setProperty(new LongProperty());
         } else {
           p.setType(param.getDataType());
@@ -146,10 +146,10 @@ public class ParameterProcessorAdapterJakarta {
       if (helper.isRequired() != null) {
         p.setRequired(true);
       }
-      if(helper.getType() != null) {
+      if (helper.getType() != null) {
         p.setType(helper.getType());
       }
-      if(helper.getFormat() != null) {
+      if (helper.getFormat() != null) {
         p.setFormat(helper.getFormat());
       }
 
@@ -585,7 +585,7 @@ public class ParameterProcessorAdapterJakarta {
    * Wrapper implementation for ApiParam annotation
    */
 
-  private final static class ApiParamWrapper implements ParameterProcessorAdapterJakarta.ParamWrapper<ApiParam> {
+  private static final class ApiParamWrapper implements ParameterProcessorAdapterJakarta.ParamWrapper<ApiParam> {
 
     private final ApiParam apiParam;
 
@@ -681,7 +681,7 @@ public class ParameterProcessorAdapterJakarta {
   /**
    * Wrapper implementation for ApiImplicitParam annotation
    */
-  private final static class ApiImplicitParamWrapper implements ParameterProcessorAdapterJakarta.ParamWrapper<ApiImplicitParam> {
+  private static final class ApiImplicitParamWrapper implements ParameterProcessorAdapterJakarta.ParamWrapper<ApiImplicitParam> {
 
     private final ApiImplicitParam apiParam;
 

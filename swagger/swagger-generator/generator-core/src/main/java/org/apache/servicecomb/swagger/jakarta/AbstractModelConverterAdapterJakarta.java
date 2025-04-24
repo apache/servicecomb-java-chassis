@@ -212,7 +212,7 @@ public abstract class AbstractModelConverterAdapterJakarta implements ModelConve
     if (prop != null) {
       if (prop.accessMode().equals(ApiModelProperty.AccessMode.AUTO)) {
         return null;
-      } else if(prop.accessMode().equals(ApiModelProperty.AccessMode.READ_ONLY)) {
+      } else if (prop.accessMode().equals(ApiModelProperty.AccessMode.READ_ONLY)) {
         return true;
       }
       return false;
