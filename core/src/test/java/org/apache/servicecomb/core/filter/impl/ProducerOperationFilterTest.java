@@ -37,6 +37,8 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import mockit.Expectations;
 import mockit.Injectable;
@@ -179,6 +181,7 @@ public class ProducerOperationFilterTest {
   }
 
   @Test
+  @EnabledOnJre(JRE.JAVA_21)
   public void should_unify_IllegalArgumentException_message_when_convert_exception() throws NoSuchMethodException {
     setInvokeSyncMethod();
     new Expectations() {
@@ -194,6 +197,31 @@ public class ProducerOperationFilterTest {
             .withThrowableOfType(ExecutionException.class)
             .withCauseExactlyInstanceOf(IllegalArgumentException.class)
             .withMessage("java.lang.IllegalArgumentException: wrong number of arguments: 1 expected: 0");
+
+    InvocationException throwable = Exceptions
+        .convert(invocation, catchThrowable(future::get), INTERNAL_SERVER_ERROR);
+    assertThat(throwable).hasCauseInstanceOf(IllegalArgumentException.class);
+    CommonExceptionData data = (CommonExceptionData) throwable.getErrorData();
+    assertThat(data.getMessage()).isEqualTo("Parameters not valid or types not match.");
+  }
+
+  @Test
+  @EnabledOnJre(JRE.JAVA_17)
+  public void should_unify_IllegalArgumentException_message_when_convert_exception_17() throws NoSuchMethodException {
+    setInvokeSyncMethod();
+    new Expectations() {
+      {
+        invocation.toProducerArguments();
+        result = new Object[] {1};
+      }
+    };
+    CompletableFuture<Response> future = filter.onFilter(invocation, FilterNode.EMPTY);
+
+    assertThat(future)
+        .failsWithin(Duration.ofSeconds(1))
+        .withThrowableOfType(ExecutionException.class)
+        .withCauseExactlyInstanceOf(IllegalArgumentException.class)
+        .withMessage("java.lang.IllegalArgumentException: wrong number of arguments");
 
     InvocationException throwable = Exceptions
         .convert(invocation, catchThrowable(future::get), INTERNAL_SERVER_ERROR);
