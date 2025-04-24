@@ -34,10 +34,14 @@ public class SelfServiceInvoker implements BootListener {
 
   public CountDownLatch latch = new CountDownLatch(1);
 
-  public String result = "";
+  private String result = "";
 
   public void onAfterRegistry(BootEvent event) {
     result = endpoint.getName("hello");
     latch.countDown();
+  }
+
+  public String getResult() {
+    return result;
   }
 }
