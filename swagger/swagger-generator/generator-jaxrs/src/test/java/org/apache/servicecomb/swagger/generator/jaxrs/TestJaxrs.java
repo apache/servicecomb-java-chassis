@@ -20,8 +20,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.EnabledForJreRange;
-import org.junit.jupiter.api.condition.JRE;
 
 public class TestJaxrs {
   @Test
