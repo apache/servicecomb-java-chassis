@@ -40,11 +40,11 @@ public class PojoClientTest {
   @RpcReference(microserviceName = "pojo")
   public static Test test;
 
-  public static Test testFromXml;
+  private static Test testFromXml;
 
-  public static final byte[] buffer = new byte[1024];
+  private static final byte[] buffer = new byte[1024];
 
-  public static final String SPLITPARAM_RESPONSE_USER_SUFFIX = "(modified by MyHandler)";
+  private static final String SPLITPARAM_RESPONSE_USER_SUFFIX = "(modified by MyHandler)";
 
   static {
     Arrays.fill(buffer, (byte) 1);
