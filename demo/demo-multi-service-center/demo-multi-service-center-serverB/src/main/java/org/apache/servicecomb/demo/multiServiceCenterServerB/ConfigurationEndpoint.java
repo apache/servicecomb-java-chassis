@@ -72,7 +72,7 @@ public class ConfigurationEndpoint {
     if (type == 1) {
       return environment.getProperty(key);
     } else if (type == 2) {
-      return DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      return environment.getProperty(key);
     } else {
       switch (key) {
         case "demo.multi.service.center.serverB.key1":
