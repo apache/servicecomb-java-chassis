@@ -31,8 +31,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 @RestSchema(schemaId = "ConfigurationEndpoint")
 @RequestMapping(path = "/register/url/config", produces = MediaType.APPLICATION_JSON)
 public class ConfigurationEndpoint {
