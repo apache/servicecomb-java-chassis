@@ -21,7 +21,7 @@ import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;

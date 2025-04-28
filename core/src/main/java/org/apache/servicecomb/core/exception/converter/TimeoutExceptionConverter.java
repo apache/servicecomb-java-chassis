@@ -20,7 +20,7 @@ import static jakarta.ws.rs.core.Response.Status.REQUEST_TIMEOUT;
 
 import java.util.concurrent.TimeoutException;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;

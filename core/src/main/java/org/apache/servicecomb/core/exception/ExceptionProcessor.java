@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.core.exception;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;

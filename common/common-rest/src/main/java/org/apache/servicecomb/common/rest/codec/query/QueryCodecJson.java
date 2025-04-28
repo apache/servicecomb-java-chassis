@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.common.rest.codec.query;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.Response.Status;
 

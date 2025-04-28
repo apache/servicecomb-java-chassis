@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.filter.impl;
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;

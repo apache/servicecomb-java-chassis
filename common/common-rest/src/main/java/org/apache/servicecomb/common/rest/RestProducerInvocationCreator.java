@@ -24,7 +24,7 @@ import static org.apache.servicecomb.core.exception.ExceptionCodes.NOT_DEFINED_A
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.commons.lang3.StringUtils;

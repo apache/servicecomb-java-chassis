@@ -21,7 +21,7 @@ import static org.apache.servicecomb.core.provider.consumer.InvokerUtils.isAsync
 import java.lang.reflect.Method;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;

@@ -26,8 +26,8 @@ import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;

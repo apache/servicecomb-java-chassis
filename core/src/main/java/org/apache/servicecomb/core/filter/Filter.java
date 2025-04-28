@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;

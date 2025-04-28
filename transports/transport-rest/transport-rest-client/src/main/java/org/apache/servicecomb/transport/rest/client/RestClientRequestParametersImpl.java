@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.utils.PartUtils;

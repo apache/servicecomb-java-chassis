@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.common.rest;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;

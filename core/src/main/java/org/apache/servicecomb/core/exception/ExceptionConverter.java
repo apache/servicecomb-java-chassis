@@ -20,7 +20,7 @@ import static jakarta.ws.rs.core.Response.Status.Family.CLIENT_ERROR;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_CLIENT;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.GENERIC_SERVER;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
