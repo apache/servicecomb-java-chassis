@@ -115,14 +115,6 @@ public interface BootListener extends Ordered {
     }
   }
 
-  default void onBeforeHandler(BootEvent event) {
-
-  }
-
-  default void onAfterHandler(BootEvent event) {
-
-  }
-
   default void onBeforeFilter(BootEvent event) {
 
   }
