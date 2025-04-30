@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 public class DiscoveryTreeNode extends VersionedCache {
   private volatile boolean childrenInited;
 
-  private int level;
+  private volatile int level;
 
   protected Map<String, Object> attributes = new ConcurrentHashMapEx<>();
 

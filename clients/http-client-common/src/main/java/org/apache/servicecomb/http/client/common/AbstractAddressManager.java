@@ -66,7 +66,7 @@ public class AbstractAddressManager {
 
   private final List<String> isolationRegionAddress = new ArrayList<>();
 
-  private boolean addressAutoRefreshed = false;
+  private volatile boolean addressAutoRefreshed = false;
 
   private final Object lock = new Object();
 

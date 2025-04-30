@@ -100,7 +100,7 @@ public class GroupExecutor implements Executor, Closeable {
     return this;
   }
 
-  public void initConfig() {
+  public synchronized void initConfig() {
     if (LOG_PRINTED.compareAndSet(false, true)) {
       LOGGER.info("thread pool rules:\n"
           + "1.use core threads.\n"
