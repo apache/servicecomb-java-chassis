@@ -184,8 +184,7 @@ public class ServiceCenterWatch implements WebSocketListener {
     LOGGER.info("web socket connected to server {}, status={}, message={}", currentServerUri,
         serverHandshake.getHttpStatus(),
         serverHandshake.getHttpStatusMessage());
-    continuousError.set( 0 );
-
+    continuousError.set(0);
     reconnecting.set(false);
   }
 }
