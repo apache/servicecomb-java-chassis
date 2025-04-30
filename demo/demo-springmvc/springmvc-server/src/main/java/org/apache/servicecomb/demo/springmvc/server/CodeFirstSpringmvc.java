@@ -495,7 +495,7 @@ public class CodeFirstSpringmvc {
     return input;
   }
 
-  private boolean testvoidInRPCSuccess = false;
+  private volatile boolean testvoidInRPCSuccess = false;
 
   @GetMapping(path = "/testvoidInRPC")
   public void testvoidInRPC() {
@@ -503,7 +503,7 @@ public class CodeFirstSpringmvc {
     testvoidInRPCSuccess = true;
   }
 
-  private boolean testVoidInRPCSuccess = false;
+  private volatile boolean testVoidInRPCSuccess = false;
 
   @GetMapping(path = "/testVoidInRPC")
   public Void testVoidInRPC() {
@@ -512,7 +512,7 @@ public class CodeFirstSpringmvc {
     return null;
   }
 
-  private boolean testvoidInRestTemplateSuccess = false;
+  private volatile boolean testvoidInRestTemplateSuccess = false;
 
   @GetMapping(path = "/testvoidInRestTemplate")
   public void testvoidInRestTemplate() {
@@ -520,7 +520,7 @@ public class CodeFirstSpringmvc {
     testvoidInRestTemplateSuccess = true;
   }
 
-  private boolean testVoidInRestTemplateSuccess = false;
+  private volatile boolean testVoidInRestTemplateSuccess = false;
 
   @GetMapping(path = "/testVoidInRestTemplate")
   public Void testVoidInRestTemplate() {
