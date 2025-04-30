@@ -549,12 +549,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       }
       sendUnAuthorizedEvent(response);
       throw new OperationException(
-              "update service instance status fails, statusCode = " + response.getStatusCode() + "; message = " + response
+              "update service properties fails, statusCode = " + response.getStatusCode() + "; message = " + response
                       .getMessage()
                       + "; content = " + response.getContent());
     } catch (IOException e) {
       throw new OperationException(
-              "update service instance status fails", e);
+              "update service properties fails", e);
     }
   }
 
