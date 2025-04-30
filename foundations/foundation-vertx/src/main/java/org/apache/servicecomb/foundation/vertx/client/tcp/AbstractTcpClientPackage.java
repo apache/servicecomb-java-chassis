@@ -27,9 +27,9 @@ public abstract class AbstractTcpClientPackage {
     return reqId.getAndIncrement();
   }
 
-  private long msRequestTimeout;
+  private volatile long msRequestTimeout;
 
-  private long finishWriteToBuffer;
+  private volatile long finishWriteToBuffer;
 
   protected long msgId = getAndIncRequestId();
 
