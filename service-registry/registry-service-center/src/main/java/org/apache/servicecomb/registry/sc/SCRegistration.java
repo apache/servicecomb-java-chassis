@@ -194,4 +194,8 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
   public MicroserviceInstance getBackendMicroserviceInstance() {
     return microserviceInstance;
   }
+
+  EventBus getEventBus() {
+    return eventBus;
+  }
 }
