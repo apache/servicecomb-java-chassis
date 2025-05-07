@@ -63,7 +63,7 @@ public class SCAddressManager {
     this.configurationProperties = configurationProperties;
     this.serviceCenterClient = serviceCenterClient;
     this.scRegistration = scRegistration;
-    EventManager.getEventBus().register(this);
+    scRegistration.getEventBus().register(this);
   }
 
   @Subscribe
