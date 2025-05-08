@@ -66,7 +66,7 @@
     <log4j2.version>2.24.3</log4j2.version>
     <maven-model.version>3.9.9</maven-model.version>
     <micrometer.version>1.14.6</micrometer.version>
-    <mockito.version>5.15.2</mockito.version>
+    <mockito.version>5.17.0</mockito.version>
     <mockito-inline.version>5.2.0</mockito-inline.version>
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>3.0.0</nacos-client.version>
