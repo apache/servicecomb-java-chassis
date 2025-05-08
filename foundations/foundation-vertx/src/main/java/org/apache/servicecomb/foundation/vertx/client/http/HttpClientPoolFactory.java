@@ -46,7 +46,7 @@ public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithCo
               connection.localAddress(), connection.remoteAddress())
       );
       connection.exceptionHandler(e ->
-          LOGGER.info("http connection exception, local:{}, remote:{}.",
+          LOGGER.error("http connection exception, local:{}, remote:{}.",
               connection.localAddress(), connection.remoteAddress(), e)
       );
     });
