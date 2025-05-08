@@ -63,7 +63,7 @@ public class PojoClient {
   @RpcReference(microserviceName = "pojo")
   public static Test test;
 
-  public static Test testFromXml;
+  private static Test testFromXml;
 
   private static SmartCare smartcare;
 

@@ -21,10 +21,10 @@ name: rat check
 on:
   push:
     branches:
-      - 2.8.x
+      - 2.9.x
   pull_request:
     branches:
-      - 2.8.x
+      - 2.9.x
 
 jobs:
   rat_check:
@@ -35,7 +35,7 @@ jobs:
       - name: Set up jdk
         uses: actions/setup-java@v3
         with:
-          java-version: '8'
+          java-version: '21'
           distribution: 'temurin'
       - name: rat check
         run: mvn apache-rat:check -B -Pit,distribution

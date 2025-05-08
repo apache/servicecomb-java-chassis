@@ -245,3 +245,14 @@ For foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/ArrayFie
 ================================================================
 This product bundles files from protostuff which is licensed under the Apache License v2.
 For details, see  https://github.com/protostuff/protostuff
+
+================================================================
+For swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/jakarta/AbstractModelConverterAdapterJakarta.java
+    swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/jakarta/JAXBAnnotationsHelperAdapterJakarta.java
+    swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/jakarta/ModelConvertersAdapterJakarta.java
+    swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/jakarta/ModelResolverAdapterJakarta.java
+    swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/jakarta/ParameterProcessorAdapterJakarta.java
+    swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/jakarta/SwaggerAnnotationIntrospectorAdapterJakarta.java
+================================================================
+This product bundles files from swagger which is licensed under the Apache License v2.
+For details, see https://github.com/swagger-api/swagger-core

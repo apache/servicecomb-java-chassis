@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hamcrest.MatcherAssert;
@@ -33,7 +33,7 @@ public class TestJaxrsProducerResponseMapper {
 
   @Test
   public void mapResponse_withoutHeaders() {
-    javax.ws.rs.core.Response jaxrsResponse = Mockito.mock(javax.ws.rs.core.Response.class);
+    jakarta.ws.rs.core.Response jaxrsResponse = Mockito.mock(jakarta.ws.rs.core.Response.class);
     Mockito.when(jaxrsResponse.getStatusInfo()).thenReturn(Status.OK);
     Mockito.when(jaxrsResponse.getEntity()).thenReturn("result");
     Mockito.when(jaxrsResponse.getHeaders()).thenReturn(new MultivaluedHashMap<>());
@@ -46,7 +46,7 @@ public class TestJaxrsProducerResponseMapper {
 
   @Test
   public void mapResponse_withHeaders() {
-    javax.ws.rs.core.Response jaxrsResponse = Mockito.mock(javax.ws.rs.core.Response.class);
+    jakarta.ws.rs.core.Response jaxrsResponse = Mockito.mock(jakarta.ws.rs.core.Response.class);
     Mockito.when(jaxrsResponse.getStatusInfo()).thenReturn(Status.OK);
     Mockito.when(jaxrsResponse.getEntity()).thenReturn("result");
 

@@ -19,7 +19,7 @@ package org.apache.servicecomb.demo.multiServiceCenterServerB;
 
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.slf4j.Logger;
@@ -30,8 +30,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 @RestSchema(schemaId = "ConfigurationEndpoint")
 @RequestMapping(path = "/register/url/config", produces = MediaType.APPLICATION_JSON)
@@ -72,7 +70,7 @@ public class ConfigurationEndpoint {
     if (type == 1) {
       return environment.getProperty(key);
     } else if (type == 2) {
-      return DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
+      return environment.getProperty(key);
     } else {
       switch (key) {
         case "demo.multi.service.center.serverB.key1":

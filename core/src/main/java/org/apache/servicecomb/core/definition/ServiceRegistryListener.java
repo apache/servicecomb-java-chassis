@@ -21,7 +21,7 @@ import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSER
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSERVICE_VERSIONS_META;
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.getMicroserviceVersionsMeta;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;

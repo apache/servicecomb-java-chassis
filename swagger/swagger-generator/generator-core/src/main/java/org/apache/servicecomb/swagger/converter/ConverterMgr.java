@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.swagger.converter.model.ArrayModelConverter;
 import org.apache.servicecomb.swagger.converter.model.ModelImplConverter;

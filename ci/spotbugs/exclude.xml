@@ -260,4 +260,36 @@
         <Bug pattern="VA_FORMAT_STRING_USES_NEWLINE"/>
     </Match>
 
+    <Match>
+        <Bug pattern="CT_CONSTRUCTOR_THROW"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+        <Class name="org.apache.servicecomb.swagger.jakarta.AbstractModelConverterAdapterJakarta"/>
+    </Match>
+    <Match>
+        <Class name="org.apache.servicecomb.swagger.jakarta.ModelConvertersAdapterJakarta"/>
+        <Or>
+            <Bug pattern="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
+            <Bug pattern="SING_SINGLETON_HAS_NONPRIVATE_CONSTRUCTOR"/>
+        </Or>
+    </Match>
+    <Match>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
+        <Class name="org.apache.servicecomb.swagger.jakarta.ModelResolverAdapterJakarta"/>
+    </Match>
+    <Match>
+        <Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+        <Class name="org.apache.servicecomb.swagger.jakarta.SwaggerAnnotationIntrospectorAdapterJakarta"/>
+    </Match>
+
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+        <Or>
+            <Class name="org.apache.servicecomb.registry.DiscoveryManager"/>
+            <Class name="org.apache.servicecomb.registry.RegistrationManager"/>
+        </Or>
+    </Match>
+
 </FindBugsFilter>

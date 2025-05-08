@@ -33,7 +33,7 @@ public class ServerApplication {
 
     SelfServiceInvoker invoker = BeanUtils.getBean("SelfServiceInvoker");
     invoker.latch.await(10, TimeUnit.SECONDS);
-    TestMgr.check(invoker.result, "hello");
+    TestMgr.check(invoker.getResult(), "hello");
 
     TestMgr.summary();
     if (!TestMgr.errors().isEmpty()) {

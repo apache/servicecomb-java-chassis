@@ -119,8 +119,7 @@ public class HelloWorldIT implements CategorizedTestCase {
       }
     }
 
-    double ratio = oldCount / (float) (oldCount + newCount);
-    TestMgr.check(ratio == 0.5, true);
+    TestMgr.check(oldCount == newCount, true);
   }
 
   private void testHelloWorldEmptyProtectionCloseWeight100() {

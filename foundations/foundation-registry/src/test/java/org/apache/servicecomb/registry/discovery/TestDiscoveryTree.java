@@ -187,6 +187,7 @@ public class TestDiscoveryTree {
     result = discoveryTree.discovery(context, null, null, null);
     Assertions.assertEquals(parent.name(), result.name());
     Assertions.assertEquals(parent.cacheVersion(), result.cacheVersion());
+    DiscoveryManager.renewInstance();
   }
 
   @Test
@@ -212,6 +213,7 @@ public class TestDiscoveryTree {
     ServiceCombException exception = Assertions.assertThrows(ServiceCombException.class,
         () -> result = discoveryTree.discovery(context, null, null, null));
     Assertions.assertEquals(filter.getClass().getName() + " discovery return null.", exception.getMessage());
+    DiscoveryManager.renewInstance();
   }
 
   @Test
@@ -331,5 +333,6 @@ public class TestDiscoveryTree {
 
     countDownLatch.await(3000, TimeUnit.MILLISECONDS);
     Assertions.assertEquals(1000, success.get());
+    DiscoveryManager.renewInstance();
   }
 }

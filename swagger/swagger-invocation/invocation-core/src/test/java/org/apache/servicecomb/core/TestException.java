@@ -18,7 +18,7 @@ package org.apache.servicecomb.core;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;

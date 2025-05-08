@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.exception;
 import java.io.IOException;
 import java.util.Arrays;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;

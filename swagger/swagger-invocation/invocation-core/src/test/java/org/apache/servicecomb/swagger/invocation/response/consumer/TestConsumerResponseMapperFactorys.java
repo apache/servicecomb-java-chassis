@@ -43,7 +43,7 @@ public class TestConsumerResponseMapperFactorys {
     Response scbResponse();
 
     @ApiResponse(code = 200, message = "", response = String.class)
-    javax.ws.rs.core.Response jaxrsResponse();
+    jakarta.ws.rs.core.Response jaxrsResponse();
 
     Optional<String> optional();
   }

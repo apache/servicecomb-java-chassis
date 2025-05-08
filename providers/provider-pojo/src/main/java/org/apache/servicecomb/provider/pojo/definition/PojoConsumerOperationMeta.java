@@ -20,7 +20,7 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 
 import java.lang.reflect.Type;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
