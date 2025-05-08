@@ -88,7 +88,7 @@
     <snakeyaml.version>2.4</snakeyaml.version>
     <spring.version>6.1.10</spring.version>
     <swagger.version>2.2.29</swagger.version>
-    <vertx.version>4.5.13</vertx.version>
+    <vertx.version>4.5.14</vertx.version>
     <zipkin.version>3.5.1</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.5</jetcd-core.version>
