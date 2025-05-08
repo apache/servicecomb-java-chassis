@@ -21,6 +21,7 @@ import java.io.OutputStream;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.io.AsyncCloseable;
 
@@ -60,7 +61,7 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
   // we just need to flow control by pump, so use another size
   private final Queue<Buffer> buffers = new ConcurrentLinkedQueue<>();
 
-  private int currentBufferCount;
+  private final AtomicInteger currentBufferCount = new AtomicInteger();
 
   // just indicate if buffers is full, not control add logic
   // must >= SMALLEST_MAX_BUFFERS
@@ -103,7 +104,7 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
 
   @Override
   public void write(Buffer data, Handler<AsyncResult<Void>> handler) {
-    currentBufferCount++;
+    currentBufferCount.incrementAndGet();
     buffers.add(data);
     context.executeBlocking(this::writeInWorker,
         true,
@@ -122,12 +123,12 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
         outputStream.write(buffer.getBytes());
 
         synchronized (OutputStreamToWriteStream.this) {
-          currentBufferCount--;
-          Runnable action = (currentBufferCount == 0 && closedDeferred != null) ? closedDeferred : this::checkDrained;
+          currentBufferCount.decrementAndGet();
+          Runnable action = (currentBufferCount.get() == 0 && closedDeferred != null) ? closedDeferred : this::checkDrained;
           action.run();
         }
       } catch (IOException e) {
-        currentBufferCount--;
+        currentBufferCount.decrementAndGet();
         future.fail(e);
         return;
       }
@@ -148,7 +149,7 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
 
   @Override
   public synchronized boolean writeQueueFull() {
-    return currentBufferCount >= maxBuffers;
+    return currentBufferCount.get() >= maxBuffers;
   }
 
   @Override
@@ -158,7 +159,7 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
   }
 
   private synchronized void checkDrained() {
-    if (drainHandler != null && currentBufferCount <= drainMark) {
+    if (drainHandler != null && currentBufferCount.get() <= drainMark) {
       Handler<Void> handler = drainHandler;
       drainHandler = null;
       handler.handle(null);
@@ -186,7 +187,7 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
     closed = true;
 
     CompletableFuture<Void> future = new CompletableFuture<>();
-    if (currentBufferCount == 0) {
+    if (currentBufferCount.get() == 0) {
       doClose(future);
     } else {
       closedDeferred = () -> doClose(future);

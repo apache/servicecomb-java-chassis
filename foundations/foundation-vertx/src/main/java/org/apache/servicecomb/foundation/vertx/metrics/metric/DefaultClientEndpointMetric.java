@@ -29,7 +29,7 @@ public class DefaultClientEndpointMetric extends DefaultEndpointMetric {
   // control if the metric instance will be expired
   // all invoker about incRefCount/isExpired, must lock: DefaultClientEndpointMetricManager
   // decRefCount no need to lock, because that only cause to be expired later.
-  private long lastNanoTime = System.nanoTime();
+  private volatile long lastNanoTime = System.nanoTime();
 
   public DefaultClientEndpointMetric(String address) {
     super(address);

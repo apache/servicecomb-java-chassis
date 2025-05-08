@@ -84,15 +84,15 @@ public class Invocation extends SwaggerInvocation {
   // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑
   private Executor responseExecutor;
 
-  private boolean sync = true;
+  private volatile boolean sync = true;
 
   private final InvocationStageTrace invocationStageTrace = new InvocationStageTrace(this);
 
   private HttpServletRequestEx requestEx;
 
-  private boolean finished;
+  private volatile boolean finished;
 
-  private long invocationId;
+  private volatile long invocationId;
 
   private TraceIdLogger traceIdLogger;
 

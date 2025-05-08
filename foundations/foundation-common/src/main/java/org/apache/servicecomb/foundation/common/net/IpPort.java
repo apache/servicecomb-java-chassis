@@ -22,9 +22,9 @@ import java.net.InetSocketAddress;
 import com.google.common.base.Objects;
 
 public class IpPort {
-  private String hostOrIp;
+  private volatile String hostOrIp;
 
-  private int port;
+  private volatile int port;
 
   private volatile InetSocketAddress socketAddress;
 

@@ -30,7 +30,7 @@ public class VersionedCache {
     boolean isEmpty();
   }
 
-  protected int cacheVersion;
+  protected volatile int cacheVersion;
 
   // an optional name
   protected String name;

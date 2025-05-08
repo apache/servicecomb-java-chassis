@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
@@ -67,7 +68,7 @@ public class ServiceCenterWatch implements WebSocketListener {
 
   private String serviceId;
 
-  private int continuousError = 0;
+  private AtomicInteger continuousError = new AtomicInteger(0);
 
   private final AtomicBoolean reconnecting = new AtomicBoolean(false);
 
@@ -143,7 +144,7 @@ public class ServiceCenterWatch implements WebSocketListener {
     if (reconnecting.getAndSet(true)) {
       return;
     }
-    continuousError++;
+    continuousError.incrementAndGet();
     if (webSocketTransport != null) {
       webSocketTransport.close();
     }
@@ -151,11 +152,11 @@ public class ServiceCenterWatch implements WebSocketListener {
   }
 
   private void backOff() {
-    if (this.continuousError <= 0) {
+    if (this.continuousError.get() <= 0) {
       return;
     }
     try {
-      Thread.sleep(Math.min(SLEEP_MAX, this.continuousError * this.continuousError * SLEEP_BASE));
+      Thread.sleep(Math.min(SLEEP_MAX, this.continuousError.get() * this.continuousError.get() * SLEEP_BASE));
     } catch (InterruptedException e) {
       // do not care
     }
@@ -183,7 +184,7 @@ public class ServiceCenterWatch implements WebSocketListener {
     LOGGER.info("web socket connected to server {}, status={}, message={}", currentServerUri,
         serverHandshake.getHttpStatus(),
         serverHandshake.getHttpStatusMessage());
-    continuousError = 0;
+    continuousError.set(0);
     reconnecting.set(false);
   }
 }
