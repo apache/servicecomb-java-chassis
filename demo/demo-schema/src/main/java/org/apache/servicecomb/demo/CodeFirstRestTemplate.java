@@ -21,10 +21,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
+import org.apache.servicecomb.demo.jaxbbean.JAXBJob;
+import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.RegistrationManager;
@@ -34,6 +37,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -51,10 +55,12 @@ public class CodeFirstRestTemplate {
     testOnlyHighway(template, cseUrlPrefix);
 
     changeTransport(microserviceName, Const.RESTFUL);
+    // xml test will failed
     testOnlyRest(microserviceName, template, cseUrlPrefix);
 
     for (String transport : DemoConst.transports) {
       changeTransport(microserviceName, transport);
+      // rest/"" xml test will failed
       testAllTransport(microserviceName, template, cseUrlPrefix);
     }
   }
@@ -62,6 +68,7 @@ public class CodeFirstRestTemplate {
   protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     testCodeFirstUserMap(template, cseUrlPrefix);
     testCodeFirstTextPlain(template, cseUrlPrefix);
+    testCodeFirstAppXml(template, cseUrlPrefix);
     testCodeFirstBytes(template, cseUrlPrefix);
     testCseResponse(microserviceName, template, cseUrlPrefix);
     testCodeFirstAddDate(template, cseUrlPrefix);
@@ -87,6 +94,7 @@ public class CodeFirstRestTemplate {
   protected void testOnlyRest(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     testCodeFirstUserMap(template, cseUrlPrefix);
     testCodeFirstTextPlain(template, cseUrlPrefix);
+    testCodeFirstAppXml(template, cseUrlPrefix);
     testCodeFirstBytes(template, cseUrlPrefix);
     testCseResponse(microserviceName, template, cseUrlPrefix);
     testCodeFirstAddDate(template, cseUrlPrefix);
@@ -127,6 +135,21 @@ public class CodeFirstRestTemplate {
         body,
         String.class);
     TestMgr.check(body, result);
+  }
+
+  private void testCodeFirstAppXml(RestTemplate template, String cseUrlPrefix) {
+    JAXBPerson person = new JAXBPerson("jake", 22, "it", "60kg");
+    person.setJob(new JAXBJob("developer", "coding"));
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
+    headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+    HttpEntity<JAXBPerson> requestEntity = new HttpEntity<>(person, headers);
+    ResponseEntity<JAXBPerson> resEntity = template.exchange(cseUrlPrefix + "appXml",
+        HttpMethod.POST,
+        requestEntity,
+        JAXBPerson.class);
+    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.findProcessor(MediaType.APPLICATION_XML_VALUE, null).getOrder());
+    TestMgr.check(person, resEntity.getBody());
   }
 
   private void testCodeFirstBytes(RestTemplate template, String cseUrlPrefix) {

@@ -70,9 +70,11 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>inspector</artifactId>
     </dependency>
+    <!--upper jdk9 need add this dependency to resolve java.lang.ClassNotFoundException: org.glassfish.jaxb.runtime.v2.ContextFactory-->
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-runtime</artifactId>
+      <version>2.3.2</version>
     </dependency>
   </dependencies>
   <build>
