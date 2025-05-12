@@ -55,12 +55,10 @@ public class CodeFirstRestTemplate {
     testOnlyHighway(template, cseUrlPrefix);
 
     changeTransport(microserviceName, Const.RESTFUL);
-    // xml test will failed
     testOnlyRest(microserviceName, template, cseUrlPrefix);
 
     for (String transport : DemoConst.transports) {
       changeTransport(microserviceName, transport);
-      // rest/"" xml test will failed
       testAllTransport(microserviceName, template, cseUrlPrefix);
     }
   }

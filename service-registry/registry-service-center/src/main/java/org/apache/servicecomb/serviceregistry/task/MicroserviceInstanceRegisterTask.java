@@ -116,7 +116,7 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
   }
 
   @VisibleForTesting
-  public void setAddrCheckInit(boolean addrCheckInit) {
+  void setAddrCheckInit(boolean addrCheckInit) {
     isAddrCheckInit = addrCheckInit;
   }
 }
