@@ -66,7 +66,8 @@ public class ConfigCenterClient implements ConfigCenterOperation {
   }
 
   @Override
-  public QueryConfigurationsResponse queryConfigurations(QueryConfigurationsRequest request, String address) {
+  public QueryConfigurationsResponse queryConfigurations(QueryConfigurationsRequest request, String address,
+      boolean isFirstPull) {
     String dimensionsInfo = buildDimensionsInfo(request, true);
     QueryConfigurationsResponse queryConfigurationsResponse = new QueryConfigurationsResponse();
 
@@ -95,18 +96,24 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
         if (allConfigMap.get(APPLICATION_CONFIG) != null) {
           configurations.putAll(allConfigMap.get(APPLICATION_CONFIG));
+          loggingConfigurationsInfo(APPLICATION_CONFIG, allConfigMap.get(APPLICATION_CONFIG), isFirstPull);
         }
 
         if (allConfigMap.get(buildDimensionsInfo(request, false)) != null) {
           configurations.putAll(allConfigMap.get(buildDimensionsInfo(request, false)));
+          loggingConfigurationsInfo(buildDimensionsInfo(request, false),
+              allConfigMap.get(buildDimensionsInfo(request, false)), isFirstPull);
         }
 
         if (allConfigMap.get(buildDarkLaunchDimensionsInfo(request)) != null) {
           configurations.putAll(allConfigMap.get(buildDarkLaunchDimensionsInfo(request)));
+          loggingConfigurationsInfo(buildDarkLaunchDimensionsInfo(request),
+              allConfigMap.get(buildDarkLaunchDimensionsInfo(request)), isFirstPull);
         }
 
         if (allConfigMap.get(dimensionsInfo) != null) {
           configurations.putAll(allConfigMap.get(dimensionsInfo));
+          loggingConfigurationsInfo(dimensionsInfo, allConfigMap.get(dimensionsInfo), isFirstPull);
         }
         queryConfigurationsResponse.setConfigurations(configurations);
         queryConfigurationsResponse.setChanged(true);
@@ -133,6 +140,19 @@ public class ConfigCenterClient implements ConfigCenterOperation {
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
     }
+  }
+
+  private void loggingConfigurationsInfo(String dimension, Map<String, Object> configs, boolean isFirstPull) {
+    if (!isFirstPull) {
+      return;
+    }
+    StringBuilder sb = new StringBuilder();
+    for (String key : configs.keySet()) {
+      sb.append(key).append(",");
+    }
+    String fileNames = sb.isEmpty() ? "" : sb.substring(0, sb.length() - 1);
+    LOGGER.info("pulling configurations success, current dimension [{}], contains configuration item names [{}].",
+        dimension, fileNames);
   }
 
   @Override

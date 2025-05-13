@@ -78,7 +78,7 @@ public class ConfigCenterManager extends AbstractTask {
     public void execute() {
       try {
         QueryConfigurationsResponse response = configCenterClient.queryConfigurations(queryConfigurationsRequest,
-            configCenterAddressManager.address());
+            configCenterAddressManager.address(), false);
         if (response.isChanged()) {
           queryConfigurationsRequest.setRevision(response.getRevision());
           Map<String, Object> lastData = configConverter.updateData(response.getConfigurations());

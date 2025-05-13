@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -77,7 +78,7 @@ public class KieClient implements KieConfigOperation {
   }
 
   @Override
-  public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request, String address) {
+  public ConfigurationsResponse queryConfigurations(ConfigurationsRequest request, String address, boolean isFirstPull) {
     String url = buildUrl(request, address);
     try {
       if (kieConfiguration.isEnableLongPolling()) {
@@ -90,6 +91,7 @@ public class KieClient implements KieConfigOperation {
       if (httpResponse.getStatusCode() == HttpStatus.SC_OK) {
         revision = httpResponse.getHeader("X-Kie-Revision");
         KVResponse allConfigList = HttpUtils.deserialize(httpResponse.getContent(), KVResponse.class);
+        loggingConfigurationsInfo(request.getLabelsQuery(), allConfigList.getData(), isFirstPull);
         Map<String, Object> configurations = getConfigByLabel(allConfigList);
         configurationsResponse.setConfigurations(configurations);
         configurationsResponse.setChanged(true);
@@ -114,6 +116,19 @@ public class KieClient implements KieConfigOperation {
       LOGGER.error("query configuration from {} failed, message={}", url, e.getMessage());
       throw new OperationException("read response failed. ", e);
     }
+  }
+
+  private void loggingConfigurationsInfo(String dimension, List<KVDoc> data, boolean isFirstPull) {
+    if (!isFirstPull) {
+      return;
+    }
+    StringBuilder sb = new StringBuilder();
+    for (KVDoc doc : data) {
+      sb.append(doc.getKey()).append(",");
+    }
+    String fileNames = sb.isEmpty() ? "" : sb.substring(0, sb.length() - 1);
+    LOGGER.info("pulling configurations success, current dimension [{}], contains configuration item names [{}].",
+        dimension, fileNames);
   }
 
   @Override
