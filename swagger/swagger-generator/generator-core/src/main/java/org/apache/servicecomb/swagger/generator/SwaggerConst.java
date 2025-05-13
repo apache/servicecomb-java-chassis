@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 
 public final class SwaggerConst {
   private SwaggerConst() {

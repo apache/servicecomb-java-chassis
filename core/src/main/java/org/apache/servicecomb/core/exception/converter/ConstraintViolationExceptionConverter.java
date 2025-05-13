@@ -16,14 +16,14 @@
  */
 package org.apache.servicecomb.core.exception.converter;
 
-import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
 import static org.apache.servicecomb.core.exception.ExceptionCodes.DEFAULT_VALIDATE;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.ConstraintViolationException;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;

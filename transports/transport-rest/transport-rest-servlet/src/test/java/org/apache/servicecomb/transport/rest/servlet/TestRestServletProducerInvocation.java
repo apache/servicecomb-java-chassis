@@ -20,7 +20,7 @@ package org.apache.servicecomb.transport.rest.servlet;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;

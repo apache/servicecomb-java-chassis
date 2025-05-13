@@ -20,15 +20,15 @@ package org.apache.servicecomb.demo.mapnull;
 import java.util.Map;
 
 public class ParseResponse {
-  public String resultCode = "99999999";
+  private String resultCode = "99999999";
 
-  public String resultInfo = "unknown result";
+  private String resultInfo = "unknown result";
 
-  public String msgType = "";
+  private String msgType = "";
 
-  public Map<String, String> msgHeader;
+  private Map<String, String> msgHeader;
 
-  public Map<String, Object> msgBody;
+  private Map<String, Object> msgBody;
 
   public String getResultCode() {
     return resultCode;

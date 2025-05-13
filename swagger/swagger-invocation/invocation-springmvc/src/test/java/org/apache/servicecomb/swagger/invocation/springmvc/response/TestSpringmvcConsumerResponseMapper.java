@@ -25,9 +25,9 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Before;
-import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 import io.swagger.models.Swagger;
@@ -39,16 +39,16 @@ public class TestSpringmvcConsumerResponseMapper {
     CompletableFuture<ResponseEntity<String>> asyncResponseEntity();
   }
 
-  SwaggerEnvironment environment = new SwaggerEnvironment();
+  static SwaggerEnvironment environment = new SwaggerEnvironment();
 
-  SwaggerConsumer swaggerConsumer;
+  static SwaggerConsumer swaggerConsumer;
 
   String result = "abc";
 
   Response response = Response.ok(result);
 
-  @Before
-  public void setup() {
+  @BeforeAll
+  public static void setup() {
     Swagger swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
     swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
   }

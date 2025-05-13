@@ -19,7 +19,7 @@ package org.apache.servicecomb.metrics.core.publish;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;

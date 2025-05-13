@@ -89,6 +89,7 @@ public class TestMicroserviceInstanceRegisterTask {
 
     MicroserviceInstanceRegisterTask registerTask =
         new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, null, microservice);
+    registerTask.setAddrCheckInit(true);
     registerTask.run();
 
     Assertions.assertFalse(registerTask.isRegistered());
@@ -119,6 +120,7 @@ public class TestMicroserviceInstanceRegisterTask {
     MicroserviceInstanceRegisterTask registerTask =
         new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
     registerTask.taskStatus = TaskStatus.READY;
+    registerTask.setAddrCheckInit(true);
     registerTask.run();
 
     Assertions.assertTrue(registerTask.isRegistered());
@@ -153,6 +155,7 @@ public class TestMicroserviceInstanceRegisterTask {
     MicroserviceInstanceRegisterTask registerTask =
         new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
     registerTask.taskStatus = TaskStatus.READY;
+    registerTask.setAddrCheckInit(true);
     registerTask.run();
 
     Assertions.assertTrue(registerTask.isRegistered());
@@ -187,6 +190,7 @@ public class TestMicroserviceInstanceRegisterTask {
     MicroserviceInstanceRegisterTask registerTask =
         new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice);
     registerTask.taskStatus = TaskStatus.READY;
+    registerTask.setAddrCheckInit(true);
     registerTask.run();
 
     Assertions.assertFalse(registerTask.isRegistered());

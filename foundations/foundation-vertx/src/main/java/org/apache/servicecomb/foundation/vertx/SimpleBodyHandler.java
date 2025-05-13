@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpHeaders;
 

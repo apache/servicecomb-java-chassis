@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
@@ -118,6 +118,6 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
       }
     }
     TestMgr.check(404, exception.getRawStatusCode());
-    TestMgr.check("404 Not Found: \"{\"message\":\"Not Found\"}\"", exception.getMessage());
+    TestMgr.check("404 Not Found on GET request for \"http://127.0.0.1:8080/aPathNotExist\": \"{\"message\":\"Not Found\"}\"", exception.getMessage());
   }
 }

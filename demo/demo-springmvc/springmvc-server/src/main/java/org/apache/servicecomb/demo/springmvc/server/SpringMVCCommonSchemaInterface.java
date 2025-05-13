@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.demo.CommonSchemaInterface;

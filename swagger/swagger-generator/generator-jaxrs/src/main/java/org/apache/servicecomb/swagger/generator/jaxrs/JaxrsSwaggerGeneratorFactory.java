@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs;
 
-import javax.ws.rs.Path;
+import jakarta.ws.rs.Path;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;

@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.common.rest.filter.inner;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;

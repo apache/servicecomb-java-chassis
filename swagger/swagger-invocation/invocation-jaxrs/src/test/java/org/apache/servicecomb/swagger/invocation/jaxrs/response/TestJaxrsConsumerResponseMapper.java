@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
@@ -39,7 +39,7 @@ public class TestJaxrsConsumerResponseMapper {
     @ApiResponse(code = 200, message = "", response = String.class)
     @Path("/jaxrsResponse")
     @GET
-    javax.ws.rs.core.Response jaxrsResponse();
+    jakarta.ws.rs.core.Response jaxrsResponse();
   }
 
   SwaggerEnvironment environment = new SwaggerEnvironment();

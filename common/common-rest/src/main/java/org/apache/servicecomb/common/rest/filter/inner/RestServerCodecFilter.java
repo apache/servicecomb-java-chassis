@@ -25,8 +25,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.Part;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -95,7 +95,7 @@ public class RestServerCodecFilter implements ProducerFilter {
   @SuppressWarnings("deprecation")
   public static CompletableFuture<Response> encodeResponse(Response response, boolean download,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
-    responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
+    responseEx.setStatus(response.getStatusCode());
     copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
     if (download) {

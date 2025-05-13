@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 import java.lang.reflect.Type;
 import java.util.List;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 

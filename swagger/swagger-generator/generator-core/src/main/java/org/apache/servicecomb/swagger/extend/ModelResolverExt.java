@@ -40,6 +40,7 @@ import org.apache.servicecomb.swagger.extend.property.creator.PartPropertyCreato
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.ShortPropertyCreator;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.jakarta.ModelResolverAdapterJakarta;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +49,6 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.converter.ModelConverter;
 import io.swagger.converter.ModelConverterContext;
-import io.swagger.jackson.ModelResolver;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.properties.IntegerProperty;
@@ -56,7 +56,7 @@ import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
 import io.swagger.util.PrimitiveType;
 
-public class ModelResolverExt extends ModelResolver {
+public class ModelResolverExt extends ModelResolverAdapterJakarta {
   private final Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
 
   private static ObjectMapper objectMapper;

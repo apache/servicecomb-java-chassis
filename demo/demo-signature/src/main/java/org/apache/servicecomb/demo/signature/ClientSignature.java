@@ -19,7 +19,7 @@ package org.apache.servicecomb.demo.signature;
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;

@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.qps;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 

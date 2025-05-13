@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.config.priority;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 

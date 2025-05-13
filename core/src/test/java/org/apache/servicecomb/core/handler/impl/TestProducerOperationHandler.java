@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.handler.impl;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;

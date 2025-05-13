@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.invocation.response.producer;
 
 import java.util.Optional;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 

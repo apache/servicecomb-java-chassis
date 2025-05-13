@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.common.rest.codec.query;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 
 import org.springframework.stereotype.Component;
 

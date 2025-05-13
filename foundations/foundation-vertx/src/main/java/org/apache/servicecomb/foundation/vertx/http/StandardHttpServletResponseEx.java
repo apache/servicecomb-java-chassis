@@ -23,13 +23,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.StatusType;
 
-import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
 import io.vertx.core.Context;
@@ -65,13 +64,6 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
   @Override
   public int getBodyBytesLength() {
     return bodyBuffer.getBodyBytesLength();
-  }
-
-  @SuppressWarnings("deprecation")
-  @Override
-  public void setStatus(int sc, String sm) {
-    super.setStatus(sc, sm);
-    statusType = new HttpStatus(sc, sm);
   }
 
   @Override

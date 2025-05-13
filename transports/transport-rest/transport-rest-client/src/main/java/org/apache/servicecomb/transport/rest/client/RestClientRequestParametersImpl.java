@@ -20,8 +20,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.annotation.Nonnull;
-import javax.servlet.http.Part;
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.slf4j.Logger;

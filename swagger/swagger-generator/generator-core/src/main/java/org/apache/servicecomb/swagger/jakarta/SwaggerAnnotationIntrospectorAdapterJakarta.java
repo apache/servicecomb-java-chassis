@@ -1,0 +1,123 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.servicecomb.swagger.jakarta;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.jackson.PackageVersion;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import jakarta.xml.bind.annotation.XmlElement;
+
+/**
+ * replace io.swagger.jackson.SwaggerAnnotationIntrospector to adapter JAVAEE9 jakarta API
+ * modifying content: javax API dependency changing to the jakarta API dependency.
+ */
+public class SwaggerAnnotationIntrospectorAdapterJakarta extends AnnotationIntrospector {
+  private static final long serialVersionUID = 1L;
+  private boolean isThereAHiddenField = false;
+
+  @Override
+  public Version version() {
+    return PackageVersion.VERSION;
+  }
+
+  @Override
+  public boolean hasIgnoreMarker(AnnotatedMember m) {
+    ApiModelProperty ann = m.getAnnotation(ApiModelProperty.class);
+    if (ann != null && ann.hidden()) {
+      isThereAHiddenField = true;
+      return true;
+    }
+    // Add a Ignore Marker when there's a Constructor with JsonCreator and also if there's any Hidden Field
+    JsonCreator constructor = m.getAnnotation(JsonCreator.class);
+    if (constructor != null && isThereAHiddenField) {
+      return true;
+    }
+    return false;
+  }
+
+  @Override
+  public Boolean hasRequiredMarker(AnnotatedMember m) {
+    ApiModelProperty ann = m.getAnnotation(ApiModelProperty.class);
+    if (ann != null) {
+      return ann.required();
+    }
+    XmlElement elem = m.getAnnotation(XmlElement.class);
+    if (elem != null) {
+      if (elem.required()) {
+        return true;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public String findPropertyDescription(Annotated a) {
+    ApiModel model = a.getAnnotation(ApiModel.class);
+    if (model != null && !"".equals(model.description())) {
+      return model.description();
+    }
+    ApiModelProperty prop = a.getAnnotation(ApiModelProperty.class);
+    if (prop != null) {
+      return prop.value();
+    }
+    return null;
+  }
+
+  @Override
+  public Integer findPropertyIndex(Annotated a) {
+    ApiModelProperty prop = a.getAnnotation(ApiModelProperty.class);
+    if (prop != null && prop.position() != 0) {
+      return prop.position();
+    }
+    return null;
+  }
+
+  @Override
+  public List<NamedType> findSubtypes(Annotated a) {
+    final ApiModel api = a.getAnnotation(ApiModel.class);
+    if (api != null) {
+      final Class<?>[] classes = api.subTypes();
+      final List<NamedType> names = new ArrayList<NamedType>(classes.length);
+      for (Class<?> subType : classes) {
+        names.add(new NamedType(subType));
+      }
+      if (!names.isEmpty()) {
+        return names;
+      }
+    }
+
+    return Collections.emptyList();
+  }
+
+  @Override
+  public String findTypeName(AnnotatedClass ac) {
+    return null;
+  }
+}

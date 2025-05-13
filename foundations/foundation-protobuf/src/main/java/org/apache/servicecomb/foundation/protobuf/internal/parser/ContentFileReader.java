@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.parser;
 
-import javax.annotation.Nullable;
+import jakarta.annotation.Nullable;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;

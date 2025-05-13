@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.PATCH;
+import jakarta.ws.rs.PATCH;
 
 public class PatchAnnotationProcessor extends GetAnnotationProcessor {
   @Override

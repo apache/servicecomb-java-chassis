@@ -20,13 +20,12 @@ package org.apache.servicecomb.swagger.extend.introspector;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.base.EnumUtils;
 import org.apache.servicecomb.swagger.extend.SwaggerEnum;
+import org.apache.servicecomb.swagger.jakarta.SwaggerAnnotationIntrospectorAdapterJakarta;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.introspect.Annotated;
 
-import io.swagger.jackson.SwaggerAnnotationIntrospector;
-
-public class JsonPropertyIntrospector extends SwaggerAnnotationIntrospector {
+public class JsonPropertyIntrospector extends SwaggerAnnotationIntrospectorAdapterJakarta {
   private static final long serialVersionUID = 4157263023893695762L;
 
   @SuppressWarnings("deprecation")
