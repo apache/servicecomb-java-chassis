@@ -61,7 +61,7 @@ public class TcpClientConnection extends TcpConnection {
 
   private final InetSocketAddress socketAddress;
 
-  private boolean localSupportLogin = false;
+  private volatile boolean localSupportLogin = false;
 
   private final boolean remoteSupportLogin;
 

@@ -232,11 +232,11 @@ public class RestBodyHandler implements BodyHandler {
 
     Buffer body;
 
-    boolean failed;
+    volatile boolean failed;
 
     final AtomicInteger uploadCount = new AtomicInteger();
 
-    boolean ended;
+    volatile boolean ended;
 
     long uploadSize = 0L;
 
