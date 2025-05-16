@@ -116,6 +116,12 @@ public class ConfigCenterClient implements ConfigCenterOperation {
         queryConfigurationsResponse.setChanged(false);
         addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
+      } else if (httpResponse.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
+        LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged, If this error persists for a long "
+            + "time, contact the platform for handling.", dimensionsInfo);
+        queryConfigurationsResponse.setChanged(false);
+        addressManager.recordSuccessState(address);
+        return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
         throw new OperationException("Bad request for query configurations.");
       } else {

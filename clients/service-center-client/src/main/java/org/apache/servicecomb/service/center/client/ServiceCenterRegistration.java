@@ -287,7 +287,7 @@ public class ServiceCenterRegistration extends AbstractTask {
         }
 
         if (!serviceCenterClient.sendHeartBeat(microservice.getServiceId(), microserviceInstance.getInstanceId())) {
-          LOGGER.error("send heart failed, and will try again.");
+          LOGGER.warn("send heart failed, and will try again.");
           eventBus.post(new HeartBeatEvent(false, microservice, microserviceInstance));
           startTask(new BackOffSleepTask(failedCount + 1, new SendHeartBeatTask(failedCount + 1)));
         } else {
@@ -297,7 +297,12 @@ public class ServiceCenterRegistration extends AbstractTask {
               new BackOffSleepTask(Math.max(heartBeatInterval, heartBeatRequestTimeout), new SendHeartBeatTask(0)));
         }
       } catch (Exception e) {
-        LOGGER.error("send heart failed, and will try again.", e);
+        // If heartbeat failures three times, log error stack help troubleshooting. Others just log message as warn.
+        if (failedCount == 2) {
+          LOGGER.error("send heart failed, and will try again.", e);
+        } else {
+          LOGGER.warn("send heart failed, and will try again. message [{}]", e.getCause().getMessage());
+        }
         eventBus.post(new HeartBeatEvent(false, microservice, microserviceInstance));
         startTask(new BackOffSleepTask(failedCount + 1, new SendHeartBeatTask(failedCount + 1)));
       }

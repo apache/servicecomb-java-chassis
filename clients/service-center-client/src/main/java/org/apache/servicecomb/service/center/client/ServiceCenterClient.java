@@ -250,6 +250,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         result.setModified(false);
         return result;
       }
+      if (response.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
+        LOGGER.warn("rate limited, keep the local service {}#{} instance cache unchanged, if there has invoking error, "
+            + "contact the platform for handling", appId, serviceName);
+        result.setModified(false);
+        return result;
+      }
       sendUnAuthorizedEvent(response);
       throw new OperationException(
           "get service instances list fails, statusCode = " + response.getStatusCode() + "; message = " + response
