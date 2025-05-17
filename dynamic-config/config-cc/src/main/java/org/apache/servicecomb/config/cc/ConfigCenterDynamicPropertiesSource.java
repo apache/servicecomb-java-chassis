@@ -96,7 +96,7 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     QueryConfigurationsRequest queryConfigurationsRequest = createQueryConfigurationsRequest(environment);
     try {
       QueryConfigurationsResponse response = configCenterClient
-          .queryConfigurations(queryConfigurationsRequest, configCenterAddressManager.address());
+          .queryConfigurations(queryConfigurationsRequest, configCenterAddressManager.address(), true);
       if (response.isChanged()) {
         configConverter.updateData(response.getConfigurations());
         queryConfigurationsRequest.setRevision(response.getRevision());
