@@ -37,9 +37,8 @@ public class ConsumerMain {
     new Consumer().run("rest");
     System.out.println("Running url dispatcher.");
     new Consumer().run("url");
-    // Common Http Dispatcher do not have OperationMeta, can not use router.
-//    System.out.println("Running http dispatcher.");
-//    new Consumer().run("http");
+    System.out.println("Running http dispatcher.");
+    new Consumer().run("http");
 
     System.out.println("All test case finished.");
 
