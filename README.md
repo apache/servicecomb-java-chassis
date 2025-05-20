@@ -111,11 +111,5 @@ mailing list: [subscribe](mailto:dev-subscribe@servicecomb.apache.org)  [dev](ht
 
 See [CONTRIBUTING](http://servicecomb.apache.org/developers/contributing) for details on submitting patches and the contribution workflow.
 
-# Star this project
-
-If you like this project, do not forget star it.
-
-[![Star History Chart](https://api.star-history.com/svg?repos=apache/servicecomb-java-chassis&type=Date)](https://star-history.com/#apache/servicecomb-java-chassis&Date)
-
 # License
 Licensed under an [Apache 2.0 license](LICENSE).

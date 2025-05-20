@@ -119,11 +119,5 @@ public class ConsumerController implements ConsumerService {
 
 参考 [如何做贡献](http://servicecomb.apache.org/cn/developers/contributing).
 
-# 给项目加星
-
-如果喜欢这个项目，请给项目加星，把它推荐给更多人。
-
-[![Star History Chart](https://api.star-history.com/svg?repos=apache/servicecomb-java-chassis&type=Date)](https://star-history.com/#apache/servicecomb-java-chassis&Date)
-
 # License
 Licensed under an [Apache 2.0 license](LICENSE).
