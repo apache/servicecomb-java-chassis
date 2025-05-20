@@ -117,8 +117,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
         addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
-        LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged, If this error persists for a long "
-            + "time, contact the platform for handling.", dimensionsInfo);
+        LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged.", dimensionsInfo);
         queryConfigurationsResponse.setChanged(false);
         addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;

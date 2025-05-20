@@ -106,8 +106,7 @@ public class KieClient implements KieConfigOperation {
         return configurationsResponse;
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
-        LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged, If this error persists for a long"
-            + " time, contact the platform for handling.", request.getLabelsQuery());
+        LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged.", request.getLabelsQuery());
         configurationsResponse.setChanged(false);
         addressManager.recordSuccessState(address);
         return configurationsResponse;

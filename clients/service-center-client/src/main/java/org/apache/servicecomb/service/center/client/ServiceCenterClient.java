@@ -251,8 +251,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         return result;
       }
       if (response.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
-        LOGGER.warn("rate limited, keep the local service {}#{} instance cache unchanged, if there has invoking error, "
-            + "contact the platform for handling", appId, serviceName);
+        LOGGER.warn("rate limited, keep the local service {}#{} instance cache unchanged.", appId, serviceName);
         result.setModified(false);
         return result;
       }
