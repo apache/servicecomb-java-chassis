@@ -105,6 +105,12 @@ public class KieClient implements KieConfigOperation {
         addressManager.recordSuccessState(address);
         return configurationsResponse;
       }
+      if (httpResponse.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
+        LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged.", request.getLabelsQuery());
+        configurationsResponse.setChanged(false);
+        addressManager.recordSuccessState(address);
+        return configurationsResponse;
+      }
       addressManager.recordFailState(address);
       throw new OperationException(
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +

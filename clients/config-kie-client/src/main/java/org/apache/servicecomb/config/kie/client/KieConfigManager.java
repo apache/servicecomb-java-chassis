@@ -156,7 +156,8 @@ public class KieConfigManager extends AbstractTask {
               new PollConfigurationTask(0, this.configurationsRequest)));
         }
       } catch (Exception e) {
-        LOGGER.error("get configurations from KieConfigCenter failed, and will try again.", e);
+        LOGGER.warn("get configurations from KieConfigCenter failed, and will try again, cause message: {}. current "
+            + "fail does not affect the obtained historical configuration.", e.getCause().getMessage());
         startTask(
             new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1, this.configurationsRequest)));
       }

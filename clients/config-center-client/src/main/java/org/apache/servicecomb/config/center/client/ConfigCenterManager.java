@@ -91,7 +91,8 @@ public class ConfigCenterManager extends AbstractTask {
         startTask(
             new BackOffSleepTask(configCenterConfiguration.getRefreshIntervalInMillis(), new PollConfigurationTask(0)));
       } catch (Exception e) {
-        LOGGER.error("get configurations from ConfigCenter failed, and will try again.", e);
+        LOGGER.warn("get configurations from ConfigCenter failed, and will try again, cause message: {}. current "
+            + "fail does not affect the obtained historical configuration.", e.getCause().getMessage());
         startTask(new BackOffSleepTask(failCount + 1, new PollConfigurationTask(failCount + 1)));
       }
     }
