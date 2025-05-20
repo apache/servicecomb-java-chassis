@@ -22,9 +22,9 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 Java Chassis 的核心依赖
 
-| Java Chassis | Spring Boot | Vert.x  | Swagger |
-| ---- | ---- | ---- | ---- |
-| 3.2.x | 3.3.x | 4.5.x | 2.2.x |
+| Java Chassis | Spring Boot | Vert.x  | Swagger | Jackson |
+| ---- | ---- | ---- | ---- | ---- | 
+| 3.2.x | 3.3.x | 4.5.x | 2.2.x | 2.18.x |
 
 > NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2、Java Chassis 1不能与Java Chassis 3共存互访. 升级Java Chassis 3, 需要将相关的消费者、提供者和边缘服务同时升级.
 

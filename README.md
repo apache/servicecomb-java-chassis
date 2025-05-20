@@ -14,9 +14,9 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 
 Java Chassis core dependencies
 
-| Java Chassis | Spring Boot  | Vert.x   | Swagger |
-| ---- | ---- | ---- | ---- |
-| 3.2.x | 3.3.x | 4.5.x | 2.2.x |
+| Java Chassis | Spring Boot  | Vert.x   | Swagger | Jackson |
+| ---- | ---- | ---- | ---- | ---- |
+| 3.2.x | 3.3.x | 4.5.x | 2.2.x | 2.18.x |
 
 > NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not
 > work together with Java Chassis 3. All related consumers, providers and edge service need use Java Chassis 3 when upgrading.
