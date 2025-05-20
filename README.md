@@ -2,6 +2,8 @@
 
 Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features.
 
+> If you find this project helpful, please don't forget to `star` it.
+
 # releases
 
 | Release Train  | Latest Version | Compiled JDK Version | Tested JDK Version | Open API | Notes                    |
@@ -9,6 +11,12 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 | Java Chassis 3 | 3.2.2          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
 | Java Chassis 2 | 2.8.20         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
 | Java Chassis 1 | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
+
+Java Chassis core dependencies
+
+| Java Chassis | Spring Boot  | Vert.x   | Swagger |
+| ---- | ---- | ---- | ---- |
+| 3.2.x | 3.3.x | 4.5.x | 2.2.x |
 
 > NOTICE: Since Open API 3.0.x is not compatible with 2.0.x, Java Chassis 2 and Java Chassis 1 can not
 > work together with Java Chassis 3. All related consumers, providers and edge service need use Java Chassis 3 when upgrading.
