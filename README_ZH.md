@@ -10,6 +10,8 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 
 可以通过[设计选型参考](https://servicecomb.apache.org/references/java-chassis/zh_CN/start/design.html) 了解更多特性和设计原理。
 
+> 如果发现项目能帮助到您，别忘了点击右上角`star`表示鼓励。
+
 # 发布版本
 
 | 版本火车           | 最新版本   | 编译的JDK版本   | 支持的JDK版本          | Open API | 备注              |
@@ -18,9 +20,15 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 | Java Chassis 2 | 2.8.20 | OpenJDK 8  | OpenJDK 8, 11, 17 | 2.0.x    | 依赖Spring 5      |
 | Java Chassis 1 | 1.3.11 | OpenJDK 8  | OpenJDK 8         | 2.0.x    | 停止更新            |
 
->>>NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2、Java Chassis 1不能与Java Chassis 3共存互访. 升级Java Chassis 3, 需要将相关的消费者、提供者和边缘服务同时升级.
+Java Chassis 的核心依赖
 
->>>NOTICE: Java Chassis 1 第一个版本于2018发布，已经停止更新.
+| Java Chassis | Spring Boot | Vert.x  | Swagger | Jackson |
+| ---- | ---- | ---- | ---- | ---- |
+| 3.2.x | 3.3.x | 4.5.x | 2.2.x | 2.18.x |
+
+> NOTICE: Open API 3.0.x 不兼容 2.0.x， 因此Java Chassis 2、Java Chassis 1不能与Java Chassis 3共存互访. 升级Java Chassis 3, 需要将相关的消费者、提供者和边缘服务同时升级.
+
+> NOTICE: Java Chassis 1 第一个版本于2018发布，已经停止更新.
 
 # 快速开始
 
