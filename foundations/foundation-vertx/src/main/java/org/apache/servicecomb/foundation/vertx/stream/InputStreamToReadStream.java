@@ -40,7 +40,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   private final InputStream inputStream;
 
-  private boolean closed;
+  private volatile boolean closed;
 
   private boolean paused;
 

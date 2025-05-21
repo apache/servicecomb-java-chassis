@@ -40,7 +40,7 @@ public class SessionStickinessRule implements RuleExt {
 
   private volatile ServiceCombServer lastServer = null;
 
-  private long lastAccessedTime = 0;
+  private volatile long lastAccessedTime = 0;
 
   private volatile boolean errorThresholdMet = false;
 
