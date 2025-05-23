@@ -31,7 +31,6 @@
 
   <properties>
     <demo.main></demo.main>
-    <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
   </properties>
 
   <packaging>pom</packaging>
@@ -131,11 +130,6 @@
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>foundation-test-scaffolding</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish.jaxb</groupId>
-        <artifactId>jaxb-runtime</artifactId>
-        <version>${jaxb-runtime.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
