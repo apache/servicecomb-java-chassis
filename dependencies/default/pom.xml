@@ -106,6 +106,7 @@
     <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
     <jakarta.xml.bind.version>4.0.2</jakarta.xml.bind.version>
     <jaxb-api.version>2.3.1</jaxb-api.version>
+    <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
     <groovy.version>3.0.9</groovy.version>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
@@ -798,6 +799,12 @@
         <groupId>javax.xml.bind</groupId>
         <artifactId>jaxb-api</artifactId>
         <version>${jaxb-api.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.glassfish.jaxb</groupId>
+        <artifactId>jaxb-runtime</artifactId>
+        <version>${jaxb-runtime.version}</version>
       </dependency>
 
       <dependency>
