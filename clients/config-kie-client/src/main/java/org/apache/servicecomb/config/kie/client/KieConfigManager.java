@@ -84,7 +84,7 @@ public class KieConfigManager extends AbstractTask {
       try {
         this.configurationsRequests.forEach(r -> {
           r.setRevision(ConfigurationsRequest.INITIAL_REVISION);
-          ConfigurationsResponse response = configKieClient.queryConfigurations(r, address);
+          ConfigurationsResponse response = configKieClient.queryConfigurations(r, address, true);
           if (response.isChanged()) {
             r.setRevision(response.getRevision());
             r.setLastRawData(response.getConfigurations());
@@ -142,7 +142,7 @@ public class KieConfigManager extends AbstractTask {
     public void execute() {
       try {
         ConfigurationsResponse response = configKieClient.queryConfigurations(configurationsRequest,
-            kieAddressManager.address());
+            kieAddressManager.address(), false);
         if (response.isChanged()) {
           configurationsRequest.setRevision(response.getRevision());
           configurationsRequest.setLastRawData(response.getConfigurations());
