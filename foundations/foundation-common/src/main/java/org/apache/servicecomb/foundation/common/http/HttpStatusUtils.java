@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.common.http;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public final class HttpStatusUtils {
   private static final HttpStatusManager MGR = new HttpStatusManager();

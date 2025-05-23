@@ -98,7 +98,7 @@ public class TestRestProducerInvocation {
 
   @Test
   public void invokeSendFail() {
-    InvocationException expected = new InvocationException(javax.ws.rs.core.Response.Status.BAD_REQUEST, "test");
+    InvocationException expected = new InvocationException(jakarta.ws.rs.core.Response.Status.BAD_REQUEST, "test");
     restProducerInvocation = Mockito.spy(new RestProducerInvocation());
     Mockito.doThrow(expected).when(restProducerInvocation).findRestOperation();
     Mockito.doAnswer(invocationOnMock -> {

@@ -19,7 +19,7 @@ package org.apache.servicecomb.common.rest.resource;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 

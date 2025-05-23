@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.swagger.invocation.schemas.models;
 
-import javax.ws.rs.QueryParam;
+import jakarta.ws.rs.QueryParam;
 
 public class AddBeanParamV1 {
   @QueryParam("x")

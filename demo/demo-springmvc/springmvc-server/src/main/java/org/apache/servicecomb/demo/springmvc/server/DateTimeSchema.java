@@ -21,8 +21,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.GetMapping;

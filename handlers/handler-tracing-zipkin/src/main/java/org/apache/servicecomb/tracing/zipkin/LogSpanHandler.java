@@ -14,18 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.tracing.zipkin;
 
-package org.apache.servicecomb.provider.springmvc.reference.async;
 
-import java.net.URI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.springframework.http.HttpMethod;
+import brave.handler.MutableSpan;
+import brave.handler.SpanHandler;
+import brave.propagation.TraceContext;
 
-@SuppressWarnings("deprecation")
-// TODO : upgrade to spring 5 will having warning's , we'll fix it later
-public class CseAsyncClientHttpRequestFactory implements org.springframework.http.client.AsyncClientHttpRequestFactory {
-  @Override
-  public org.springframework.http.client.AsyncClientHttpRequest createAsyncRequest(URI uri, HttpMethod httpMethod) {
-    return new CseAsyncClientHttpRequest(uri, httpMethod);
+public class LogSpanHandler extends SpanHandler {
+  private static final Logger LOGGER = LoggerFactory.getLogger("scb-trace");
+
+  public boolean end(TraceContext context, MutableSpan span, Cause cause) {
+    if (!LOGGER.isInfoEnabled()) {
+      return false;
+    } else {
+      LOGGER.info(span.toString());
+      return true;
+    }
+  }
+
+  public String toString() {
+    return "LogSpanHandler{name=scb-trace}";
   }
 }

@@ -22,7 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
@@ -51,8 +51,8 @@ public class TestProducerResponseMapperFactorys {
     }
 
     @ApiResponse(code = 200, message = "", response = String.class)
-    public javax.ws.rs.core.Response jaxrsResponse() {
-      return javax.ws.rs.core.Response.ok("jaxrs").build();
+    public jakarta.ws.rs.core.Response jaxrsResponse() {
+      return jakarta.ws.rs.core.Response.ok("jaxrs").build();
     }
 
     public Optional<String> optional() {

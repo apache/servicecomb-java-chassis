@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.common.part;
 
 import java.io.IOException;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

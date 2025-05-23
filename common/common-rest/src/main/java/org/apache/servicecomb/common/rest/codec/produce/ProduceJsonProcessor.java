@@ -20,7 +20,7 @@ package org.apache.servicecomb.common.rest.codec.produce;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 

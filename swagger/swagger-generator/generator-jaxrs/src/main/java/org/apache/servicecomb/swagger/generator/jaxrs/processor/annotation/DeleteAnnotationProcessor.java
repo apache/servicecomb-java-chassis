@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
 import java.lang.reflect.Type;
 
-import javax.ws.rs.DELETE;
+import jakarta.ws.rs.DELETE;
 
 public class DeleteAnnotationProcessor extends GetAnnotationProcessor {
   @Override

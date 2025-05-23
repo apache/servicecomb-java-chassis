@@ -18,7 +18,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.common.part.FilePartForSend;
@@ -51,11 +51,11 @@ public final class DownloadUtils {
       }
     }
 
-    if (responseEx.getHeader(javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION) == null) {
+    if (responseEx.getHeader(jakarta.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION) == null) {
       // to support chinese and space filename in firefox
       // must use "filename*", (https://tools.ietf.org/html/rtf6266)
       String encodedFileName = HttpUtils.uriEncodePath(part.getSubmittedFileName());
-      responseEx.setHeader(javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION,
+      responseEx.setHeader(jakarta.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION,
           "attachment;filename=" + encodedFileName + ";filename*=utf-8''" + encodedFileName);
     }
   }

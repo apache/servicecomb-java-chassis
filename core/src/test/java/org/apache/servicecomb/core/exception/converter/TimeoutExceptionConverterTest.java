@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.concurrent.TimeoutException;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;

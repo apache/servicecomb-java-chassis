@@ -19,8 +19,8 @@ package org.apache.servicecomb.transport.rest.servlet;
 
 import java.util.Arrays;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRegistration.Dynamic;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletRegistration.Dynamic;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;

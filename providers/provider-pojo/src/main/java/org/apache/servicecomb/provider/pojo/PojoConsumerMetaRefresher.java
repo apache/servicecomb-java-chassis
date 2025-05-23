@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.provider.pojo;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.SCBEngine;

@@ -34,6 +34,7 @@ import org.apache.servicecomb.config.DynamicProperties;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -43,10 +44,11 @@ import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.ThreadLocalCurrentTraceContext;
 import zipkin2.Span;
-import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
+import zipkin2.reporter.BytesMessageSender;
 import zipkin2.reporter.Reporter;
 import zipkin2.reporter.Sender;
+import zipkin2.reporter.SpanBytesEncoder;
 import zipkin2.reporter.brave.AsyncZipkinSpanHandler;
 import zipkin2.reporter.okhttp3.OkHttpSender;
 
@@ -54,7 +56,13 @@ import zipkin2.reporter.okhttp3.OkHttpSender;
 class TracingConfiguration {
   private String apiVersion = CONFIG_TRACING_COLLECTOR_API_V2;
 
-  public static final String TRACING_WORK_WITH_THIRDPARTY = "servicecomb.tracing.workWithThirdParty";
+  public static final String TRACING_PREFIX = "servicecomb.tracing";
+
+  public static final String TRACING_WORK_WITH_THIRDPARTY = TRACING_PREFIX + ".workWithThirdParty";
+
+  public static final String TRACING_REPORTER_LOG_ENABLED = TRACING_PREFIX + ".reporter.log.enabled";
+
+  public static final String TRACING_REPORTER_ZIPKIN_ENABLED = TRACING_PREFIX + ".reporter.zipkin.enabled";
 
   @Bean
   Sender sender(DynamicProperties dynamicProperties) {
@@ -76,7 +84,9 @@ class TracingConfiguration {
   }
 
   @Bean
-  Reporter<Span> zipkinReporter(Sender sender) {
+  Reporter<Span> zipkinReporter(DynamicProperties dynamicProperties, BytesMessageSender sender) {
+    String apiVersion = dynamicProperties.getStringProperty(CONFIG_TRACING_COLLECTOR_API_VERSION,
+        CONFIG_TRACING_COLLECTOR_API_V2).toLowerCase();
     if (apiVersion.compareTo(CONFIG_TRACING_COLLECTOR_API_V1) == 0) {
       return AsyncReporter.builder(sender).build(SpanBytesEncoder.JSON_V1);
     }
@@ -86,13 +96,18 @@ class TracingConfiguration {
 
 
   @Bean
-  Tracing tracing(Sender sender, DynamicProperties dynamicProperties,
-      CurrentTraceContext currentTraceContext) {
-    return Tracing.newBuilder()
+  Tracing Tracing(@Autowired(required = false) Sender sender,
+      CurrentTraceContext currentTraceContext, DynamicProperties dynamicProperties) {
+    Tracing.Builder builder = Tracing.newBuilder()
         .localServiceName(BootStrapProperties.readServiceName())
-        .currentTraceContext(currentTraceContext) // puts trace IDs into logs
-        .addSpanHandler(AsyncZipkinSpanHandler.create(sender))
-        .build();
+        .currentTraceContext(currentTraceContext); // puts trace IDs into logs
+    if (dynamicProperties.getBooleanProperty(TRACING_REPORTER_LOG_ENABLED, true)) {
+      builder.addSpanHandler(new LogSpanHandler());
+    }
+    if (dynamicProperties.getBooleanProperty(TRACING_REPORTER_ZIPKIN_ENABLED, false)) {
+      builder.addSpanHandler(AsyncZipkinSpanHandler.create(sender));
+    }
+    return builder.build();
   }
 
   @Bean

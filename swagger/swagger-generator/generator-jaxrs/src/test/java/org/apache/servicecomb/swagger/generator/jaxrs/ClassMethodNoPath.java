@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
 
 @Path("")
 public class ClassMethodNoPath {

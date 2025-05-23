@@ -30,6 +30,7 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -112,5 +113,10 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     public void run() {
       srClient.checkIsolationAddressAvailable();
     }
+  }
+
+  @VisibleForTesting
+  void setAddrCheckInit(boolean addrCheckInit) {
+    isAddrCheckInit = addrCheckInit;
   }
 }

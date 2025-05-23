@@ -29,6 +29,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -46,10 +47,13 @@ import org.springframework.web.util.UriTemplateHandler;
 class RestTemplateWrapper extends RestTemplate {
   private final List<AcceptableRestTemplate> acceptableRestTemplates = new ArrayList<>();
 
-  final RestTemplate defaultRestTemplate = new RestTemplate();
+  final RestTemplate defaultRestTemplate;
 
   RestTemplateWrapper() {
     acceptableRestTemplates.add(new CseRestTemplate());
+    defaultRestTemplate = new RestTemplate();
+    defaultRestTemplate
+        .setRequestFactory(new BufferingClientHttpRequestFactory(defaultRestTemplate.getRequestFactory()));
   }
 
   void addAcceptableRestTemplate(int index, AcceptableRestTemplate restTemplate) {

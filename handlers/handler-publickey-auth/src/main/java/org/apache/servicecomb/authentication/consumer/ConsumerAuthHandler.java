@@ -18,7 +18,7 @@ package org.apache.servicecomb.authentication.consumer;
 
 import java.util.Optional;
 
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;

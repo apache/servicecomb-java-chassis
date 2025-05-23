@@ -36,7 +36,7 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -147,7 +147,6 @@ public class CodeFirstRestTemplate {
         requestEntity,
         JAXBPerson.class);
     TestMgr.check(-1, ProduceProcessorManager.INSTANCE.findProcessor(MediaType.APPLICATION_XML_VALUE, null).getOrder());
-    // test case maybe fail in JDK 11
     TestMgr.check(person, resEntity.getBody());
   }
 
@@ -162,7 +161,7 @@ public class CodeFirstRestTemplate {
     TestMgr.check(2, result[2]);
   }
 
-  protected void checkStatusCode(String microserviceName, int expectStatusCode, HttpStatus httpStatus) {
+  protected void checkStatusCode(String microserviceName, int expectStatusCode, HttpStatusCode httpStatus) {
     TestMgr.check(expectStatusCode, httpStatus.value());
   }
 

@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.transport.rest.servlet;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.common.rest.HttpTransportContext;
 import org.apache.servicecomb.common.rest.RestProducerInvocationCreator;
