@@ -20,10 +20,13 @@ package org.apache.servicecomb.foundation.common.net;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import mockit.Deencapsulation;
 
@@ -134,6 +137,28 @@ public class TestNetUtils {
     Assertions.assertEquals("http://1.1.1.1:8080", NetUtils.getRealListenAddress("http", "1.1.1.1:8080"));
 
     checkException(v -> NetUtils.getRealListenAddress("http:1", "1.1.1.1:8080"));
+  }
+
+  @Test
+  public void testNetworkInterface() {
+    Map<String, InetAddress> org = Deencapsulation.getField(NetUtils.class, "allInterfaceAddresses");
+
+    Map<String, InetAddress> newValue = new HashMap<>();
+    InetAddress addr = Mockito.mock(InetAddress.class);
+    newValue.put("eth100", addr);
+    Deencapsulation.setField(NetUtils.class, "allInterfaceAddresses", newValue);
+
+    Assertions.assertEquals(addr, NetUtils.getInterfaceAddress("eth100"));
+    Assertions.assertEquals(addr, NetUtils.ensureGetInterfaceAddress("eth100"));
+
+    try {
+      NetUtils.ensureGetInterfaceAddress("xxx");
+      Assertions.fail("must throw exception");
+    } catch (IllegalArgumentException e) {
+      Assertions.assertEquals("Can not find address for interface name: xxx", e.getMessage());
+    }
+
+    Deencapsulation.setField(NetUtils.class, "allInterfaceAddresses", org);
   }
 
   @Test
