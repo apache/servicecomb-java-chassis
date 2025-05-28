@@ -88,7 +88,7 @@ public final class EndpointUtils {
   }
 
   /**
-   * <pre>
+   * {@code
    *   http://xxx  -> rest://xxx
    *   https://xxx -> rest://xxx?sslEnabled=true
    *
@@ -98,7 +98,7 @@ public final class EndpointUtils {
    *   xxx         -> rest://xxx:port?protocol=http2
    *   xxx?a=a1    -> rest://xxx:port?a=a1&protocol=http2
    *   other://xxx -> other://xxx
-   * </pre>
+   * }
    *
    *  This method provided for convenience of handling user input endpoints, and do not have a strict meaning. Make sure all unit test cases
    *  work before change.

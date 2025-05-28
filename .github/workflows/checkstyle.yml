@@ -36,3 +36,5 @@ jobs:
           distribution: 'temurin'
       - name: checkstyle
         run: mvn -B -Pit install -DskipTests -Dspotbugs.skip=true checkstyle:check
+      - name: javadoc
+        run: mvn javadoc:javadoc -Prelease

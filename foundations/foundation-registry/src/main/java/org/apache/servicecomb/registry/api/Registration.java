@@ -22,42 +22,42 @@ import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 
 
 /**
- * This is the core service registration interface. <br/>
+ * This is the core service registration interface.
  */
 public interface Registration<R extends RegistrationInstance> extends SPIEnabled, SPIOrder, LifeCycle {
   String name();
 
   /**
-   * get MicroserviceInstance </br>
-   *
+   * get MicroserviceInstance
+   * <p>
    * Life Cycle：This method is called anytime after <code>run</code>.
    */
   R getMicroserviceInstance();
 
   /**
-   * update MicroserviceInstance status </br>
-   *
+   * update MicroserviceInstance status
+   * <p>
    * Life Cycle：This method is called anytime after <code>run</code>.
    */
   boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status);
 
   /**
-   * adding schemas to Microservice </br>
-   *
+   * adding schemas to Microservice
+   * <p>
    * Life Cycle：This method is called after <code>init</code> and before <code>run</code>.
    */
   void addSchema(String schemaId, String content);
 
   /**
-   * adding endpoints to MicroserviceInstance </br>
-   *
+   * adding endpoints to MicroserviceInstance
+   * <p>
    * Life Cycle：This method is called after <code>init</code> and before <code>run</code>.
    */
   void addEndpoint(String endpoint);
 
   /**
-   * adding property to MicroserviceInstance </br>
-   *
+   * adding property to MicroserviceInstance
+   * <p>
    * Life Cycle：This method is called after <code>init</code> and before <code>run</code>.
    */
   void addProperty(String key, String value);

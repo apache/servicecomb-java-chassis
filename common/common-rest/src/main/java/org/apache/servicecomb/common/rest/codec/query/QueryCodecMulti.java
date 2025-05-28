@@ -25,9 +25,6 @@ import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPath
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * ?query=x1&query=x2
- */
 @SuppressWarnings("unchecked")
 public class QueryCodecMulti extends AbstractQueryCodec {
   public static final String CODEC_NAME = "form:1";

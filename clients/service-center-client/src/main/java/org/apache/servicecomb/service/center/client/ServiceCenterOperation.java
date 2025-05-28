@@ -160,7 +160,6 @@ public interface ServiceCenterOperation {
    * Batch send heartbeats to service-center
    *
    * @param heartbeatsRequest
-   * @return
    * @throws OperationException
    */
   void sendHeartBeats(HeartbeatsRequest heartbeatsRequest);

@@ -38,7 +38,7 @@ public class CompareOperator implements MatchOperator {
   }
 
   /**
-   * 支持 > < = >= <= ! 后面加数字
+   * 支持 {@code > < = >= <= !} 后面加数字
    *
    * @param targetStr
    * @param patternStr
