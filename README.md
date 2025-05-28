@@ -8,8 +8,8 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
 
 | Release Train  | Latest Version | Compiled JDK Version | Tested JDK Version | Open API | Notes                    |
 |----------------|----------------|----------------------|--------------------|----------|--------------------------|
-| Java Chassis 3 | 3.2.2          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
-| Java Chassis 2 | 2.8.20         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
+| Java Chassis 3 | 3.2.6          | OpenJDK 17           | OpenJDK 17         | 3.0.x    | Depends on Spring Boot 3 |
+| Java Chassis 2 | 2.8.24         | OpenJDK 8            | OpenJDK 8, 11, 17  | 2.0.x    | Depends on Spring 5      |
 | Java Chassis 1 | 1.3.11         | OpenJDK 8            | OpenJDK 8          | 2.0.x    | End of Support           |
 
 Java Chassis core dependencies
