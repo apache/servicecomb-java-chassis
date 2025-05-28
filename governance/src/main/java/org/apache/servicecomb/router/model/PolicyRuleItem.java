@@ -25,8 +25,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 /**
- * @Author GuoYl123
- * @Date 2019/10/17
+ * @author GuoYl123
+ * @since 2019/10/17
  **/
 public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 

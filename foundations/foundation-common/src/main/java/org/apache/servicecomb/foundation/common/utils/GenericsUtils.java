@@ -24,14 +24,14 @@ public final class GenericsUtils {
   /**
    * check if XXX.class is generic type. see TestGenericsUtils for details meaning.
    * This method is provided for API compatibility for RestTemplate. Following code:
-   *
-   * <code>
+   * <p>
+   *{@code
    * List<GenericObjectParam<List<RecursiveObjectParam>>> response = consumers.getSCBRestTemplate()
    * postForObject("/testListObjectParam", request, List.class);
-   * </code>
+   * }
    *
    * should work for versions of 1.*. This is because java-chassis can read type info from swaggers.
-   *
+   * <p>
    * Start from 2.x, the best practise to write this code is to use ParameterizedTypeReference provided by RestTemplate
    * exchange method.
    */

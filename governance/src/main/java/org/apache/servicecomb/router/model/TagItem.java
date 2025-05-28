@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * @Author GuoYl123
- * @Date 2019/10/17
+ * @author  GuoYl123
+ * @since  2019/10/17
  **/
 public class TagItem {
 

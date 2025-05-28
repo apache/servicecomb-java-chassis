@@ -21,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @Author GuoYl123
- * @Date 2019/10/17
+ * @author GuoYl123
+ * @since 2019/10/17
  **/
 public class HeaderRule {
 

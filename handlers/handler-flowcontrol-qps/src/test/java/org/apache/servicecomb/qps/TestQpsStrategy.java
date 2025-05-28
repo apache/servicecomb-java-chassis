@@ -24,8 +24,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
- * @Author GuoYl123
- * @Date 2020/7/16
+ * @author GuoYl123
+ * @since 2020/7/16
  **/
 public class TestQpsStrategy {
 

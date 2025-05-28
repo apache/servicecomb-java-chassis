@@ -22,8 +22,8 @@ import java.util.stream.Collectors;
 import org.springframework.util.CollectionUtils;
 
 /**
- * @Author GuoYl123
- * @Date 2019/10/17
+ * @author GuoYl123
+ * @since 2019/10/17
  **/
 public class ServiceInfoCache {
   private final List<PolicyRuleItem> allrule;

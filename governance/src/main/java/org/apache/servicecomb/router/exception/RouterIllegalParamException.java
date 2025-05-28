@@ -17,8 +17,8 @@
 package org.apache.servicecomb.router.exception;
 
 /**
- * @Author GuoYl123
- * @Date 2019/11/4
+ * @author GuoYl123
+ * @since 2019/11/4
  **/
 public class RouterIllegalParamException extends RuntimeException {
 

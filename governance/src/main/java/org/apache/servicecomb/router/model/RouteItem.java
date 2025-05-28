@@ -19,8 +19,8 @@ package org.apache.servicecomb.router.model;
 import java.util.Map;
 
 /**
- * @Author GuoYl123
- * @Date 2019/10/17
+ * @author GuoYl123
+ * @since 2019/10/17
  **/
 public class RouteItem implements Comparable<RouteItem> {
 

@@ -23,8 +23,8 @@ import java.util.function.Function;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 
 /**
- * @Author GuoYl123
- * @Date 2019/10/17
+ * @author GuoYl123
+ * @since 2019/10/17
  **/
 public interface RouterDistributor<INSTANCE> {
 
