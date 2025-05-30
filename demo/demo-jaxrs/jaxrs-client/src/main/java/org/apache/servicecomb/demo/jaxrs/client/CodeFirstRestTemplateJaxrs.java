@@ -57,6 +57,6 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
       }
     }
     TestMgr.check(404, exception.getStatusCode().value());
-    TestMgr.check("404 Not Found: \"{\"message\":\"Not Found\"}\"", exception.getMessage());
+    TestMgr.check(true, exception.getMessage().contains("404 Not Found"));
   }
 }

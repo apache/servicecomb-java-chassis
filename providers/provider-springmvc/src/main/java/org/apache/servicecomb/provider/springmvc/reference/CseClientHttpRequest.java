@@ -20,6 +20,7 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -148,6 +149,11 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   @Override
   public URI getURI() {
     return uri;
+  }
+
+  @Override
+  public Map<String, Object> getAttributes() {
+    return Collections.emptyMap();
   }
 
   @Override

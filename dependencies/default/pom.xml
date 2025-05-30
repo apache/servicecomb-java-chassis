@@ -71,7 +71,6 @@
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>3.0.0</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
-    <netty.version>4.1.119.Final</netty.version>
     <okhttp3.version>4.12.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
     <protobuf.version>3.23.4</protobuf.version>
@@ -86,9 +85,8 @@
     <servlet-api.version>6.0.0</servlet-api.version>
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>2.4</snakeyaml.version>
-    <spring.version>6.1.10</spring.version>
     <swagger.version>2.2.29</swagger.version>
-    <vertx.version>4.5.14</vertx.version>
+    <vertx.version>4.5.15</vertx.version>
     <zipkin.version>3.5.1</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.5</jetcd-core.version>
@@ -228,14 +226,6 @@
         <groupId>commons-logging</groupId>
         <artifactId>commons-logging</artifactId>
         <version>${commons-logging.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>io.netty</groupId>
-        <artifactId>netty-bom</artifactId>
-        <scope>import</scope>
-        <version>${netty.version}</version>
-        <type>pom</type>
       </dependency>
 
       <dependency>
@@ -493,14 +483,6 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.springframework</groupId>
-        <artifactId>spring-framework-bom</artifactId>
-        <version>${spring.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
       </dependency>
 
       <dependency>
