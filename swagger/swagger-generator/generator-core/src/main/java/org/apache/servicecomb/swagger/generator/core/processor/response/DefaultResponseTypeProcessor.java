@@ -21,15 +21,15 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.jakarta.ModelConvertersAdapterJakarta;
 
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
 import io.swagger.util.ReflectionUtils;
@@ -87,7 +87,7 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
       responseType = Part.class;
     }
     SwaggerUtils.addDefinitions(swaggerGenerator.getSwagger(), responseType);
-    Property property = ModelConverters.getInstance().readAsProperty(responseType);
+    Property property = ModelConvertersAdapterJakarta.getInstance().readAsProperty(responseType);
     return PropertyModelConverterExt.toModel(property);
   }
 }

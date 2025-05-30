@@ -21,13 +21,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ParseRequest {
-  public String msgType = "";
+  private String msgType = "";
 
-  public String strMsg;
+  private String strMsg;
 
-  public String strID = "";
+  private String strID = "";
 
-  public Map<String, Object> flags = new HashMap<>();
+  private Map<String, Object> flags = new HashMap<>();
 
   public String getMsgType() {
     return msgType;

@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.common.part;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 public interface FilePartForSend extends Part {
   boolean isDeleteAfterFinished();

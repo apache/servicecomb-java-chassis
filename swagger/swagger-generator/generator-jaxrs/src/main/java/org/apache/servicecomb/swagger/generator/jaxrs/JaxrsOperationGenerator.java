@@ -22,7 +22,7 @@ import java.lang.reflect.Parameter;
 import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.BeanParam;
+import jakarta.ws.rs.BeanParam;
 
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;

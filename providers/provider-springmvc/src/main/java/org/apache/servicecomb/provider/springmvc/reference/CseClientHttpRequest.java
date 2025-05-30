@@ -20,11 +20,12 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -74,6 +75,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   private RequestMeta requestMeta;
 
   private Type responseType;
+
+  private final Map<String, Object> attributes = new LinkedHashMap<>();
 
   public CseClientHttpRequest() {
   }
@@ -144,11 +147,6 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   }
 
   @Override
-  public String getMethodValue() {
-    return method.name();
-  }
-
-  @Override
   public URI getURI() {
     return uri;
   }
@@ -161,6 +159,11 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   @Override
   public OutputStream getBody() {
     return null;
+  }
+
+  @Override
+  public Map<String, Object> getAttributes() {
+    return attributes;
   }
 
   @Override

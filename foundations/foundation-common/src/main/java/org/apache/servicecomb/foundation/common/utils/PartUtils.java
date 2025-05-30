@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.common.utils;
 import java.io.File;
 import java.io.InputStream;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;

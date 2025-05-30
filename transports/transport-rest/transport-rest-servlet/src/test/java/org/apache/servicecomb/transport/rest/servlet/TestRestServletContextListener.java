@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
 
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;

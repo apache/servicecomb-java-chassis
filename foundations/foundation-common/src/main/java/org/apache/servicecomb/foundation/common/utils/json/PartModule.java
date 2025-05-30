@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.common.utils.json;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 

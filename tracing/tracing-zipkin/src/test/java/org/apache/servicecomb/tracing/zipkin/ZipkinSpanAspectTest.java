@@ -34,14 +34,12 @@ import org.apache.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication;
 import org.apache.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.CustomSpanTask;
 import org.apache.servicecomb.tracing.zipkin.app.ZipkinSpanTestApplication.SomeSlowTask;
 import org.hamcrest.MatcherAssert;
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import brave.Tracing;
 import brave.propagation.StrictScopeDecorator;
@@ -49,7 +47,6 @@ import brave.propagation.ThreadLocalCurrentTraceContext;
 import zipkin2.Span;
 import zipkin2.reporter.brave.ZipkinSpanHandler;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = {ZipkinSpanTestApplication.class, TracingConfig.class})
 public class ZipkinSpanAspectTest {
   private Queue<Span> spans;
@@ -83,7 +80,7 @@ public class ZipkinSpanAspectTest {
   public ZipkinSpanAspectTest() {
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws Exception {
     tracing.close();
   }

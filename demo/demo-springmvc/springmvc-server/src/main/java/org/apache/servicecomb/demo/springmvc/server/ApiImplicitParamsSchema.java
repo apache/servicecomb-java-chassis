@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.demo.springmvc.server;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.MediaType;

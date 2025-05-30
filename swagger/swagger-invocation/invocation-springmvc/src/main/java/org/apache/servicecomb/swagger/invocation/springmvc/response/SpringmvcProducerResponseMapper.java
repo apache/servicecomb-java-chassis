@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.invocation.springmvc.response;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
@@ -39,8 +39,7 @@ public class SpringmvcProducerResponseMapper implements ProducerResponseMapper {
   public Response mapResponse(StatusType status, Object response) {
     ResponseEntity<Object> springmvcResponse = (ResponseEntity<Object>) response;
 
-    StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(),
-        springmvcResponse.getStatusCode().getReasonPhrase());
+    StatusType responseStatus = new HttpStatus(springmvcResponse.getStatusCode().value(), "");
 
     Response cseResponse = null;
     if (HttpStatus.isSuccess(responseStatus)) {

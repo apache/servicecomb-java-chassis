@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.filter.impl;
 
-import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static jakarta.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
@@ -188,12 +188,20 @@ public class ProducerOperationFilterTest {
       }
     };
     CompletableFuture<Response> future = filter.onFilter(invocation, FilterNode.EMPTY);
-
-    assertThat(future)
-            .failsWithin(Duration.ofSeconds(1))
-            .withThrowableOfType(ExecutionException.class)
-            .withCauseExactlyInstanceOf(IllegalArgumentException.class)
-            .withMessage("java.lang.IllegalArgumentException: wrong number of arguments");
+    String version = System.getProperty("java.version");
+    if (version != null && version.contains("21")) {
+      assertThat(future)
+          .failsWithin(Duration.ofSeconds(1))
+          .withThrowableOfType(ExecutionException.class)
+          .withCauseExactlyInstanceOf(IllegalArgumentException.class)
+          .withMessage("java.lang.IllegalArgumentException: wrong number of arguments: 1 expected: 0");
+    } else {
+      assertThat(future)
+          .failsWithin(Duration.ofSeconds(1))
+          .withThrowableOfType(ExecutionException.class)
+          .withCauseExactlyInstanceOf(IllegalArgumentException.class)
+          .withMessage("java.lang.IllegalArgumentException: wrong number of arguments");
+    }
 
     InvocationException throwable = Exceptions
         .convert(invocation, catchThrowable(future::get), INTERNAL_SERVER_ERROR);

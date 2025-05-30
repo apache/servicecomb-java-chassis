@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.filter;
 import java.util.Collections;
 import java.util.List;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 

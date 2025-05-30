@@ -15,7 +15,7 @@
  */
 package org.apache.servicecomb.demo.springmvc.client;
 
-import static javax.ws.rs.core.Response.Status.REQUEST_URI_TOO_LONG;
+import static jakarta.ws.rs.core.Response.Status.REQUEST_URI_TOO_LONG;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;

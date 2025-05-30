@@ -20,8 +20,8 @@ package org.apache.servicecomb.springboot2.starter.servlet;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang3.StringUtils;

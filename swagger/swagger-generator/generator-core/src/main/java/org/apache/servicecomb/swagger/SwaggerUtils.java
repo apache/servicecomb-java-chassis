@@ -32,9 +32,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.Response.Status.Family;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Response.Status.Family;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
@@ -45,13 +45,13 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.jakarta.ModelConvertersAdapterJakarta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.Info;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
@@ -211,7 +211,7 @@ public final class SwaggerUtils {
     if (javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
       return;
     }
-    Map<String, Model> models = ModelConverters.getInstance().readAll(javaType);
+    Map<String, Model> models = ModelConvertersAdapterJakarta.getInstance().readAll(javaType);
     for (Entry<String, Model> entry : models.entrySet()) {
       if (!modelNotDuplicate(swagger, entry)) {
         LOGGER.warn("duplicate param model: " + entry.getKey());
@@ -246,7 +246,7 @@ public final class SwaggerUtils {
 
   public static void setParameterType(Swagger swagger, JavaType type, AbstractSerializableParameter<?> parameter) {
     addDefinitions(swagger, type);
-    Property property = ModelConverters.getInstance().readAsProperty(type);
+    Property property = ModelConvertersAdapterJakarta.getInstance().readAsProperty(type);
 
     if (isComplexProperty(property)) {
       // cannot set a simple parameter(header, query, etc.) as complex type

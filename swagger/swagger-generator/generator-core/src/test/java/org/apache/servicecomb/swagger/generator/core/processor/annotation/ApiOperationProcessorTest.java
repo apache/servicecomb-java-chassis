@@ -19,10 +19,10 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.MediaType;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.core.MediaType;
 
 import io.swagger.models.properties.Property;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;

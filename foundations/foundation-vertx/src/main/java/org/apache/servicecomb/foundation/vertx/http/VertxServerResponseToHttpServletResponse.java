@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import javax.servlet.http.Part;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
@@ -49,13 +49,6 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   @Override
   public void setContentType(String type) {
     serverResponse.headers().set(HttpHeaders.CONTENT_TYPE, type);
-  }
-
-  @Override
-  @Deprecated
-  public void setStatus(int sc, String sm) {
-    serverResponse.setStatusCode(sc);
-    serverResponse.setStatusMessage(sm);
   }
 
   @Override

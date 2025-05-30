@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.swagger.invocation;
 
-import javax.ws.rs.core.Response.StatusType;
+import jakarta.ws.rs.core.Response.StatusType;
 
 public interface AsyncResponse {
   void handle(Response response);

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -322,7 +322,7 @@ public abstract class AbstractRestInvocation {
     RestServerCodecFilter.copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
     if (!(response.getResult() instanceof ServerWebSocket)) {
-      responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
+      responseEx.setStatus(response.getStatusCode());
     }
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR, produceProcessor);

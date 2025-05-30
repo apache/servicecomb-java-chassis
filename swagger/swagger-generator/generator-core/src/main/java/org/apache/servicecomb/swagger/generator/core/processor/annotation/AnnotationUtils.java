@@ -28,12 +28,12 @@ import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfig;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfigBase;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
+import org.apache.servicecomb.swagger.jakarta.ModelConvertersAdapterJakarta;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ExampleProperty;
 import io.swagger.annotations.ResponseHeader;
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
@@ -202,11 +202,11 @@ public final class AnnotationUtils {
     }
 
     if (!ClassUtils.isPrimitiveOrWrapper(responseClass)) {
-      Map<String, Model> newDefinitions = ModelConverters.getInstance().readAll(responseClass);
+      Map<String, Model> newDefinitions = ModelConvertersAdapterJakarta.getInstance().readAll(responseClass);
       appendDefinition(swagger, newDefinitions);
     }
 
-    Property property = ModelConverters.getInstance().readAsProperty(responseClass);
+    Property property = ModelConvertersAdapterJakarta.getInstance().readAsProperty(responseClass);
     // responseContainer只可能是:"List", "Set" or "Map"
     // 根据swagger定义这里是区分大小写的， 虽然不明白为何这样做，不过还是不要改标准了
     switch (config.getResponseContainer()) {

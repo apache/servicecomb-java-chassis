@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.demo.springmvc.server;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.provider.rest.common.RestSchema;

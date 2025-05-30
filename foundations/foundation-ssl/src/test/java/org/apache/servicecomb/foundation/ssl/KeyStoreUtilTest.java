@@ -78,7 +78,7 @@ public class KeyStoreUtilTest {
     try {
       KeyStoreUtil.createKeyManagers(keystore, storeKeyValue);
     } catch (IllegalArgumentException e) {
-      if (SystemUtils.JAVA_SPECIFICATION_VERSION.startsWith("17")) {
+      if (Integer.parseInt(SystemUtils.JAVA_SPECIFICATION_VERSION) >= 17) {
         Assertions.assertEquals("Bad key store.Get Key failed:"
                         + " Cannot read the array length because \"password\" is null",
                 e.getMessage());

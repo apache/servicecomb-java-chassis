@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.common.utils.json;
 
 import java.io.IOException;
 
-import javax.servlet.http.Part;
+import jakarta.servlet.http.Part;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;

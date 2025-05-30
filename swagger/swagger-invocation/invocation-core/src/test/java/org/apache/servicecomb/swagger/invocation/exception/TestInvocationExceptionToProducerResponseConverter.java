@@ -33,7 +33,7 @@ public class TestInvocationExceptionToProducerResponseConverter {
 
   @Test
   public void convert(@Mocked SwaggerInvocation swaggerInvocation) {
-    InvocationException e = new InvocationException(javax.ws.rs.core.Response.Status.BAD_REQUEST, "test");
+    InvocationException e = new InvocationException(jakarta.ws.rs.core.Response.Status.BAD_REQUEST, "test");
     Response response = converter.convert(swaggerInvocation, e);
     Assertions.assertSame(e, response.getResult());
   }

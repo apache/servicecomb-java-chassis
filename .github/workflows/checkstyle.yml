@@ -21,7 +21,7 @@ name: checkstyle
 on:
   pull_request:
     branches:
-      - 2.8.x
+      - 2.9.x
 
 jobs:
   checkstyle:
@@ -32,7 +32,7 @@ jobs:
       - name: Set up jdk
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
       - name: checkstyle
         run: mvn -B -Pit install -DskipTests -Dspotbugs.skip=true checkstyle:check

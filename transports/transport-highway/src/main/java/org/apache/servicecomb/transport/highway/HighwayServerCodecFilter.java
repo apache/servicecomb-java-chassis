@@ -20,7 +20,7 @@ import static org.apache.servicecomb.core.exception.Exceptions.toProducerRespons
 
 import java.util.concurrent.CompletableFuture;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;

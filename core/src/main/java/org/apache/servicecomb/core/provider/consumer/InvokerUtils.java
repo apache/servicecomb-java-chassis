@@ -32,8 +32,8 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import javax.annotation.Nonnull;
-import javax.ws.rs.core.Response.Status;
+import jakarta.annotation.Nonnull;
+import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.core.Invocation;

@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
-import javax.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;

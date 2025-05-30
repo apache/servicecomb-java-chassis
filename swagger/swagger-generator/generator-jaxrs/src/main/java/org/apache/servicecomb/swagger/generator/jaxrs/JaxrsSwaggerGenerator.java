@@ -20,7 +20,7 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import javax.ws.rs.HttpMethod;
+import jakarta.ws.rs.HttpMethod;
 
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.rest.RestSwaggerGenerator;
