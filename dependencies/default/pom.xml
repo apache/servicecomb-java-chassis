@@ -69,7 +69,7 @@
     <mockito.version>5.15.2</mockito.version>
     <mockito-inline.version>5.2.0</mockito-inline.version>
     <mock-server.version>5.15.0</mock-server.version>
-    <nacos-client.version>3.0.0</nacos-client.version>
+    <nacos-client.version>3.0.1</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
     <okhttp3.version>4.12.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
