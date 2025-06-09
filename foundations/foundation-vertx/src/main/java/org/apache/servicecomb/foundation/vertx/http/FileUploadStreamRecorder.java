@@ -35,10 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.netflix.config.DynamicPropertyFactory;
 
-public class OpenInputStreamRecorder {
-  private static final Logger LOGGER = LoggerFactory.getLogger(OpenInputStreamRecorder.class);
+public class FileUploadStreamRecorder {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FileUploadStreamRecorder.class);
 
-  private static final OpenInputStreamRecorder RECORDER = new OpenInputStreamRecorder();
+  private static final FileUploadStreamRecorder RECORDER = new FileUploadStreamRecorder();
 
   private static final String STREAM_OPEN_UPPER_LIMIT = "file.upload.stream.operate.upper-limit";
 
@@ -56,7 +56,7 @@ public class OpenInputStreamRecorder {
 
   private final ScheduledExecutorService streamCheckExecutor;
 
-  private OpenInputStreamRecorder() {
+  private FileUploadStreamRecorder() {
     eventBus = EventManager.getEventBus();
     streamCheckExecutor = Executors.newScheduledThreadPool(1, (t) -> new Thread(t, "stream-operate-check"));
     startCheckOpenStream();
@@ -67,7 +67,7 @@ public class OpenInputStreamRecorder {
         getStreamCheckInterval(), TimeUnit.MILLISECONDS);
   }
 
-  public static OpenInputStreamRecorder getInstance() {
+  public static FileUploadStreamRecorder getInstance() {
     return RECORDER;
   }
 

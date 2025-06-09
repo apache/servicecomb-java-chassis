@@ -68,7 +68,7 @@ public class InputStreamWrapper extends InputStream {
 
   @Override
   public void close() throws IOException {
-    OpenInputStreamRecorder.getInstance().clearRecorder(this);
+    FileUploadStreamRecorder.getInstance().clearRecorder(this);
     inputStream.close();
   }
 
