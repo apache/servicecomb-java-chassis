@@ -18,7 +18,9 @@
 package org.apache.servicecomb.config.center.client;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +57,8 @@ public class ConfigCenterClient implements ConfigCenterOperation {
   private final HttpTransport httpTransport;
 
   private final ConfigCenterAddressManager addressManager;
+
+  private final Map<String, List<String>> dimensionConfigNames = new HashMap<>();
 
   public ConfigCenterClient(ConfigCenterAddressManager addressManager, HttpTransport httpTransport) {
     this.addressManager = addressManager;
@@ -95,18 +99,24 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
         if (allConfigMap.get(APPLICATION_CONFIG) != null) {
           configurations.putAll(allConfigMap.get(APPLICATION_CONFIG));
+          logConfigurationNames(APPLICATION_CONFIG, allConfigMap.get(APPLICATION_CONFIG));
         }
 
         if (allConfigMap.get(buildDimensionsInfo(request, false)) != null) {
           configurations.putAll(allConfigMap.get(buildDimensionsInfo(request, false)));
+          logConfigurationNames(buildDimensionsInfo(request, false),
+              allConfigMap.get(buildDimensionsInfo(request, false)));
         }
 
         if (allConfigMap.get(buildDarkLaunchDimensionsInfo(request)) != null) {
           configurations.putAll(allConfigMap.get(buildDarkLaunchDimensionsInfo(request)));
+          logConfigurationNames(buildDarkLaunchDimensionsInfo(request),
+              allConfigMap.get(buildDarkLaunchDimensionsInfo(request)));
         }
 
         if (allConfigMap.get(dimensionsInfo) != null) {
           configurations.putAll(allConfigMap.get(dimensionsInfo));
+          logConfigurationNames(dimensionsInfo, allConfigMap.get(dimensionsInfo));
         }
         queryConfigurationsResponse.setConfigurations(configurations);
         queryConfigurationsResponse.setChanged(true);
@@ -138,6 +148,35 @@ public class ConfigCenterClient implements ConfigCenterOperation {
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
     }
+  }
+
+  /**
+   * Only the name of the new configuration item is printed.
+   * No log is printed when the configuration content is updated.
+   *
+   * @param dimension dimension
+   * @param configs configs
+   */
+  private void logConfigurationNames(String dimension, Map<String, Object> configs) {
+    List<String> configNames = dimensionConfigNames.get(dimension);
+    if (configNames == null) {
+      configNames = new ArrayList<>();
+    }
+    StringBuilder names = new StringBuilder();
+    for (String key : configs.keySet()) {
+      if (configNames.contains(key)) {
+        continue;
+      }
+      names.append(key).append(",");
+      configNames.add(key);
+    }
+    if (names.isEmpty()) {
+      return;
+    }
+    dimensionConfigNames.put(dimension, configNames);
+    String fileNames = names.substring(0, names.length() - 1);
+    LOGGER.info("pulling dimension [{}] configurations success, get config names: [{}].",
+        dimension, fileNames);
   }
 
   @Override
