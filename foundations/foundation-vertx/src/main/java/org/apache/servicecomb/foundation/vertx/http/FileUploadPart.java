@@ -36,7 +36,10 @@ public class FileUploadPart extends AbstractPart {
 
   @Override
   public InputStream getInputStream() throws IOException {
-    return Files.newInputStream(new File(fileUpload.uploadedFileName()).toPath());
+    final InputStream inputStream = Files.newInputStream(new File(fileUpload.uploadedFileName()).toPath());
+    final InputStreamWrapper inputStreamWrapper = new InputStreamWrapper(inputStream);
+    OpenInputStreamRecorder.getInstance().recordOpenStream(inputStreamWrapper);
+    return inputStreamWrapper;
   }
 
   @Override
