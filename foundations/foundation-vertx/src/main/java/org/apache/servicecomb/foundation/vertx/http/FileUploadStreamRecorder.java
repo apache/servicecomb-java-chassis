@@ -98,7 +98,7 @@ public class FileUploadStreamRecorder {
     if (wrapperRecorder.isEmpty()) {
       return;
     }
-    List<InputStreamWrapper> closeStreamWrapper = new ArrayList<>();
+    List<InputStreamWrapper> overdueStreams = new ArrayList<>();
     for (Map.Entry<InputStreamWrapper, StreamOperateEvent> entry : wrapperRecorder.entrySet()) {
       StreamOperateEvent event = entry.getValue();
       long streamOperateTime = event.getOpenStreamTimestamp();
@@ -106,7 +106,7 @@ public class FileUploadStreamRecorder {
 
       // If the check time exceeds three times, close the open stream.
       if (System.currentTimeMillis() - streamOperateTime >= 3 * notifyTime) {
-        closeStreamWrapper.add(entry.getKey());
+        overdueStreams.add(entry.getKey());
         continue;
       }
       if (System.currentTimeMillis() - streamOperateTime >= notifyTime) {
@@ -115,7 +115,7 @@ public class FileUploadStreamRecorder {
         eventBus.post(event);
       }
     }
-    for (InputStreamWrapper wrapper : closeStreamWrapper) {
+    for (InputStreamWrapper wrapper : overdueStreams) {
       closeStreamWrapper(wrapper);
       LOGGER.warn("closed notify three times stream, operate time [{}], operate stackTrace {}",
           wrapperRecorder.get(wrapper).getOpenStreamTimestamp(), wrapperRecorder.get(wrapper).getInvokeStackTrace());
