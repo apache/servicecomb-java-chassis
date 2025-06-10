@@ -21,10 +21,12 @@ import com.google.common.eventbus.EventBus;
 
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.util.CollectionUtils;
 
 public class KieClient implements KieConfigOperation {
 
@@ -65,6 +68,8 @@ public class KieClient implements KieConfigOperation {
   private final KieConfiguration kieConfiguration;
 
   public static final String DEFAULT_KIE_API_VERSION = "v1";
+
+  private final Map<String, List<String>> dimensionConfigNames = new HashMap<>();
 
   public KieClient(KieAddressManager addressManager, HttpTransport httpTransport, KieConfiguration kieConfiguration) {
     this.httpTransport = httpTransport;
@@ -90,6 +95,7 @@ public class KieClient implements KieConfigOperation {
       if (httpResponse.getStatusCode() == HttpStatus.SC_OK) {
         revision = httpResponse.getHeader("X-Kie-Revision");
         KVResponse allConfigList = HttpUtils.deserialize(httpResponse.getContent(), KVResponse.class);
+        logConfigurationNames(request.getLabelsQuery(), allConfigList.getData());
         Map<String, Object> configurations = getConfigByLabel(allConfigList);
         configurationsResponse.setConfigurations(configurations);
         configurationsResponse.setChanged(true);
@@ -114,6 +120,38 @@ public class KieClient implements KieConfigOperation {
       LOGGER.error("query configuration from {} failed, message={}", url, e.getMessage());
       throw new OperationException("read response failed. ", e);
     }
+  }
+
+  /**
+   * Only the name of the new configuration item is printed.
+   * No log is printed when the configuration content is updated.
+   *
+   * @param dimension dimension
+   * @param data configs-data
+   */
+  private void logConfigurationNames(String dimension, List<KVDoc> data) {
+    if (CollectionUtils.isEmpty(data)) {
+      return;
+    }
+    List<String> configNames = dimensionConfigNames.get(dimension);
+    if (configNames == null) {
+      configNames = new ArrayList<>();
+    }
+    StringBuilder names = new StringBuilder();
+    for (KVDoc doc : data) {
+      if (configNames.contains(doc.getKey())) {
+        continue;
+      }
+      names.append(doc.getKey()).append(",");
+      configNames.add(doc.getKey());
+    }
+    if (names.isEmpty()) {
+      return;
+    }
+    dimensionConfigNames.put(dimension, configNames);
+    String fileNames = names.substring(0, names.length() - 1);
+    LOGGER.info("pulling dimension [{}] configurations success, get config names: [{}].",
+        dimension, fileNames);
   }
 
   @Override
