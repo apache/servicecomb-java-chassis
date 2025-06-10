@@ -25,6 +25,7 @@ public class InputStreamWrapper extends InputStream {
 
   public InputStreamWrapper(InputStream inputStream) {
     this.inputStream = inputStream;
+    FileUploadStreamRecorder.getInstance().recordOpenStream(this);
   }
 
   public InputStream getInputStream() {
@@ -62,7 +63,7 @@ public class InputStreamWrapper extends InputStream {
   }
 
   @Override
-  public synchronized void mark(int readlimit) {
+  public void mark(int readlimit) {
     inputStream.mark(readlimit);
   }
 
@@ -73,7 +74,7 @@ public class InputStreamWrapper extends InputStream {
   }
 
   @Override
-  public synchronized void reset() throws IOException {
+  public void reset() throws IOException {
     inputStream.reset();
   }
 }
