@@ -84,26 +84,26 @@ public class FileUploadStreamRecorder {
     if (streamWrapperRecorder.size() < maxSize) {
       return;
     }
-    StreamOperateEvent oldestEvent = getOldestOperateEvent(streamWrapperRecorder.values());
-    LOGGER.warn("reached recorder maxSize [{}] of file stream, delete oldest stream, operate time [{}], stackTrace {}",
-        maxSize, oldestEvent.getOpenStreamTimestamp(), oldestEvent.getInvokeStackTrace());
-    closeStreamWrapper(oldestEvent.getInputStreamWrapper());
+    synchronized (lock) {
+      StreamOperateEvent oldestEvent = getOldestOperateEvent(streamWrapperRecorder.values());
+      LOGGER.warn("reached recorder maxSize [{}] of file stream, delete oldest stream, operate time [{}], stackTrace {}",
+          maxSize, oldestEvent.getOpenStreamTimestamp(), oldestEvent.getInvokeStackTrace());
+      closeStreamWrapper(oldestEvent.getInputStreamWrapper());
+    }
   }
 
   private StreamOperateEvent getOldestOperateEvent(Collection<StreamOperateEvent> values) {
-    synchronized (lock) {
-      StreamOperateEvent oldestEvent = null;
-      for (StreamOperateEvent event : values) {
-        if (oldestEvent == null) {
-          oldestEvent = event;
-          continue;
-        }
-        if (oldestEvent.getOpenStreamTimestamp() > event.getOpenStreamTimestamp()) {
-          oldestEvent = event;
-        }
+    StreamOperateEvent oldestEvent = null;
+    for (StreamOperateEvent event : values) {
+      if (oldestEvent == null) {
+        oldestEvent = event;
+        continue;
       }
-      return oldestEvent;
+      if (oldestEvent.getOpenStreamTimestamp() > event.getOpenStreamTimestamp()) {
+        oldestEvent = event;
+      }
     }
+    return oldestEvent;
   }
 
   public void clearRecorder(InputStreamWrapper inputStreamWrapper) {
