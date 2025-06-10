@@ -35,6 +35,7 @@ import org.apache.servicecomb.http.client.common.HttpUtils;
 import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.eventbus.EventBus;
@@ -158,6 +159,9 @@ public class ConfigCenterClient implements ConfigCenterOperation {
    * @param configs configs
    */
   private void logConfigurationNames(String dimension, Map<String, Object> configs) {
+    if (CollectionUtils.isEmpty(configs)) {
+      return;
+    }
     List<String> configNames = dimensionConfigNames.get(dimension);
     if (configNames == null) {
       configNames = new ArrayList<>();
