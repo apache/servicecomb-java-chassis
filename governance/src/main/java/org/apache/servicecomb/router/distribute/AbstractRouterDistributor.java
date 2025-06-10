@@ -79,14 +79,14 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
         unSetTagInstances, fallbackVersionServerMap);
 
     // weight calculation to obtain the next tags instance
-    TagItem targetTag = getFiltedServerTagItem(invokeRule, targetServiceName);
+    TagItem targetTag = getFilteredServerTagItem(invokeRule, targetServiceName);
     if (targetTag != null && versionServerMap.containsKey(targetTag)) {
       return versionServerMap.get(targetTag);
     }
 
     if (!fallbackVersionServerMap.isEmpty()) {
       // weight calculation to obtain the next fallback tags instance
-      TagItem fallbackTargetTag = getFallbackFiltedServerTagItem(invokeRule, targetServiceName);
+      TagItem fallbackTargetTag = getFallbackFilteredServerTagItem(invokeRule, targetServiceName);
       if (fallbackTargetTag != null && fallbackVersionServerMap.containsKey(fallbackTargetTag)) {
         return fallbackVersionServerMap.get(fallbackTargetTag);
       }
@@ -113,12 +113,12 @@ public abstract class AbstractRouterDistributor<INSTANCE> implements
     this.getProperties = getProperties;
   }
 
-  public TagItem getFiltedServerTagItem(PolicyRuleItem rule, String targetServiceName) {
+  public TagItem getFilteredServerTagItem(PolicyRuleItem rule, String targetServiceName) {
     return routerRuleCache.getServiceInfoCacheMap().get(targetServiceName)
         .getNextInvokeVersion(rule);
   }
 
-  public TagItem getFallbackFiltedServerTagItem(PolicyRuleItem rule, String targetServiceName) {
+  public TagItem getFallbackFilteredServerTagItem(PolicyRuleItem rule, String targetServiceName) {
     return routerRuleCache.getServiceInfoCacheMap().get(targetServiceName)
         .getFallbackNextInvokeVersion(rule);
   }
