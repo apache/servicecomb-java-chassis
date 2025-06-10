@@ -19,14 +19,13 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class FileUploadStreamRecorder {
 
   private static final String STREAM_CHECK_INTERVAL = "servicecomb.uploads.file.stream-recorder.check-interval";
 
-  private static final int DEFAULT_STREAM_OPEN_UPPER_LIMIT = 1000;
+  private static final int DEFAULT_STREAM_RECORDER_MAX_SIZE = 5000;
 
   private static final long DEFAULT_STREAM_CHECK_INTERVAL = 30000L;
 
@@ -56,6 +55,8 @@ public class FileUploadStreamRecorder {
   private final EventBus eventBus;
 
   private final ScheduledExecutorService streamCheckExecutor;
+
+  private final Object lock = new Object();
 
   private FileUploadStreamRecorder() {
     eventBus = EventManager.getEventBus();
@@ -83,13 +84,26 @@ public class FileUploadStreamRecorder {
     if (streamWrapperRecorder.size() < maxSize) {
       return;
     }
-    List<StreamOperateEvent> operateEvents = new ArrayList<>(streamWrapperRecorder.values());
-    List<StreamOperateEvent> sortEvents = operateEvents.stream()
-        .sorted(Comparator.comparingLong(StreamOperateEvent::getOpenStreamTimestamp)).collect(Collectors.toList());
-    StreamOperateEvent deleteEvent = sortEvents.get(0);
+    StreamOperateEvent oldestEvent = getOldestOperateEvent(streamWrapperRecorder.values());
     LOGGER.warn("reached recorder maxSize [{}] of file stream, delete oldest stream, operate time [{}], stackTrace {}",
-        maxSize, deleteEvent.getOpenStreamTimestamp(), deleteEvent.getInvokeStackTrace());
-    closeStreamWrapper(deleteEvent.getInputStreamWrapper());
+        maxSize, oldestEvent.getOpenStreamTimestamp(), oldestEvent.getInvokeStackTrace());
+    closeStreamWrapper(oldestEvent.getInputStreamWrapper());
+  }
+
+  private StreamOperateEvent getOldestOperateEvent(Collection<StreamOperateEvent> values) {
+    synchronized (lock) {
+      StreamOperateEvent oldestEvent = null;
+      for (StreamOperateEvent event : values) {
+        if (oldestEvent == null) {
+          oldestEvent = event;
+          continue;
+        }
+        if (oldestEvent.getOpenStreamTimestamp() > event.getOpenStreamTimestamp()) {
+          oldestEvent = event;
+        }
+      }
+      return oldestEvent;
+    }
   }
 
   public void clearRecorder(InputStreamWrapper inputStreamWrapper) {
@@ -135,7 +149,7 @@ public class FileUploadStreamRecorder {
 
   private int getStreamRecorderMaxSize() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty(STREAM_RECORDER_MAX_SIZE, DEFAULT_STREAM_OPEN_UPPER_LIMIT).get();
+        .getIntProperty(STREAM_RECORDER_MAX_SIZE, DEFAULT_STREAM_RECORDER_MAX_SIZE).get();
   }
 
   private boolean getStreamStackTraceEnabled() {
