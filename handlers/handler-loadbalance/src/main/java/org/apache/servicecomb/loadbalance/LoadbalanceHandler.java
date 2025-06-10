@@ -89,7 +89,6 @@ public class LoadbalanceHandler implements Handler {
 
   private void preCheck() {
     // Old configurations check.Just print an error, because configurations may given in dynamic and fail on runtime.
-
     String policyName = DynamicPropertyFactory.getInstance()
         .getStringProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName", null)
         .get();
@@ -115,8 +114,9 @@ public class LoadbalanceHandler implements Handler {
       response.handle(async);
     };
 
-    if (handleSuppliedEndpoint(invocation, asyncResp)) {
+    if (handleSuppliedEndpoint(invocation)) {
       invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, false);
+      invocation.next(asyncResp);
       return;
     }
     invocation.addLocalContext(RetryContext.RETRY_LOAD_BALANCE, true);
@@ -137,15 +137,13 @@ public class LoadbalanceHandler implements Handler {
 
   // user's can invoke a service by supplying target Endpoint.
   // in this case, we do not using load balancer, and no stats of server calculated, no retrying.
-  private boolean handleSuppliedEndpoint(Invocation invocation,
-      AsyncResponse asyncResp) throws Exception {
+  private boolean handleSuppliedEndpoint(Invocation invocation) throws Exception {
     if (invocation.getEndpoint() != null) {
-      invocation.next(asyncResp);
       return true;
     }
 
     if (supportDefinedEndpoint) {
-      return defineEndpointAndHandle(invocation, asyncResp);
+      return defineEndpointAndHandle(invocation);
     }
 
     return false;
@@ -162,7 +160,7 @@ public class LoadbalanceHandler implements Handler {
     return new Endpoint(transport, endpointUri);
   }
 
-  private boolean defineEndpointAndHandle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+  private boolean defineEndpointAndHandle(Invocation invocation) throws Exception {
     Object endpoint = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
     if (endpoint == null) {
       return false;
@@ -173,7 +171,6 @@ public class LoadbalanceHandler implements Handler {
     }
 
     invocation.setEndpoint((Endpoint) endpoint);
-    invocation.next(asyncResp);
     return true;
   }
 
