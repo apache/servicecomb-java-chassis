@@ -174,7 +174,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
       names.append(key).append(",");
       configNames.add(key);
     }
-    if (names.isEmpty()) {
+    if (names.length() == 0) {
       return;
     }
     dimensionConfigNames.put(dimension, configNames);

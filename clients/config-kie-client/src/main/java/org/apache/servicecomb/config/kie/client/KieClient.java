@@ -151,7 +151,7 @@ public class KieClient implements KieConfigOperation {
       names.append(doc.getKey()).append(",");
       configNames.add(doc.getKey());
     }
-    if (names.isEmpty()) {
+    if (names.length() == 0) {
       return;
     }
     dimensionConfigNames.put(dimension, configNames);
