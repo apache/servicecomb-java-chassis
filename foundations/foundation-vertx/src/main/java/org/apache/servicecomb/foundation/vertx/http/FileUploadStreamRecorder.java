@@ -39,14 +39,14 @@ public class FileUploadStreamRecorder {
 
   private static final FileUploadStreamRecorder RECORDER = new FileUploadStreamRecorder();
 
-  private static final String STREAM_RECORDER_MAX_SIZE = "servicecomb.uploads.file.stream-recorder.max-size";
+  private static final String STREAM_RECORDER_MAX_SIZE = "servicecomb.uploads.file.streamRecorder.maxSize";
 
   private static final String STREAM_STACKTRACE_ENABLED
-      = "servicecomb.uploads.file.stream-recorder.stack-trace-enabled";
+      = "servicecomb.uploads.file.streamRecorder.stackTraceEnabled";
 
-  private static final String STREAM_CHECK_INTERVAL = "servicecomb.uploads.file.stream-recorder.check-interval";
+  private static final String STREAM_CHECK_INTERVAL = "servicecomb.uploads.file.streamRecorder.checkInterval";
 
-  private static final String STREAM_MAX_OPEN_TIME = "servicecomb.uploads.file.stream-recorder.stream-max-open-time";
+  private static final String STREAM_MAX_OPEN_TIME = "servicecomb.uploads.file.streamRecorder.streamMaxOpenTime";
 
   private static final int DEFAULT_STREAM_RECORDER_MAX_SIZE = 5000;
 
@@ -90,7 +90,7 @@ public class FileUploadStreamRecorder {
     }
     synchronized (lock) {
       StreamOperateEvent oldestEvent = getOldestOperateEvent(streamWrapperRecorder.values());
-      LOGGER.warn("reached record maxSize [{}] of file stream, delete oldest stream, operate time [{}], stackTrace {}",
+      LOGGER.warn("reached record maxSize [{}] of file stream, delete oldest stream, operate time [{}], stackTrace: ",
           maxSize, oldestEvent.getOpenStreamTimestamp(), oldestEvent.getInvokeStackTrace());
       oldestEvent.setEventType(EventType.OVER_SIZE);
       eventBus.post(oldestEvent);
@@ -117,23 +117,27 @@ public class FileUploadStreamRecorder {
   }
 
   private void checkRecordFileStream() {
-    if (streamWrapperRecorder.isEmpty()) {
-      return;
-    }
-    List<StreamOperateEvent> overdueStreamEvents = new ArrayList<>();
-    long currentMillis = System.currentTimeMillis();
-    for (StreamOperateEvent event : streamWrapperRecorder.values()) {
-      long streamOperateTime = event.getOpenStreamTimestamp();
-      if (currentMillis - streamOperateTime >= getStreamMaxOpenTime()) {
-        overdueStreamEvents.add(event);
+    try {
+      if (streamWrapperRecorder.isEmpty()) {
+        return;
       }
-    }
-    for (StreamOperateEvent overdueEvent : overdueStreamEvents) {
-      overdueEvent.setEventType(EventType.TIMEOUT);
-      eventBus.post(overdueEvent);
-      closeStreamWrapper(overdueEvent.getInputStreamWrapper());
-      LOGGER.warn("closed timeout stream, operate time [{}], operate stackTrace {}",
-          overdueEvent.getOpenStreamTimestamp(), overdueEvent.getInvokeStackTrace());
+      List<StreamOperateEvent> overdueStreamEvents = new ArrayList<>();
+      long currentMillis = System.currentTimeMillis();
+      for (StreamOperateEvent event : streamWrapperRecorder.values()) {
+        long streamOperateTime = event.getOpenStreamTimestamp();
+        if (currentMillis - streamOperateTime >= getStreamMaxOpenTime()) {
+          overdueStreamEvents.add(event);
+        }
+      }
+      for (StreamOperateEvent overdueEvent : overdueStreamEvents) {
+        overdueEvent.setEventType(EventType.TIMEOUT);
+        eventBus.post(overdueEvent);
+        closeStreamWrapper(overdueEvent.getInputStreamWrapper());
+        LOGGER.warn("closed timeout stream, operate time [{}], operate stackTrace: ",
+            overdueEvent.getOpenStreamTimestamp(), overdueEvent.getInvokeStackTrace());
+      }
+    } catch (Exception e) {
+      LOGGER.error("checkRecordFileStream failed, next interval will try again.", e);
     }
   }
 
