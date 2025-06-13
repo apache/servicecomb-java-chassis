@@ -39,20 +39,20 @@ public class FileUploadStreamRecorder {
 
   private static final FileUploadStreamRecorder RECORDER = new FileUploadStreamRecorder();
 
-  private static final String STREAM_RECORDER_MAX_SIZE = "servicecomb.uploads.file.streamRecorder.maxSize";
+  public static final String STREAM_RECORDER_MAX_SIZE = "servicecomb.uploads.file.streamRecorder.maxSize";
 
-  private static final String STREAM_STACKTRACE_ENABLED
+  public static final String STREAM_STACKTRACE_ENABLED
       = "servicecomb.uploads.file.streamRecorder.stackTraceEnabled";
 
-  private static final String STREAM_CHECK_INTERVAL = "servicecomb.uploads.file.streamRecorder.checkInterval";
+  public static final String STREAM_CHECK_INTERVAL = "servicecomb.uploads.file.streamRecorder.checkInterval";
 
-  private static final String STREAM_MAX_OPEN_TIME = "servicecomb.uploads.file.streamRecorder.streamMaxOpenTime";
+  public static final String STREAM_MAX_OPEN_TIME = "servicecomb.uploads.file.streamRecorder.streamMaxOpenTime";
 
-  private static final int DEFAULT_STREAM_RECORDER_MAX_SIZE = 5000;
+  public static final int DEFAULT_STREAM_RECORDER_MAX_SIZE = 5000;
 
-  private static final long DEFAULT_STREAM_CHECK_INTERVAL = 30000L;
+  public static final long DEFAULT_STREAM_CHECK_INTERVAL = 30000L;
 
-  private static final long DEFAULT_STREAM_MAX_OPEN_TIME = 90000L;
+  public static final long DEFAULT_STREAM_MAX_OPEN_TIME = 90000L;
 
   private final Map<InputStreamWrapper, StreamOperateEvent> streamWrapperRecorder = new ConcurrentHashMap<>();
 
