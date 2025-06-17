@@ -36,8 +36,8 @@
       <artifactId>archaius-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-configuration2</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>
