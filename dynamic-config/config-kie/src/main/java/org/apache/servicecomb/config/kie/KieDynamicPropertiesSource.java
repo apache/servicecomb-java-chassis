@@ -72,7 +72,7 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
     configConverter = new ConfigConverter(kieConfig.getFileSources());
     KieAddressManager kieAddressManager = configKieAddressManager(kieConfig);
 
-    RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
+    RequestConfig.Builder requestBuilder = buildRequestConfigBuilder(environment);
     if (kieConfig.enableLongPolling()
         && kieConfig.getPollingWaitTime() >= 0) {
       requestBuilder.setConnectionRequestTimeout(kieConfig.getPollingWaitTime() * 2 * 1000);
@@ -88,6 +88,17 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
     kieConfigManager.firstPull();
     kieConfigManager.startConfigKieManager();
     data.putAll(configConverter.getCurrentData());
+  }
+
+  private RequestConfig.Builder buildRequestConfigBuilder(Environment environment) {
+    RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
+    builder.setConnectTimeout(
+        environment.getProperty("servicecomb.kie.client.timeout.connect", int.class, 5000));
+    builder.setConnectionRequestTimeout(
+        environment.getProperty("servicecomb.kie.client.timeout.request",  int.class, 5000));
+    builder.setSocketTimeout(
+        environment.getProperty("servicecomb.kie.client.timeout.socket",  int.class, 5000));
+    return builder;
   }
 
   @Subscribe

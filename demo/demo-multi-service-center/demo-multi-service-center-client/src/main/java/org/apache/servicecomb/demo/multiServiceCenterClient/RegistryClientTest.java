@@ -42,6 +42,8 @@ import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.apache.servicecomb.service.center.client.model.ServiceCenterConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import com.google.common.base.Charsets;
@@ -58,6 +60,13 @@ public class RegistryClientTest implements CategorizedTestCase {
   // auto test only tests 'hasRegistered=false', can run this client many times to test 'hasRegistered=true'
   private boolean hasRegistered = true;
 
+  private final Environment environment;
+
+  @Autowired
+  public RegistryClientTest(Environment environment) {
+    this.environment = environment;
+  }
+
   @Override
   public void testRestTransport() throws Exception {
     ServiceCenterAddressManager addressManager = new ServiceCenterAddressManager("default", Arrays.asList("http://127.0.0.1:30100"),
@@ -65,7 +74,7 @@ public class RegistryClientTest implements CategorizedTestCase {
     SSLProperties sslProperties = new SSLProperties();
     sslProperties.setEnabled(false);
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(addressManager, sslProperties,
-        new DefaultRequestAuthHeaderProvider(), "default", null);
+        new DefaultRequestAuthHeaderProvider(), "default", null, environment);
     EventBus eventBus = new SimpleEventBus();
     ServiceCenterConfiguration serviceCenterConfiguration = new ServiceCenterConfiguration();
     ServiceCenterRegistration serviceCenterRegistration = new ServiceCenterRegistration(serviceCenterClient,
