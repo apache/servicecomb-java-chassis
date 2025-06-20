@@ -105,15 +105,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     if (environment == null) {
       return builder.build();
     }
-    int connectTimeout
-        = environment.getProperty("servicecomb.service.center.client.timeout.connect", int.class, 5000);
-    int requestTimeout
-        = environment.getProperty("servicecomb.service.center.client.timeout.request",  int.class, 5000);
-    int socketTimeout
-        = environment.getProperty("servicecomb.service.center.client.timeout.socket",  int.class, 5000);
-    builder.setConnectTimeout(connectTimeout);
-    builder.setConnectionRequestTimeout(requestTimeout);
-    builder.setSocketTimeout(socketTimeout);
+    builder.setConnectTimeout(
+        environment.getProperty("servicecomb.service.client.timeout.connect", int.class, 5000));
+    builder.setConnectionRequestTimeout(
+        environment.getProperty("servicecomb.service.client.timeout.request",  int.class, 5000));
+    builder.setSocketTimeout(
+        environment.getProperty("servicecomb.service.client.timeout.socket",  int.class, 5000));
     return builder.build();
   }
 
