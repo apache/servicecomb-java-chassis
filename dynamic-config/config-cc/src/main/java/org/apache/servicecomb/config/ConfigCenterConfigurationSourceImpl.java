@@ -91,8 +91,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     ConfigCenterAddressManager configCenterAddressManager = configCenterAddressManager();
 
     HttpTransport httpTransport = createHttpTransport(configCenterAddressManager,
-        HttpTransportFactory.defaultRequestConfig().build(),
-        localConfiguration);
+        buildRequestConfig(localConfiguration), localConfiguration);
     ConfigCenterClient configCenterClient = new ConfigCenterClient(configCenterAddressManager, httpTransport);
     EventManager.register(this);
 
@@ -104,6 +103,14 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
         configConverter, configCenterConfiguration, configCenterAddressManager);
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
+  }
+
+  private RequestConfig buildRequestConfig(Configuration localConfiguration) {
+    RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
+    builder.setConnectTimeout(localConfiguration.getInt("servicecomb.config.client.timeout.connect", 5000));
+    builder.setConnectionRequestTimeout(localConfiguration.getInt("servicecomb.config.client.timeout.request", 5000));
+    builder.setSocketTimeout(localConfiguration.getInt("servicecomb.config.client.timeout.socket", 5000));
+    return builder.build();
   }
 
   private QueryConfigurationsRequest firstPull(ConfigCenterClient configCenterClient,

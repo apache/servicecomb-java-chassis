@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
@@ -59,6 +60,7 @@ import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.apache.servicecomb.service.center.client.model.UpdatePropertiesRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 
@@ -86,8 +88,9 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       SSLProperties sslProperties,
       RequestAuthHeaderProvider requestAuthHeaderProvider,
       String tenantName,
-      Map<String, String> extraGlobalHeaders) {
-    HttpTransport httpTransport = HttpTransportFactory.createHttpTransport(sslProperties, requestAuthHeaderProvider);
+      Map<String, String> extraGlobalHeaders, Environment environment) {
+    HttpTransport httpTransport = HttpTransportFactory.createHttpTransport(sslProperties, requestAuthHeaderProvider,
+        buildRequestConfig(environment));
     httpTransport.addHeaders(extraGlobalHeaders);
 
     this.httpClient = new ServiceCenterRawClient.Builder()
@@ -95,6 +98,23 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         .setAddressManager(addressManager)
         .setHttpTransport(httpTransport).build();
     this.addressManager = addressManager;
+  }
+
+  private RequestConfig buildRequestConfig(Environment environment) {
+    RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
+    if (environment == null) {
+      return builder.build();
+    }
+    int connectTimeout
+        = environment.getProperty("servicecomb.service.center.client.timeout.connect", int.class, 5000);
+    int requestTimeout
+        = environment.getProperty("servicecomb.service.center.client.timeout.request",  int.class, 5000);
+    int socketTimeout
+        = environment.getProperty("servicecomb.service.center.client.timeout.socket",  int.class, 5000);
+    builder.setConnectTimeout(connectTimeout);
+    builder.setConnectionRequestTimeout(requestTimeout);
+    builder.setSocketTimeout(socketTimeout);
+    return builder.build();
   }
 
   @Override
