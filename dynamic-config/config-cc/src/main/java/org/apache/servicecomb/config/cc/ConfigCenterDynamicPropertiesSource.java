@@ -58,6 +58,12 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterDynamicPropertiesSource.class);
 
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.config.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.config.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.config.client.timeout.socket";
+
   private final Map<String, Object> data = new ConcurrentHashMapEx<>();
 
   private ConfigConverter configConverter;
@@ -91,12 +97,9 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
 
   private RequestConfig buildRequestConfig(Environment environment) {
     RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
-    builder.setConnectTimeout(
-        environment.getProperty("servicecomb.config.client.timeout.connect", int.class, 5000));
-    builder.setConnectionRequestTimeout(
-        environment.getProperty("servicecomb.config.client.timeout.request",  int.class, 5000));
-    builder.setSocketTimeout(
-        environment.getProperty("servicecomb.config.client.timeout.socket",  int.class, 5000));
+    builder.setConnectTimeout(environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000));
+    builder.setConnectionRequestTimeout(environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000));
+    builder.setSocketTimeout(environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000));
     return builder.build();
   }
 

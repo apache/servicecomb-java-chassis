@@ -55,6 +55,12 @@ import com.google.common.eventbus.Subscribe;
 public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
   private static final Logger LOGGER = LoggerFactory.getLogger(KieDynamicPropertiesSource.class);
 
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.kie.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.kie.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.kie.client.timeout.socket";
+
   public static final String SOURCE_NAME = "kie";
 
   private final Map<String, Object> data = new ConcurrentHashMapEx<>();
@@ -92,12 +98,9 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
 
   private RequestConfig.Builder buildRequestConfigBuilder(Environment environment) {
     RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
-    builder.setConnectTimeout(
-        environment.getProperty("servicecomb.kie.client.timeout.connect", int.class, 5000));
-    builder.setConnectionRequestTimeout(
-        environment.getProperty("servicecomb.kie.client.timeout.request",  int.class, 5000));
-    builder.setSocketTimeout(
-        environment.getProperty("servicecomb.kie.client.timeout.socket",  int.class, 5000));
+    builder.setConnectTimeout(environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000));
+    builder.setConnectionRequestTimeout(environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000));
+    builder.setSocketTimeout(environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000));
     return builder;
   }
 
