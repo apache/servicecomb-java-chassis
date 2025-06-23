@@ -59,6 +59,12 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KieConfigurationSourceImpl.class);
 
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.kie.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.kie.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.kie.client.timeout.socket";
+
   private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   private KieConfigManager kieConfigManager;
@@ -106,9 +112,9 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private Builder buildRequestConfigBuilder(Configuration configuration) {
     RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
-    builder.setConnectTimeout(configuration.getInt("servicecomb.kie.client.timeout.connect", 5000));
-    builder.setConnectionRequestTimeout(configuration.getInt("servicecomb.kie.client.timeout.request", 5000));
-    builder.setSocketTimeout(configuration.getInt("servicecomb.kie.client.timeout.socket", 5000));
+    builder.setConnectTimeout(configuration.getInt(CLIENT_CONNECT_TIMEOUT, 5000));
+    builder.setConnectionRequestTimeout(configuration.getInt(CLIENT_REQUEST_TIMEOUT, 5000));
+    builder.setSocketTimeout(configuration.getInt(CLIENT_SOCKET_TIMEOUT, 5000));
     return builder;
   }
 

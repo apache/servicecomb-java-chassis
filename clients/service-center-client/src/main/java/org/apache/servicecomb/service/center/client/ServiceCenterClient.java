@@ -68,6 +68,12 @@ public class ServiceCenterClient implements ServiceCenterOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterClient.class);
 
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.service.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.service.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.service.client.timeout.socket";
+
   private final ServiceCenterRawClient httpClient;
 
   private EventBus eventBus;
@@ -105,12 +111,9 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     if (environment == null) {
       return builder.build();
     }
-    builder.setConnectTimeout(
-        environment.getProperty("servicecomb.service.client.timeout.connect", int.class, 5000));
-    builder.setConnectionRequestTimeout(
-        environment.getProperty("servicecomb.service.client.timeout.request",  int.class, 5000));
-    builder.setSocketTimeout(
-        environment.getProperty("servicecomb.service.client.timeout.socket",  int.class, 5000));
+    builder.setConnectTimeout(environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000));
+    builder.setConnectionRequestTimeout(environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000));
+    builder.setSocketTimeout(environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000));
     return builder.build();
   }
 
