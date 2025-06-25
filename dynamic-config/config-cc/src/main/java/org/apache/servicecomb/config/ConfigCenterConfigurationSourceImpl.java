@@ -60,12 +60,6 @@ import com.netflix.config.WatchedUpdateResult;
 public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigurationSource {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterConfigurationSourceImpl.class);
 
-  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.config.client.timeout.connect";
-
-  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.config.client.timeout.request";
-
-  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.config.client.timeout.socket";
-
   private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
   private ConfigCenterManager configCenterManager;
@@ -111,11 +105,11 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     configCenterManager.startConfigCenterManager();
   }
 
-  private RequestConfig buildRequestConfig(Configuration localConfiguration) {
+  private RequestConfig buildRequestConfig(Configuration configuration) {
     RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
-    builder.setConnectTimeout(localConfiguration.getInt(CLIENT_CONNECT_TIMEOUT, 5000));
-    builder.setConnectionRequestTimeout(localConfiguration.getInt(CLIENT_REQUEST_TIMEOUT, 5000));
-    builder.setSocketTimeout(localConfiguration.getInt(CLIENT_SOCKET_TIMEOUT, 5000));
+    builder.setConnectTimeout(ConfigCenterConfig.INSTANCE.getConnectTimeout(configuration));
+    builder.setConnectionRequestTimeout(ConfigCenterConfig.INSTANCE.getConnectionRequestTimeout(configuration));
+    builder.setSocketTimeout(ConfigCenterConfig.INSTANCE.getSocketTimeout(configuration));
     return builder.build();
   }
 

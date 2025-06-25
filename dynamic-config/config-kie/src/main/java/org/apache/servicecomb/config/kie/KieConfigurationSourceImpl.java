@@ -38,6 +38,7 @@ import org.apache.servicecomb.config.common.ConfigConverter;
 import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.KieClient;
 import org.apache.servicecomb.config.kie.client.KieConfigManager;
+import org.apache.servicecomb.config.kie.client.model.ConfigConstants;
 import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
 import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
@@ -58,12 +59,6 @@ import com.netflix.config.WatchedUpdateResult;
 public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSource {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KieConfigurationSourceImpl.class);
-
-  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.kie.client.timeout.connect";
-
-  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.kie.client.timeout.request";
-
-  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.kie.client.timeout.socket";
 
   private final List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -112,9 +107,9 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private Builder buildRequestConfigBuilder(Configuration configuration) {
     RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
-    builder.setConnectTimeout(configuration.getInt(CLIENT_CONNECT_TIMEOUT, 5000));
-    builder.setConnectionRequestTimeout(configuration.getInt(CLIENT_REQUEST_TIMEOUT, 5000));
-    builder.setSocketTimeout(configuration.getInt(CLIENT_SOCKET_TIMEOUT, 5000));
+    builder.setConnectTimeout(configuration.getInt(ConfigConstants.CLIENT_CONNECT_TIMEOUT, 5000));
+    builder.setConnectionRequestTimeout(configuration.getInt(ConfigConstants.CLIENT_REQUEST_TIMEOUT, 5000));
+    builder.setSocketTimeout(configuration.getInt(ConfigConstants.CLIENT_SOCKET_TIMEOUT, 5000));
     return builder;
   }
 
