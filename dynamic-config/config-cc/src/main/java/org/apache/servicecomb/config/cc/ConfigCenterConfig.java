@@ -39,6 +39,12 @@ public final class ConfigCenterConfig {
 
   private static final int DEFAULT_REFRESH_INTERVAL = 15000;
 
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.config.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.config.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.config.client.timeout.socket";
+
   private final Environment environment;
 
   public ConfigCenterConfig(Environment environment) {
@@ -85,5 +91,17 @@ public final class ConfigCenterConfig {
 
   public List<String> getServerUri() {
     return ConfigUtil.parseArrayValue(environment.getProperty(ADDRESS, ""));
+  }
+
+  public int getConnectTimeout() {
+    return environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000);
+  }
+
+  public int getConnectionRequestTimeout() {
+    return environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000);
+  }
+
+  public int getSocketTimeout() {
+    return environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000);
   }
 }

@@ -26,6 +26,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.BootStrapProperties;
@@ -55,12 +56,6 @@ import com.google.common.eventbus.Subscribe;
 public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
   private static final Logger LOGGER = LoggerFactory.getLogger(KieDynamicPropertiesSource.class);
 
-  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.kie.client.timeout.connect";
-
-  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.kie.client.timeout.request";
-
-  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.kie.client.timeout.socket";
-
   public static final String SOURCE_NAME = "kie";
 
   private final Map<String, Object> data = new ConcurrentHashMapEx<>();
@@ -78,7 +73,7 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
     configConverter = new ConfigConverter(kieConfig.getFileSources());
     KieAddressManager kieAddressManager = configKieAddressManager(kieConfig);
 
-    RequestConfig.Builder requestBuilder = buildRequestConfigBuilder(environment);
+    RequestConfig.Builder requestBuilder = buildRequestConfigBuilder(kieConfig);
     if (kieConfig.enableLongPolling()
         && kieConfig.getPollingWaitTime() >= 0) {
       requestBuilder.setConnectionRequestTimeout(kieConfig.getPollingWaitTime() * 2 * 1000);
@@ -96,11 +91,11 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
     data.putAll(configConverter.getCurrentData());
   }
 
-  private RequestConfig.Builder buildRequestConfigBuilder(Environment environment) {
-    RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
-    builder.setConnectTimeout(environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000));
-    builder.setConnectionRequestTimeout(environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000));
-    builder.setSocketTimeout(environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000));
+  private Builder buildRequestConfigBuilder(KieConfig kieConfig) {
+    Builder builder = HttpTransportFactory.defaultRequestConfig();
+    builder.setConnectTimeout(kieConfig.getConnectTimeout());
+    builder.setConnectionRequestTimeout(kieConfig.getConnectionRequestTimeout());
+    builder.setSocketTimeout(kieConfig.getSocketTimeout());
     return builder;
   }
 

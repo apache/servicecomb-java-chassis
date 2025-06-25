@@ -58,12 +58,6 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterDynamicPropertiesSource.class);
 
-  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.config.client.timeout.connect";
-
-  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.config.client.timeout.request";
-
-  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.config.client.timeout.socket";
-
   private final Map<String, Object> data = new ConcurrentHashMapEx<>();
 
   private ConfigConverter configConverter;
@@ -77,8 +71,8 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
 
     ConfigCenterAddressManager configCenterAddressManager = configCenterAddressManager(configCenterConfig);
 
-    HttpTransport httpTransport = createHttpTransport(configCenterAddressManager, buildRequestConfig(environment),
-        environment, configCenterConfig);
+    HttpTransport httpTransport = createHttpTransport(configCenterAddressManager,
+        buildRequestConfig(configCenterConfig), environment, configCenterConfig);
     ConfigCenterClient configCenterClient = new ConfigCenterClient(configCenterAddressManager, httpTransport);
     EventManager.register(this);
 
@@ -95,11 +89,11 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     data.putAll(configConverter.getCurrentData());
   }
 
-  private RequestConfig buildRequestConfig(Environment environment) {
+  private RequestConfig buildRequestConfig(ConfigCenterConfig config) {
     RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
-    builder.setConnectTimeout(environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000));
-    builder.setConnectionRequestTimeout(environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000));
-    builder.setSocketTimeout(environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000));
+    builder.setConnectTimeout(config.getConnectTimeout());
+    builder.setConnectionRequestTimeout(config.getConnectionRequestTimeout());
+    builder.setSocketTimeout(config.getSocketTimeout());
     return builder.build();
   }
 
