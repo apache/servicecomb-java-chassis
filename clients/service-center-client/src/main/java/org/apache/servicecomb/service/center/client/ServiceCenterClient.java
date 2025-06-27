@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
@@ -59,12 +60,19 @@ import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.apache.servicecomb.service.center.client.model.UpdatePropertiesRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import com.google.common.eventbus.EventBus;
 
 public class ServiceCenterClient implements ServiceCenterOperation {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterClient.class);
+
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.registry.sc.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.registry.sc.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.registry.sc.client.timeout.socket";
 
   private final ServiceCenterRawClient httpClient;
 
@@ -87,8 +95,10 @@ public class ServiceCenterClient implements ServiceCenterOperation {
       SSLProperties sslProperties,
       RequestAuthHeaderProvider requestAuthHeaderProvider,
       String tenantName,
-      Map<String, String> extraGlobalHeaders) {
-    HttpTransport httpTransport = HttpTransportFactory.createHttpTransport(sslProperties, requestAuthHeaderProvider);
+      Map<String, String> extraGlobalHeaders,
+      Environment environment) {
+    HttpTransport httpTransport = HttpTransportFactory.createHttpTransport(sslProperties, requestAuthHeaderProvider,
+        buildRequestConfig(environment));
     httpTransport.addHeaders(extraGlobalHeaders);
 
     this.httpClient = new ServiceCenterRawClient.Builder()
@@ -96,6 +106,17 @@ public class ServiceCenterClient implements ServiceCenterOperation {
         .setAddressManager(addressManager)
         .setHttpTransport(httpTransport).build();
     this.addressManager = addressManager;
+  }
+
+  private RequestConfig buildRequestConfig(Environment environment) {
+    RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
+    if (environment == null) {
+      return builder.build();
+    }
+    builder.setConnectTimeout(environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000));
+    builder.setConnectionRequestTimeout(environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000));
+    builder.setSocketTimeout(environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000));
+    return builder.build();
   }
 
   @Override

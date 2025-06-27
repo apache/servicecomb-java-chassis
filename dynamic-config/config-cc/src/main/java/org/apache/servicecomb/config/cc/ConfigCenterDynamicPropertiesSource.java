@@ -72,8 +72,7 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     ConfigCenterAddressManager configCenterAddressManager = configCenterAddressManager(configCenterConfig);
 
     HttpTransport httpTransport = createHttpTransport(configCenterAddressManager,
-        HttpTransportFactory.defaultRequestConfig().build(),
-        environment, configCenterConfig);
+        buildRequestConfig(configCenterConfig), environment, configCenterConfig);
     ConfigCenterClient configCenterClient = new ConfigCenterClient(configCenterAddressManager, httpTransport);
     EventManager.register(this);
 
@@ -88,6 +87,14 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     configCenterManager.setQueryConfigurationsRequest(queryConfigurationsRequest);
     configCenterManager.startConfigCenterManager();
     data.putAll(configConverter.getCurrentData());
+  }
+
+  private RequestConfig buildRequestConfig(ConfigCenterConfig config) {
+    RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
+    builder.setConnectTimeout(config.getConnectTimeout());
+    builder.setConnectionRequestTimeout(config.getConnectionRequestTimeout());
+    builder.setSocketTimeout(config.getSocketTimeout());
+    return builder.build();
   }
 
   private QueryConfigurationsRequest firstPull(ConfigCenterConfig configCenterConfig,

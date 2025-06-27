@@ -26,6 +26,7 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.BootStrapProperties;
@@ -72,7 +73,7 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
     configConverter = new ConfigConverter(kieConfig.getFileSources());
     KieAddressManager kieAddressManager = configKieAddressManager(kieConfig);
 
-    RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
+    RequestConfig.Builder requestBuilder = buildRequestConfigBuilder(kieConfig);
     if (kieConfig.enableLongPolling()
         && kieConfig.getPollingWaitTime() >= 0) {
       requestBuilder.setConnectionRequestTimeout(kieConfig.getPollingWaitTime() * 2 * 1000);
@@ -88,6 +89,14 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
     kieConfigManager.firstPull();
     kieConfigManager.startConfigKieManager();
     data.putAll(configConverter.getCurrentData());
+  }
+
+  private Builder buildRequestConfigBuilder(KieConfig kieConfig) {
+    Builder builder = HttpTransportFactory.defaultRequestConfig();
+    builder.setConnectTimeout(kieConfig.getConnectTimeout());
+    builder.setConnectionRequestTimeout(kieConfig.getConnectionRequestTimeout());
+    builder.setSocketTimeout(kieConfig.getSocketTimeout());
+    return builder;
   }
 
   @Subscribe

@@ -66,6 +66,12 @@ public class KieConfig {
 
   private static final String CUSTOM_LABEL_VALUE_DEFAULT = "";
 
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.kie.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.kie.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.kie.client.timeout.socket";
+
   private final Environment environment;
 
   public KieConfig(Environment environment) {
@@ -147,5 +153,17 @@ public class KieConfig {
 
   public String getProxyPasswd() {
     return environment.getProperty(VertxConst.PROXY_PASSWD);
+  }
+
+  public int getConnectTimeout() {
+    return environment.getProperty(CLIENT_CONNECT_TIMEOUT, int.class, 5000);
+  }
+
+  public int getConnectionRequestTimeout() {
+    return environment.getProperty(CLIENT_REQUEST_TIMEOUT,  int.class, 5000);
+  }
+
+  public int getSocketTimeout() {
+    return environment.getProperty(CLIENT_SOCKET_TIMEOUT,  int.class, 5000);
   }
 }
