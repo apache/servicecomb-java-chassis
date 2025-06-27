@@ -5,9 +5,7 @@
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
  * the License.  You may obtain a copy of the License at
- *
  *     http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,13 +15,12 @@
 
 package org.apache.servicecomb.foundation.vertx.client.http;
 
-import org.apache.servicecomb.foundation.vertx.client.ClientPoolFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.vertx.core.Context;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
+import org.apache.servicecomb.foundation.vertx.client.ClientPoolFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // execute in vertx context
 public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithContext> {
@@ -37,7 +34,9 @@ public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithCo
 
   @Override
   public HttpClientWithContext createClientPool(Context context) {
-    HttpClient httpClient = context.owner().httpClientBuilder().with(httpClientOptions)
+    HttpClient httpClient = context.owner().httpClientBuilder()
+        .with(httpClientOptions)
+        .with(httpClientOptions.getPoolOptions())
         .withConnectHandler(connection -> {
           LOGGER.debug("http connection connected, local:{}, remote:{}.",
               connection.localAddress(), connection.remoteAddress());
