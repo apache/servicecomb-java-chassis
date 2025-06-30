@@ -37,4 +37,10 @@ public class ConfigConstants {
 
   public static final String KEY_POLLINGWAITSEC = "pollingWaitInSeconds";
 
+  public static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.kie.client.timeout.connect";
+
+  public static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.kie.client.timeout.request";
+
+  public static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.kie.client.timeout.socket";
+
 }

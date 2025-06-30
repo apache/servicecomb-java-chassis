@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.collect.ConfigCenterDefaultDeploymentProvider;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
@@ -50,6 +51,12 @@ public final class ConfigCenterConfig {
   private static final int DEFAULT_REFRESH_INTERVAL = 15000;
 
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
+
+  private static final String CLIENT_CONNECT_TIMEOUT = "servicecomb.config.client.timeout.connect";
+
+  private static final String CLIENT_REQUEST_TIMEOUT = "servicecomb.config.client.timeout.request";
+
+  private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.config.client.timeout.socket";
 
   private ConfigCenterConfig() {
   }
@@ -134,5 +141,17 @@ public final class ConfigCenterConfig {
 
   public String getEnvironment() {
     return BootStrapProperties.readServiceEnvironment(finalConfig);
+  }
+
+  public int getConnectTimeout(Configuration localConfiguration) {
+    return localConfiguration.getInt(CLIENT_CONNECT_TIMEOUT, 5000);
+  }
+
+  public int getConnectionRequestTimeout(Configuration configuration) {
+    return configuration.getInt(CLIENT_REQUEST_TIMEOUT, 5000);
+  }
+
+  public int getSocketTimeout(Configuration configuration) {
+    return configuration.getInt(CLIENT_SOCKET_TIMEOUT, 5000);
   }
 }

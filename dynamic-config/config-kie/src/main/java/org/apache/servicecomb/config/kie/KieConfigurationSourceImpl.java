@@ -31,12 +31,14 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.servicecomb.config.common.ConfigConverter;
 import org.apache.servicecomb.config.common.ConfigurationChangedEvent;
 import org.apache.servicecomb.config.kie.client.KieClient;
 import org.apache.servicecomb.config.kie.client.KieConfigManager;
+import org.apache.servicecomb.config.kie.client.model.ConfigConstants;
 import org.apache.servicecomb.config.kie.client.model.KieAddressManager;
 import org.apache.servicecomb.config.kie.client.model.KieConfiguration;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
@@ -85,7 +87,7 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
     configConverter = new ConfigConverter(KieConfig.INSTANCE.getFileSources());
     KieAddressManager kieAddressManager = configKieAddressManager();
 
-    RequestConfig.Builder requestBuilder = HttpTransportFactory.defaultRequestConfig();
+    RequestConfig.Builder requestBuilder = buildRequestConfigBuilder(localConfiguration);
     if (KieConfig.INSTANCE.enableLongPolling()
         && KieConfig.INSTANCE.getPollingWaitTime() >= 0) {
       requestBuilder.setConnectionRequestTimeout(KieConfig.INSTANCE.getPollingWaitTime() * 2 * 1000);
@@ -101,6 +103,14 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
     kieConfigManager.firstPull();
     kieConfigManager.startConfigKieManager();
     updateConfiguration(WatchedUpdateResult.createIncremental(configConverter.getCurrentData(), null, null));
+  }
+
+  private Builder buildRequestConfigBuilder(Configuration configuration) {
+    RequestConfig.Builder builder = HttpTransportFactory.defaultRequestConfig();
+    builder.setConnectTimeout(configuration.getInt(ConfigConstants.CLIENT_CONNECT_TIMEOUT, 5000));
+    builder.setConnectionRequestTimeout(configuration.getInt(ConfigConstants.CLIENT_REQUEST_TIMEOUT, 5000));
+    builder.setSocketTimeout(configuration.getInt(ConfigConstants.CLIENT_SOCKET_TIMEOUT, 5000));
+    return builder;
   }
 
   @Subscribe

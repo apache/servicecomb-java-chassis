@@ -68,7 +68,7 @@ public class RBACBootStrapService implements BootStrapService {
     // header: x-domain-name and url: /v1/{project}/ are all token from getTenantName。
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(
         addressManager, sslProperties, new DefaultRequestAuthHeaderProvider(), getTenantName(environment),
-        new HashMap<>(0)
+        new HashMap<>(0), environment
     );
     Map<String, ServiceCenterClient> clients = new HashMap<>(1);
     clients
