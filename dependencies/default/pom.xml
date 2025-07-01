@@ -40,7 +40,7 @@
     <brave.version>5.14.1</brave.version>
     <bytebuddy.version>1.12.20</bytebuddy.version>
     <commons-beanutils.version>1.9.4</commons-beanutils.version>
-    <commons-configuration.version>1.10</commons-configuration.version>
+    <commons-configuration2.version>2.12.0</commons-configuration2.version>
     <commons-io.version>2.11.0</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
     <commons-lang3.version>3.12.0</commons-lang3.version>
@@ -319,9 +319,9 @@
       </dependency>
 
       <dependency>
-        <groupId>commons-configuration</groupId>
-        <artifactId>commons-configuration</artifactId>
-        <version>${commons-configuration.version}</version>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-configuration2</artifactId>
+        <version>${commons-configuration2.version}</version>
       </dependency>
 
       <dependency>
