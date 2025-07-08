@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.swagger.generator.core.processor.response.CompletableFutureProcessor
 org.apache.servicecomb.swagger.generator.core.processor.response.OptionalProcessor
+org.apache.servicecomb.swagger.generator.core.processor.response.PublisherProcessor

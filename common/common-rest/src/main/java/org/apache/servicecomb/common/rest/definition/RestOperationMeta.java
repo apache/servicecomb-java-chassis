@@ -42,6 +42,7 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -88,6 +89,10 @@ public class RestOperationMeta {
   // 快速构建URL path
   private URLPathBuilder pathBuilder;
 
+  protected boolean serverSendEvents;
+
+  protected static final String EVENTS_MEDIA_TYPE = MediaType.SERVER_SENT_EVENTS;
+
   public void init(OperationMeta operationMeta) {
     this.operationMeta = operationMeta;
 
@@ -99,6 +104,7 @@ public class RestOperationMeta {
     }
 
     this.downloadFile = checkDownloadFileFlag();
+    this.serverSendEvents = checkServerSendEvents();
     this.createProduceProcessors();
 
     // 初始化所有rest param
@@ -146,6 +152,10 @@ public class RestOperationMeta {
     return downloadFile;
   }
 
+  public boolean isServerSendEvents() {
+    return serverSendEvents;
+  }
+
   private boolean checkDownloadFileFlag() {
     Response response = operationMeta.getSwaggerOperation().getResponses().get("200");
     if (response != null) {
@@ -155,6 +165,10 @@ public class RestOperationMeta {
     }
 
     return false;
+  }
+
+  private boolean checkServerSendEvents() {
+    return !CollectionUtils.isEmpty(produces) && produces.contains(EVENTS_MEDIA_TYPE);
   }
 
   public boolean isFormData() {

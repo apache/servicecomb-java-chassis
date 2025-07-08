@@ -59,4 +59,6 @@ public final class Const {
 
   // controlling whether to print stack information with sensitive errors
   public static final String PRINT_SENSITIVE_ERROR_MESSAGE = "servicecomb.error.printSensitiveErrorMessage";
+
+  public static final String FLOWABLE_CLIENT_RESPONSE = "flowable-client-response";
 }
