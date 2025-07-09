@@ -20,9 +20,7 @@ package org.apache.servicecomb.foundation.vertx.stream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.buffer.impl.VertxByteBufAllocator;
 
 /**
  * BufferOutputStream.
@@ -32,40 +30,36 @@ import io.vertx.core.buffer.impl.VertxByteBufAllocator;
 public class BufferOutputStream extends OutputStream {
   private static final int DIRECT_BUFFER_SIZE = 1024;
 
-  protected ByteBuf byteBuf;
+  protected Buffer byteBuf;
 
   public BufferOutputStream() {
-    this(VertxByteBufAllocator.DEFAULT.heapBuffer(DIRECT_BUFFER_SIZE, Integer.MAX_VALUE));
+    this(Buffer.buffer(DIRECT_BUFFER_SIZE));
   }
 
-  public BufferOutputStream(ByteBuf buffer) {
+  public BufferOutputStream(Buffer buffer) {
     this.byteBuf = buffer;
   }
 
-  public ByteBuf getByteBuf() {
+  public Buffer getBuffer() {
     return byteBuf;
   }
 
-  public Buffer getBuffer() {
-    return Buffer.buffer(byteBuf);
-  }
-
   public int length() {
-    return byteBuf.readableBytes();
+    return byteBuf.length();
   }
 
   public void writeByte(byte value) {
-    byteBuf.writeByte(value);
+    byteBuf.appendByte(value);
   }
 
   // 实际是写byte
   @Override
   public void write(int byteValue) {
-    byteBuf.writeByte((byte) byteValue);
+    byteBuf.appendByte((byte) byteValue);
   }
 
   public void write(boolean value) {
-    byteBuf.writeBoolean(value);
+    byteBuf.appendByte(value ? (byte) 1 : (byte) 0);
   }
 
   public void writeInt(int pos, int value) {
@@ -73,20 +67,20 @@ public class BufferOutputStream extends OutputStream {
   }
 
   public void writeShort(short value) {
-    byteBuf.writeShort(value);
+    byteBuf.appendShort(value);
   }
 
   public void writeInt(int value) {
-    byteBuf.writeInt(value);
+    byteBuf.appendInt(value);
   }
 
   public void writeLong(long value) {
-    byteBuf.writeLong(value);
+    byteBuf.appendLong(value);
   }
 
   public void writeString(String value) {
-    byteBuf.writeInt(value.length());
-    byteBuf.writeCharSequence(value, StandardCharsets.UTF_8);
+    writeInt(value.length());
+    byteBuf.appendString(value, StandardCharsets.UTF_8.toString());
   }
 
   @Override
@@ -96,7 +90,7 @@ public class BufferOutputStream extends OutputStream {
 
   @Override
   public void write(byte[] bytes, int offset, int len) {
-    byteBuf.writeBytes(bytes, offset, len);
+    byteBuf.appendBytes(bytes, offset, len);
   }
 
   @Override
@@ -105,6 +99,6 @@ public class BufferOutputStream extends OutputStream {
   }
 
   public int writerIndex() {
-    return byteBuf.writerIndex();
+    return byteBuf.length();
   }
 }

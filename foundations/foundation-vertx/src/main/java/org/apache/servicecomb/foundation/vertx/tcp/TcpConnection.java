@@ -20,7 +20,6 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;
 import io.vertx.core.Context;
@@ -49,7 +48,7 @@ public class TcpConnection {
   // so this optimization:
   // 1.avoid vertx's lock
   // 2.reduce netty's task schedule
-  private final Queue<ByteBuf> writeQueue = new ConcurrentLinkedQueue<>();
+  private final Queue<Buffer> writeQueue = new ConcurrentLinkedQueue<>();
 
   private final AtomicLong writeQueueSize = new AtomicLong();
 
@@ -83,7 +82,7 @@ public class TcpConnection {
     this.context = netSocket.getContext();
   }
 
-  public void write(ByteBuf buf) {
+  public void write(Buffer buf) {
     writeQueue.add(buf);
     long oldSize = writeQueueSize.getAndIncrement();
     if (oldSize == 0) {
@@ -99,13 +98,13 @@ public class TcpConnection {
   protected void writeInContext() {
     CompositeByteBuf cbb = ByteBufAllocator.DEFAULT.compositeBuffer();
     for (; ; ) {
-      ByteBuf buf = writeQueue.poll();
+      Buffer buf = writeQueue.poll();
       if (buf == null) {
         break;
       }
 
       writeQueueSize.decrementAndGet();
-      cbb.addComponent(true, buf);
+      cbb.addComponent(true, buf.getByteBuf());
 
       if (cbb.numComponents() == cbb.maxNumComponents()) {
         CompositeByteBuf last = cbb;

@@ -122,4 +122,16 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
     Context context = Vertx.currentContext();
     return new PumpFromPart(context, part).toOutputStream(outputStream, false);
   }
+
+  @Override
+  public CompletableFuture<Void> sendBuffer(Buffer buffer) {
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    try {
+      getOutputStream().write(buffer.getBytes(), 0, buffer.length());
+      future.complete(null);
+    } catch (IOException e) {
+      future.completeExceptionally(e);
+    }
+    return future;
+  }
 }
