@@ -86,7 +86,7 @@
     <slf4j.version>1.7.36</slf4j.version>
     <snakeyaml.version>2.4</snakeyaml.version>
     <swagger.version>2.2.34</swagger.version>
-    <vertx.version>4.5.15</vertx.version>
+    <vertx.version>5.0.1</vertx.version>
     <zipkin.version>3.5.1</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.5</jetcd-core.version>
