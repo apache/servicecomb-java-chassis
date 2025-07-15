@@ -18,6 +18,8 @@
 package org.apache.servicecomb.service.center.client;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -153,13 +155,12 @@ public class ServiceCenterDiscovery extends AbstractTask {
     startTask(new PullInstanceOnceTask());
   }
 
-  private List<SubscriptionKey> pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
+  private void pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
     if (myselfServiceId == null) {
       // registration not ready
-      return Collections.emptyList();
+      return;
     }
 
-    List<SubscriptionKey> failedKeys = new ArrayList<>();
     try {
       FindMicroserviceInstancesResponse instancesResponse = serviceCenterClient
           .findMicroserviceInstance(myselfServiceId, k.appId, k.serviceName, ALL_VERSION, v.revision);
@@ -186,17 +187,9 @@ public class ServiceCenterDiscovery extends AbstractTask {
         }
       }
     } catch (Exception e) {
-      if (!(e.getCause() instanceof IOException)) {
-        // for IOException, do not remove cache, or when service center
-        // not available, invocation between microservices will fail.
-        failedKeys.add(k);
-        LOGGER.error("find service {}#{} instance failed and remove local cache.", k.appId, k.serviceName, e);
-      } else {
-        LOGGER.warn("find service {}#{} instance failed, remaining local instances cache, cause message: {}",
-            k.appId, k.serviceName, e.getMessage());
-      }
+      LOGGER.warn("find service {}#{} instance failed, remaining local instances cache [{}], cause message: {}",
+          k.appId, k.serviceName, instanceToString(v.instancesCache), e.getMessage());
     }
-    return failedKeys;
   }
 
   private void setMicroserviceInfo(List<MicroserviceInstance> instances) {
@@ -236,10 +229,13 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private synchronized void pullAllInstance() {
     List<SubscriptionKey> failedInstances = new ArrayList<>();
-    instancesCache.forEach((k, v) -> failedInstances.addAll(pullInstance(k, v, true)));
-    if (failedInstances.isEmpty()) {
-      return;
-    }
+    instancesCache.forEach((k, v) -> {
+      pullInstance(k, v, true);
+      v.instancesCache.removeIf(instance -> isInstanceUnavailable(instance.getServiceName(), instance.getEndpoints()));
+      if (v.instancesCache.isEmpty()) {
+        failedInstances.add(k);
+      }
+    });
     failedInstances.forEach(instancesCache::remove);
     failedInstances.clear();
   }
@@ -260,5 +256,33 @@ public class ServiceCenterDiscovery extends AbstractTask {
     }
     sb.append("#");
     return sb.toString();
+  }
+
+  protected boolean isInstanceUnavailable(String serviceName, List<String> endpoints) {
+    for (String endpoint : endpoints) {
+      String[] hostPort = getHostPort(endpoint);
+      if (hostPort == null) {
+        continue;
+      }
+      for (int k = 0; k < 3; k++) {
+        try (Socket s = new Socket()) {
+          s.connect(new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1])), 3000);
+          return false;
+        } catch (IOException e) {
+          LOGGER.warn("telnet endpoint [{}] failed, It will be try again.", endpoint);
+        }
+      }
+      LOGGER.warn("telnet three times failed, remove service [{}] endpoint [{}].", serviceName, endpoint);
+      return true;
+    }
+    return true;
+  }
+
+  private String[] getHostPort(String endpoint) {
+    String hostPort = endpoint.substring("rest://".length());
+    if (hostPort.split(":").length == 2) {
+      return hostPort.split(":");
+    }
+    return null;
   }
 }
