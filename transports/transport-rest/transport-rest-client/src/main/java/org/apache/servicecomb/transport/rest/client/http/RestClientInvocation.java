@@ -220,7 +220,7 @@ public class RestClientInvocation {
       return;
     }
 
-    if (restOperationMeta.isServerSendEvents()) {
+    if (restOperationMeta != null && restOperationMeta.isServerSendEvents()) {
       processFlowableResponseBody(FlowableHelper.toFlowable(httpClientResponse));
       return;
     }
