@@ -18,12 +18,15 @@ package org.apache.servicecomb.samples;
 
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 import org.reactivestreams.Publisher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.reactivex.rxjava3.core.Flowable;
 
@@ -65,13 +68,24 @@ public class ReactiveStreamController {
   }
 
   @GetMapping("/sseString")
-  public Publisher<String> sseString() {
-    return Flowable.fromArray("a", "b", "c");
+  public Publisher<String> sseString(@RequestParam(name = "param1") String param1) {
+    return Flowable.fromArray("a", "b", "c", param1);
   }
 
   @GetMapping("/sseModel")
   public Publisher<Model> sseModel() {
     return Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
         .map(item -> new Model("jack", item.intValue()));
+  }
+
+  @GetMapping("/sseResponseTest")
+  public Publisher<SseEventResponseEntity<Model>> sseResponseTest() {
+    AtomicInteger index = new AtomicInteger(0);
+    return Flowable.intervalRange(0, 10, 0, 1, TimeUnit.SECONDS)
+        .map(item -> new SseEventResponseEntity<Model>()
+            .event("testEvent" + index)
+            .eventId(index.getAndIncrement())
+            .retry(System.currentTimeMillis())
+            .data(new Model("jack", item.intValue())));
   }
 }

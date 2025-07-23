@@ -20,17 +20,23 @@ package org.apache.servicecomb.samples;
 import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 import org.reactivestreams.Publisher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestSchema(schemaId = "ReactiveStreamController")
 @RequestMapping(path = "/")
 public class ConsumerReactiveStreamController {
   interface ProviderReactiveStreamController {
-    Publisher<String> sseString();
+    Publisher<String> sseString(String param1);
 
     Publisher<Model> sseModel();
+
+    Publisher<SseEventResponseEntity<Model>> sseResponseTest();
   }
 
   @RpcReference(microserviceName = "provider", schemaId = "ReactiveStreamController")
@@ -71,13 +77,19 @@ public class ConsumerReactiveStreamController {
 
   @GetMapping("/sseString")
   @Transport(name = "rest")
-  public Publisher<String> sseString() {
-    return controller.sseString();
+  public Publisher<String> sseString(@RequestParam(name = "param1") String param1, HttpServletRequest request) {
+    return controller.sseString(param1);
   }
 
   @GetMapping("/sseModel")
   @Transport(name = "rest")
   public Publisher<Model> sseModel() {
     return controller.sseModel();
+  }
+
+  @GetMapping("/sseResponseTest")
+  @Transport(name = "rest")
+  public Publisher<SseEventResponseEntity<Model>> sseResponseTest() {
+    return controller.sseResponseTest();
   }
 }

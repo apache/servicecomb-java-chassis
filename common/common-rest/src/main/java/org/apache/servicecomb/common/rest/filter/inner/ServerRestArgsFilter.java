@@ -22,6 +22,7 @@ import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFil
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceEventStreamProcessor;
@@ -85,7 +86,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
     if (isServerSendEvent(response)) {
       produceProcessor = new ProduceEventStreamProcessor();
       responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
-      return writeServerSendEvent(response, produceProcessor, responseEx);
+      return writeServerSendEvent(invocation, response, produceProcessor, responseEx);
     }
 
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
@@ -109,9 +110,10 @@ public class ServerRestArgsFilter implements HttpServerFilter {
     return response.getResult() instanceof Publisher<?>;
   }
 
-  private static CompletableFuture<Void> writeServerSendEvent(Response response, ProduceProcessor produceProcessor,
-      HttpServletResponseEx responseEx) {
+  private static CompletableFuture<Void> writeServerSendEvent(Invocation invocation, Response response,
+      ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
     responseEx.setChunked(true);
+    refreshEventId(invocation.getRequestEx(), produceProcessor);
     CompletableFuture<Void> result = new CompletableFuture<>();
     Publisher<?> publisher = response.getResult();
     publisher.subscribe(new Subscriber<Object>() {
@@ -146,6 +148,14 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       }
     });
     return result;
+  }
+
+  private static void refreshEventId(HttpServletRequestEx requestEx, ProduceProcessor produceProcessor) {
+    String lastEventId = requestEx.getHeader("last-event-id");
+    if (StringUtils.isEmpty(lastEventId)) {
+      return;
+    }
+    produceProcessor.refreshEventId(Integer.parseInt(lastEventId));
   }
 
   private static CompletableFuture<Response> writeResponse(

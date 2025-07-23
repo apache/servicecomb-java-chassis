@@ -105,7 +105,6 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       produceProcessor = ProduceProcessorManager.INSTANCE.findDefaultProcessor();
     }
 
-
     try {
       if (responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE) == null) {
         result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);

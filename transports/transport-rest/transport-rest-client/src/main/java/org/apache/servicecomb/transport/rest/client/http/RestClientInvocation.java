@@ -263,7 +263,7 @@ public class RestClientInvocation {
 
   /**
    * after this method, connection will be recycled to connection pool
-   * @param flowable sse response
+   * @param flowable sse flowable response
    */
   protected void processFlowableResponseBody(Flowable<Buffer> flowable) {
     invocation.getInvocationStageTrace().finishReceiveResponse();

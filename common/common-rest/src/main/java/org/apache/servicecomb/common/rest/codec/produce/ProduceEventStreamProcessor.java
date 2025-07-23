@@ -21,7 +21,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -42,21 +44,76 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
 
   @Override
   public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-    String buffer = "id: " + (writeIndex++) + "\n"
-        + "data: "
-        + RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(result)
-        + "\n\n";
-    output.write(buffer.getBytes(StandardCharsets.UTF_8));
+    StringBuilder bufferBuilder = new StringBuilder();
+    if (result instanceof SseEventResponseEntity<?> responseEntity) {
+      appendEventId(bufferBuilder, responseEntity.getEventId());
+      appendEvent(bufferBuilder, responseEntity.getEvent());
+      appendRetry(bufferBuilder, responseEntity.getRetry());
+      appendData(bufferBuilder, responseEntity.getData());
+    } else {
+      appendEventId(bufferBuilder, writeIndex++);
+      appendData(bufferBuilder, result);
+    }
+    bufferBuilder.append("\n");
+    output.write(bufferBuilder.toString().getBytes(StandardCharsets.UTF_8));
   }
 
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     String buffer = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+    SseEventResponseEntity<?> responseEntity = new SseEventResponseEntity<>();
     for (String line : buffer.split("\n")) {
+      if (line.startsWith("eventId: ")) {
+        responseEntity.eventId(Integer.parseInt(line.substring(9)));
+        continue;
+      }
+      if (line.startsWith("event: ")) {
+        responseEntity.event(line.substring(7));
+        continue;
+      }
+      if (line.startsWith("retry: ")) {
+        responseEntity.retry(Long.parseLong(line.substring(7)));
+        continue;
+      }
       if (line.startsWith("data: ")) {
-        return RestObjectMapperFactory.getRestObjectMapper().readValue(line.substring(5), type);
+        responseEntity.data(RestObjectMapperFactory.getRestObjectMapper().readValue(line.substring(6), type));
       }
     }
-    return null;
+    return responseEntity;
+  }
+
+  @Override
+  public void refreshEventId(int index) {
+    this.writeIndex = index;
+  }
+
+  private void appendEventId(StringBuilder eventBuilder, Integer eventId) {
+    if (eventId == null) {
+      return;
+    }
+    eventBuilder.append("eventId: ").append(eventId.intValue()).append("\n");
+  }
+
+  private void appendEvent(StringBuilder eventBuilder, String event) {
+    if (StringUtils.isEmpty(event)) {
+      return;
+    }
+    eventBuilder.append("event: ").append(event).append("\n");
+  }
+
+  private void appendRetry(StringBuilder eventBuilder, Long retry) {
+    if (retry == null) {
+      return;
+    }
+    eventBuilder.append("retry: ").append(retry.longValue()).append("\n");
+  }
+
+  private void appendData(StringBuilder eventBuilder, Object data) throws Exception {
+    if (data == null) {
+      throw new Exception("sse response data is null!");
+    }
+    eventBuilder.append("data: ")
+        .append(RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(data))
+        .append("\n");
   }
 }
