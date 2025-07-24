@@ -39,7 +39,7 @@ public class SseEventResponseEntity<T> {
    * business data
    */
   @NotNull
-  private Object data;
+  private T data;
 
   public SseEventResponseEntity<T> eventId(int eventId) {
     this.eventId = eventId;

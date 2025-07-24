@@ -18,7 +18,6 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.response;
 
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
-import org.springframework.http.ResponseEntity;
 
 public class SseEventResponseEntityProcessor extends DefaultResponseTypeProcessor {
   public SseEventResponseEntityProcessor() {

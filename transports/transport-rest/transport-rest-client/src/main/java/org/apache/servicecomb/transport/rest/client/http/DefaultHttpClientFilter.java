@@ -108,7 +108,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     try {
       if (responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE) == null) {
         result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);
-      }else {
+      } else {
         Flowable<Buffer> flowable = (Flowable<Buffer>) responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE);
         ProduceProcessor finalProduceProcessor = produceProcessor;
         result = flowable.map(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer));

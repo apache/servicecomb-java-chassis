@@ -18,11 +18,9 @@
 package org.apache.servicecomb.swagger.generator.core.processor.response;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.jakarta.ModelConvertersAdapterJakarta;
 import org.reactivestreams.Publisher;
