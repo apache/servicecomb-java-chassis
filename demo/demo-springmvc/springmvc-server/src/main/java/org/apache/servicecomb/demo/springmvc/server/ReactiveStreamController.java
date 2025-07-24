@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.samples;
+package org.apache.servicecomb.demo.springmvc.server;
 
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.annotation.Transport;
-import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.demo.model.Model;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 import org.reactivestreams.Publisher;
@@ -26,70 +29,39 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import jakarta.servlet.http.HttpServletRequest;
+import io.reactivex.rxjava3.core.Flowable;
 
 @RestSchema(schemaId = "ReactiveStreamController")
 @RequestMapping(path = "/")
-public class ConsumerReactiveStreamController {
-  interface ProviderReactiveStreamController {
-    Publisher<String> sseString(String param1);
-
-    Publisher<Model> sseModel();
-
-    Publisher<SseEventResponseEntity<Model>> sseResponseTest();
-  }
-
-  @RpcReference(microserviceName = "provider", schemaId = "ReactiveStreamController")
-  ProviderReactiveStreamController controller;
-
-  public static class Model {
-    private String name;
-
-    private int age;
-
-    public Model() {
-
-    }
-
-    public Model(String name, int age) {
-      this.name = name;
-      this.age = age;
-    }
-
-    public int getAge() {
-      return age;
-    }
-
-    public Model setAge(int age) {
-      this.age = age;
-      return this;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public Model setName(String name) {
-      this.name = name;
-      return this;
-    }
-  }
-
+public class ReactiveStreamController {
   @GetMapping("/sseString")
   @Transport(name = "rest")
-  public Publisher<String> sseString(@RequestParam(name = "param1") String param1, HttpServletRequest request) {
-    return controller.sseString(param1);
+  public Publisher<String> sseString() {
+    return Flowable.fromArray("a", "b", "c");
   }
+
+  @GetMapping("/sseStringWithParam")
+  @Transport(name = "rest")
+  public Publisher<String> sseStringWithParam(@RequestParam(name = "name") String name) {
+    return Flowable.fromArray("a", "b", "c", name);
+  };
 
   @GetMapping("/sseModel")
   @Transport(name = "rest")
   public Publisher<Model> sseModel() {
-    return controller.sseModel();
+    return Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
+        .map(item -> new Model("jack", item.intValue()));
   }
 
-  @GetMapping("/sseResponseTest")
+  @GetMapping("/sseResponseEntity")
   @Transport(name = "rest")
-  public Publisher<SseEventResponseEntity<Model>> sseResponseTest() {
-    return controller.sseResponseTest();
-  }
+  public Publisher<SseEventResponseEntity<Model>> sseResponseEntity() {
+    AtomicInteger index = new AtomicInteger(0);
+    return Flowable.intervalRange(0, 3, 0, 1, TimeUnit.SECONDS)
+        .map(item -> new SseEventResponseEntity<Model>()
+            .event("test" + index)
+            .eventId(index.getAndIncrement())
+            .retry(System.currentTimeMillis())
+            .data(new Model("jack", item.intValue())));
+  };
 }
