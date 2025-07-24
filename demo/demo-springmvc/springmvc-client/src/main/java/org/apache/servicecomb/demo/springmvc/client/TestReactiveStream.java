@@ -38,7 +38,7 @@ public class TestReactiveStream implements CategorizedTestCase {
   private static final String SERVER = "servicecomb://springmvc";
 
   @Override
-  public void testAllTransport() throws Exception {
+  public void testRestTransport() throws Exception {
     testSseString();
     testSseStringWithParam();
     testSseModel();
