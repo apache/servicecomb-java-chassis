@@ -23,6 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceEventStreamProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -110,7 +111,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
         result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);
       } else {
         Flowable<Buffer> flowable = (Flowable<Buffer>) responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE);
-        ProduceProcessor finalProduceProcessor = produceProcessor;
+        ProduceProcessor finalProduceProcessor = new ProduceEventStreamProcessor();
         result = flowable.map(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer));
       }
       Response response = Response.create(responseEx.getStatusType(), result);

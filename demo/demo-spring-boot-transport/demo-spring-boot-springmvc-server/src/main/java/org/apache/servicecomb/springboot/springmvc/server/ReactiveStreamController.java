@@ -14,13 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.demo.springmvc.server;
-
+package org.apache.servicecomb.springboot.springmvc.server;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.core.annotation.Transport;
 import org.apache.servicecomb.demo.model.Model;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
@@ -35,26 +33,22 @@ import io.reactivex.rxjava3.core.Flowable;
 @RequestMapping(path = "/")
 public class ReactiveStreamController {
   @GetMapping("/sseString")
-  @Transport(name = "rest")
   public Publisher<String> sseString() {
     return Flowable.fromArray("a", "b", "c");
   }
 
   @GetMapping("/sseStringWithParam")
-  @Transport(name = "rest")
   public Publisher<String> sseStringWithParam(@RequestParam(name = "name") String name) {
     return Flowable.fromArray("a", "b", "c", name);
   };
 
   @GetMapping("/sseModel")
-  @Transport(name = "rest")
   public Publisher<Model> sseModel() {
     return Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
         .map(item -> new Model("jack", item.intValue()));
   }
 
   @GetMapping("/sseResponseEntity")
-  @Transport(name = "rest")
   public Publisher<SseEventResponseEntity<Model>> sseResponseEntity() {
     AtomicInteger index = new AtomicInteger(0);
     return Flowable.intervalRange(0, 3, 0, 1, TimeUnit.SECONDS)

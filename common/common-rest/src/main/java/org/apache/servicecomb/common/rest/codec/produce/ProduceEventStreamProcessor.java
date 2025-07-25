@@ -79,7 +79,17 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
         responseEntity.data(RestObjectMapperFactory.getRestObjectMapper().readValue(line.substring(6), type));
       }
     }
+    if (isNotResponseEntity(responseEntity)) {
+      writeIndex++;
+      return responseEntity.getData();
+    }
     return responseEntity;
+  }
+
+  private boolean isNotResponseEntity(SseEventResponseEntity<?> responseEntity) {
+    return StringUtils.isEmpty(responseEntity.getEvent())
+        && responseEntity.getRetry() == null
+        && (responseEntity.getEventId() != null && responseEntity.getEventId() == writeIndex);
   }
 
   @Override
