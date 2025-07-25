@@ -20,16 +20,21 @@ package org.apache.servicecomb.common.rest.codec.produce;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import jakarta.ws.rs.core.MediaType;
 
 public class ProduceEventStreamProcessor implements ProduceProcessor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProduceEventStreamProcessor.class);
+
   private int writeIndex = 0;
 
   @Override
@@ -61,7 +66,10 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     String buffer = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+    LOGGER.info("=========doDecodeResponse buffer===================>" + buffer + "stack: {}", Arrays.toString(
+        new Exception().getStackTrace()));
     SseEventResponseEntity<?> responseEntity = new SseEventResponseEntity<>();
+    boolean isResponseEntity = false;
     for (String line : buffer.split("\n")) {
       if (line.startsWith("eventId: ")) {
         responseEntity.eventId(Integer.parseInt(line.substring(9)));
@@ -69,27 +77,22 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       }
       if (line.startsWith("event: ")) {
         responseEntity.event(line.substring(7));
+        isResponseEntity = true;
         continue;
       }
       if (line.startsWith("retry: ")) {
         responseEntity.retry(Long.parseLong(line.substring(7)));
+        isResponseEntity = true;
         continue;
       }
       if (line.startsWith("data: ")) {
         responseEntity.data(RestObjectMapperFactory.getRestObjectMapper().readValue(line.substring(6), type));
       }
     }
-    if (isNotResponseEntity(responseEntity)) {
-      writeIndex++;
+    if (!isResponseEntity) {
       return responseEntity.getData();
     }
     return responseEntity;
-  }
-
-  private boolean isNotResponseEntity(SseEventResponseEntity<?> responseEntity) {
-    return StringUtils.isEmpty(responseEntity.getEvent())
-        && responseEntity.getRetry() == null
-        && (responseEntity.getEventId() != null && responseEntity.getEventId() == writeIndex);
   }
 
   @Override

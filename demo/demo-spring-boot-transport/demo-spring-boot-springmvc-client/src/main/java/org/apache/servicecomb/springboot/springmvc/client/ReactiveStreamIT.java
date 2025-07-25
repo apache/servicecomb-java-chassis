@@ -29,12 +29,16 @@ import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ReactiveStreamIT implements CategorizedTestCase {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ReactiveStreamIT.class);
+
   @Autowired
   @Qualifier("reactiveStreamProvider")
   ReactiveStreamClient reactiveStreamProvider;
@@ -58,8 +62,8 @@ public class ReactiveStreamIT implements CategorizedTestCase {
   }
 
   private String buildBufferString(Publisher<String> result) throws Exception {
-    StringBuilder buffer = new StringBuilder();
     CountDownLatch countDownLatch = new CountDownLatch(1);
+    StringBuilder buffer = new StringBuilder();
     result.subscribe(new Subscriber<>() {
       Subscription subscription;
 
@@ -71,18 +75,21 @@ public class ReactiveStreamIT implements CategorizedTestCase {
 
       @Override
       public void onNext(String s) {
+        LOGGER.info("=========buildBufferString result===================>" + s);
         buffer.append(s);
         subscription.request(1);
       }
 
       @Override
       public void onError(Throwable t) {
+        LOGGER.info("=========buildBufferString onError===================>");
         subscription.cancel();
         countDownLatch.countDown();
       }
 
       @Override
       public void onComplete() {
+        LOGGER.info("=========buildBufferString onComplete===================>");
         countDownLatch.countDown();
       }
     });
@@ -106,17 +113,20 @@ public class ReactiveStreamIT implements CategorizedTestCase {
       @Override
       public void onNext(Model s) {
         buffer.append(s.getName()).append(s.getAge());
+        LOGGER.info("=========testSseModel result===================>" + buffer);
         subscription.request(1);
       }
 
       @Override
       public void onError(Throwable t) {
+        LOGGER.info("=========testSseModel error===================>");
         subscription.cancel();
         countDownLatch.countDown();
       }
 
       @Override
       public void onComplete() {
+        LOGGER.info("=========testSseModel onComplete===================>");
         countDownLatch.countDown();
       }
     });
@@ -144,17 +154,20 @@ public class ReactiveStreamIT implements CategorizedTestCase {
         }
         buffer.append(((Model) responseEntity.getData()).getName())
             .append(((Model) responseEntity.getData()).getAge());
+        LOGGER.info("=========testSseResponseEntity result===================>" + buffer);
         subscription.request(1);
       }
 
       @Override
       public void onError(Throwable t) {
+        LOGGER.info("=========testSseResponseEntity error===================>");
         subscription.cancel();
         countDownLatch.countDown();
       }
 
       @Override
       public void onComplete() {
+        LOGGER.info("=========testSseResponseEntity onComplete===================>");
         countDownLatch.countDown();
       }
     });
