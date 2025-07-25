@@ -62,6 +62,7 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     String buffer = new String(input.readAllBytes(), StandardCharsets.UTF_8);
     SseEventResponseEntity<?> responseEntity = new SseEventResponseEntity<>();
+    boolean isResponseEntity = false;
     for (String line : buffer.split("\n")) {
       if (line.startsWith("eventId: ")) {
         responseEntity.eventId(Integer.parseInt(line.substring(9)));
@@ -69,27 +70,22 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       }
       if (line.startsWith("event: ")) {
         responseEntity.event(line.substring(7));
+        isResponseEntity = true;
         continue;
       }
       if (line.startsWith("retry: ")) {
         responseEntity.retry(Long.parseLong(line.substring(7)));
+        isResponseEntity = true;
         continue;
       }
       if (line.startsWith("data: ")) {
         responseEntity.data(RestObjectMapperFactory.getRestObjectMapper().readValue(line.substring(6), type));
       }
     }
-    if (isNotResponseEntity(responseEntity)) {
-      writeIndex++;
+    if (!isResponseEntity) {
       return responseEntity.getData();
     }
     return responseEntity;
-  }
-
-  private boolean isNotResponseEntity(SseEventResponseEntity<?> responseEntity) {
-    return StringUtils.isEmpty(responseEntity.getEvent())
-        && responseEntity.getRetry() == null
-        && (responseEntity.getEventId() != null && responseEntity.getEventId() == writeIndex);
   }
 
   @Override
