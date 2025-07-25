@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.demo.springmvc.client;
+package org.apache.servicecomb.springboot.springmvc.client;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -46,24 +46,28 @@ public class TestReactiveStream implements CategorizedTestCase {
   }
 
   private void testSseStringWithParam() throws Exception {
+    System.out.println("=============start testSseStringWithParam==================");
     Publisher<SseEventResponseEntity<?>> result
         = restTemplate.getForObject(SERVER + "/sseStringWithParam?name=d", Publisher.class);
     TestMgr.check("abcd", buildStringBuffer(result));
   }
 
   private void testSseString() throws Exception {
+    System.out.println("=============start testSseString==================");
     Publisher<SseEventResponseEntity<?>> result
         = restTemplate.getForObject(SERVER + "/sseString", Publisher.class);
     TestMgr.check("abc", buildStringBuffer(result));
   }
 
   private void testSseResponseEntity() throws Exception {
+    System.out.println("=============start testSseResponseEntity==================");
     Publisher<SseEventResponseEntity<?>> result
         = restTemplate.getForObject(SERVER + "/sseResponseEntity", Publisher.class);
     TestMgr.check("test0jack0test1jack1test2jack2", buildStringBuffer(result));
   }
 
   private void testSseModel() throws Exception {
+    System.out.println("=============start testSseModel==================");
     Publisher<SseEventResponseEntity<?>> result
         = restTemplate.getForObject(SERVER + "/sseModel", Publisher.class);
     TestMgr.check("jack0jack1jack2jack3jack4", buildStringBuffer(result));
@@ -84,14 +88,14 @@ public class TestReactiveStream implements CategorizedTestCase {
       @Override
       public void onNext(SseEventResponseEntity<?> responseEntity) {
         if (responseEntity.getData() instanceof String) {
+          System.out.println("=========onNext=============>" + responseEntity.getData());
           buffer.append(responseEntity.getData());
         }
         if (responseEntity.getData() instanceof Model model) {
           if (!StringUtils.isEmpty(responseEntity.getEvent())) {
             buffer.append(responseEntity.getEvent());
           }
-          buffer.append(model.getName())
-              .append(model.getAge());
+          buffer.append(model.getName()).append(model.getAge());
         }
         subscription.request(1);
       }
@@ -107,7 +111,8 @@ public class TestReactiveStream implements CategorizedTestCase {
         countDownLatch.countDown();
       }
     });
-    countDownLatch.await(10, TimeUnit.SECONDS);
+    countDownLatch.await(20, TimeUnit.SECONDS);
+    System.out.println("=========result=============>" + buffer.toString());
     return buffer.toString();
   }
 }
