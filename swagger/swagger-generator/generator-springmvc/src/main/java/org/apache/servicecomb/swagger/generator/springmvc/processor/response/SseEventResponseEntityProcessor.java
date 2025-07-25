@@ -14,30 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.springmvc.processor.response;
 
-package org.apache.servicecomb.foundation.vertx.http;
+import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
+import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 
-import java.util.concurrent.CompletableFuture;
-
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.Response.StatusType;
-
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpHeaders;
-
-public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSupport {
-  StatusType getStatusType();
-
-  void setAttribute(String key, Object value);
-
-  Object getAttribute(String key);
-
-  CompletableFuture<Void> sendPart(Part body);
-
-  default void setChunked(boolean chunked) {
-    setHeader(HttpHeaders.TRANSFER_ENCODING.toString(), HttpHeaders.CHUNKED.toString());
+public class SseEventResponseEntityProcessor extends DefaultResponseTypeProcessor {
+  public SseEventResponseEntityProcessor() {
+    extractActualType = true;
   }
 
-  CompletableFuture<Void> sendBuffer(Buffer buffer);
+  @Override
+  public Class<?> getProcessType() {
+    return SseEventResponseEntity.class;
+  }
 }

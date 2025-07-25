@@ -27,11 +27,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
 import mockit.Deencapsulation;
@@ -90,14 +90,14 @@ public class TestTcpClientConnection {
     Deencapsulation.setField(tcpClientConnection, "status", Status.WORKING);
 
     long msgId = 1;
-    ByteBuf byteBuf = Unpooled.buffer();
+    Buffer byteBuf = Buffer.buffer();
     new Expectations(tcpClientConnection) {
       {
         tcpClientPackage.getMsgId();
         result = msgId;
         tcpClientPackage.createStream();
         result = tcpOutputStream;
-        tcpOutputStream.getByteBuf();
+        tcpOutputStream.getBuffer();
         result = byteBuf;
       }
     };
@@ -172,7 +172,7 @@ public class TestTcpClientConnection {
       {
         tcpClientPackage.getMsgId();
         result = msgId;
-        tcpClientConnection.write((ByteBuf) any);
+        tcpClientConnection.write((Buffer) any);
       }
     };
     new MockUp<Context>(context) {

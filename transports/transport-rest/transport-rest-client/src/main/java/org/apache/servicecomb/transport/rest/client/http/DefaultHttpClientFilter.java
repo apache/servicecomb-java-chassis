@@ -23,10 +23,12 @@ import java.util.concurrent.CompletableFuture;
 import jakarta.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceEventStreamProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -40,6 +42,9 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.netflix.config.DynamicPropertyFactory;
+
+import io.reactivex.rxjava3.core.Flowable;
+import io.vertx.core.buffer.Buffer;
 
 public class DefaultHttpClientFilter implements HttpClientFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHttpClientFilter.class);
@@ -84,7 +89,6 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     if (result != null) {
       return Response.create(responseEx.getStatusType(), result);
     }
-
     OperationMeta operationMeta = invocation.getOperationMeta();
     JavaType responseType = invocation.findResponseType(responseEx.getStatus());
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
@@ -103,7 +107,13 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     }
 
     try {
-      result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);
+      if (responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE) == null) {
+        result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);
+      } else {
+        Flowable<Buffer> flowable = (Flowable<Buffer>) responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE);
+        ProduceProcessor finalProduceProcessor = new ProduceEventStreamProcessor();
+        result = flowable.map(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer));
+      }
       Response response = Response.create(responseEx.getStatusType(), result);
       if (response.isFailed()) {
         LOGGER.warn("invoke operation [{}] failed, status={}, msg={}", invocation.getMicroserviceQualifiedName(),
@@ -128,6 +138,11 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
           new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(),
               new CommonExceptionData(msg), e));
     }
+  }
+
+  protected Object extractFlowableBody(ProduceProcessor produceProcessor, JavaType responseType, Buffer buffer)
+      throws Exception {
+    return produceProcessor.decodeResponse(buffer, responseType);
   }
 
   @Override

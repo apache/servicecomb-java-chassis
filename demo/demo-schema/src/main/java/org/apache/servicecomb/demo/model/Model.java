@@ -15,29 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.vertx.http;
+package org.apache.servicecomb.demo.model;
 
-import java.util.concurrent.CompletableFuture;
+public class Model {
+  private String name;
 
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.Response.StatusType;
+  private int age;
 
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.HttpHeaders;
+  public Model() {
 
-public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSupport {
-  StatusType getStatusType();
-
-  void setAttribute(String key, Object value);
-
-  Object getAttribute(String key);
-
-  CompletableFuture<Void> sendPart(Part body);
-
-  default void setChunked(boolean chunked) {
-    setHeader(HttpHeaders.TRANSFER_ENCODING.toString(), HttpHeaders.CHUNKED.toString());
   }
 
-  CompletableFuture<Void> sendBuffer(Buffer buffer);
+  public Model(String name, int age) {
+    this.name = name;
+    this.age = age;
+  }
+
+  public int getAge() {
+    return age;
+  }
+
+  public Model setAge(int age) {
+    this.age = age;
+    return this;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public Model setName(String name) {
+    this.name = name;
+    return this;
+  }
 }

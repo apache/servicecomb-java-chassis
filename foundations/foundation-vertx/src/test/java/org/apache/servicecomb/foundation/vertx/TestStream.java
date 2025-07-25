@@ -53,7 +53,7 @@ public class TestStream {
     Assertions.assertTrue((1 < oBufferOutputStream.length()));
 
     @SuppressWarnings("resource")
-    BufferInputStream oBufferInputStream = new BufferInputStream(oBufferOutputStream.getByteBuf());
+    BufferInputStream oBufferInputStream = new BufferInputStream(oBufferOutputStream.getBuffer().getByteBuf());
     Assertions.assertEquals("test", oBufferInputStream.readString());
     Assertions.assertEquals(1, oBufferInputStream.readByte());
     Assertions.assertEquals(true, oBufferInputStream.readBoolean());

@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.swagger.generator.springmvc.processor.response.ResponseEntityProcessor
+org.apache.servicecomb.swagger.generator.springmvc.processor.response.SseEventResponseEntityProcessor
