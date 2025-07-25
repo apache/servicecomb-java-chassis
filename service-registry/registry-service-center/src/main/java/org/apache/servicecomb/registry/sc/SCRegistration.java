@@ -104,6 +104,10 @@ public class SCRegistration implements Registration<SCRegistrationInstance> {
         eventBus);
     serviceCenterRegistration.setMicroservice(microservice);
     serviceCenterRegistration.setMicroserviceInstance(microserviceInstance);
+    serviceCenterRegistration.setHeartBeatInterval(
+        TimeUnit.SECONDS.toMillis(configurationProperties.getHealthCheckIntervalInSeconds()));
+    serviceCenterRegistration.setHeartBeatRequestTimeout(
+        configurationProperties.getHealthCheckRequestTimeoutInMillis());
     registrationInstance = new SCRegistrationInstance(microservice, microserviceInstance, serviceCenterRegistration);
     eventBus.register(this);
   }
