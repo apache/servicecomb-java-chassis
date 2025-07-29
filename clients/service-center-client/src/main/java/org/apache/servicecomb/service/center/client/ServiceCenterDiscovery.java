@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
@@ -126,6 +129,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
     if (!started) {
       started = true;
       startTask(new PullInstanceTask());
+      startCheckInstancesHealth();
     }
   }
 
@@ -228,16 +232,33 @@ public class ServiceCenterDiscovery extends AbstractTask {
   }
 
   private synchronized void pullAllInstance() {
-    List<SubscriptionKey> failedInstances = new ArrayList<>();
     instancesCache.forEach((k, v) -> {
       pullInstance(k, v, true);
-      v.instancesCache.removeIf(instance -> isInstanceUnavailable(instance.getServiceName(), instance.getEndpoints()));
-      if (v.instancesCache.isEmpty()) {
-        failedInstances.add(k);
-      }
     });
-    failedInstances.forEach(instancesCache::remove);
-    failedInstances.clear();
+  }
+
+  private void startCheckInstancesHealth() {
+    ScheduledExecutorService executor =
+        Executors.newScheduledThreadPool(1, (t) -> new Thread(t, "instance-health-check"));
+    executor.scheduleWithFixedDelay(new CheckInstancesHealthTask(), 0, pollInterval, TimeUnit.MILLISECONDS);
+  }
+
+  class CheckInstancesHealthTask implements Runnable {
+    @Override
+    public void run() {
+      if (instancesCache.isEmpty()) {
+        return;
+      }
+      List<SubscriptionKey> failedInstances = new ArrayList<>();
+      instancesCache.forEach((k, v) -> {
+        v.instancesCache.removeIf(item -> isInstanceUnavailable(item.getServiceName(), item.getEndpoints()));
+        if (v.instancesCache.isEmpty()) {
+          failedInstances.add(k);
+        }
+      });
+      failedInstances.forEach(instancesCache::remove);
+      failedInstances.clear();
+    }
   }
 
   private static String instanceToString(List<MicroserviceInstance> instances) {
