@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.springboot.springmvc.server;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -36,28 +34,24 @@ import io.reactivex.rxjava3.core.Flowable;
 public class ReactiveStreamController {
   @GetMapping("/sseString")
   public Publisher<String> sseString() {
-    List<String> data = Arrays.asList("a", "b", "c");
-    return Flowable.intervalRange(0, 3, 5, 1, TimeUnit.SECONDS)
-        .map(item -> data.get(item.intValue()));
+    return Flowable.fromArray("a", "b", "c");
   }
 
   @GetMapping("/sseStringWithParam")
   public Publisher<String> sseStringWithParam(@RequestParam(name = "name") String name) {
-    List<String> data = Arrays.asList("a", "b", "c", name);
-    return Flowable.intervalRange(0, 4, 5, 1, TimeUnit.SECONDS)
-        .map(item -> data.get(item.intValue()));
+    return Flowable.fromArray("a", "b", "c", name);
   };
 
   @GetMapping("/sseModel")
   public Publisher<Model> sseModel() {
-    return Flowable.intervalRange(0, 5, 5, 1, TimeUnit.SECONDS)
+    return Flowable.intervalRange(0, 5, 0, 1, TimeUnit.SECONDS)
         .map(item -> new Model("jack", item.intValue()));
   }
 
   @GetMapping("/sseResponseEntity")
   public Publisher<SseEventResponseEntity<Model>> sseResponseEntity() {
     AtomicInteger index = new AtomicInteger(0);
-    return Flowable.intervalRange(0, 3, 5, 1, TimeUnit.SECONDS)
+    return Flowable.intervalRange(0, 3, 0, 1, TimeUnit.SECONDS)
         .map(item -> new SseEventResponseEntity<Model>()
             .event("test" + index)
             .eventId(index.getAndIncrement())

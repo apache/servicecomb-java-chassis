@@ -271,8 +271,7 @@ public class RestClientInvocation {
       try {
         invocation.getInvocationStageTrace().startClientFiltersResponse();
         HttpServletResponseEx responseEx =
-            new VertxClientResponseToHttpServletResponse(clientResponse, null);
-        responseEx.setAttribute(Const.FLOWABLE_CLIENT_RESPONSE, flowable);
+            new VertxClientResponseToHttpServletResponse(clientResponse, flowable);
         for (HttpClientFilter filter : httpClientFilters) {
           if (filter.enabled()) {
             Response response = filter.afterReceiveResponse(invocation, responseEx);

@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.Response.StatusType;
 
+import io.reactivex.rxjava3.core.Flowable;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpHeaders;
 
@@ -40,4 +41,8 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
   }
 
   CompletableFuture<Void> sendBuffer(Buffer buffer);
+
+  default Flowable<Buffer> getFlowableBuffer() {
+    return null;
+  }
 }

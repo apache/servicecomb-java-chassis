@@ -28,7 +28,6 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -107,10 +106,10 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     }
 
     try {
-      if (responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE) == null) {
+      if (responseEx.getFlowableBuffer() == null) {
         result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);
       } else {
-        Flowable<Buffer> flowable = (Flowable<Buffer>) responseEx.getAttribute(Const.FLOWABLE_CLIENT_RESPONSE);
+        Flowable<Buffer> flowable = responseEx.getFlowableBuffer();
         ProduceProcessor finalProduceProcessor = new ProduceEventStreamProcessor();
         result = flowable.map(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer));
       }
