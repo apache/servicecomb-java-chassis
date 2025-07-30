@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.sse;
+package org.apache.servicecomb.common.rest.codec.produce;
 
 import jakarta.validation.constraints.NotNull;
 

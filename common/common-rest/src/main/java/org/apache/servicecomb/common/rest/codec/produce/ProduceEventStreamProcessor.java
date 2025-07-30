@@ -24,7 +24,6 @@ import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +67,14 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
     String buffer = new String(input.readAllBytes(), StandardCharsets.UTF_8);
     LOGGER.info("=========doDecodeResponse buffer===================>" + buffer + "stack: {}", Arrays.toString(
         new Exception().getStackTrace()));
+    if (isResponseEntity(type)) {
+      return parseAsSseEventResponseEntity(buffer, type);
+    }
+    return parseOriginObject(buffer, type);
+  }
+
+  private Object parseAsSseEventResponseEntity(String buffer, JavaType type) throws Exception {
     SseEventResponseEntity<?> responseEntity = new SseEventResponseEntity<>();
-    boolean isResponseEntity = false;
     for (String line : buffer.split("\n")) {
       if (line.startsWith("eventId: ")) {
         responseEntity.eventId(Integer.parseInt(line.substring(9)));
@@ -77,22 +82,36 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       }
       if (line.startsWith("event: ")) {
         responseEntity.event(line.substring(7));
-        isResponseEntity = true;
         continue;
       }
       if (line.startsWith("retry: ")) {
         responseEntity.retry(Long.parseLong(line.substring(7)));
-        isResponseEntity = true;
         continue;
       }
       if (line.startsWith("data: ")) {
-        responseEntity.data(RestObjectMapperFactory.getRestObjectMapper().readValue(line.substring(6), type));
+        responseEntity.data(RestObjectMapperFactory.getRestObjectMapper()
+            .readValue(line.substring(6), getParsObjectType(type)));
       }
     }
-    if (!isResponseEntity) {
-      return responseEntity.getData();
-    }
     return responseEntity;
+  }
+
+  private Object parseOriginObject(String buffer, JavaType type) throws Exception {
+    for (String line : buffer.split("\n")) {
+      if (line.startsWith("data: ")) {
+        return RestObjectMapperFactory.getRestObjectMapper()
+            .readValue(line.substring(6), type);
+      }
+    }
+    return null;
+  }
+
+  private boolean isResponseEntity(JavaType type) {
+    return type.getRawClass().getName().equals(SseEventResponseEntity.class.getName());
+  }
+
+  private JavaType getParsObjectType(JavaType type) {
+    return type.getBindings().getBoundType(0);
   }
 
   @Override

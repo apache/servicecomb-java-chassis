@@ -19,9 +19,9 @@ package org.apache.servicecomb.springboot.springmvc.server;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.common.rest.codec.produce.SseEventResponseEntity;
 import org.apache.servicecomb.demo.model.Model;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.swagger.sse.SseEventResponseEntity;
 import org.reactivestreams.Publisher;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,5 +57,5 @@ public class ReactiveStreamController {
             .eventId(index.getAndIncrement())
             .retry(System.currentTimeMillis())
             .data(new Model("jack", item.intValue())));
-  };
+  }
 }
