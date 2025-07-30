@@ -169,7 +169,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
           result.completeExceptionally(e);
         }
         try {
-          responseEx.flushBuffer();
+          responseEx.flushStreamBuffer();
         } catch (IOException ex) {
           LOGGER.warn("Failed to flush buffer for Server Send Events", ex);
         }

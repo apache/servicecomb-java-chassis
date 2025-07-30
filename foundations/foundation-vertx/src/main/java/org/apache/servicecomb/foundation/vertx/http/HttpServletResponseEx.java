@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -45,4 +46,6 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
   default Flowable<Buffer> getFlowableBuffer() {
     return null;
   }
+
+  default void flushStreamBuffer() throws IOException {};
 }

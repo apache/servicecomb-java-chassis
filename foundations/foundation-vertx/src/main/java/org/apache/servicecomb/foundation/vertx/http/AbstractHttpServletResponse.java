@@ -86,7 +86,7 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
 
   @Override
   public void flushBuffer() throws IOException {
-    throw new Error("not supported method");
+    // for vert.x do noting
   }
 
   @Override
