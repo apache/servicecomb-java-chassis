@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest.filter.inner;
 
 import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter.isDownloadFileResponseType;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
@@ -166,6 +167,11 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       responseEx.sendBuffer(output.getBuffer()).whenComplete((v, e) -> {
         if (e != null) {
           result.completeExceptionally(e);
+        }
+        try {
+          responseEx.flushBuffer();
+        } catch (IOException ex) {
+          LOGGER.warn("Failed to flush buffer for Server Send Events", ex);
         }
       });
       result.complete(response);
