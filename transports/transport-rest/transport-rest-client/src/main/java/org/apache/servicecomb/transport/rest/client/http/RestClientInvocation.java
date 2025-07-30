@@ -221,7 +221,9 @@ public class RestClientInvocation {
     }
 
     if (restOperationMeta != null && restOperationMeta.isServerSendEvents()) {
-      processFlowableResponseBody(FlowableHelper.toFlowable(httpClientResponse));
+      processFlowableResponseBody(FlowableHelper.toFlowable(httpClientResponse).doOnEach(notification->{
+        LOGGER.info("----- receive buffer {}", notification.getValue());
+      }));
       return;
     }
 
