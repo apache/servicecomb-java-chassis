@@ -83,7 +83,7 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
   }
 
   @Override
-  public void flushBuffer() throws IOException {
+  public void endResponse() throws IOException {
     byte[] bytes = getBodyBytes();
     if (bytes != null) {
       getOutputStream().write(bytes, 0, getBodyBytesLength());

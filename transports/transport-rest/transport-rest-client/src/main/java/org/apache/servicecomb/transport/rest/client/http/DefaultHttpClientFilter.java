@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import jakarta.ws.rs.core.HttpHeaders;
@@ -111,7 +112,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       } else {
         Flowable<Buffer> flowable = responseEx.getFlowableBuffer();
         ProduceProcessor finalProduceProcessor = new ProduceEventStreamProcessor();
-        result = flowable.map(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer));
+        result = flowable.map(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer))
+            .filter(Objects::nonNull);
       }
       Response response = Response.create(responseEx.getStatusType(), result);
       if (response.isFailed()) {

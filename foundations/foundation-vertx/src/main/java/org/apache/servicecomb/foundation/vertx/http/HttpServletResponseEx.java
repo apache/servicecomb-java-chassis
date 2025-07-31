@@ -47,5 +47,5 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
     return null;
   }
 
-  default void flushStreamBuffer() throws IOException {};
+  void endResponse() throws IOException;
 }

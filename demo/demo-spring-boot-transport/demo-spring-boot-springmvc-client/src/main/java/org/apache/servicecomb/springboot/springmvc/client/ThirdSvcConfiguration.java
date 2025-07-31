@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.springboot.springmvc.client;
 
-import org.apache.servicecomb.common.rest.codec.produce.SseEventResponseEntity;
+import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
 import org.apache.servicecomb.demo.model.Model;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.reactivestreams.Publisher;

@@ -916,7 +916,7 @@ public class TestAbstractRestInvocation {
       }
 
       @Override
-      public void flushBuffer() {
+      public void endResponse() {
         endCount.value = endCount.value + 1;
       }
 
@@ -956,7 +956,7 @@ public class TestAbstractRestInvocation {
       }
 
       @Override
-      public void flushBuffer() {
+      public void endResponse() {
         endCount.value = endCount.value + 1;
       }
 

@@ -21,7 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.common.rest.codec.produce.SseEventResponseEntity;
+import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.model.Model;
@@ -75,21 +75,18 @@ public class ReactiveStreamIT implements CategorizedTestCase {
 
       @Override
       public void onNext(String s) {
-        LOGGER.info("=========buildBufferString result===================>" + s);
         buffer.append(s);
         subscription.request(1);
       }
 
       @Override
       public void onError(Throwable t) {
-        LOGGER.info("=========buildBufferString onError===================>");
         subscription.cancel();
         countDownLatch.countDown();
       }
 
       @Override
       public void onComplete() {
-        LOGGER.info("=========buildBufferString onComplete===================>");
         countDownLatch.countDown();
       }
     });
@@ -113,20 +110,17 @@ public class ReactiveStreamIT implements CategorizedTestCase {
       @Override
       public void onNext(Model s) {
         buffer.append(s.getName()).append(s.getAge());
-        LOGGER.info("=========testSseModel result===================>" + buffer);
         subscription.request(1);
       }
 
       @Override
       public void onError(Throwable t) {
-        LOGGER.info("=========testSseModel error===================>");
         subscription.cancel();
         countDownLatch.countDown();
       }
 
       @Override
       public void onComplete() {
-        LOGGER.info("=========testSseModel onComplete===================>");
         countDownLatch.countDown();
       }
     });

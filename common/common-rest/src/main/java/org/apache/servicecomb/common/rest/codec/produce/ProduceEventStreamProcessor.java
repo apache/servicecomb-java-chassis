@@ -20,20 +20,16 @@ package org.apache.servicecomb.common.rest.codec.produce;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import jakarta.ws.rs.core.MediaType;
 
 public class ProduceEventStreamProcessor implements ProduceProcessor {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProduceEventStreamProcessor.class);
-
   private int writeIndex = 0;
 
   @Override
@@ -65,15 +61,6 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     String buffer = new String(input.readAllBytes(), StandardCharsets.UTF_8);
-    LOGGER.info("=========doDecodeResponse buffer===================>" + buffer + "stack: {}", Arrays.toString(
-        new Exception().getStackTrace()));
-    if (isResponseEntity(type)) {
-      return parseAsSseEventResponseEntity(buffer, type);
-    }
-    return parseOriginObject(buffer, type);
-  }
-
-  private Object parseAsSseEventResponseEntity(String buffer, JavaType type) throws Exception {
     SseEventResponseEntity<?> responseEntity = new SseEventResponseEntity<>();
     for (String line : buffer.split("\n")) {
       if (line.startsWith("eventId: ")) {
@@ -90,28 +77,10 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       }
       if (line.startsWith("data: ")) {
         responseEntity.data(RestObjectMapperFactory.getRestObjectMapper()
-            .readValue(line.substring(6), getParsObjectType(type)));
+            .readValue(line.substring(6), type));
       }
     }
     return responseEntity;
-  }
-
-  private Object parseOriginObject(String buffer, JavaType type) throws Exception {
-    for (String line : buffer.split("\n")) {
-      if (line.startsWith("data: ")) {
-        return RestObjectMapperFactory.getRestObjectMapper()
-            .readValue(line.substring(6), type);
-      }
-    }
-    return null;
-  }
-
-  private boolean isResponseEntity(JavaType type) {
-    return type.getRawClass().getName().equals(SseEventResponseEntity.class.getName());
-  }
-
-  private JavaType getParsObjectType(JavaType type) {
-    return type.getBindings().getBoundType(0);
   }
 
   @Override

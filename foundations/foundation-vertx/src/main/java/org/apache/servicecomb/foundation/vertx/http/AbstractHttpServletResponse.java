@@ -228,4 +228,9 @@ public abstract class AbstractHttpServletResponse extends BodyBufferSupportImpl 
   public CompletableFuture<Void> sendBuffer(Buffer buffer) {
     throw new Error("not supported method");
   }
+
+  @Override
+  public void endResponse() throws IOException {
+    throw new Error("not supported method");
+  }
 }

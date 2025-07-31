@@ -102,7 +102,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   @Override
-  public void flushBuffer() {
+  public void endResponse() {
     if (context == Vertx.currentContext()) {
       internalFlushBuffer();
       return;

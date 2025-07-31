@@ -19,7 +19,7 @@ package org.apache.servicecomb.springboot.springmvc.server;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.common.rest.codec.produce.SseEventResponseEntity;
+import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
 import org.apache.servicecomb.demo.model.Model;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.reactivestreams.Publisher;
