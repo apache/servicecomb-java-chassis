@@ -253,21 +253,21 @@ public class TestVertxServerResponseToHttpServletResponse {
   }
 
   @Test
-  public void flushBuffer_sameContext() throws IOException {
-    response.flushBuffer();
+  public void endResponse_sameContext() throws IOException {
+    response.endResponse();
 
     Assertions.assertFalse(runOnContextInvoked);
   }
 
   @Test
-  public void flushBuffer_diffContext() throws IOException {
+  public void endResponse_diffContext() throws IOException {
     new Expectations() {
       {
         Vertx.currentContext();
         result = null;
       }
     };
-    response.flushBuffer();
+    response.endResponse();
 
     Assertions.assertTrue(runOnContextInvoked);
   }

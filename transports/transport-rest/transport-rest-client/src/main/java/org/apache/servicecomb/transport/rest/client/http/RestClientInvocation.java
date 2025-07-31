@@ -53,6 +53,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.reactivex.rxjava3.core.Flowable;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -60,6 +61,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
+import io.vertx.rxjava3.FlowableHelper;
 
 public class RestClientInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientInvocation.class);
@@ -218,6 +220,11 @@ public class RestClientInvocation {
       return;
     }
 
+    if (restOperationMeta != null && restOperationMeta.isServerSendEvents()) {
+      processFlowableResponseBody(FlowableHelper.toFlowable(httpClientResponse));
+      return;
+    }
+
     httpClientResponse.exceptionHandler(e -> {
       invocation.getTraceIdLogger().error(LOGGER, "Failed to receive response, local:{}, remote:{}, message={}.",
           getLocalAddress(), httpClientResponse.netSocket().remoteAddress(),
@@ -233,12 +240,26 @@ public class RestClientInvocation {
    * @param responseBuf response body buffer, when download, responseBuf is null, because download data by ReadStreamPart
    */
   protected void processResponseBody(Buffer responseBuf) {
+    HttpServletResponseEx responseEx =
+        new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
+    doProcessResponseBody(responseEx);
+  }
+
+  /**
+   * after this method, connection will be recycled to connection pool
+   * @param flowable sse flowable response
+   */
+  protected void processFlowableResponseBody(Flowable<Buffer> flowable) {
+    HttpServletResponseEx responseEx =
+        new VertxClientResponseToHttpServletResponse(clientResponse, flowable);
+    doProcessResponseBody(responseEx);
+  }
+
+  private void doProcessResponseBody(HttpServletResponseEx responseEx) {
     invocation.getInvocationStageTrace().finishReceiveResponse();
     invocation.getResponseExecutor().execute(() -> {
       try {
         invocation.getInvocationStageTrace().startClientFiltersResponse();
-        HttpServletResponseEx responseEx =
-            new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
         for (HttpClientFilter filter : httpClientFilters) {
           if (filter.enabled()) {
             Response response = filter.afterReceiveResponse(invocation, responseEx);

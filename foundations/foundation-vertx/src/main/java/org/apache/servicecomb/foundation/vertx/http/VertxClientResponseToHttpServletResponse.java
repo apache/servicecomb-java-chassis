@@ -24,6 +24,7 @@ import jakarta.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 
+import io.reactivex.rxjava3.core.Flowable;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
 
@@ -32,9 +33,16 @@ public class VertxClientResponseToHttpServletResponse extends AbstractHttpServle
 
   private StatusType statusType;
 
+  private Flowable<Buffer> flowableBuffer;
+
   public VertxClientResponseToHttpServletResponse(HttpClientResponse clientResponse, Buffer bodyBuffer) {
     this.clientResponse = clientResponse;
     setBodyBuffer(bodyBuffer);
+  }
+
+  public VertxClientResponseToHttpServletResponse(HttpClientResponse clientResponse, Flowable<Buffer> buffer) {
+    this.clientResponse = clientResponse;
+    this.flowableBuffer = buffer;
   }
 
   @Override
@@ -68,5 +76,10 @@ public class VertxClientResponseToHttpServletResponse extends AbstractHttpServle
   @Override
   public Collection<String> getHeaderNames() {
     return clientResponse.headers().names();
+  }
+
+  @Override
+  public Flowable<Buffer> getFlowableBuffer() {
+    return flowableBuffer;
   }
 }

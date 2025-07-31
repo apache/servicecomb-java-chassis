@@ -144,7 +144,7 @@ public class TcpClientConnection extends TcpConnection {
     if (Status.WORKING.equals(status)) {
       // encode in sender thread
       try (TcpOutputStream os = tcpClientPackage.createStream()) {
-        write(os.getByteBuf());
+        write(os.getBuffer());
         tcpClientPackage.finishWriteToBuffer();
       }
       return true;

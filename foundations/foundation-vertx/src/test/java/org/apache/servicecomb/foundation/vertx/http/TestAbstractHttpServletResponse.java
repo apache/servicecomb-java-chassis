@@ -91,8 +91,7 @@ public class TestAbstractHttpServletResponse {
 
   @Test
   public void testFlushBuffer() {
-    Error error = Assertions.assertThrows(Error.class, () -> response.flushBuffer());
-    checkError(error);
+    Assertions.assertDoesNotThrow(() -> response.flushBuffer());
   }
 
   @Test
