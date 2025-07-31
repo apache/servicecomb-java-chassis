@@ -113,7 +113,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
 
   private static CompletableFuture<Void> writeServerSendEvent(Invocation invocation, Response response,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
-    responseEx.setChunked(true);
+    responseEx.setChunkedForEvent(true);
     refreshEventId(invocation.getRequestEx(), produceProcessor);
     CompletableFuture<Void> result = new CompletableFuture<>();
     Publisher<?> publisher = response.getResult();

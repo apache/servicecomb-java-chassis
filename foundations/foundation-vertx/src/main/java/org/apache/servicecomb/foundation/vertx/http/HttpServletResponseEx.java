@@ -48,4 +48,8 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
   }
 
   void endResponse() throws IOException;
+
+  default void setChunkedForEvent(boolean chunked) {
+    // not set header transfer-encoding=chunked in Rest Over Servlet, or will have Multiple in response.
+  }
 }
