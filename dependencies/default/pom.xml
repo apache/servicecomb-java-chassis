@@ -71,7 +71,6 @@
     <mock-server.version>5.15.0</mock-server.version>
     <nacos-client.version>3.0.2</nacos-client.version>
     <netflix-commons.version>0.3.0</netflix-commons.version>
-    <okhttp3.version>4.12.0</okhttp3.version>
     <prometheus.version>0.16.0</prometheus.version>
     <protobuf.version>3.23.4</protobuf.version>
     <protostuff.version>1.8.0</protostuff.version>
@@ -190,18 +189,6 @@
         <artifactId>protobuf-java</artifactId>
         <version>${protobuf.version}</version>
         <scope>test</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>com.squareup.okhttp3</groupId>
-        <artifactId>okhttp</artifactId>
-        <version>${okhttp3.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>com.squareup.okhttp3</groupId>
-        <artifactId>mockwebserver</artifactId>
-        <version>${okhttp3.version}</version>
       </dependency>
 
       <dependency>

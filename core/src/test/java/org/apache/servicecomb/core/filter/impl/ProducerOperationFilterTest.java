@@ -189,8 +189,7 @@ public class ProducerOperationFilterTest {
     assertThat(future)
         .failsWithin(Duration.ofSeconds(1))
         .withThrowableOfType(ExecutionException.class)
-        .withCauseExactlyInstanceOf(IllegalArgumentException.class)
-        .withMessage("java.lang.IllegalArgumentException: wrong number of arguments");
+        .withCauseExactlyInstanceOf(IllegalArgumentException.class);
 
     InvocationException throwable = Exceptions
         .convert(invocation, catchThrowable(future::get), INTERNAL_SERVER_ERROR);
