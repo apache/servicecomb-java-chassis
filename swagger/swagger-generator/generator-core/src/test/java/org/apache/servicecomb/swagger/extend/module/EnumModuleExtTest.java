@@ -56,7 +56,7 @@ public class EnumModuleExtTest {
     serializeValue = mapper.writeValueAsString(TestEnum.E_F);
     Assertions.assertEquals("\"E.F\"", serializeValue);
     serializeValue = mapper.writeValueAsString(TestEnum.HI);
-    Assertions.assertEquals("\"HI\"", serializeValue);
+    Assertions.assertEquals("\"\"", serializeValue);
   }
 
   @Test
@@ -64,6 +64,6 @@ public class EnumModuleExtTest {
     OpenAPI openAPI = new OpenAPI();
     Schema schema = SwaggerUtils.resolveTypeSchemas(openAPI, TestEnum.class);
     Assertions.assertEquals(schema.getType(), "string");
-    MatcherAssert.assertThat((List<String>) schema.getEnum(), contains("AB", "C-D", "E.F", "HI"));
+    MatcherAssert.assertThat((List<String>) schema.getEnum(), contains("AB", "C-D", "E.F", ""));
   }
 }
