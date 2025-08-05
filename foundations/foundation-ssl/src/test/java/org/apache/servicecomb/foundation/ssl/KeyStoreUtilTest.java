@@ -26,13 +26,12 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.Collection;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.Mockito;
 
 import mockit.Mock;
 import mockit.MockUp;
+import org.mockito.Mockito;
 
 public class KeyStoreUtilTest {
   final String strFilePath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
@@ -78,14 +77,9 @@ public class KeyStoreUtilTest {
     try {
       KeyStoreUtil.createKeyManagers(keystore, storeKeyValue);
     } catch (IllegalArgumentException e) {
-      if (SystemUtils.JAVA_SPECIFICATION_VERSION.startsWith("17")) {
         Assertions.assertEquals("Bad key store.Get Key failed:"
                         + " Cannot read the array length because \"password\" is null",
                 e.getMessage());
-      } else {
-        Assertions.assertEquals("Bad key store.Get Key failed: null",
-                e.getMessage());
-      }
     }
   }
 
