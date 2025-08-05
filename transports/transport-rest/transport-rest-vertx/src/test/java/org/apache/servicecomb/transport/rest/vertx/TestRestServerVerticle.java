@@ -65,10 +65,10 @@ import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
-import io.vertx.core.file.impl.FileResolverImpl;
 import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.impl.SysProps;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
@@ -164,7 +164,7 @@ public class TestRestServerVerticle {
         .thenReturn(Http2Settings.DEFAULT_ENABLE_PUSH);
     Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
         .thenReturn(-1);
-    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+    Mockito.when(environment.getProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, boolean.class, true))
         .thenReturn(true);
     Mockito.when(environment.getProperty(CLIENT_LOG_ENABLED, boolean.class, false))
         .thenReturn(false);

@@ -37,6 +37,7 @@ import io.vertx.core.ThreadingModel;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.dns.AddressResolverOptions;
+import io.vertx.core.http.PoolOptions;
 import io.vertx.core.http.WebSocketClient;
 
 /**
@@ -70,8 +71,12 @@ public class HttpClients {
 
   private static ClientPoolManager<HttpClientWithContext> createClientPoolManager(HttpClientOptionsSPI option) {
     Vertx vertx = getOrCreateVertx(option);
+    PoolOptions poolOptions = new PoolOptions();
+    poolOptions.setMaxWaitQueueSize(option.getMaxWaitQueueSize());
+    poolOptions.setHttp1MaxSize(option.getMaxPoolSize());
+    poolOptions.setHttp2MaxSize(option.getHttp2MaxPoolSize());
     ClientPoolManager<HttpClientWithContext> clientPoolManager = new ClientPoolManager<>(vertx,
-        new HttpClientPoolFactory(HttpClientOptionsSPI.createHttpClientOptions(option)));
+        new HttpClientPoolFactory(HttpClientOptionsSPI.createHttpClientOptions(option), poolOptions));
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientPoolManager,
             option.getInstanceCount())
@@ -103,7 +108,7 @@ public class HttpClients {
         .setEventLoopPoolSize(option.getEventLoopPoolSize());
 
     // Maybe we can deploy only one vert.x for the application. However this has did it like this.
-    return VertxUtils.getOrCreateVertxByName(option.clientName(), vertxOptions);
+    return VertxUtils.getOrCreateVertxByName(option.clientName(), vertxOptions, null);
   }
 
   /**

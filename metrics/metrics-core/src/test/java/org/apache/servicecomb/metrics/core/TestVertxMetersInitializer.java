@@ -45,12 +45,14 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
-import io.vertx.core.file.impl.FileResolverImpl;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.impl.SysProps;
 import io.vertx.ext.web.Router;
 
 public class TestVertxMetersInitializer {
@@ -64,6 +66,12 @@ public class TestVertxMetersInitializer {
 
   Environment environment = Mockito.mock(Environment.class);
 
+  LogCollector logCollector = new LogCollector();
+
+  static HttpClient client;
+
+  static HttpServer server;
+
   static int port;
 
   static String body = "body";
@@ -74,16 +82,17 @@ public class TestVertxMetersInitializer {
       Router mainRouter = Router.router(vertx);
       mainRouter.route("/").handler(context -> context.response().end(body));
 
-      HttpServer server = vertx.createHttpServer();
+      server = vertx.createHttpServer();
       server.requestHandler(mainRouter);
-      server.listen(0, "0.0.0.0", ar -> {
-        if (ar.succeeded()) {
-          port = ar.result().actualPort();
+      Future<HttpServer> future = server.listen(0, "0.0.0.0");
+      future.onComplete((s, f) -> {
+        if (f == null) {
+          port = s.actualPort();
           startPromise.complete();
           return;
         }
 
-        startPromise.fail(ar.cause());
+        startPromise.fail(f);
       });
     }
   }
@@ -91,13 +100,16 @@ public class TestVertxMetersInitializer {
   public static class TestClientVerticle extends AbstractVerticle {
     @Override
     public void start(Promise<Void> startPromise) {
-      HttpClient client = vertx.createHttpClient();
-      client.request(HttpMethod.GET, port, "127.0.0.1", "/", ar -> {
-        if (ar.succeeded()) {
-          HttpClientRequest request = ar.result();
-          request.send(body, resp -> {
-            if (resp.succeeded()) {
-              resp.result().bodyHandler((buffer) -> startPromise.complete());
+      client = vertx.createHttpClient();
+      Future<HttpClientRequest> future = client.request(HttpMethod.GET, port, "127.0.0.1", "/");
+      future.onComplete((s, f) -> {
+        if (f == null) {
+          Future<HttpClientResponse> responseFuture = s.send(body);
+          responseFuture.onComplete((rs, rf) -> {
+            if (rf == null) {
+              rs.bodyHandler((buffer) -> startPromise.complete());
+            } else {
+              startPromise.fail(f);
             }
           });
         }
@@ -109,15 +121,22 @@ public class TestVertxMetersInitializer {
   public void setup() {
     Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
         .thenReturn(-1);
-    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+    Mockito.when(environment.getProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, boolean.class, true))
         .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);
     HttpClients.load();
   }
 
   @AfterEach
-  public void teardown() {
+  public void tearDown() {
+    logCollector.clear();
     HttpClients.destroy();
+    if (client != null) {
+      client.shutdown();
+    }
+    if (server != null) {
+      server.shutdown();
+    }
   }
 
   @Test
@@ -140,14 +159,10 @@ public class TestVertxMetersInitializer {
     vertxMetersInitializer.poll(0, 1);
     List<Meter> meters = registry.getMeters();
 
-    LogCollector logCollector = new LogCollector();
-
     testLog(logCollector, meters, true);
     logCollector.clear();
 
     testLog(logCollector, meters, false);
-
-    logCollector.teardown();
   }
 
   private void testLog(LogCollector logCollector, List<Meter> meters, boolean printDetail) {

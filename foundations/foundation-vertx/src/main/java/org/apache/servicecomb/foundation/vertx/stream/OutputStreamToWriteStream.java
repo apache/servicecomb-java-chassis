@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.io.AsyncCloseable;
 
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -93,22 +92,20 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
   @Override
   public synchronized Future<Void> write(Buffer data) {
     Promise<Void> result = Promise.<Void>promise();
-    write(data, ar -> {
-      if (ar.failed()) {
-        handleException(ar.cause());
-      }
-      result.complete();
-    });
+    write(data, result);
     return result.future();
   }
 
-  @Override
-  public void write(Buffer data, Handler<AsyncResult<Void>> handler) {
+  private void write(Buffer data, Promise<Void> future) {
     currentBufferCount.incrementAndGet();
     buffers.add(data);
-    context.executeBlocking(this::writeInWorker,
-        true,
-        handler);
+    context.executeBlocking(
+        () -> {
+          writeInWorker(future);
+          return null;
+        },
+        true
+    );
   }
 
   protected void writeInWorker(Promise<Void> future) {
@@ -124,7 +121,8 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
 
         synchronized (OutputStreamToWriteStream.this) {
           currentBufferCount.decrementAndGet();
-          Runnable action = (currentBufferCount.get() == 0 && closedDeferred != null) ? closedDeferred : this::checkDrained;
+          Runnable action = (currentBufferCount.get() == 0 && closedDeferred != null)
+              ? closedDeferred : this::checkDrained;
           action.run();
         }
       } catch (IOException e) {
@@ -136,8 +134,8 @@ public class OutputStreamToWriteStream implements WriteStream<Buffer>, AsyncClos
   }
 
   @Override
-  public void end(Handler<AsyncResult<Void>> handler) {
-    close();
+  public Future<Void> end() {
+    return Future.fromCompletionStage(close());
   }
 
   @Override

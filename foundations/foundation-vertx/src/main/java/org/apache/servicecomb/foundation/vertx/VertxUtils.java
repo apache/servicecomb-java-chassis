@@ -38,14 +38,17 @@ import org.slf4j.LoggerFactory;
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.impl.FileResolverImpl;
-import io.vertx.core.impl.VertxBuilder;
+import io.vertx.core.impl.SysProps;
 import io.vertx.core.impl.VertxThread;
+import io.vertx.core.internal.VertxBootstrap;
+import io.vertx.core.spi.VertxMetricsFactory;
 import io.vertx.core.spi.VertxThreadFactory;
+import io.vertx.core.transport.Transport;
 
 /**
  * VertxUtils
@@ -90,12 +93,13 @@ public final class VertxUtils {
     Map<String, Object> result = new HashMap<>();
 
     CountDownLatch latch = new CountDownLatch(1);
-    vertx.deployVerticle(cls.getName(), options, ar -> {
-      result.put("code", ar.succeeded());
+    Future<String> future = vertx.deployVerticle(cls.getName(), options);
+    future.onComplete((succuss, failure) -> {
+      result.put("code", failure == null);
 
-      if (ar.failed()) {
-        result.put("message", ar.cause().getMessage());
-        LOGGER.error("deploy vertx failed, cause ", ar.cause());
+      if (failure != null) {
+        result.put("message", failure.getMessage());
+        LOGGER.error("deploy vertx failed, cause ", failure);
       }
 
       latch.countDown();
@@ -106,11 +110,12 @@ public final class VertxUtils {
     return result;
   }
 
-  public static Vertx getOrCreateVertxByName(String name, VertxOptions vertxOptions) {
-    return vertxMap.computeIfAbsent(name, vertxName -> init(vertxName, vertxOptions));
+  public static Vertx getOrCreateVertxByName(String name, VertxOptions vertxOptions,
+      VertxMetricsFactory metricsFactory) {
+    return vertxMap.computeIfAbsent(name, vertxName -> init(name, vertxOptions, metricsFactory));
   }
 
-  public static Vertx init(String name, VertxOptions vertxOptions) {
+  public static Vertx init(String name, VertxOptions vertxOptions, VertxMetricsFactory metricsFactory) {
     if (vertxOptions == null) {
       vertxOptions = new VertxOptions();
     }
@@ -123,14 +128,31 @@ public final class VertxUtils {
 
     configureVertxFileCaching(vertxOptions);
 
-    return new VertxBuilder(vertxOptions).threadFactory(new VertxThreadFactory() {
-      @Override
-      public VertxThread newVertxThread(Runnable target, String threadName, boolean worker, long maxExecTime,
-          TimeUnit maxExecTimeUnit) {
-        return VertxThreadFactory.super
-            .newVertxThread(target, name + "-" + threadName, worker, maxExecTime, maxExecTimeUnit);
-      }
-    }).init().vertx();
+    VertxBootstrap bootstrap = bootstrap(vertxOptions, metricsFactory)
+        .threadFactory(new VertxThreadFactory() {
+          @Override
+          public VertxThread newVertxThread(Runnable target, String threadName, boolean worker, long maxExecTime,
+              TimeUnit maxExecTimeUnit) {
+            return VertxThreadFactory.super
+                .newVertxThread(target, name + "-" + threadName, worker, maxExecTime, maxExecTimeUnit);
+          }
+        });
+
+    return bootstrap.init().vertx();
+  }
+
+  private static VertxBootstrap bootstrap(VertxOptions options, VertxMetricsFactory metricsFactory) {
+    VertxBootstrap bootstrap = VertxBootstrap.create();
+    bootstrap.options(options);
+    bootstrap.metricsFactory(metricsFactory);
+    Transport tr;
+    if (options.getPreferNativeTransport()) {
+      tr = Transport.nativeTransport();
+    } else {
+      tr = Transport.NIO;
+    }
+    bootstrap.transport(tr.implementation());
+    return bootstrap;
   }
 
   /**
@@ -138,7 +160,7 @@ public final class VertxUtils {
    */
   private static void configureVertxFileCaching(VertxOptions vertxOptions) {
     boolean disableFileCPResolving = LegacyPropertyFactory
-        .getBooleanProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, true);
+        .getBooleanProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, true);
     vertxOptions.getFileSystemOptions().setClassPathResolvingEnabled(!disableFileCPResolving);
   }
 
@@ -178,15 +200,17 @@ public final class VertxUtils {
       return future;
     }
 
-    vertx.close(ar -> {
-      if (ar.succeeded()) {
+    Future<Void> closeFuture = vertx.close();
+    closeFuture.onComplete((succ, fail) -> {
+      if (fail == null) {
         LOGGER.info("Success to close vertx {}.", name);
         future.complete(null);
         return;
       }
 
-      future.completeExceptionally(ar.cause());
+      future.completeExceptionally(fail);
     });
+
     return future;
   }
 
@@ -201,8 +225,9 @@ public final class VertxUtils {
 
   public static void blockCloseVertx(Vertx vertx) {
     CountDownLatch latch = new CountDownLatch(1);
-    vertx.close(ar -> {
-      if (ar.succeeded()) {
+    Future<Void> closeFuture = vertx.close();
+    closeFuture.onComplete((succ, fail) -> {
+      if (fail == null) {
         LOGGER.info("Success to close vertx {}.", vertx);
       } else {
         LOGGER.info("Failed to close vertx {}.", vertx);

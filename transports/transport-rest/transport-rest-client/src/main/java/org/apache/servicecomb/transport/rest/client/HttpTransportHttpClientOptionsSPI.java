@@ -22,6 +22,7 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClientOptionsSPI;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
+import io.vertx.core.http.PoolOptions;
 
 public class HttpTransportHttpClientOptionsSPI implements HttpClientOptionsSPI {
   public static final String CLIENT_NAME = "http-transport-client";
@@ -136,12 +137,12 @@ public class HttpTransportHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getHttp2MaxPoolSize() {
-    return HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE;
+    return PoolOptions.DEFAULT_HTTP2_MAX_POOL_SIZE;
   }
 
   @Override
   public boolean isUseAlpn() {
-    return HttpClientOptions.DEFAULT_USE_ALPN;
+    return !HttpClientOptions.DEFAULT_ALPN_VERSIONS.isEmpty();
   }
 
   @Override

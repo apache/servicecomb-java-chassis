@@ -55,7 +55,6 @@ public class DefaultVertxMetricsFactory implements VertxMetricsFactory {
   @Override
   public MetricsOptions newOptions() {
     MetricsOptionsEx metricsOptions = new MetricsOptionsEx();
-    metricsOptions.setFactory(this);
     metricsOptions.setEnabled(true);
     return metricsOptions;
   }

@@ -82,8 +82,8 @@ public class TestSlowInvocationLogger {
   }
 
   @AfterEach
-  public void teardown() {
-    logCollector.teardown();
+  public void tearDown() {
+    logCollector.tearDown();
   }
 
   @Test

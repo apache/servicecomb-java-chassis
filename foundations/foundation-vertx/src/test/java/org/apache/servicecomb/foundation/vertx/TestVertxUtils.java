@@ -38,14 +38,14 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.impl.FileResolverImpl;
+import io.vertx.core.impl.SysProps;
 
 public class TestVertxUtils {
   Environment environment = Mockito.mock(Environment.class);
 
   @BeforeEach
   public void setUp() {
-    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+    Mockito.when(environment.getProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, boolean.class, true))
         .thenReturn(true);
 
     LegacyPropertyFactory.setEnvironment(environment);
@@ -53,7 +53,7 @@ public class TestVertxUtils {
 
   @Test
   public void testGetOrCreateVertx() throws InterruptedException {
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
+    Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null, null);
 
     Holder<String> name = new Holder<>();
     CountDownLatch latch = new CountDownLatch(1);
@@ -70,25 +70,25 @@ public class TestVertxUtils {
   @Test
   public void testCreateVertxWithFileCPResolving() {
     // create .vertx folder
-    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+    Mockito.when(environment.getProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, boolean.class, true))
         .thenReturn(false);
     deleteCacheFile();
-    VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingFalse", null);
+    VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingFalse", null, null);
     Assertions.assertTrue(isCacheFileExists());
     VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingFalse");
 
     // don't create .vertx folder
     deleteCacheFile();
     Assertions.assertFalse(isCacheFileExists());
-    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+    Mockito.when(environment.getProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, boolean.class, true))
         .thenReturn(true);
-    VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingTrue", null);
+    VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolvingTrue", null, null);
     Assertions.assertFalse(isCacheFileExists());
     VertxUtils.blockCloseVertxByName("testCreateVertxWithFileCPResolvingTrue");
   }
 
   private void deleteCacheFile() {
-    String cacheDirBase = System.getProperty(FileResolverImpl.CACHE_DIR_BASE_PROP_NAME,
+    String cacheDirBase = System.getProperty(SysProps.FILE_CACHE_DIR.name,
         System.getProperty("java.io.tmpdir", "."));
     File folder = new File(cacheDirBase);
     File[] files = folder.listFiles();
@@ -100,7 +100,7 @@ public class TestVertxUtils {
   }
 
   private boolean isCacheFileExists() {
-    String cacheDirBase = System.getProperty(FileResolverImpl.CACHE_DIR_BASE_PROP_NAME,
+    String cacheDirBase = System.getProperty(SysProps.FILE_CACHE_DIR.name,
         System.getProperty("java.io.tmpdir", "."));
     File folder = new File(cacheDirBase);
     File[] files = folder.listFiles();
@@ -114,7 +114,7 @@ public class TestVertxUtils {
 
   @Test
   public void testVertxUtilsInitNullOptions() {
-    Vertx vertx = VertxUtils.init(null, null);
+    Vertx vertx = VertxUtils.init(null, null, null);
     Assertions.assertNotEquals(null, vertx);
     VertxUtils.blockCloseVertx(vertx);
   }
@@ -123,7 +123,7 @@ public class TestVertxUtils {
   public void testVertxUtilsInitWithOptions() {
     VertxOptions oOptions = new VertxOptions();
 
-    Vertx vertx = VertxUtils.init(null, oOptions);
+    Vertx vertx = VertxUtils.init(null, oOptions, null);
     Assertions.assertNotEquals(null, vertx);
     VertxUtils.blockCloseVertx(vertx);
   }

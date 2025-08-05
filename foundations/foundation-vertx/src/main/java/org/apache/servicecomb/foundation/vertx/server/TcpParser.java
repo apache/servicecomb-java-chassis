@@ -86,16 +86,17 @@ public class TcpParser implements Handler<Buffer> {
   protected void onParse(Buffer buffer) {
     switch (status) {
       case TCP_HEADER:
-        ByteBuf buf = buffer.getByteBuf();
-        if (!firstNEqual(TCP_MAGIC, buf.array(), TCP_MAGIC.length)) {
+        if (!firstNEqual(TCP_MAGIC, buffer.getBytes(), TCP_MAGIC.length)) {
           reset();
           return;
         }
 
-        buf.skipBytes(TCP_MAGIC.length);
-        msgId = buf.readLong();
-        totalLen = buf.readInt();
-        headerLen = buf.readInt();
+        int index = TCP_MAGIC.length;
+        msgId = buffer.getLong(index);
+        index = index + 8;
+        totalLen = buffer.getInt(index);
+        index = index + 4;
+        headerLen =  buffer.getInt(index);
         if (headerLen > totalLen || headerLen <= 0) {
           throw new IllegalStateException("possibly attack.");
         }

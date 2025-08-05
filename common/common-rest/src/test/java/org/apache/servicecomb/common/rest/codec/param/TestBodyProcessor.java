@@ -116,7 +116,7 @@ public class TestBodyProcessor {
     LegacyPropertyFactory.setEnvironment(environment);
     Mockito.when(environment.getProperty("servicecomb.rest.parameter.decodeAsObject", boolean.class, false))
         .thenReturn(false);
-    headers = new HeadersMultiMap();
+    headers = HeadersMultiMap.httpHeaders();
     value = "value";
   }
 

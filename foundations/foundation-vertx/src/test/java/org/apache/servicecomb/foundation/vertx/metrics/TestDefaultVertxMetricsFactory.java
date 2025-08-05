@@ -29,14 +29,12 @@ public class TestDefaultVertxMetricsFactory {
 
   DefaultVertxMetricsFactory factory = new DefaultVertxMetricsFactory();
 
-  @SuppressWarnings("deprecation")
   @Test
   public void metrics() {
     MetricsOptions metricsOptions = factory.newOptions();
     options.setMetricsOptions(metricsOptions);
     VertxMetrics vertxMetrics = factory.metrics(options);
 
-    Assertions.assertSame(factory, metricsOptions.getFactory());
     Assertions.assertTrue(metricsOptions.isEnabled());
 
     Assertions.assertSame(factory.getVertxMetrics(), vertxMetrics);

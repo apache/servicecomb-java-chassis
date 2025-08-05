@@ -20,10 +20,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import jakarta.servlet.http.Part;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.Response.Status;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -34,6 +30,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+
+import jakarta.servlet.http.Part;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.Response.Status;
 
 public class TestClassPathStaticResourceHandler {
   static ClassPathStaticResourceHandler handler = new ClassPathStaticResourceHandler();
@@ -49,7 +49,7 @@ public class TestClassPathStaticResourceHandler {
     Part part = response.getResult();
 
     try (InputStream is = part.getInputStream()) {
-      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("<html></html>\n"));
+      Assertions.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).trim().endsWith("<html></html>"));
     }
     Assertions.assertEquals("text/html", part.getContentType());
     Assertions.assertEquals("text/html", response.getHeader(HttpHeaders.CONTENT_TYPE));
@@ -84,7 +84,7 @@ public class TestClassPathStaticResourceHandler {
   public void readContentFailed() throws IOException {
     handler = Mockito.spy(TestClassPathStaticResourceHandler.handler);
     Mockito.when(handler.findResource("web-root/index.html"))
-            .thenThrow(new RuntimeExceptionWithoutStackTrace("read content failed."));
+        .thenThrow(new RuntimeExceptionWithoutStackTrace("read content failed."));
 
     try (LogCollector logCollector = new LogCollector()) {
       Response response = handler.handle("index.html");

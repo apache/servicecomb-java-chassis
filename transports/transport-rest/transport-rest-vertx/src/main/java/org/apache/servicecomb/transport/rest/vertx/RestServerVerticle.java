@@ -47,6 +47,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -244,11 +245,12 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   private void startListen(HttpServer server, Promise<Void> startPromise) {
-    server.listen(endpointObject.getPort(), endpointObject.getHostOrIp(), ar -> {
-      if (ar.succeeded()) {
+    Future<HttpServer> result = server.listen(endpointObject.getPort(), endpointObject.getHostOrIp());
+    result.onComplete((s, f) -> {
+      if (f == null) {
         LOGGER.info("rest listen success. address={}:{}",
             endpointObject.getHostOrIp(),
-            ar.result().actualPort());
+            s.actualPort());
         startPromise.complete();
         return;
       }
@@ -256,8 +258,8 @@ public class RestServerVerticle extends AbstractVerticle {
       String msg = String.format("rest listen failed, address=%s:%d",
           endpointObject.getHostOrIp(),
           endpointObject.getPort());
-      LOGGER.error(msg, ar.cause());
-      startPromise.fail(ar.cause());
+      LOGGER.error(msg, f);
+      startPromise.fail(f);
     });
   }
 

@@ -17,8 +17,12 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import java.nio.channels.FileChannel;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import io.vertx.codegen.annotations.Nullable;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
@@ -28,13 +32,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.net.HostAndPort;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 class MockHttpServerResponse implements HttpServerResponse {
-  boolean responseClosed;
-
   boolean responseEnded;
 
   Map<String, String> responseHeader = new HashMap<>(1);
@@ -44,11 +42,6 @@ class MockHttpServerResponse implements HttpServerResponse {
   String responseStatusMessage;
 
   String responseChunk;
-
-  @Override
-  public void close() {
-    responseClosed = true;
-  }
 
   @Override
   public HttpServerResponse putHeader(String name, String value) {
@@ -75,20 +68,10 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public void end(Handler<AsyncResult<Void>> handler) {
-
-  }
-
-  @Override
   public Future<Void> end(String chunk) {
     responseEnded = true;
     responseChunk = chunk;
     return Future.succeededFuture();
-  }
-
-  @Override
-  public void end(String s, Handler<AsyncResult<Void>> handler) {
-
   }
 
   @Override
@@ -99,10 +82,6 @@ class MockHttpServerResponse implements HttpServerResponse {
   @Override
   public Future<Void> write(Buffer data) {
     return Future.succeededFuture();
-  }
-
-  @Override
-  public void write(Buffer buffer, Handler<AsyncResult<Void>> handler) {
   }
 
   @Override
@@ -196,13 +175,15 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
+  public Future<Void> writeHead() {
+    return null;
+  }
+
+  @Override
   public Future<Void> write(String chunk, String enc) {
     return Future.succeededFuture();
   }
 
-  @Override
-  public void write(String s, String s1, Handler<AsyncResult<Void>> handler) {
-  }
 
   @Override
   public Future<Void> write(String chunk) {
@@ -210,12 +191,7 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public void write(String s, Handler<AsyncResult<Void>> handler) {
-
-  }
-
-  @Override
-  public HttpServerResponse writeContinue() {
+  public Future<Void> writeContinue() {
     return null;
   }
 
@@ -225,28 +201,16 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public void writeEarlyHints(MultiMap headers, Handler<AsyncResult<Void>> handler) {
-  }
-
-  @Override
   public Future<Void> end(String chunk, String enc) {
     return Future.succeededFuture();
   }
 
-  @Override
-  public void end(String s, String s1, Handler<AsyncResult<Void>> handler) {
-
-  }
 
   @Override
   public Future<Void> end(Buffer chunk) {
     return Future.succeededFuture();
   }
 
-  @Override
-  public void end(Buffer buffer, Handler<AsyncResult<Void>> handler) {
-
-  }
 
   @Override
   public Future<Void> sendFile(String filename, long offset, long length) {
@@ -254,8 +218,7 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public HttpServerResponse sendFile(String filename, long offset, long length,
-      Handler<AsyncResult<Void>> resultHandler) {
+  public Future<Void> sendFile(FileChannel channel, long offset, long length) {
     return null;
   }
 
@@ -295,45 +258,17 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
-  public HttpServerResponse push(HttpMethod method, String host, String path,
-      Handler<AsyncResult<HttpServerResponse>> handler) {
-    return null;
-  }
-
-  @Override
-  public HttpServerResponse push(HttpMethod method, String path, MultiMap headers,
-      Handler<AsyncResult<HttpServerResponse>> handler) {
-    return null;
-  }
-
-  @Override
-  public HttpServerResponse push(HttpMethod method, String path, Handler<AsyncResult<HttpServerResponse>> handler) {
-    return null;
-  }
-
-  @Override
-  public HttpServerResponse push(HttpMethod method, String host, String path, MultiMap headers,
-      Handler<AsyncResult<HttpServerResponse>> handler) {
-    return null;
-  }
-
-  @Override
   public Future<HttpServerResponse> push(HttpMethod httpMethod, HostAndPort hostAndPort, String s, MultiMap multiMap) {
     return null;
   }
 
   @Override
-  public Future<HttpServerResponse> push(HttpMethod method, String host, String path, MultiMap headers) {
-    return Future.succeededFuture();
+  public Future<Void> reset(long code) {
+    return null;
   }
 
   @Override
-  public boolean reset(long code) {
-    return false;
-  }
-
-  @Override
-  public HttpServerResponse writeCustomFrame(int type, int flags, Buffer payload) {
+  public Future<Void> writeCustomFrame(int type, int flags, Buffer payload) {
     return null;
   }
 

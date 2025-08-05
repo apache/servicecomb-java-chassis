@@ -89,8 +89,8 @@ public class TestDefaultLogPublisher {
   }
 
   @After
-  public void teardown() {
-    collector.teardown();
+  public void tearDown() {
+    collector.tearDown();
   }
 
   @Test

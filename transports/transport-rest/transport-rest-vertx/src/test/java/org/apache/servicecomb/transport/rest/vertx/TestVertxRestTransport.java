@@ -37,7 +37,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.file.impl.FileResolverImpl;
+import io.vertx.core.impl.SysProps;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -69,7 +69,7 @@ public class TestVertxRestTransport {
         .thenReturn("");
     Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
         .thenReturn(-1);
-    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+    Mockito.when(environment.getProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, boolean.class, true))
         .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);
     instance = new VertxRestTransport();

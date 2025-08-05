@@ -31,6 +31,7 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
@@ -81,15 +82,16 @@ public class TcpServer {
     netServer.exceptionHandler(
         e -> LOGGER.error("Unexpected error in server.", e));
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();
-    netServer.listen(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
-      if (ar.succeeded()) {
+    Future<NetServer> result = netServer.listen(socketAddress.getPort(), socketAddress.getHostString());
+    result.onComplete((s, f) -> {
+      if (f == null) {
         callback.success(socketAddress);
         return;
       }
 
       // 监听失败
       String msg = String.format("listen failed, address=%s", socketAddress);
-      callback.fail(new Exception(msg, ar.cause()));
+      callback.fail(new Exception(msg, f));
     });
   }
 

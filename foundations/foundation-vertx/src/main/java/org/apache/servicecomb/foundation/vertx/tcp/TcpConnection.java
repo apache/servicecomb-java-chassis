@@ -77,7 +77,7 @@ public class TcpConnection {
   public void initNetSocket(NetSocketImpl netSocket) {
     this.netSocket = netSocket;
 
-    this.context = netSocket.getContext();
+    this.context = netSocket.context();
   }
 
   public void write(Buffer buf) {

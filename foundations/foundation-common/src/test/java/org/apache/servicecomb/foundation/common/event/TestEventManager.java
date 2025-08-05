@@ -48,7 +48,7 @@ public class TestEventManager {
 
     test(this);
     Assertions.assertTrue(collector.getEvents().isEmpty()); // ensure no warning logs
-    collector.teardown();
+    collector.tearDown();
   }
 
   @Test
@@ -72,7 +72,7 @@ public class TestEventManager {
       Assertions.assertTrue(true);
     }
 
-    collector.teardown();
+    collector.tearDown();
   }
 
   @Test
@@ -98,7 +98,7 @@ public class TestEventManager {
 
     // ensure logs: "LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method, throwable);"
     Assertions.assertFalse(collector.getEvents().isEmpty());
-    collector.teardown();
+    collector.tearDown();
   }
 
   @Subscribe

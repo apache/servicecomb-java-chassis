@@ -17,16 +17,14 @@
 
 package org.apache.servicecomb.foundation.vertx.metrics;
 
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientTaskMetric;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
-
 import io.vertx.core.spi.metrics.ClientMetrics;
 import io.vertx.core.spi.observability.HttpRequest;
 import io.vertx.core.spi.observability.HttpResponse;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 
 public class DefaultClientMetrics implements
-    ClientMetrics<DefaultRequestMetric, DefaultClientTaskMetric, HttpRequest, HttpResponse> {
+    ClientMetrics<DefaultRequestMetric, HttpRequest, HttpResponse> {
   private final DefaultClientEndpointMetric clientEndpointMetric;
 
   public DefaultClientMetrics(DefaultClientEndpointMetric clientEndpointMetric) {
@@ -35,18 +33,6 @@ public class DefaultClientMetrics implements
 
   public DefaultClientEndpointMetric getClientEndpointMetric() {
     return this.clientEndpointMetric;
-  }
-
-  @Override
-  public DefaultClientTaskMetric enqueueRequest() {
-    DefaultClientTaskMetric taskMetric = new DefaultClientTaskMetric(clientEndpointMetric);
-    taskMetric.enqueueRequest();
-    return taskMetric;
-  }
-
-  @Override
-  public void dequeueRequest(DefaultClientTaskMetric endpointMetric) {
-    endpointMetric.dequeueRequest();
   }
 
   @Override

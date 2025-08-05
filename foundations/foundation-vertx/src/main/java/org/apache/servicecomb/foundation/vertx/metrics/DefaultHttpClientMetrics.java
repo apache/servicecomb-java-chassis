@@ -18,7 +18,6 @@ package org.apache.servicecomb.foundation.vertx.metrics;
 
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientTaskMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultRequestMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMetric;
 
@@ -26,7 +25,7 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 
 public class DefaultHttpClientMetrics implements
-    HttpClientMetrics<DefaultRequestMetric, Object, DefaultTcpSocketMetric, DefaultClientTaskMetric> {
+    HttpClientMetrics<DefaultRequestMetric, Object, DefaultTcpSocketMetric> {
   private static final String PROTOCOL = "http://";
 
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;

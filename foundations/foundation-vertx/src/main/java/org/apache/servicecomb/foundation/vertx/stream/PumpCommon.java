@@ -20,27 +20,23 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.io.AsyncCloseable;
 
-import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.streams.Pump;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
+import io.vertx.core.streams.impl.PipeImpl;
 
 public class PumpCommon {
   /**
-   *
-   * @param context
-   * @param readStream
-   * @param writeStream
    * @return future of save action<br>
    * <p>important:
    * <p>  if writeStream is AsyncCloseable, future means write complete
    * <p>  if writeStream is not AsyncCloseable, future only means read complete
    */
   @SuppressWarnings("unchecked")
-  public CompletableFuture<Void> pump(Context context, ReadStream<Buffer> readStream, WriteStream<Buffer> writeStream,
+  public CompletableFuture<Void> pump(ReadStream<Buffer> readStream, WriteStream<Buffer> writeStream,
       Handler<Throwable> throwableHandler) {
     CompletableFuture<Void> readFuture = new CompletableFuture<>();
 
@@ -62,17 +58,18 @@ public class PumpCommon {
       readFuture.completeExceptionally(e);
     });
     readStream.exceptionHandler(readFuture::completeExceptionally);
-    // just means read finished, not means write finished
-    readStream.endHandler(readFuture::complete);
 
-    // if readStream(HttpClientResponse) and writeStream(HttpServerResponse)
-    // belongs to difference eventloop
-    // maybe will cause deadlock
-    // if happened, vertx will print deadlock stacks
-    Pump.pump(readStream, writeStream).start();
-    context.runOnContext(v -> readStream.resume());
+    Future<Void> pipeResult = new PipeImpl<>(readStream).endOnComplete(false).to(writeStream);
 
-    if (!AsyncCloseable.class.isInstance(writeStream)) {
+    pipeResult.onComplete((s) -> readFuture.complete(null),
+        (f) -> {
+          if (throwableHandler != null) {
+            throwableHandler.handle(f);
+          }
+          readFuture.completeExceptionally(f);
+        });
+
+    if (!(writeStream instanceof AsyncCloseable)) {
       return readFuture;
     }
 

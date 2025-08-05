@@ -39,6 +39,7 @@ import com.google.common.annotations.VisibleForTesting;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
@@ -180,17 +181,17 @@ public class TcpClientConnection extends TcpConnection {
     this.status = Status.CONNECTING;
     LOGGER.info("connecting to address {}", socketAddress.toString());
 
-    netClientWrapper.connect(endpoint.isSslEnabled(),
+    Future<NetSocket> result = netClientWrapper.connect(endpoint.isSslEnabled(),
         socketAddress.getPort(),
-        socketAddress.getHostString(),
-        ar -> {
-          if (ar.succeeded()) {
-            onConnectSuccess(ar.result());
-            return;
-          }
+        socketAddress.getHostString());
+    result.onComplete((socket, fail) -> {
+      if (fail == null) {
+        onConnectSuccess(socket);
+        return;
+      }
 
-          onConnectFailed(ar.cause());
-        });
+      onConnectFailed(fail);
+    });
   }
 
   private void onConnectSuccess(NetSocket socket) {

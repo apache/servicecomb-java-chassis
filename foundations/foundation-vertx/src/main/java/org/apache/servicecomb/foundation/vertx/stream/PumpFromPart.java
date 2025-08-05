@@ -69,7 +69,7 @@ public class PumpFromPart {
 
   public CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream, Handler<Throwable> throwableHandler) {
     return prepareReadStream()
-        .thenCompose(readStream -> new PumpCommon().pump(context, readStream, writeStream, throwableHandler))
+        .thenCompose(readStream -> new PumpCommon().pump(readStream, writeStream, throwableHandler))
         .whenComplete((v, e) -> {
           if (e != null) {
             LOGGER.error("to write stream failed.", e);

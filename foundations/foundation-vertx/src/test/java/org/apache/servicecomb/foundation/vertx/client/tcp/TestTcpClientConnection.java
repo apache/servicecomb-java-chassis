@@ -28,8 +28,8 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 
 import io.netty.buffer.ByteBuf;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
@@ -195,9 +195,9 @@ public class TestTcpClientConnection {
     Promise<NetSocket> promise = Promise.promise();
     new MockUp<NetClientWrapper>(netClientWrapper) {
       @Mock
-      void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
+      public Future<NetSocket> connect(boolean ssl, int port, String host) {
         promise.complete(netSocket);
-        connectHandler.handle(promise.future());
+        return promise.future();
       }
     };
 
@@ -216,9 +216,9 @@ public class TestTcpClientConnection {
     RuntimeException error = new RuntimeExceptionWithoutStackTrace();
     new MockUp<NetClientWrapper>(netClientWrapper) {
       @Mock
-      void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
+      public Future<NetSocket> connect(boolean ssl, int port, String host) {
         promise.fail(error);
-        connectHandler.handle(promise.future());
+        return promise.future();
       }
     };
 

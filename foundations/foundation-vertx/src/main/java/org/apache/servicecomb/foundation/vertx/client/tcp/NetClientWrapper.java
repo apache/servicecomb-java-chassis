@@ -16,8 +16,7 @@
  */
 package org.apache.servicecomb.foundation.vertx.client.tcp;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetClient;
 import io.vertx.core.net.NetSocket;
@@ -50,12 +49,11 @@ public class NetClientWrapper {
     return normalClientConfig;
   }
 
-  public void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {
+  public Future<NetSocket> connect(boolean ssl, int port, String host) {
     if (ssl) {
-      sslNetClient.connect(port, host, connectHandler);
-      return;
+      return sslNetClient.connect(port, host);
     }
 
-    normalNetClient.connect(port, host, connectHandler);
+    return normalNetClient.connect(port, host);
   }
 }

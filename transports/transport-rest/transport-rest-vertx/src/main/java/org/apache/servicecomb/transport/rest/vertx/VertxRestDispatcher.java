@@ -124,15 +124,13 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
           .setStatusMessage(Status.INTERNAL_SERVER_ERROR.getReasonPhrase())
           .end(wrapResponseBody(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     }
-    context.response().close();
   }
 
   /**
    * Use routingContext to send failure information in throwable.
    */
   private void sendExceptionByRoutingContext(RoutingContext context, Throwable e) {
-    if (e instanceof InvocationException) {
-      InvocationException invocationException = (InvocationException) e;
+    if (e instanceof InvocationException invocationException) {
       context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
           .setStatusCode(invocationException.getStatusCode()).setStatusMessage(invocationException.getReasonPhrase())
           .end(wrapResponseBody(invocationException.getReasonPhrase()));
@@ -141,7 +139,6 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
           .setStatusCode(Status.INTERNAL_SERVER_ERROR.getStatusCode())
           .end(wrapResponseBody(Status.INTERNAL_SERVER_ERROR.getReasonPhrase()));
     }
-    context.response().close();
   }
 
   /**

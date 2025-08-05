@@ -21,6 +21,7 @@ import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.transport.common.TransportConfigUtils;
 
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.PoolOptions;
 
 public final class TransportClientConfig {
   private static final int DEFAULT_IDLE_TIME_OUT = 150;
@@ -38,7 +39,7 @@ public final class TransportClientConfig {
 
   public static int getHttp2ConnectionMaxPoolSize() {
     return LegacyPropertyFactory.getIntProperty("servicecomb.rest.client.http2.maxPoolSize",
-        HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE);
+        PoolOptions.DEFAULT_HTTP2_MAX_POOL_SIZE);
   }
 
   public static int getHttp2MultiplexingLimit() {
@@ -57,7 +58,7 @@ public final class TransportClientConfig {
 
   public static int getConnectionMaxPoolSize() {
     return LegacyPropertyFactory.getIntProperty("servicecomb.rest.client.connection.maxPoolSize",
-        HttpClientOptions.DEFAULT_MAX_POOL_SIZE);
+        PoolOptions.DEFAULT_MAX_POOL_SIZE);
   }
 
   public static int getHttp2ConnectionIdleTimeoutInSeconds() {
@@ -94,7 +95,7 @@ public final class TransportClientConfig {
   public static boolean getConnectionCompression() {
     return LegacyPropertyFactory
         .getBooleanProperty("servicecomb.rest.client.connection.compression",
-            HttpClientOptions.DEFAULT_TRY_USE_COMPRESSION);
+            HttpClientOptions.DEFAULT_DECOMPRESSION_SUPPORTED);
   }
 
   public static int getMaxHeaderSize() {
@@ -105,7 +106,7 @@ public final class TransportClientConfig {
   public static int getMaxWaitQueueSize() {
     return LegacyPropertyFactory
         .getIntProperty("servicecomb.rest.client.maxWaitQueueSize",
-            HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
+            PoolOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
   }
 
   public static boolean isHttpTransportClientEnabled() {
