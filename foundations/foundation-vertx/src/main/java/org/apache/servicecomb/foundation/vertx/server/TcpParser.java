@@ -19,16 +19,10 @@ package org.apache.servicecomb.foundation.vertx.server;
 
 import java.nio.charset.StandardCharsets;
 
-import io.netty.buffer.ByteBuf;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.parsetools.RecordParser;
 
-/**
- * TcpParser
- *
- *
- */
 public class TcpParser implements Handler<Buffer> {
   public static final byte[] TCP_MAGIC;
 
@@ -96,7 +90,7 @@ public class TcpParser implements Handler<Buffer> {
         index = index + 8;
         totalLen = buffer.getInt(index);
         index = index + 4;
-        headerLen =  buffer.getInt(index);
+        headerLen = buffer.getInt(index);
         if (headerLen > totalLen || headerLen <= 0) {
           throw new IllegalStateException("possibly attack.");
         }
