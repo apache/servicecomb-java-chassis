@@ -94,7 +94,7 @@ public class CodeFirstPojoClient implements CategorizedTestCase {
       return;
     }
 
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("transport", null);
+    Vertx vertx = VertxUtils.getOrCreateVertxByName("transport", null, null);
     CountDownLatch latch = new CountDownLatch(1);
     // vertx.runOnContext in normal thread is not a good practice
     // here just a test, not care for this.

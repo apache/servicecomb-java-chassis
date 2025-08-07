@@ -125,15 +125,12 @@ public interface HttpClientOptionsSPI {
 
     httpClientOptions.setProtocolVersion(spi.getHttpVersion());
     httpClientOptions.setDecompressionSupported(spi.isTryUseCompression());
-    httpClientOptions.setMaxWaitQueueSize(spi.getMaxWaitQueueSize());
-    httpClientOptions.setMaxPoolSize(spi.getMaxPoolSize());
     httpClientOptions.setKeepAlive(spi.isKeepAlive());
     httpClientOptions.setMaxHeaderSize(spi.getMaxHeaderSize());
 
     if (spi.getHttpVersion() == HttpVersion.HTTP_2) {
       httpClientOptions.setHttp2ClearTextUpgrade(false);
       httpClientOptions.setHttp2MultiplexingLimit(spi.getHttp2MultiplexingLimit());
-      httpClientOptions.setHttp2MaxPoolSize(spi.getHttp2MaxPoolSize());
       httpClientOptions.setHttp2KeepAliveTimeout(spi.getKeepAliveTimeout());
     } else {
       httpClientOptions.setKeepAliveTimeout(spi.getKeepAliveTimeout());

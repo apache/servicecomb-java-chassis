@@ -48,12 +48,10 @@ public class WebsocketController {
         e.printStackTrace();
       }
 
-      serverWebsocket.writeTextMessage("hello", r -> {
-      });
+      serverWebsocket.writeTextMessage("hello");
 
       for (int i = 0; i < 5; i++) {
-        serverWebsocket.writeTextMessage("hello " + i, r -> {
-        });
+        serverWebsocket.writeTextMessage("hello " + i);
         try {
           Thread.sleep(500);
         } catch (InterruptedException e) {

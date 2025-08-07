@@ -19,12 +19,11 @@ package org.apache.servicecomb.foundation.vertx.stream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.netty.buffer.Unpooled;
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
@@ -106,17 +105,20 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     }
 
     Buffer toBuffer() {
-      return Buffer.buffer(Unpooled.wrappedBuffer(bytes).writerIndex(read));
+      return Buffer.buffer(Arrays.copyOf(bytes, read));
     }
   }
 
   private synchronized void doRead() {
     if (!readInProgress) {
       readInProgress = true;
-
-      context.executeBlocking(this::readInWorker,
-          true,
-          this::afterReadInEventloop);
+      Promise<ReadResult> future = Promise.promise();
+      context.executeBlocking(() -> {
+            readInWorker(future);
+            return null;
+          },
+          true);
+      future.future().onComplete(this::afterReadInEventloop);
     }
   }
 
@@ -135,14 +137,13 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     exceptionHandler.handle(e);
   }
 
-  private synchronized void afterReadInEventloop(AsyncResult<ReadResult> ar) {
-    if (ar.failed()) {
-      handleException(ar.cause());
+  private synchronized void afterReadInEventloop(ReadResult readResult, Throwable failure) {
+    if (failure != null) {
+      handleException(failure);
       return;
     }
 
     readInProgress = false;
-    ReadResult readResult = ar.result();
     if (readResult.read < 0) {
       handleEnd();
       return;

@@ -83,7 +83,7 @@ public class RestClientSender {
   }
 
   protected CompletableFuture<Void> sendInVertxContext() {
-    httpClientRequest.setTimeout(invocation.getOperationMeta().getConfig().getMsRequestTimeout());
+    httpClientRequest.idleTimeout(invocation.getOperationMeta().getConfig().getMsRequestTimeout());
 
     Multimap<String, Part> uploads = requestParameters.getUploads();
     if (uploads == null) {

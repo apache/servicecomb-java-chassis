@@ -35,17 +35,22 @@ import org.apache.logging.log4j.core.layout.PatternLayout;
 public class LogCollector implements Closeable {
   List<LogEvent> events = new ArrayList<>();
 
-  Appender appender = new AbstractAppender("LogCollector", null, PatternLayout.createDefaultLayout(), true,
-      Property.EMPTY_ARRAY) {
-    @Override
-    public void append(LogEvent event) {
-      events.add(event);
-    }
-  };
+  Appender appender;
+
+  String appenderName;
 
   public LogCollector() {
     LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
     Configuration config = ctx.getConfiguration();
+    appenderName = "LogCollector" + System.nanoTime();
+    appender = new AbstractAppender(appenderName, null, PatternLayout.createDefaultLayout(),
+        true,
+        Property.EMPTY_ARRAY) {
+      @Override
+      public void append(LogEvent event) {
+        events.add(event);
+      }
+    };
     appender.start();
     config.getRootLogger().addAppender(appender, Level.ALL, null);
     ctx.updateLoggers(config);
@@ -84,11 +89,11 @@ public class LogCollector implements Closeable {
         .collect(Collectors.toList());
   }
 
-  public void teardown() {
+  public void tearDown() {
     LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
     Configuration config = ctx.getConfiguration();
     appender.stop();
-    config.getRootLogger().removeAppender("LogCollector");
+    config.getRootLogger().removeAppender(appenderName);
     ctx.updateLoggers(config);
   }
 
@@ -98,6 +103,6 @@ public class LogCollector implements Closeable {
 
   @Override
   public void close() {
-    teardown();
+    tearDown();
   }
 }

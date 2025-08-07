@@ -56,7 +56,7 @@ public class TestJvmUtils {
 
     Assertions.assertNull(JvmUtils.findMainClass());
     Assertions.assertEquals("\"invalidCls\" is not a valid class.", logCollector.getEvents().get(0).getMessage());
-    logCollector.teardown();
+    logCollector.tearDown();
   }
 
   @Test

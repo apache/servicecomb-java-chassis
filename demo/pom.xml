@@ -52,7 +52,8 @@
     <module>demo-cse-v1</module>
     <module>demo-cse-v2</module>
     <module>demo-nacos</module>
-    <module>demo-etcd</module>
+    <!-- TODO: etcd for vert.x 5.x is not released, after release will support it-->
+    <!-- <module>demo-etcd</module> -->
     <module>demo-zookeeper</module>
     <module>demo-consul</module>
   </modules>

@@ -111,7 +111,7 @@ public class TestGroupExecutor {
     Assertions.assertEquals(
         "servicecomb.executor.default.thread-per-group is deprecated, recommended to use servicecomb.executor.default.maxThreads-per-group.",
         collector.getEvents().get(collector.getEvents().size() - 2).getMessage().getFormattedMessage());
-    collector.teardown();
+    collector.tearDown();
 
     Mockito.when(environment.getProperty(KEY_MAX_THREADS, int.class, -1)).thenReturn(300);
     groupExecutor.initConfig();
@@ -127,7 +127,7 @@ public class TestGroupExecutor {
     Assertions.assertEquals(
         "coreThreads is bigger than maxThreads, change from 25 to 10.",
         collector.getEvents().get(collector.getEvents().size() - 2).getMessage().getFormattedMessage());
-    collector.teardown();
+    collector.tearDown();
   }
 
   @Test

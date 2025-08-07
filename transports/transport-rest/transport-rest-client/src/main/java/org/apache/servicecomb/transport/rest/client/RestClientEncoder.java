@@ -41,8 +41,6 @@ import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import jakarta.servlet.http.Part;
@@ -151,22 +149,19 @@ public class RestClientEncoder {
     }
 
     protected Buffer genUrlEncodedFormBuffer(Map<String, Object> formMap) throws Exception {
-      // 2x faster than UriComponentsBuilder
-      ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
+      Buffer buffer = Buffer.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
       for (Entry<String, Object> entry : formMap.entrySet()) {
-        writeCharSequence(byteBuf, entry.getKey());
-        byteBuf.writeByte('=');
+        writeCharSequence(buffer, entry.getKey());
+        buffer.appendByte(((byte) '='));
 
         String value = QueryCodec.convertToString(entry.getValue());
-        String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
-        writeCharSequence(byteBuf, encodedValue);
+        String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8);
+        writeCharSequence(buffer, encodedValue);
 
-        byteBuf.markWriterIndex();
-        byteBuf.writeByte('&');
+        buffer.appendByte(((byte) '&'));
       }
 
-      byteBuf.resetWriterIndex();
-      return Buffer.buffer(byteBuf);
+      return buffer;
     }
 
     protected void writeChunkedForm(Map<String, Object> formMap) throws Exception {
@@ -184,65 +179,65 @@ public class RestClientEncoder {
     }
 
     protected Buffer genChunkedFormBuffer(Map<String, Object> formMap, String boundary) throws Exception {
-      ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
+      Buffer buffer = Buffer.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
       for (Entry<String, Object> entry : formMap.entrySet()) {
         Object content = entry.getValue();
         if (content instanceof List<?>) {
           for (Object item : ((List<?>) content)) {
-            writeFormData(byteBuf, boundary, entry.getKey(), item);
+            writeFormData(buffer, boundary, entry.getKey(), item);
           }
         } else {
-          writeFormData(byteBuf, boundary, entry.getKey(), entry.getValue());
+          writeFormData(buffer, boundary, entry.getKey(), entry.getValue());
         }
       }
-      return Buffer.buffer(byteBuf);
+      return buffer;
     }
 
-    private void writeFormData(ByteBuf byteBuf, String boundary, String key, Object data) throws Exception {
-      writeCharSequence(byteBuf, "\r\n--");
-      writeCharSequence(byteBuf, boundary);
-      writeCharSequence(byteBuf, "\r\nContent-Disposition: form-data; name=\"");
-      writeCharSequence(byteBuf, key);
-      writeCharSequence(byteBuf, "\"\r\n\r\n");
+    private void writeFormData(Buffer buffer, String boundary, String key, Object data) throws Exception {
+      writeCharSequence(buffer, "\r\n--");
+      writeCharSequence(buffer, boundary);
+      writeCharSequence(buffer, "\r\nContent-Disposition: form-data; name=\"");
+      writeCharSequence(buffer, key);
+      writeCharSequence(buffer, "\"\r\n\r\n");
 
       String value = QueryCodec.convertToString(data);
-      writeCharSequence(byteBuf, value);
+      writeCharSequence(buffer, value);
     }
   }
 
-  protected static void writeCharSequence(ByteBuf byteBuf, String value) {
-    byteBuf.writeCharSequence(value, StandardCharsets.UTF_8);
+  protected static void writeCharSequence(Buffer buffer, String value) {
+    buffer.appendString(value, "UTF-8");
   }
 
   public static Buffer genFileBoundaryBuffer(Part part, String name, String boundary) {
-    ByteBuf byteBuf = Unpooled.buffer();
+    Buffer buffer = Buffer.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
 
-    writeCharSequence(byteBuf, "\r\n--");
-    writeCharSequence(byteBuf, boundary);
-    writeCharSequence(byteBuf, "\r\nContent-Disposition: form-data; name=\"");
-    writeCharSequence(byteBuf, name);
-    writeCharSequence(byteBuf, "\"; filename=\"");
-    writeCharSequence(byteBuf, String.valueOf(part.getSubmittedFileName()));
-    writeCharSequence(byteBuf, "\"\r\n");
+    writeCharSequence(buffer, "\r\n--");
+    writeCharSequence(buffer, boundary);
+    writeCharSequence(buffer, "\r\nContent-Disposition: form-data; name=\"");
+    writeCharSequence(buffer, name);
+    writeCharSequence(buffer, "\"; filename=\"");
+    writeCharSequence(buffer, String.valueOf(part.getSubmittedFileName()));
+    writeCharSequence(buffer, "\"\r\n");
 
-    writeCharSequence(byteBuf, "Content-Type: ");
-    writeCharSequence(byteBuf, part.getContentType());
-    writeCharSequence(byteBuf, "\r\n");
+    writeCharSequence(buffer, "Content-Type: ");
+    writeCharSequence(buffer, part.getContentType());
+    writeCharSequence(buffer, "\r\n");
 
-    writeCharSequence(byteBuf, "Content-Transfer-Encoding: binary\r\n");
+    writeCharSequence(buffer, "Content-Transfer-Encoding: binary\r\n");
 
-    writeCharSequence(byteBuf, "\r\n");
+    writeCharSequence(buffer, "\r\n");
 
-    return Buffer.buffer(byteBuf);
+    return buffer;
   }
 
   public static Buffer genBoundaryEndBuffer(String boundary) {
-    ByteBuf byteBuf = Unpooled.buffer();
+    Buffer buffer = Buffer.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
 
-    writeCharSequence(byteBuf, "\r\n--");
-    writeCharSequence(byteBuf, boundary);
-    writeCharSequence(byteBuf, "--\r\n");
+    writeCharSequence(buffer, "\r\n--");
+    writeCharSequence(buffer, boundary);
+    writeCharSequence(buffer, "--\r\n");
 
-    return Buffer.buffer(byteBuf);
+    return buffer;
   }
 }

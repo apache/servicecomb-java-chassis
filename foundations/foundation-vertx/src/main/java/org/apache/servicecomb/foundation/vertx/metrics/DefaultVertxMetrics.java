@@ -18,23 +18,22 @@ package org.apache.servicecomb.foundation.vertx.metrics;
 
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
-
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServerOptions;
-import io.vertx.core.metrics.impl.DummyVertxMetrics;
 import io.vertx.core.net.NetClientOptions;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 import io.vertx.core.spi.metrics.HttpServerMetrics;
 import io.vertx.core.spi.metrics.TCPMetrics;
+import io.vertx.core.spi.metrics.VertxMetrics;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 
-public class DefaultVertxMetrics extends DummyVertxMetrics {
+public class DefaultVertxMetrics implements VertxMetrics {
   // to support listen multiple addresses, must use a map to manage the metric
   private final Map<String, DefaultServerEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
 
@@ -61,7 +60,7 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   }
 
   @Override
-  public HttpClientMetrics<?, ?, ?, ?> createHttpClientMetrics(HttpClientOptions options) {
+  public HttpClientMetrics<?, ?, ?> createHttpClientMetrics(HttpClientOptions options) {
     return new DefaultHttpClientMetrics(clientEndpointMetricManager);
   }
 

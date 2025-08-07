@@ -15,12 +15,14 @@
 
 package org.apache.servicecomb.foundation.vertx.client.http;
 
-import io.vertx.core.Context;
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientOptions;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vertx.core.Context;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.http.PoolOptions;
 
 // execute in vertx context
 public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithContext> {
@@ -28,15 +30,18 @@ public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithCo
 
   private final HttpClientOptions httpClientOptions;
 
-  public HttpClientPoolFactory(HttpClientOptions httpClientOptions) {
+  private final PoolOptions poolOptions;
+
+  public HttpClientPoolFactory(HttpClientOptions httpClientOptions, PoolOptions poolOptions) {
     this.httpClientOptions = httpClientOptions;
+    this.poolOptions = poolOptions;
   }
 
   @Override
   public HttpClientWithContext createClientPool(Context context) {
     HttpClient httpClient = context.owner().httpClientBuilder()
         .with(httpClientOptions)
-        .with(httpClientOptions.getPoolOptions())
+        .with(poolOptions)
         .withConnectHandler(connection -> {
           LOGGER.debug("http connection connected, local:{}, remote:{}.",
               connection.localAddress(), connection.remoteAddress());

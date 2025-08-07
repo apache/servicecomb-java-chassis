@@ -64,7 +64,7 @@ public class ResponseHeaderItemTest {
 
   @Test
   public void serverFormattedElement() {
-    HeadersMultiMap headers = new HeadersMultiMap();
+    HeadersMultiMap headers = HeadersMultiMap.httpHeaders();
     String headerValue = "headerValue";
     headers.add(VAR_NAME, headerValue);
     when(routingContext.response()).thenReturn(serverResponse);
@@ -122,7 +122,7 @@ public class ResponseHeaderItemTest {
 
   @Test
   public void serverFormattedElementOnNotFound() {
-    HeadersMultiMap headers = new HeadersMultiMap();
+    HeadersMultiMap headers = HeadersMultiMap.httpHeaders();
     String headerValue = "headerValue";
     headers.add("anotherHeader", headerValue);
     when(routingContext.response()).thenReturn(serverResponse);

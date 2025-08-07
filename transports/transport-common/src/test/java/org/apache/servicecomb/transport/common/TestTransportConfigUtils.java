@@ -60,7 +60,7 @@ public class TestTransportConfigUtils {
     Assertions.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
     Assertions.assertEquals("thread-count is ambiguous, and deprecated, recommended to use verticle-count.",
         collector.getEvent(0).getMessage().getFormattedMessage());
-    collector.teardown();
+    collector.tearDown();
   }
 
   @Test
@@ -79,7 +79,7 @@ public class TestTransportConfigUtils {
     Assertions.assertEquals(7, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
     Assertions.assertEquals("verticle-count not defined, set to 7.",
         collector.getLastEvents().getMessage().getFormattedMessage());
-    collector.teardown();
+    collector.tearDown();
   }
 
   @Test
@@ -106,6 +106,6 @@ public class TestTransportConfigUtils {
     Assertions.assertEquals("verticle-count not defined, set to 8.",
         collector.getLastEvents().getMessage().getFormattedMessage());
 
-    collector.teardown();
+    collector.tearDown();
   }
 }

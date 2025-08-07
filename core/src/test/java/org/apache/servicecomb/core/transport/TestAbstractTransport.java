@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
-import io.vertx.core.file.impl.FileResolverImpl;
+import io.vertx.core.impl.SysProps;
 
 public class TestAbstractTransport {
   Environment environment = Mockito.mock(Environment.class);
@@ -56,7 +56,7 @@ public class TestAbstractTransport {
     Mockito.when(environment.getProperty("servicecomb.my.publishPort", int.class, 0)).thenReturn(0);
     Mockito.when(environment.getProperty("servicecomb.transport.eventloop.size", int.class, -1))
         .thenReturn(-1);
-    Mockito.when(environment.getProperty(FileResolverImpl.DISABLE_CP_RESOLVING_PROP_NAME, boolean.class, true))
+    Mockito.when(environment.getProperty(SysProps.DISABLE_FILE_CP_RESOLVING.name, boolean.class, true))
         .thenReturn(true);
     LegacyPropertyFactory.setEnvironment(environment);
   }

@@ -27,8 +27,8 @@ import org.apache.servicecomb.foundation.vertx.stream.PumpCommon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
+import io.vertx.core.Future;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
@@ -82,15 +82,13 @@ public class ReadStreamPart extends AbstractPart {
   }
 
   /**
-   *
-   * @param writeStream
    * @return future of save action<br>
    *
    * important: WriteStream did not provide endHandler, so we can not know when will really finished write.
    * so the return future only means finished read from readStream.
    */
   public CompletableFuture<Void> saveToWriteStream(WriteStream<Buffer> writeStream) {
-    return new PumpCommon().pump(context, readStream, writeStream, null);
+    return new PumpCommon().pump(readStream, writeStream, null);
   }
 
   public CompletableFuture<byte[]> saveAsBytes() {
@@ -120,8 +118,6 @@ public class ReadStreamPart extends AbstractPart {
   }
 
   /**
-   *
-   * @param fileName
    * @return future of save to file, future complete means write to file finished
    */
   public CompletableFuture<File> saveToFile(String fileName) {
@@ -132,9 +128,6 @@ public class ReadStreamPart extends AbstractPart {
   }
 
   /**
-   *
-   * @param file
-   * @param openOptions
    * @return future of save to file, future complete means write to file finished
    */
   public CompletableFuture<File> saveToFile(File file, OpenOptions openOptions) {
@@ -142,34 +135,37 @@ public class ReadStreamPart extends AbstractPart {
 
     context.runOnContext((v) -> {
       Vertx vertx = context.owner();
-      vertx.fileSystem().open(file.getAbsolutePath(), openOptions, ar -> onFileOpened(file, ar, future));
+      Future<AsyncFile> openFuture = vertx.fileSystem().open(file.getAbsolutePath(), openOptions);
+      openFuture.onComplete((s, f) -> onFileOpened(file, s, f, future));
     });
 
     return future;
   }
 
-  protected void onFileOpened(File file, AsyncResult<AsyncFile> ar, CompletableFuture<File> future) {
-    if (ar.failed()) {
-      future.completeExceptionally(ar.cause());
+  protected void onFileOpened(File file, AsyncFile asyncFile, Throwable failure, CompletableFuture<File> future) {
+    if (failure != null) {
+      future.completeExceptionally(failure);
       return;
     }
 
-    AsyncFile asyncFile = ar.result();
     CompletableFuture<Void> saveFuture = saveToWriteStream(asyncFile);
-    saveFuture.whenComplete((v, saveException) -> asyncFile.close(closeAr -> {
-      if (closeAr.failed()) {
-        LOGGER.error("Failed to close file {}.", file);
-      }
+    saveFuture.whenComplete((v, saveException) -> {
+      Future<Void> result = asyncFile.close();
+      result.onComplete((s, f) -> {
+        if (f != null) {
+          LOGGER.error("Failed to close file {}.", file);
+        }
 
-      // whatever close success or failed
-      // will not affect to result
-      // result just only related to write
-      if (saveException == null) {
-        future.complete(file);
-        return;
-      }
+        // whatever close success or failed
+        // will not affect to result
+        // result just only related to write
+        if (saveException == null) {
+          future.complete(file);
+          return;
+        }
 
-      future.completeExceptionally(saveException);
-    }));
+        future.completeExceptionally(saveException);
+      });
+    });
   }
 }

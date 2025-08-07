@@ -64,7 +64,7 @@ public class SharedVertxFactory {
   private static Vertx createSharedVertx(Environment environment, String name) {
     SharedVertxInfo info = new SharedVertxInfo(environment);
 
-    Vertx vertx = VertxUtils.init(name, info.vertxOptions);
+    Vertx vertx = VertxUtils.init(name, info.vertxOptions, info.metricsFactory);
     info.metricsFactory.setVertx(vertx, info.vertxOptions);
     vertx.sharedData().getLocalMap(LOCAL_MAP_NAME).put(INFO, info);
 
