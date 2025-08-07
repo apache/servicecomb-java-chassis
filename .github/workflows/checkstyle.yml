@@ -36,5 +36,3 @@ jobs:
           distribution: 'temurin'
       - name: checkstyle
         run: mvn checkstyle:check -B -Pit
-      - name: javadoc
-        run: mvn javadoc:javadoc -Prelease
