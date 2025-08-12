@@ -17,9 +17,15 @@
 
 package org.apache.servicecomb.swagger.invocation.sse;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import jakarta.validation.constraints.NotNull;
 
 public class SseEventResponseEntity<T> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SseEventResponseEntity.class);
+
   /**
    * event id
    */
@@ -42,22 +48,34 @@ public class SseEventResponseEntity<T> {
   private T data;
 
   public SseEventResponseEntity<T> eventId(int eventId) {
+    if (this.eventId != null) {
+      LOGGER.warn("origin eventId: [{}] is exists, overridden by the current value: [{}]", this.eventId, eventId);
+    }
     this.eventId = eventId;
     return this;
   }
 
   public SseEventResponseEntity<T> event(String event) {
+    if (!StringUtils.isEmpty(this.event)) {
+      LOGGER.warn("origin event: [{}] is exists, overridden by the current value: [{}]", this.event, event);
+    }
     this.event = event;
     return this;
   }
 
   public SseEventResponseEntity<T> retry(long retry) {
+    if (this.retry != null) {
+      LOGGER.warn("origin retry: [{}] is exists, overridden by the current value: [{}]", this.retry, retry);
+    }
     this.retry = retry;
     return this;
   }
 
-  public SseEventResponseEntity<T> data(T data) throws Exception {
-    this.data = data;
+  public SseEventResponseEntity<T> data(Object data) {
+    if (this.data != null) {
+      LOGGER.warn("origin data: [{}] is exists, overridden by the current value: [{}]", this.data, data);
+    }
+    this.data = (T) data;
     return this;
   }
 

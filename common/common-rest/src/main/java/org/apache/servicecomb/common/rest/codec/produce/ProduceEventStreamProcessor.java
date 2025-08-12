@@ -20,6 +20,9 @@ package org.apache.servicecomb.common.rest.codec.produce;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -30,7 +33,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import jakarta.ws.rs.core.MediaType;
 
 public class ProduceEventStreamProcessor implements ProduceProcessor {
-  private int writeIndex = 0;
+  public static final List<String> DEFAULT_DELIMITERS = Arrays.asList("\r\n", "\n", "\r");
 
   @Override
   public String getName() {
@@ -50,42 +53,58 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       appendEvent(bufferBuilder, responseEntity.getEvent());
       appendRetry(bufferBuilder, responseEntity.getRetry());
       appendData(bufferBuilder, responseEntity.getData());
-    } else {
-      appendEventId(bufferBuilder, writeIndex++);
-      appendData(bufferBuilder, result);
+      bufferBuilder.append("\n");
+      output.write(bufferBuilder.toString().getBytes(StandardCharsets.UTF_8));
     }
-    bufferBuilder.append("\n");
-    output.write(bufferBuilder.toString().getBytes(StandardCharsets.UTF_8));
   }
 
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     String buffer = new String(input.readAllBytes(), StandardCharsets.UTF_8);
+    List<String> lines = new ArrayList<>();
+    splitStringByDelimiters(buffer, lines);
     SseEventResponseEntity<?> responseEntity = new SseEventResponseEntity<>();
-    for (String line : buffer.split("\n")) {
-      if (line.startsWith("eventId: ")) {
-        responseEntity.eventId(Integer.parseInt(line.substring(9)));
+    for (String line : lines) {
+      if (line.startsWith("eventId:")) {
+        responseEntity.eventId(Integer.parseInt(line.substring("eventId:".length()).trim()));
         continue;
       }
-      if (line.startsWith("event: ")) {
-        responseEntity.event(line.substring(7));
+      if (line.startsWith("event:")) {
+        responseEntity.event(line.substring("event:".length()).trim());
         continue;
       }
-      if (line.startsWith("retry: ")) {
-        responseEntity.retry(Long.parseLong(line.substring(7)));
+      if (line.startsWith("retry:")) {
+        responseEntity.retry(Long.parseLong(line.substring("retry:".length()).trim()));
         continue;
       }
-      if (line.startsWith("data: ")) {
+      if (line.startsWith("data:")) {
         responseEntity.data(RestObjectMapperFactory.getRestObjectMapper()
-            .readValue(line.substring(6), type));
+            .readValue(line.substring("data:".length()).trim(), type));
       }
     }
     return responseEntity;
   }
 
-  @Override
-  public void refreshEventId(int index) {
-    this.writeIndex = index;
+  private void splitStringByDelimiters(String str, List<String> lines) {
+    boolean isContainsDelimiters = false;
+    for (String split : DEFAULT_DELIMITERS) {
+      if (str.contains(split)) {
+        isContainsDelimiters = true;
+        splitStrings(str.split(split), lines);
+      }
+    }
+    if (!isContainsDelimiters) {
+      lines.add(str);
+    }
+  }
+
+  private void splitStrings(String[] strings, List<String> lines) {
+    for (String str : strings) {
+      if (StringUtils.isEmpty(str)) {
+        continue;
+      }
+      splitStringByDelimiters(str, lines);
+    }
   }
 
   private void appendEventId(StringBuilder eventBuilder, Integer eventId) {

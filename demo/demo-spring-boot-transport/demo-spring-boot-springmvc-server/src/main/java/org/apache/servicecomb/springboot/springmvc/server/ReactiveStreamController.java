@@ -38,8 +38,8 @@ public class ReactiveStreamController {
   }
 
   @GetMapping("/sseStringWithParam")
-  public Publisher<String> sseStringWithParam(@RequestParam(name = "name") String name) {
-    return Flowable.fromArray("a", "b", "c", name);
+  public Publisher<String> sseStringWithParam(@RequestParam(name = "param") String param) {
+    return Flowable.fromArray("a", "b", "c", param);
   };
 
   @GetMapping("/sseModel")

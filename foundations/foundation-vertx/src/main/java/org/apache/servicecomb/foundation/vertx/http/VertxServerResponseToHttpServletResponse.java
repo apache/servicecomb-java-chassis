@@ -156,6 +156,6 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
 
   @Override
   public void setChunkedForEvent(boolean chunked) {
-    serverResponse.setChunked(chunked);
+    this.setChunked(chunked);
   }
 }

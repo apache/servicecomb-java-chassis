@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceEventStreamProcessor;
@@ -54,6 +55,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
 
   private static final String PRINT_ERROR_RESPONSE = "servicecomb.http.filter.client.default.shouldPrintErrorResponse";
 
+  protected static final String EVENTS_MEDIA_TYPE = MediaType.SERVER_SENT_EVENTS;
+
   @Override
   public int getOrder() {
     return 10000;
@@ -81,6 +84,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     if (idx != -1) {
       contentTypeForFind = contentType.substring(0, idx);
     }
+
     return restOperation.findProduceProcessor(contentTypeForFind);
   }
 

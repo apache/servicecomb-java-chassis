@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
@@ -88,6 +89,8 @@ public class RestClientInvocation {
   private final Handler<Throwable> throwableHandler = this::fail;
 
   private boolean alreadyFailed = false;
+
+  protected static final String EVENTS_MEDIA_TYPE = MediaType.SERVER_SENT_EVENTS;
 
   public RestClientInvocation(HttpClientWithContext httpClientWithContext, List<HttpClientFilter> httpClientFilters) {
     this.httpClientWithContext = httpClientWithContext;
@@ -220,7 +223,7 @@ public class RestClientInvocation {
       return;
     }
 
-    if (restOperationMeta != null && restOperationMeta.isServerSendEvents()) {
+    if (isServerSendEvents(httpClientResponse)) {
       processFlowableResponseBody(FlowableHelper.toFlowable(httpClientResponse));
       return;
     }
@@ -233,6 +236,13 @@ public class RestClientInvocation {
     });
 
     clientResponse.bodyHandler(this::processResponseBody);
+  }
+
+  private boolean isServerSendEvents(HttpClientResponse httpClientResponse) {
+    if (httpClientResponse.getHeader("Content-Type") == null) {
+      return false;
+    }
+    return httpClientResponse.getHeader("Content-Type").contains(EVENTS_MEDIA_TYPE);
   }
 
   /**

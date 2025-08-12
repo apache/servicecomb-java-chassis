@@ -76,7 +76,4 @@ public interface ProduceProcessor {
       return doDecodeResponse(input, type);
     }
   }
-
-  default void refreshEventId(int index) {
-  }
 }
