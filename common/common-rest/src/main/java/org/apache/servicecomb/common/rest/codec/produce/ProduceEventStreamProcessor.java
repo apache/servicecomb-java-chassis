@@ -27,12 +27,16 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 
 import jakarta.ws.rs.core.MediaType;
 
 public class ProduceEventStreamProcessor implements ProduceProcessor {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProduceEventStreamProcessor.class);
+
   public static final List<String> DEFAULT_DELIMITERS = Arrays.asList("\r\n", "\n", "\r");
 
   @Override
@@ -55,6 +59,8 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       appendData(bufferBuilder, responseEntity.getData());
       bufferBuilder.append("\n");
       output.write(bufferBuilder.toString().getBytes(StandardCharsets.UTF_8));
+    } else {
+      LOGGER.warn("Does not support encoding objects other than SseEventResponseEntity!");
     }
   }
 
