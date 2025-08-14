@@ -25,8 +25,6 @@ import jakarta.ws.rs.core.Response.StatusType;
 public class PublisherProducerResponseMapper implements ProducerResponseMapper {
   private final boolean shouldConstructEntity;
 
-  private int writeIndex = 0;
-
   public PublisherProducerResponseMapper(boolean shouldConstructEntity) {
     this.shouldConstructEntity = shouldConstructEntity;
   }
@@ -36,7 +34,6 @@ public class PublisherProducerResponseMapper implements ProducerResponseMapper {
     if (shouldConstructEntity) {
       Flowable<SseEventResponseEntity<?>> responseEntity = ((Flowable<?>) result).map(obj ->
           new SseEventResponseEntity<>()
-              .eventId(writeIndex++)
               .data(obj));
       return Response.create(status, responseEntity);
     }

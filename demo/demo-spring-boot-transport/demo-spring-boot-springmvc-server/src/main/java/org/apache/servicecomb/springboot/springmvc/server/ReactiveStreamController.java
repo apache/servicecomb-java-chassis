@@ -54,7 +54,7 @@ public class ReactiveStreamController {
     return Flowable.intervalRange(0, 3, 0, 1, TimeUnit.SECONDS)
         .map(item -> new SseEventResponseEntity<Model>()
             .event("test" + index)
-            .eventId(index.getAndIncrement())
+            .id(index.getAndIncrement())
             .retry(System.currentTimeMillis())
             .data(new Model("jack", item.intValue())));
   }

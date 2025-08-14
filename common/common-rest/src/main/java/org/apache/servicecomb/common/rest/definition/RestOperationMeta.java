@@ -260,7 +260,7 @@ public class RestOperationMeta {
           ProduceProcessorManager.INSTANCE.getOrCreateAcceptMap(serialViewClass));
     } else {
       for (String produce : produces) {
-        if (produce.equals(EVENTS_MEDIA_TYPE)) {
+        if (produce.contains(EVENTS_MEDIA_TYPE)) {
           // When the produce type is event-stream, the ProduceEventStreamProcessor implementation class corresponding
           // to event-stream is not added, and it is set to the default type ProduceJsonProcessor.
           // In case of an exception, the response result is parsed.

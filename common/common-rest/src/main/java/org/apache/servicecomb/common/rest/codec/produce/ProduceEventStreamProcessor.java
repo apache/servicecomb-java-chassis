@@ -39,6 +39,8 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
 
   public static final List<String> DEFAULT_DELIMITERS = Arrays.asList("\r\n", "\n", "\r");
 
+  private int writeIndex = 0;
+
   @Override
   public String getName() {
     return MediaType.SERVER_SENT_EVENTS;
@@ -53,7 +55,7 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
   public void doEncodeResponse(OutputStream output, Object result) throws Exception {
     StringBuilder bufferBuilder = new StringBuilder();
     if (result instanceof SseEventResponseEntity<?> responseEntity) {
-      appendEventId(bufferBuilder, responseEntity.getEventId());
+      appendId(bufferBuilder, responseEntity.getId());
       appendEvent(bufferBuilder, responseEntity.getEvent());
       appendRetry(bufferBuilder, responseEntity.getRetry());
       appendData(bufferBuilder, responseEntity.getData());
@@ -71,8 +73,8 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
     splitStringByDelimiters(buffer, lines);
     SseEventResponseEntity<?> responseEntity = new SseEventResponseEntity<>();
     for (String line : lines) {
-      if (line.startsWith("eventId:")) {
-        responseEntity.eventId(Integer.parseInt(line.substring("eventId:".length()).trim()));
+      if (line.startsWith("id:")) {
+        responseEntity.id(Integer.parseInt(line.substring("id:".length()).trim()));
         continue;
       }
       if (line.startsWith("event:")) {
@@ -113,11 +115,9 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
     }
   }
 
-  private void appendEventId(StringBuilder eventBuilder, Integer eventId) {
-    if (eventId == null) {
-      return;
-    }
-    eventBuilder.append("eventId: ").append(eventId.intValue()).append("\n");
+  private void appendId(StringBuilder eventBuilder, Integer eventId) {
+    int id = eventId != null ? eventId : writeIndex++;
+    eventBuilder.append("id: ").append(id).append("\n");
   }
 
   private void appendEvent(StringBuilder eventBuilder, String event) {

@@ -36,8 +36,8 @@ public class PublisherProducerResponseMapperFactory implements ProducerResponseM
   @Override
   public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
       Type providerType) {
-    Type realproducerType = ((ParameterizedType) providerType).getActualTypeArguments()[0];
+    Type realProducerType = ((ParameterizedType) providerType).getActualTypeArguments()[0];
     return new PublisherProducerResponseMapper(
-        !realproducerType.getTypeName().contains(SseEventResponseEntity.class.getName()));
+        !realProducerType.getTypeName().contains(SseEventResponseEntity.class.getName()));
   }
 }

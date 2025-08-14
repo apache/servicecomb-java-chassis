@@ -29,7 +29,7 @@ public class SseEventResponseEntity<T> {
   /**
    * event id
    */
-  private Integer eventId;
+  private Integer id;
 
   /**
    * event type
@@ -47,11 +47,11 @@ public class SseEventResponseEntity<T> {
   @NotNull
   private T data;
 
-  public SseEventResponseEntity<T> eventId(int eventId) {
-    if (this.eventId != null) {
-      LOGGER.warn("origin eventId: [{}] is exists, overridden by the current value: [{}]", this.eventId, eventId);
+  public SseEventResponseEntity<T> id(int id) {
+    if (this.id != null) {
+      LOGGER.warn("origin id: [{}] is exists, overridden by the current value: [{}]", this.id, id);
     }
-    this.eventId = eventId;
+    this.id = id;
     return this;
   }
 
@@ -79,8 +79,8 @@ public class SseEventResponseEntity<T> {
     return this;
   }
 
-  public Integer getEventId() {
-    return eventId;
+  public Integer getId() {
+    return id;
   }
 
   public String getEvent() {
