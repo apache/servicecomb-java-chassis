@@ -17,12 +17,15 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import jakarta.ws.rs.core.Response.StatusType;
 
+import io.reactivex.rxjava3.core.Flowable;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpHeaders;
 
 public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSupport {
@@ -36,5 +39,17 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
 
   default void setChunked(boolean chunked) {
     setHeader(HttpHeaders.TRANSFER_ENCODING.toString(), HttpHeaders.CHUNKED.toString());
+  }
+
+  CompletableFuture<Void> sendBuffer(Buffer buffer);
+
+  default Flowable<Buffer> getFlowableBuffer() {
+    return null;
+  }
+
+  void endResponse() throws IOException;
+
+  default void setChunkedForEvent(boolean chunked) {
+    // not set header transfer-encoding=chunked in Rest Over Servlet, or will have Multiple in response.
   }
 }

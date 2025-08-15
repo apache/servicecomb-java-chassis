@@ -19,3 +19,4 @@ org.apache.servicecomb.swagger.invocation.response.consumer.CseResponseConsumerR
 org.apache.servicecomb.swagger.invocation.response.consumer.CompletableFutureConsumerResponseMapperFactory
 org.apache.servicecomb.swagger.invocation.response.consumer.DefaultConsumerResponseMapperFactory
 org.apache.servicecomb.swagger.invocation.response.consumer.OptionalConsumerResponseMapperFactory
+org.apache.servicecomb.swagger.invocation.response.consumer.PublisherConsumerResponseMapperFactory

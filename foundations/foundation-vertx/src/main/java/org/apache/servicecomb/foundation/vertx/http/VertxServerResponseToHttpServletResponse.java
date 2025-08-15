@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -30,6 +31,7 @@ import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
@@ -100,7 +102,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   @Override
-  public void flushBuffer() {
+  public void endResponse() {
     if (context == Vertx.currentContext()) {
       internalFlushBuffer();
       return;
@@ -133,5 +135,27 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   @Override
   public void setChunked(boolean chunked) {
     serverResponse.setChunked(chunked);
+  }
+
+  @Override
+  public CompletableFuture<Void> sendBuffer(Buffer buffer) {
+    if (serverResponse.closed()) {
+      return CompletableFuture.failedFuture(new IOException("Response is closed before sending any data. "
+          + "Maybe client is timeout or check idle connection timeout for provider is properly configured."));
+    }
+    CompletableFuture<Void> future = new CompletableFuture<>();
+    serverResponse.write(buffer).onComplete(result -> {
+      if (result.failed()) {
+        future.completeExceptionally(result.cause());
+      } else {
+        future.complete(null);
+      }
+    });
+    return future;
+  }
+
+  @Override
+  public void setChunkedForEvent(boolean chunked) {
+    this.setChunked(chunked);
   }
 }

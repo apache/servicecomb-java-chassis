@@ -74,7 +74,7 @@ public class TestStandardHttpServletResponseEx {
   }
 
   @Test
-  public void flushBuffer() throws IOException {
+  public void endResponse() throws IOException {
     Buffer buffer = Buffer.buffer();
     ServletOutputStream output = new ServletOutputStream() {
       @Override
@@ -97,12 +97,12 @@ public class TestStandardHttpServletResponseEx {
     responseEx = new StandardHttpServletResponseEx(response);
 
     // no body
-    responseEx.flushBuffer();
+    responseEx.endResponse();
     Assertions.assertEquals(0, buffer.length());
 
     Buffer body = Buffer.buffer().appendString("body");
     responseEx.setBodyBuffer(body);
-    responseEx.flushBuffer();
+    responseEx.endResponse();
     Assertions.assertEquals("body", buffer.toString());
   }
 
