@@ -17,11 +17,13 @@
 
 package org.apache.servicecomb.swagger.invocation.sse;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.validation.constraints.NotNull;
 
 public class SseEventResponseEntity<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(SseEventResponseEntity.class);
@@ -44,8 +46,7 @@ public class SseEventResponseEntity<T> {
   /**
    * business data
    */
-  @NotNull
-  private T data;
+  private List<T> datas = new ArrayList<>();
 
   public SseEventResponseEntity<T> id(int id) {
     if (this.id != null) {
@@ -72,10 +73,15 @@ public class SseEventResponseEntity<T> {
   }
 
   public SseEventResponseEntity<T> data(Object data) {
-    if (this.data != null) {
-      LOGGER.warn("origin data: [{}] is exists, overridden by the current value: [{}]", this.data, data);
+    if (data == null) {
+      LOGGER.warn("The data content cannot be null!");
+    } else {
+      if (data instanceof Collection<?> collection) {
+        datas.addAll((Collection<? extends T>) collection);
+      } else {
+        datas.add((T) data);
+      }
     }
-    this.data = (T) data;
     return this;
   }
 
@@ -91,7 +97,11 @@ public class SseEventResponseEntity<T> {
     return retry;
   }
 
-  public Object getData() {
-    return data;
+  public List<T> getData() {
+    return datas;
+  }
+
+  public T getExtractData() {
+    return datas.get(0);
   }
 }

@@ -29,6 +29,7 @@ import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -53,14 +54,14 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
 
   @Override
   public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-    StringBuilder bufferBuilder = new StringBuilder();
+    StringBuilder eventBuilder = new StringBuilder();
     if (result instanceof SseEventResponseEntity<?> responseEntity) {
-      appendId(bufferBuilder, responseEntity.getId());
-      appendEvent(bufferBuilder, responseEntity.getEvent());
-      appendRetry(bufferBuilder, responseEntity.getRetry());
-      appendData(bufferBuilder, responseEntity.getData());
-      bufferBuilder.append("\n");
-      output.write(bufferBuilder.toString().getBytes(StandardCharsets.UTF_8));
+      appendId(eventBuilder, responseEntity.getId());
+      appendEvent(eventBuilder, responseEntity.getEvent());
+      appendRetry(eventBuilder, responseEntity.getRetry());
+      appendData(eventBuilder, responseEntity.getData());
+      eventBuilder.append("\n");
+      output.write(eventBuilder.toString().getBytes(StandardCharsets.UTF_8));
     } else {
       LOGGER.warn("Does not support encoding objects other than SseEventResponseEntity!");
     }
@@ -134,12 +135,14 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
     eventBuilder.append("retry: ").append(retry.longValue()).append("\n");
   }
 
-  private void appendData(StringBuilder eventBuilder, Object data) throws Exception {
-    if (data == null) {
+  private void appendData(StringBuilder eventBuilder, List<?> datas) throws Exception {
+    if (CollectionUtils.isEmpty(datas)) {
       throw new Exception("sse response data is null!");
     }
-    eventBuilder.append("data: ")
-        .append(RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(data))
-        .append("\n");
+    for (Object data : datas) {
+      eventBuilder.append("data: ")
+          .append(RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(data))
+          .append("\n");
+    }
   }
 }

@@ -45,6 +45,7 @@ public class ReactiveStreamIT implements CategorizedTestCase {
     testSseStringWithParam(reactiveStreamProvider);
     testSseModel(reactiveStreamProvider);
     testSseResponseEntity(reactiveStreamProvider);
+    testSseMultipleData(reactiveStreamProvider);
   }
 
   private void testSseString(ReactiveStreamClient client) throws Exception {
@@ -104,8 +105,8 @@ public class ReactiveStreamIT implements CategorizedTestCase {
       }
 
       @Override
-      public void onNext(Model s) {
-        buffer.append(s.getName()).append(s.getAge());
+      public void onNext(Model model) {
+        buffer.append(model.getName()).append(model.getAge());
         subscription.request(1);
       }
 
@@ -142,8 +143,9 @@ public class ReactiveStreamIT implements CategorizedTestCase {
         if (!StringUtils.isEmpty(responseEntity.getEvent())) {
           buffer.append(responseEntity.getEvent());
         }
-        buffer.append(((Model) responseEntity.getData()).getName())
-            .append(((Model) responseEntity.getData()).getAge());
+        for (Model model : responseEntity.getData()) {
+          buffer.append(model.getName()).append(model.getAge());
+        }
         subscription.request(1);
       }
 
@@ -160,5 +162,44 @@ public class ReactiveStreamIT implements CategorizedTestCase {
     });
     countDownLatch.await(10, TimeUnit.SECONDS);
     TestMgr.check("test0jack0test1jack1test2jack2", buffer.toString());
+  }
+
+  private void testSseMultipleData(ReactiveStreamClient client) throws Exception {
+    Publisher<SseEventResponseEntity<Model>> result = client.sseMultipleData();
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    StringBuilder buffer = new StringBuilder();
+    result.subscribe(new Subscriber<>() {
+      Subscription subscription;
+
+      @Override
+      public void onSubscribe(Subscription s) {
+        subscription = s;
+        subscription.request(1);
+      }
+
+      @Override
+      public void onNext(SseEventResponseEntity<Model> responseEntity) {
+        if (!StringUtils.isEmpty(responseEntity.getEvent())) {
+          buffer.append(responseEntity.getEvent());
+        }
+        for (Model model : responseEntity.getData()) {
+          buffer.append(model.getName()).append(model.getAge());
+        }
+        subscription.request(1);
+      }
+
+      @Override
+      public void onError(Throwable t) {
+        subscription.cancel();
+        countDownLatch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await(10, TimeUnit.SECONDS);
+    TestMgr.check("test0jack0tom0test1jack1tom1test2jack2tom2", buffer.toString());
   }
 }

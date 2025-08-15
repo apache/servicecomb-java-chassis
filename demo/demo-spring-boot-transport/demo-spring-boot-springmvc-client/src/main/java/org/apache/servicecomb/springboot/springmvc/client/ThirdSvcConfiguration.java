@@ -41,6 +41,9 @@ public class ThirdSvcConfiguration {
 
     @GetMapping("/sseResponseEntity")
     Publisher<SseEventResponseEntity<Model>> sseResponseEntity();
+
+    @GetMapping("/sseMultipleData")
+    Publisher<SseEventResponseEntity<Model>> sseMultipleData();
   }
 
   @Bean("reactiveStreamProvider")

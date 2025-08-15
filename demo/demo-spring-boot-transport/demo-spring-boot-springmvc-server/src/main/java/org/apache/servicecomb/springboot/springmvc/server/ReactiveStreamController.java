@@ -58,4 +58,16 @@ public class ReactiveStreamController {
             .retry(System.currentTimeMillis())
             .data(new Model("jack", item.intValue())));
   }
+
+  @GetMapping("/sseMultipleData")
+  public Publisher<SseEventResponseEntity<Model>> sseMultipleData() {
+    AtomicInteger index = new AtomicInteger(0);
+    return Flowable.intervalRange(0, 3, 0, 1, TimeUnit.SECONDS)
+        .map(item -> new SseEventResponseEntity<Model>()
+            .event("test" + index)
+            .id(index.getAndIncrement())
+            .retry(System.currentTimeMillis())
+            .data(new Model("jack", item.intValue()))
+            .data(new Model("tom", item.intValue())));
+  }
 }
