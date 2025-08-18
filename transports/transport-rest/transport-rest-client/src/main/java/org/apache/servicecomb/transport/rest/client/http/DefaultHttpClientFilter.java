@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceEventStreamProcessor;
@@ -94,7 +95,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     JavaType responseType = invocation.findResponseType(responseEx.getStatus());
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     ProduceProcessor produceProcessor = findProduceProcessor(swaggerRestOperation, responseEx);
-    if (produceProcessor == null) {
+    if (produceProcessor == null && !isEventStream(responseEx)) {
       // This happens outside the runtime such as Servlet filter response. Here we give a default json parser to it
       // and keep user data not get lose.
       LOGGER.warn("Response content-type {} is not supported. Method {}, path {}, statusCode {}, reasonPhrase {}.",
@@ -140,6 +141,11 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
           new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(),
               new CommonExceptionData(msg), e));
     }
+  }
+
+  private boolean isEventStream(HttpServletResponseEx responseEx) {
+    return responseEx.getHeader(HttpHeaders.CONTENT_TYPE) != null
+        && responseEx.getHeader(HttpHeaders.CONTENT_TYPE).contains(MediaType.SERVER_SENT_EVENTS);
   }
 
   protected Object extractFlowableBody(ProduceProcessor produceProcessor, JavaType responseType, Buffer buffer)

@@ -18,7 +18,6 @@
 package org.apache.servicecomb.swagger.invocation.sse;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,11 +75,7 @@ public class SseEventResponseEntity<T> {
     if (data == null) {
       LOGGER.warn("The data content cannot be null!");
     } else {
-      if (data instanceof Collection<?> collection) {
-        datas.addAll((Collection<? extends T>) collection);
-      } else {
-        datas.add((T) data);
-      }
+      datas.add((T) data);
     }
     return this;
   }
@@ -99,9 +94,5 @@ public class SseEventResponseEntity<T> {
 
   public List<T> getData() {
     return datas;
-  }
-
-  public T getExtractData() {
-    return datas.get(0);
   }
 }
