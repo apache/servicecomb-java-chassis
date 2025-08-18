@@ -126,14 +126,19 @@ public class ServerRestArgsFilter implements HttpServerFilter {
 
       @Override
       public void onNext(Object o) {
-        writeResponse(responseEx, produceProcessor, o, response).whenComplete((r, e) -> {
-          if (e != null) {
-            subscription.cancel();
-            result.completeExceptionally(e);
-            return;
-          }
-          subscription.request(1);
-        });
+        try {
+          writeResponse(responseEx, produceProcessor, o, response).whenComplete((r, e) -> {
+            if (e != null) {
+              subscription.cancel();
+              result.completeExceptionally(e);
+              return;
+            }
+            subscription.request(1);
+          });
+        } catch (Exception e) {
+          LOGGER.warn("Failed to subscribe event: {}", o, e);
+          result.completeExceptionally(e);
+        }
       }
 
       @Override
