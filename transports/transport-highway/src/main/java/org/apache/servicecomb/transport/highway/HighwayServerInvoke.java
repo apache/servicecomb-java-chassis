@@ -153,7 +153,7 @@ public class HighwayServerInvoke {
         respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, response.getResult());
       }
       invocation.getInvocationStageTrace().finishServerFiltersResponse();
-      connection.write(respBuffer.getByteBuf());
+      connection.write(respBuffer);
     } catch (Exception e) {
       // keep highway performance and simple, this encoding/decoding error not need handle by client
       String msg = String.format("encode response failed, %s, msgId=%d",

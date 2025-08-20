@@ -351,7 +351,7 @@ public abstract class AbstractRestInvocation {
 
     if (!(response.getResult() instanceof ServerWebSocket)) {
       try {
-        responseEx.flushBuffer();
+        responseEx.endResponse();
       } catch (Throwable flushException) {
         LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
             getMicroserviceQualifiedName(), requestEx.getRequestURI(), flushException);

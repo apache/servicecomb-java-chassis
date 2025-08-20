@@ -141,6 +141,8 @@ public class TestDefaultHttpClientFilter {
         result = 400;
         responseEx.getBodyBuffer();
         result = new BufferImpl().appendString("abc");
+        responseEx.getFlowableBuffer();
+        result = null;
       }
     };
     new MockUp<DefaultHttpClientFilter>() {
@@ -189,6 +191,8 @@ public class TestDefaultHttpClientFilter {
         result = 200;
         responseEx.getBodyBuffer();
         result = new BufferImpl().appendString("abc");
+        responseEx.getFlowableBuffer();
+        result = null;
       }
     };
     new MockUp<DefaultHttpClientFilter>() {
@@ -237,6 +241,8 @@ public class TestDefaultHttpClientFilter {
         result = Status.FORBIDDEN;
         responseEx.getBodyBuffer();
         result = Buffer.buffer(JsonUtils.writeValueAsString(data).getBytes());
+        responseEx.getFlowableBuffer();
+        result = null;
       }
     };
 
@@ -284,6 +290,8 @@ public class TestDefaultHttpClientFilter {
 
         responseEx.getStatusType();
         result = Status.OK;
+        responseEx.getFlowableBuffer();
+        result = null;
       }
     };
 

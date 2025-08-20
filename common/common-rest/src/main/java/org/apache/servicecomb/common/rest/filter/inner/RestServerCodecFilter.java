@@ -44,8 +44,8 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.stereotype.Component;
 
-import io.netty.buffer.Unpooled;
 import io.vertx.core.MultiMap;
+import io.vertx.core.buffer.Buffer;
 
 @Component
 public class RestServerCodecFilter implements ProducerFilter {
@@ -103,7 +103,7 @@ public class RestServerCodecFilter implements ProducerFilter {
     }
 
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
-    try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
+    try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
       produceProcessor.encodeResponse(output, response.getResult());
 
       responseEx.setBodyBuffer(output.getBuffer());

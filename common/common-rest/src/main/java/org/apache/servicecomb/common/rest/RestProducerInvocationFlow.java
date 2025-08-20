@@ -53,7 +53,7 @@ public class RestProducerInvocationFlow extends ProducerInvocationFlow {
           requestEx.getRequestURI(), e);
     }
 
-    flushResponse("UNKNOWN_OPERATION");
+    endResponse("UNKNOWN_OPERATION");
     return null;
   }
 
@@ -61,16 +61,16 @@ public class RestProducerInvocationFlow extends ProducerInvocationFlow {
   protected void sendResponse(Invocation invocation, Response response) {
     if (isDownloadFileResponseType(invocation, response)) {
       responseEx.sendPart(PartUtils.getSinglePart(null, response.getResult()))
-          .whenComplete((r, e) -> flushResponse(invocation.getMicroserviceQualifiedName()));
+          .whenComplete((r, e) -> endResponse(invocation.getMicroserviceQualifiedName()));
       return;
     }
 
-    flushResponse(invocation.getMicroserviceQualifiedName());
+    endResponse(invocation.getMicroserviceQualifiedName());
   }
 
-  private void flushResponse(String operationName) {
+  private void endResponse(String operationName) {
     try {
-      responseEx.flushBuffer();
+      responseEx.endResponse();
     } catch (Throwable flushException) {
       LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
           operationName, requestEx.getRequestURI(), flushException);

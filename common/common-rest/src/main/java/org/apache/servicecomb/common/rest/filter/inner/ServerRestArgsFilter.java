@@ -19,11 +19,13 @@ package org.apache.servicecomb.common.rest.filter.inner;
 
 import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter.isDownloadFileResponseType;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceEventStreamProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
@@ -36,14 +38,21 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.reactivestreams.Publisher;
+import org.reactivestreams.Subscriber;
+import org.reactivestreams.Subscription;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.netty.buffer.Unpooled;
+import io.vertx.core.buffer.Buffer;
 
 public class ServerRestArgsFilter implements HttpServerFilter {
   private static final boolean enabled = DynamicPropertyFactory.getInstance().getBooleanProperty
       ("servicecomb.http.filter.server.serverRestArgs.enabled", true).get();
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServerRestArgsFilter.class);
 
   @Override
   public int getOrder() {
@@ -74,10 +83,15 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       return responseEx.sendPart(PartUtils.getSinglePart(null, response.getResult()));
     }
 
-    responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
+    if (isServerSendEvent(response)) {
+      produceProcessor = new ProduceEventStreamProcessor();
+      responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
+      return writeServerSendEvent(invocation, response, produceProcessor, responseEx);
+    }
 
+    responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
     CompletableFuture<Void> future = new CompletableFuture<>();
-    try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
+    try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
       if (failed) {
         produceProcessor.encodeResponse(output, ((InvocationException) response.getResult()).getErrorData());
       } else {
@@ -90,5 +104,77 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       future.completeExceptionally(ExceptionFactory.convertProducerException(e));
     }
     return future;
+  }
+
+  public static boolean isServerSendEvent(Response response) {
+    return response.getResult() instanceof Publisher<?>;
+  }
+
+  private static CompletableFuture<Void> writeServerSendEvent(Invocation invocation, Response response,
+      ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
+    responseEx.setChunkedForEvent(true);
+    CompletableFuture<Void> result = new CompletableFuture<>();
+    Publisher<?> publisher = response.getResult();
+    publisher.subscribe(new Subscriber<Object>() {
+      Subscription subscription;
+
+      @Override
+      public void onSubscribe(Subscription s) {
+        s.request(1);
+        subscription = s;
+      }
+
+      @Override
+      public void onNext(Object o) {
+        try {
+          writeResponse(responseEx, produceProcessor, o, response).whenComplete((r, e) -> {
+            if (e != null) {
+              subscription.cancel();
+              result.completeExceptionally(e);
+              return;
+            }
+            subscription.request(1);
+          });
+        } catch (Throwable e) {
+          LOGGER.warn("Failed to subscribe event: {}", o, e);
+          result.completeExceptionally(e);
+        }
+      }
+
+      @Override
+      public void onError(Throwable t) {
+        result.completeExceptionally(t);
+      }
+
+      @Override
+      public void onComplete() {
+        result.complete(null);
+      }
+    });
+    return result;
+  }
+
+  private static CompletableFuture<Response> writeResponse(
+      HttpServletResponseEx responseEx, ProduceProcessor produceProcessor, Object data, Response response) {
+    try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
+      produceProcessor.encodeResponse(output, data);
+      CompletableFuture<Response> result = new CompletableFuture<>();
+      responseEx.sendBuffer(output.getBuffer()).whenComplete((v, e) -> {
+        if (e != null) {
+          result.completeExceptionally(e);
+        }
+        try {
+          responseEx.flushBuffer();
+        } catch (IOException ex) {
+          LOGGER.warn("Failed to flush buffer for Server Send Events", ex);
+        }
+      });
+      result.complete(response);
+      return result;
+    } catch (Throwable e) {
+      LOGGER.error("internal service error must be fixed.", e);
+      responseEx.setStatus(500);
+      return CompletableFuture.failedFuture(e);
+    }
   }
 }

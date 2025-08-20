@@ -31,6 +31,14 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-rx-java3</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
