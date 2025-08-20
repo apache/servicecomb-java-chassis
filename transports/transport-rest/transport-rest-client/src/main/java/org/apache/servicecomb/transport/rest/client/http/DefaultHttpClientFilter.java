@@ -38,6 +38,8 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
+import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -113,8 +115,10 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
         result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseType);
       } else {
         Flowable<Buffer> flowable = responseEx.getFlowableBuffer();
-        ProduceProcessor finalProduceProcessor = new ProduceEventStreamProcessor();
-        result = flowable.map(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer))
+        ProduceEventStreamProcessor finalProduceProcessor = new ProduceEventStreamProcessor();
+        result = flowable.concatMap(buffer -> extractFlowableBody(finalProduceProcessor, responseType, buffer))
+            .doFinally(finalProduceProcessor::close)
+            .doOnCancel(finalProduceProcessor::close)
             .filter(Objects::nonNull);
       }
       Response response = Response.create(responseEx.getStatusType(), result);
@@ -148,8 +152,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
         && responseEx.getHeader(HttpHeaders.CONTENT_TYPE).contains(MediaType.SERVER_SENT_EVENTS);
   }
 
-  protected Object extractFlowableBody(ProduceProcessor produceProcessor, JavaType responseType, Buffer buffer)
-      throws Exception {
+  protected Publisher<SseEventResponseEntity<?>> extractFlowableBody(ProduceEventStreamProcessor produceProcessor,
+      JavaType responseType, Buffer buffer) throws Exception {
     return produceProcessor.decodeResponse(buffer, responseType);
   }
 

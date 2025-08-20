@@ -24,6 +24,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import io.swagger.annotations.ApiModelProperty;
+
 public class SseEventResponseEntity<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(SseEventResponseEntity.class);
 
@@ -71,11 +75,11 @@ public class SseEventResponseEntity<T> {
     return this;
   }
 
-  public SseEventResponseEntity<T> data(Object data) {
+  public SseEventResponseEntity<T> data(T data) {
     if (data == null) {
       LOGGER.warn("The data content cannot be null!");
     } else {
-      datas.add((T) data);
+      datas.add(data);
     }
     return this;
   }
@@ -94,5 +98,14 @@ public class SseEventResponseEntity<T> {
 
   public List<T> getData() {
     return datas;
+  }
+
+  @JsonIgnore
+  @ApiModelProperty(hidden = true)
+  public boolean isEmpty() {
+    return id == null
+        && event == null
+        && retry == null
+        && datas.isEmpty();
   }
 }

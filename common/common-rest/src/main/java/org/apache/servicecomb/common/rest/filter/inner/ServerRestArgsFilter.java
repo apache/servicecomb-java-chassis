@@ -135,7 +135,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
             }
             subscription.request(1);
           });
-        } catch (Exception e) {
+        } catch (Throwable e) {
           LOGGER.warn("Failed to subscribe event: {}", o, e);
           result.completeExceptionally(e);
         }

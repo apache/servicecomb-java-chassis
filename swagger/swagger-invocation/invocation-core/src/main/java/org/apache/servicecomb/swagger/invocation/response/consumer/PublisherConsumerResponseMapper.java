@@ -32,7 +32,7 @@ public class PublisherConsumerResponseMapper implements ConsumerResponseMapper {
   public Object mapResponse(Response response) {
     Flowable<SseEventResponseEntity<?>> flowable = response.getResult();
     if (shouldExtractEntity) {
-      return flowable.flatMap(entity -> Flowable.fromIterable(entity.getData()));
+      return flowable.concatMap(entity -> Flowable.fromIterable(entity.getData()));
     }
     return flowable;
   }
