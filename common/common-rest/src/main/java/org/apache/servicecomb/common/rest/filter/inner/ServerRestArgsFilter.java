@@ -31,6 +31,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -126,19 +127,15 @@ public class ServerRestArgsFilter implements HttpServerFilter {
 
       @Override
       public void onNext(Object o) {
-        try {
-          writeResponse(responseEx, produceProcessor, o, response).whenComplete((r, e) -> {
-            if (e != null) {
-              subscription.cancel();
-              result.completeExceptionally(e);
-              return;
-            }
+        writeResponse(responseEx, produceProcessor, o, response).thenApply(r -> {
             subscription.request(1);
+            return r;
+          })
+          .exceptionally(e -> {
+            new SuppressedRunnableWrapper(() -> subscription.cancel()).run();
+            new SuppressedRunnableWrapper(() -> result.completeExceptionally(e)).run();
+            return response;
           });
-        } catch (Throwable e) {
-          LOGGER.warn("Failed to subscribe event: {}", o, e);
-          result.completeExceptionally(e);
-        }
       }
 
       @Override
@@ -158,22 +155,18 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       HttpServletResponseEx responseEx, ProduceProcessor produceProcessor, Object data, Response response) {
     try (BufferOutputStream output = new BufferOutputStream(Buffer.buffer())) {
       produceProcessor.encodeResponse(output, data);
-      CompletableFuture<Response> result = new CompletableFuture<>();
-      responseEx.sendBuffer(output.getBuffer()).whenComplete((v, e) -> {
-        if (e != null) {
-          result.completeExceptionally(e);
-        }
-        try {
-          responseEx.flushBuffer();
-        } catch (IOException ex) {
-          LOGGER.warn("Failed to flush buffer for Server Send Events", ex);
-        }
-      });
-      result.complete(response);
-      return result;
+      return responseEx.sendBuffer(output.getBuffer())
+          .thenApply(v -> {
+            try {
+              responseEx.flushBuffer();
+              return response;
+            } catch (IOException e) {
+              LOGGER.warn("Failed to flush buffer for Server Send Events", e);
+              throw new IllegalStateException("Failed to flush buffer for Server Send Events", e);
+            }
+          });
     } catch (Throwable e) {
       LOGGER.error("internal service error must be fixed.", e);
-      responseEx.setStatus(500);
       return CompletableFuture.failedFuture(e);
     }
   }
