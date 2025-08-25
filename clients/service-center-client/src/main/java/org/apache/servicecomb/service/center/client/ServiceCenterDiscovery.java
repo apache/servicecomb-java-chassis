@@ -17,18 +17,11 @@
 
 package org.apache.servicecomb.service.center.client;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
@@ -129,7 +122,6 @@ public class ServiceCenterDiscovery extends AbstractTask {
     if (!started) {
       started = true;
       startTask(new PullInstanceTask());
-      startCheckInstancesHealth();
     }
   }
 
@@ -237,30 +229,6 @@ public class ServiceCenterDiscovery extends AbstractTask {
     });
   }
 
-  private void startCheckInstancesHealth() {
-    ScheduledExecutorService executor =
-        Executors.newScheduledThreadPool(1, (t) -> new Thread(t, "instance-health-check"));
-    executor.scheduleWithFixedDelay(new CheckInstancesHealthTask(), 0, pollInterval, TimeUnit.MILLISECONDS);
-  }
-
-  class CheckInstancesHealthTask implements Runnable {
-    @Override
-    public void run() {
-      if (instancesCache.isEmpty()) {
-        return;
-      }
-      List<SubscriptionKey> failedInstances = new ArrayList<>();
-      instancesCache.forEach((k, v) -> {
-        v.instancesCache.removeIf(item -> isInstanceUnavailable(item.getServiceName(), item.getEndpoints()));
-        if (v.instancesCache.isEmpty()) {
-          failedInstances.add(k);
-        }
-      });
-      failedInstances.forEach(instancesCache::remove);
-      failedInstances.clear();
-    }
-  }
-
   private static String instanceToString(List<MicroserviceInstance> instances) {
     if (instances == null) {
       return "";
@@ -277,33 +245,5 @@ public class ServiceCenterDiscovery extends AbstractTask {
     }
     sb.append("#");
     return sb.toString();
-  }
-
-  protected boolean isInstanceUnavailable(String serviceName, List<String> endpoints) {
-    for (String endpoint : endpoints) {
-      String[] hostPort = getHostPort(endpoint);
-      if (hostPort == null) {
-        continue;
-      }
-      for (int k = 0; k < 3; k++) {
-        try (Socket s = new Socket()) {
-          s.connect(new InetSocketAddress(hostPort[0], Integer.parseInt(hostPort[1])), 3000);
-          return false;
-        } catch (IOException e) {
-          LOGGER.warn("telnet endpoint [{}] failed, It will be try again.", endpoint);
-        }
-      }
-      LOGGER.warn("telnet three times failed, remove service [{}] endpoint [{}].", serviceName, endpoint);
-      return true;
-    }
-    return true;
-  }
-
-  private String[] getHostPort(String endpoint) {
-    String hostPort = endpoint.substring("rest://".length());
-    if (hostPort.split(":").length == 2) {
-      return hostPort.split(":");
-    }
-    return null;
   }
 }
