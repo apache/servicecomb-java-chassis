@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.service.center.client;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -153,13 +151,12 @@ public class ServiceCenterDiscovery extends AbstractTask {
     startTask(new PullInstanceOnceTask());
   }
 
-  private List<SubscriptionKey> pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
+  private void pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
     if (myselfServiceId == null) {
       // registration not ready
-      return Collections.emptyList();
+      return;
     }
 
-    List<SubscriptionKey> failedKeys = new ArrayList<>();
     try {
       FindMicroserviceInstancesResponse instancesResponse = serviceCenterClient
           .findMicroserviceInstance(myselfServiceId, k.appId, k.serviceName, ALL_VERSION, v.revision);
@@ -186,17 +183,9 @@ public class ServiceCenterDiscovery extends AbstractTask {
         }
       }
     } catch (Exception e) {
-      if (!(e.getCause() instanceof IOException)) {
-        // for IOException, do not remove cache, or when service center
-        // not available, invocation between microservices will fail.
-        failedKeys.add(k);
-        LOGGER.error("find service {}#{} instance failed and remove local cache.", k.appId, k.serviceName, e);
-      } else {
-        LOGGER.warn("find service {}#{} instance failed, remaining local instances cache, cause message: {}",
-            k.appId, k.serviceName, e.getMessage());
-      }
+      LOGGER.warn("find service {}#{} instance failed, remaining local instances cache [{}], cause message: {}",
+          k.appId, k.serviceName, instanceToString(v.instancesCache), e.getMessage());
     }
-    return failedKeys;
   }
 
   private void setMicroserviceInfo(List<MicroserviceInstance> instances) {
@@ -235,13 +224,9 @@ public class ServiceCenterDiscovery extends AbstractTask {
   }
 
   private synchronized void pullAllInstance() {
-    List<SubscriptionKey> failedInstances = new ArrayList<>();
-    instancesCache.forEach((k, v) -> failedInstances.addAll(pullInstance(k, v, true)));
-    if (failedInstances.isEmpty()) {
-      return;
-    }
-    failedInstances.forEach(instancesCache::remove);
-    failedInstances.clear();
+    instancesCache.forEach((k, v) -> {
+      pullInstance(k, v, true);
+    });
   }
 
   private static String instanceToString(List<MicroserviceInstance> instances) {
