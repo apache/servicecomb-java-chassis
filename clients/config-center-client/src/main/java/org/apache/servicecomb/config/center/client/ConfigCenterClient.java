@@ -147,7 +147,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
     } catch (IOException e) {
       addressManager.recordFailState(address);
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
-      throw new OperationException("", e);
+      throw new OperationException("query configuration failed!", e);
     }
   }
 
