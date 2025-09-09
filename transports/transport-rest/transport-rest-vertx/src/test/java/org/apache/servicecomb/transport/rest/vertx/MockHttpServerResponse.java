@@ -196,6 +196,11 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
+  public Future<Void> writeHead() {
+    return Future.succeededFuture();
+  }
+
+  @Override
   public Future<Void> write(String chunk, String enc) {
     return Future.succeededFuture();
   }
