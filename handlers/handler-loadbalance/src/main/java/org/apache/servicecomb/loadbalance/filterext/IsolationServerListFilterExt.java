@@ -135,8 +135,8 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
         serverStats.markIsolated(true);
         isolationEvents.add(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
             Type.OPEN, server.getEndpoint()));
-        LOGGER.warn("Isolate service {}'s instance {}, endpoint {}.", invocation.getMicroserviceName(),
-            server.getInstance().getInstanceId(), server.getInstance().getEndpoints());
+        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
+            server.getInstance().getInstanceId());
       }
       return false;
     }
@@ -149,8 +149,8 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
       serverStats.markIsolated(false);
       isolationEvents.add(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
           Type.CLOSE, server.getEndpoint()));
-      LOGGER.warn("Recover service {}'s instance {}, endpoint {}, from isolation.", invocation.getMicroserviceName(),
-          server.getInstance().getInstanceId(), server.getInstance().getEndpoints());
+      LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
+          server.getInstance().getInstanceId());
     }
     return true;
   }
