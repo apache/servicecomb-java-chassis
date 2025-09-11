@@ -474,6 +474,9 @@ public class TestLoadBalanceHandler2 {
     Assertions.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assertions.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
