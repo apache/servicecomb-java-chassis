@@ -91,23 +91,16 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
     Settings settings = createSettings(invocation);
 
     // record instance isolation event
-    List<Holder<IsolationServerEvent>> eventHolder = new ArrayList<>();
+    List<IsolationServerEvent> isolationEvents = new ArrayList<>();
     servers.forEach((server) -> {
-      if (allowVisit(invocation, server, settings, eventHolder)) {
+      if (allowVisit(invocation, server, settings, isolationEvents)) {
         filteredServers.add(server);
       }
     });
-    eventHolder.forEach((holder) -> {
-      IsolationServerEvent event = holder.value;
+    isolationEvents.forEach((event) -> {
       event.setInstancesTotalNum(servers.size());
       event.setIsolationInstancesNum(servers.size() - filteredServers.size());
-      if (Type.OPEN == event.getType()) {
-        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
-            event.getInstance().getInstanceId());
-      } else {
-        LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
-            event.getInstance().getInstanceId());
-      }
+      eventBus.post(event);
     });
     if (filteredServers.isEmpty() && emptyProtection.get()) {
       LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
@@ -131,7 +124,7 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
   }
 
   private boolean allowVisit(Invocation invocation, ServiceCombServer server, Settings settings,
-      List<Holder<IsolationServerEvent>> eventHolder) {
+      List<IsolationServerEvent> isolationEvents) {
     ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
     if (!checkThresholdAllowed(settings, serverStats)) {
       if (serverStats.isIsolated()
@@ -141,8 +134,10 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
       if (!serverStats.isIsolated()) {
         // checkThresholdAllowed is not concurrent control, may print several logs/events in current access.
         serverStats.markIsolated(true);
-        eventHolder.add(new Holder<>(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
-            Type.OPEN, server.getEndpoint())));
+        isolationEvents.add(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
+            Type.OPEN, server.getEndpoint()));
+        LOGGER.warn("Isolate service {}'s instance {}, endpoint {}.", invocation.getMicroserviceName(),
+            server.getInstance().getInstanceId(), server.getInstance().getEndpoints());
       }
       return false;
     }
@@ -153,8 +148,10 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
         return false;
       }
       serverStats.markIsolated(false);
-      eventHolder.add(new Holder<>(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
-          Type.CLOSE, server.getEndpoint())));
+      isolationEvents.add(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
+          Type.CLOSE, server.getEndpoint()));
+      LOGGER.warn("Recover service {}'s instance {}, endpoint {}, from isolation.", invocation.getMicroserviceName(),
+          server.getInstance().getInstanceId(), server.getInstance().getEndpoints());
     }
     return true;
   }
