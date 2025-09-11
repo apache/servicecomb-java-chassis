@@ -50,6 +50,10 @@ public class IsolationServerEvent extends AlarmEvent {
 
   private final long singleTestTime;
 
+  private int instancesTotalNum;
+
+  private int isolationInstancesNum;
+
   public IsolationServerEvent(Invocation invocation, MicroserviceInstance instance,
       ServiceCombServerStats serverStats,
       IsolationServerListFilterExt.Settings settings, Type type, Endpoint endpoint) {
@@ -109,5 +113,21 @@ public class IsolationServerEvent extends AlarmEvent {
 
   public Endpoint getEndpoint() {
     return endpoint;
+  }
+
+  public int getInstancesTotalNum() {
+    return instancesTotalNum;
+  }
+
+  public void setInstancesTotalNum(int instancesTotalNum) {
+    this.instancesTotalNum = instancesTotalNum;
+  }
+
+  public int getIsolationInstancesNum() {
+    return isolationInstancesNum;
+  }
+
+  public void setIsolationInstancesNum(int isolationInstancesNum) {
+    this.isolationInstancesNum = isolationInstancesNum;
   }
 }
