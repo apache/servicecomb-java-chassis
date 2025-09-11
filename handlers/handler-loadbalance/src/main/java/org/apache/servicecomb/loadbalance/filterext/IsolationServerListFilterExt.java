@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
@@ -88,9 +89,24 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
 
     List<ServiceCombServer> filteredServers = new ArrayList<>();
     Settings settings = createSettings(invocation);
+
+    // record instance isolation event
+    List<Holder<IsolationServerEvent>> eventHolder = new ArrayList<>();
     servers.forEach((server) -> {
-      if (allowVisit(invocation, server, settings)) {
+      if (allowVisit(invocation, server, settings, eventHolder)) {
         filteredServers.add(server);
+      }
+    });
+    eventHolder.forEach((holder) -> {
+      IsolationServerEvent event = holder.value;
+      event.setInstancesTotalNum(servers.size());
+      event.setIsolationInstancesNum(servers.size() - filteredServers.size());
+      if (Type.OPEN == event.getType()) {
+        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
+            event.getInstance().getInstanceId());
+      } else {
+        LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
+            event.getInstance().getInstanceId());
       }
     });
     if (filteredServers.isEmpty() && emptyProtection.get()) {
@@ -114,7 +130,8 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
     return settings;
   }
 
-  private boolean allowVisit(Invocation invocation, ServiceCombServer server, Settings settings) {
+  private boolean allowVisit(Invocation invocation, ServiceCombServer server, Settings settings,
+      List<Holder<IsolationServerEvent>> eventHolder) {
     ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
     if (!checkThresholdAllowed(settings, serverStats)) {
       if (serverStats.isIsolated()
@@ -124,12 +141,8 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
       if (!serverStats.isIsolated()) {
         // checkThresholdAllowed is not concurrent control, may print several logs/events in current access.
         serverStats.markIsolated(true);
-        eventBus.post(
-            new IsolationServerEvent(invocation, server.getInstance(), serverStats,
-                settings, Type.OPEN, server.getEndpoint()));
-        LOGGER.warn("Isolate service {}'s instance {}.",
-            invocation.getMicroserviceName(),
-            server.getInstance().getInstanceId());
+        eventHolder.add(new Holder<>(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
+            Type.OPEN, server.getEndpoint())));
       }
       return false;
     }
@@ -140,11 +153,8 @@ public class IsolationServerListFilterExt implements ServerListFilterExt {
         return false;
       }
       serverStats.markIsolated(false);
-      eventBus.post(new IsolationServerEvent(invocation, server.getInstance(), serverStats,
-          settings, Type.CLOSE, server.getEndpoint()));
-      LOGGER.warn("Recover service {}'s instance {} from isolation.",
-          invocation.getMicroserviceName(),
-          server.getInstance().getInstanceId());
+      eventHolder.add(new Holder<>(new IsolationServerEvent(invocation, server.getInstance(), serverStats, settings,
+          Type.CLOSE, server.getEndpoint())));
     }
     return true;
   }
