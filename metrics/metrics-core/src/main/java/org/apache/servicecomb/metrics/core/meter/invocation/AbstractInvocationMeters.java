@@ -56,7 +56,7 @@ public abstract class AbstractInvocationMeters {
         .append(invocationName)
         .append(invocation.getRealTransportName())
         .append(invocation.getMicroserviceQualifiedName())
-        .append(response.getStatusCode());
+        .append(PublishUtils.refactorStatus(invocation, response));
     if (keyBuilder.length() > maxKeyLen) {
       maxKeyLen = keyBuilder.length();
     }
