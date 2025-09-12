@@ -89,7 +89,7 @@ public final class PublishUtils {
         return String.valueOf(response.getStatusCode());
       }
       HttpServerResponse contextResponse = context.response();
-      if (contextResponse.closed() && !contextResponse.ended()) {
+      if (response.getStatusCode() == 200 && contextResponse.closed() && !contextResponse.ended()) {
         return EMPTY_RESULT;
       }
     }
