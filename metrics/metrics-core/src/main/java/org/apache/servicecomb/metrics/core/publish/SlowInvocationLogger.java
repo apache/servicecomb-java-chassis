@@ -102,7 +102,7 @@ public class SlowInvocationLogger {
         restOperationMeta.getHttpMethod(),
         restOperationMeta.getAbsolutePath(),
         collectClientAddress(invocation),
-        response.getStatusCode(),
+        PublishUtils.refactorStatus(invocation, response),
         formatTime(stageTrace.calcTotalTime()),
         formatTime(stageTrace.calcInvocationPrepareTime()),
         formatTime(stageTrace.calcThreadPoolQueueTime()),
