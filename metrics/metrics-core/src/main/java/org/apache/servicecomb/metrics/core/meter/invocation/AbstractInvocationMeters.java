@@ -22,6 +22,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.metrics.core.publish.PublishUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 import com.netflix.spectator.api.Id;
@@ -55,7 +56,7 @@ public abstract class AbstractInvocationMeters {
         .append(invocationName)
         .append(invocation.getRealTransportName())
         .append(invocation.getMicroserviceQualifiedName())
-        .append(response.getStatusCode());
+        .append(PublishUtils.refactorStatus(invocation, response));
     if (keyBuilder.length() > maxKeyLen) {
       maxKeyLen = keyBuilder.length();
     }
@@ -69,7 +70,7 @@ public abstract class AbstractInvocationMeters {
           MeterInvocationConst.TAG_OPERATION,
           invocation.getMicroserviceQualifiedName(),
           MeterInvocationConst.TAG_STATUS,
-          String.valueOf(response.getStatusCode()));
+          PublishUtils.refactorStatus(invocation, response));
 
       AbstractInvocationMeter meter = createMeter(id);
       SpectatorUtils.registerMeter(registry, meter);
