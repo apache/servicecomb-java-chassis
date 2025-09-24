@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.http.client.task.AbstractTask;
@@ -100,6 +101,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
   private boolean started = false;
 
   private final Object lock = new Object();
+
+  private final Random random = new Random();
 
   public ServiceCenterDiscovery(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
     super("service-center-discovery-task");
@@ -219,8 +222,13 @@ public class ServiceCenterDiscovery extends AbstractTask {
     public void execute() {
       pullAllInstance();
 
-      startTask(new BackOffSleepTask(pollInterval, new PullInstanceTask()));
+      startTask(new BackOffSleepTask(buildPollIntervalWithSalt(), new PullInstanceTask()));
     }
+  }
+
+  private long buildPollIntervalWithSalt() {
+    int pollIntervalSalt = 5;
+    return pollInterval + random.nextInt(pollIntervalSalt) * 1000;
   }
 
   class PullInstanceOnceTask implements Task {
