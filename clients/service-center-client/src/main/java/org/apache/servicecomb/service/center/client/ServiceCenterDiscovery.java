@@ -227,8 +227,10 @@ public class ServiceCenterDiscovery extends AbstractTask {
   }
 
   private long buildPollIntervalWithSalt() {
-    int pollIntervalSalt = 5;
-    return pollInterval + random.nextInt(pollIntervalSalt) * 1000;
+    int positive = random.nextInt(5);
+    int sign = random.nextBoolean() ? 1 : -1;
+    long currentPollInterval = pollInterval + sign * positive * 1000;
+    return currentPollInterval > 0 ? currentPollInterval : pollInterval;
   }
 
   class PullInstanceOnceTask implements Task {
