@@ -32,7 +32,7 @@
   <properties>
     <!-- Dependency versions: sort by alphabetic order -->
     <activation.version>1.2.2</activation.version>
-    <assertj.version>3.27.4</assertj.version>
+    <assertj.version>3.27.6</assertj.version>
     <awaitility.version>4.3.0</awaitility.version>
     <brave.version>6.3.0</brave.version>
     <commons-beanutils.version>1.11.0</commons-beanutils.version>
