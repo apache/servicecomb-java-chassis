@@ -18,10 +18,12 @@
 package org.apache.servicecomb.registry.lightweight;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
 import io.vertx.core.json.Json;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 class MessageTest {
   private String toLinuxPrettyJson(Object value) {
@@ -33,7 +35,8 @@ class MessageTest {
   void should_encode_register_type() {
     Message<RegisterRequest> msg = Message.of(MessageType.REGISTER, new RegisterRequest());
 
-    assertThat(toLinuxPrettyJson(msg)).isEqualTo(""
+    try {
+      JSONAssert.assertEquals(toLinuxPrettyJson(msg), ""
         + "{\n"
         + "  \"type\" : \"REGISTER\",\n"
         + "  \"body\" : {\n"
@@ -45,7 +48,11 @@ class MessageTest {
         + "    \"status\" : null,\n"
         + "    \"endpoints\" : null\n"
         + "  }\n"
-        + "}");
+        + "}", false);
+    } catch (Exception e) {
+      fail("Failed to compare JSONs: " + e.getMessage(), e);
+    }
+
   }
 
   @Test
@@ -60,14 +67,18 @@ class MessageTest {
   void should_encode_unregister_type() {
     Message<UnregisterRequest> msg = Message.of(MessageType.UNREGISTER, new UnregisterRequest());
 
-    assertThat(toLinuxPrettyJson(msg)).isEqualTo(""
+    try {
+      JSONAssert.assertEquals(toLinuxPrettyJson(msg), ""
         + "{\n"
         + "  \"type\" : \"UNREGISTER\",\n"
         + "  \"body\" : {\n"
         + "    \"serviceId\" : null,\n"
         + "    \"instanceId\" : null\n"
         + "  }\n"
-        + "}");
+        + "}", false);
+    } catch (Exception e) {
+      fail("Failed to compare JSONs: " + e.getMessage(), e);
+    }
   }
 
   @Test
