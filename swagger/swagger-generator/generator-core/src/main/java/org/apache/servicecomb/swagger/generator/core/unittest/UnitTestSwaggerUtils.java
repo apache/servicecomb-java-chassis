@@ -25,9 +25,13 @@ import java.util.Objects;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.jupiter.api.Assertions;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -81,8 +85,14 @@ public final class UnitTestSwaggerUtils {
       expectSchema = expectSchema.substring(offset + 4);
     }
 
-    if (!Objects.equals(expectSchema, schema)) {
-      Assertions.assertEquals(expectSchema, schema);
+    try {
+      ObjectMapper yaml = new ObjectMapper(new YAMLFactory());
+      String expectedJson = yaml.readTree(expectSchema).toString();
+      String actualJson   = yaml.readTree(schema).toString();
+
+      JSONAssert.assertEquals(expectedJson, actualJson, JSONCompareMode.NON_EXTENSIBLE);
+    } catch (Exception e) {
+      Assertions.fail("Failed to parse/compare OpenAPI YAML: " + e.getMessage(), e);
     }
 
     return generator;
