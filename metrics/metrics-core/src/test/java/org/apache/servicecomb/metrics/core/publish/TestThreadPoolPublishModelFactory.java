@@ -24,7 +24,6 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.metrics.core.ThreadPoolMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -35,6 +34,8 @@ import org.mockito.Mockito;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.skyscreamer.jsonassert.JSONAssert;
 
 @ExtendWith(MockitoExtension.class)
 @TestMethodOrder(MethodOrderer.MethodName.class)
@@ -61,9 +62,9 @@ public class TestThreadPoolPublishModelFactory {
     PublishModelFactory factory = new PublishModelFactory(registry.getMeters());
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
-    Assertions.assertEquals(
+    JSONAssert.assertEquals(
         """
             {"test":{"avgTaskCount":0.0,"avgCompletedTaskCount":0.0,"currentThreadsBusy":0,"maxThreads":0,"poolSize":0,"corePoolSize":0,"queueSize":10,"rejected":0.0}}""",
-        JsonUtils.writeValueAsString(model.getThreadPools()));
+        JsonUtils.writeValueAsString(model.getThreadPools()), false);
   }
 }
