@@ -20,14 +20,16 @@ package org.apache.servicecomb.swagger.generator.core.unittest;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.jupiter.api.Assertions;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -81,8 +83,19 @@ public final class UnitTestSwaggerUtils {
       expectSchema = expectSchema.substring(offset + 4);
     }
 
-    if (!Objects.equals(expectSchema, schema)) {
-      Assertions.assertEquals(expectSchema, schema);
+    try {
+      ObjectMapper yaml = new ObjectMapper(new YAMLFactory());
+      JsonNode expected = yaml.readTree(expectSchema);
+      JsonNode actual   = yaml.readTree(schema);
+
+      if (!actual.equals(expected)) {
+        ObjectMapper json = new ObjectMapper();
+        String expectedPretty = json.writerWithDefaultPrettyPrinter().writeValueAsString(expected);
+        String actualPretty   = json.writerWithDefaultPrettyPrinter().writeValueAsString(actual);
+        Assertions.fail("OpenAPI mismatch.\n=== EXPECTED ===\n" + expectedPretty + "\n=== ACTUAL ===\n" + actualPretty);
+      }
+    } catch (Exception e) {
+      Assertions.fail("Failed to parse/compare OpenAPI YAML: " + e.getMessage(), e);
     }
 
     return generator;
