@@ -94,7 +94,7 @@ public final class VertxUtils {
 
     CountDownLatch latch = new CountDownLatch(1);
     Future<String> future = vertx.deployVerticle(cls.getName(), options);
-    future.onComplete((succuss, failure) -> {
+    future.onComplete((success, failure) -> {
       result.put("code", failure == null);
 
       if (failure != null) {

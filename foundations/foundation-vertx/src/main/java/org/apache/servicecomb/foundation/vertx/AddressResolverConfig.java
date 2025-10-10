@@ -109,7 +109,7 @@ public class AddressResolverConfig {
     for (String key : keys) {
       Integer val = LegacyPropertyFactory.getProperty(key, Integer.class);
       if (val != null && val <= 0) {
-        LOGGER.warn("Address resover key:{}'s value:{} is not positive, please check!", key, val);
+        LOGGER.warn("Address resolver key:{}'s value:{} is not positive, please check!", key, val);
         continue;
       }
       if (val != null) {

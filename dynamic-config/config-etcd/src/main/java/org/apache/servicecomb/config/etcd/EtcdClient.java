@@ -47,7 +47,7 @@ import io.etcd.jetcd.options.WatchOption;
 
 public class EtcdClient {
 
-  public class GetDataRunable implements Runnable {
+  public class GetDataRunnable implements Runnable {
 
     private Map<String, Object> dataMap;
 
@@ -55,7 +55,7 @@ public class EtcdClient {
 
     private String path;
 
-    public GetDataRunable(Map<String, Object> dataMap, EtcdClient etcdClient, String path) {
+    public GetDataRunnable(Map<String, Object> dataMap, EtcdClient etcdClient, String path) {
       this.dataMap = dataMap;
       this.etcdClient = etcdClient;
       this.path = path;
@@ -153,7 +153,7 @@ public class EtcdClient {
     ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
-        resp -> new Thread(new GetDataRunable(tagData, this, path)).start());
+        resp -> new Thread(new GetDataRunnable(tagData, this, path)).start());
     this.tagData = parseData(path);
   }
 
@@ -166,7 +166,7 @@ public class EtcdClient {
     ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
-        resp -> new Thread(new GetDataRunable(versionData, this, path)).start());
+        resp -> new Thread(new GetDataRunnable(versionData, this, path)).start());
     this.versionData = parseData(path);
   }
 
@@ -178,7 +178,7 @@ public class EtcdClient {
     ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
-        resp -> new Thread(new GetDataRunable(serviceData, this, path)).start());
+        resp -> new Thread(new GetDataRunnable(serviceData, this, path)).start());
     this.serviceData = parseData(path);
   }
 
@@ -188,7 +188,7 @@ public class EtcdClient {
     ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
-        resp -> new Thread(new GetDataRunable(applicationData, this, path)).start());
+        resp -> new Thread(new GetDataRunnable(applicationData, this, path)).start());
     this.applicationData = parseData(path);
   }
 
@@ -198,7 +198,7 @@ public class EtcdClient {
     ByteSequence prefixByteSeq = ByteSequence.from(path, StandardCharsets.UTF_8);
     Watch watchClient = client.getWatchClient();
     watchClient.watch(prefixByteSeq, WatchOption.builder().withPrefix(prefixByteSeq).build(),
-        resp -> new Thread(new GetDataRunable(environmentData, this, path)).start());
+        resp -> new Thread(new GetDataRunnable(environmentData, this, path)).start());
     this.environmentData = parseData(path);
   }
 
