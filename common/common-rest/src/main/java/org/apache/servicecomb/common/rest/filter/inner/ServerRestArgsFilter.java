@@ -48,7 +48,6 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.buffer.Buffer;
-import jakarta.ws.rs.core.MediaType;
 
 public class ServerRestArgsFilter implements HttpServerFilter {
   private static final boolean enabled = DynamicPropertyFactory.getInstance().getBooleanProperty
