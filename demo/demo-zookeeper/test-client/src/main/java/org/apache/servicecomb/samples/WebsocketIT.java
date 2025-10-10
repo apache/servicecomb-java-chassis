@@ -38,10 +38,15 @@ public class WebsocketIT implements CategorizedTestCase {
   public void testRestTransport() throws Exception {
     StringBuffer sb = new StringBuffer();
     AtomicBoolean closed = new AtomicBoolean(false);
+    CountDownLatch latchStarted = new CountDownLatch(1);
     CountDownLatch latch = new CountDownLatch(1);
 
     WebSocket webSocket = websocketClient.websocket();
     webSocket.textMessageHandler(s -> {
+      if ("started".equals(s)) {
+        latchStarted.countDown();
+        return;
+      }
       sb.append(s);
       sb.append(" ");
       webSocket.writeTextMessage(s);
@@ -50,6 +55,17 @@ public class WebsocketIT implements CategorizedTestCase {
       closed.set(true);
       latch.countDown();
     });
+
+    webSocket.writeTextMessage("start");
+    int i = 0;
+    for (; i < 10; i++) {
+      if (!latchStarted.await(3, TimeUnit.SECONDS)) {
+        webSocket.writeTextMessage("start");
+        continue;
+      }
+      break;
+    }
+    TestMgr.check(i < 10, true);
     latch.await(30, TimeUnit.SECONDS);
     TestMgr.check(sb.toString(), "hello hello 0 hello 1 hello 2 hello 3 hello 4 total 6 ");
     TestMgr.check(closed.get(), true);
