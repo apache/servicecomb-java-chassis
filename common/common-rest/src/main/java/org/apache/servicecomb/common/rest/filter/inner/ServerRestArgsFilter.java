@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceEventStreamProcessor;
-import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
@@ -90,10 +89,6 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       produceProcessor = new ProduceEventStreamProcessor();
       responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
       return writeServerSendEvent(invocation, response, produceProcessor, responseEx);
-    }
-
-    if (failed && MediaType.SERVER_SENT_EVENTS.equals(produceProcessor.getName())) {
-      produceProcessor = new ProduceJsonProcessor();
     }
 
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
