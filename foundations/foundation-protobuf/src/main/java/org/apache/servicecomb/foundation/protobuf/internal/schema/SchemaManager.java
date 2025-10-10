@@ -166,14 +166,14 @@ public abstract class SchemaManager {
     return FieldMapEx.createFieldMap(fieldSchemas);
   }
 
-  private JavaType getParameterType(Map<String, Type> types, String perameterName) {
+  private JavaType getParameterType(Map<String, Type> types, String parameterName) {
 
-    if (types.get(perameterName) != null) {
-      return TypeFactory.defaultInstance().constructType(types.get(perameterName));
+    if (types.get(parameterName) != null) {
+      return TypeFactory.defaultInstance().constructType(types.get(parameterName));
     }
 
     throw new IllegalArgumentException(
-        String.format("not found type info for parameter name [%s]", perameterName));
+        String.format("not found type info for parameter name [%s]", parameterName));
   }
 
   public <T> FieldSchema<T> createSchemaField(Field protoField, PropertyDescriptor propertyDescriptor) {

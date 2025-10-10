@@ -23,6 +23,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Primary
-// This example shows user's how to customize RestProducers by @Primary annotation
-public class RestProducersCutomized extends RestProducers {
+// This example shows users how to customize RestProducers by @Primary annotation
+public class RestProducersCustomized extends RestProducers {
 }

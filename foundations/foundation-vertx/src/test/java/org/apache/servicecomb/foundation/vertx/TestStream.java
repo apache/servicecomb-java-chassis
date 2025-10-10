@@ -31,7 +31,7 @@ public class TestStream {
   @Test
   public void testBufferInputStream() {
     Buffer obuf = Buffer.buffer(DIRECT_BUFFER_SIZE);
-    obuf.appendBytes(("testss").getBytes());
+    obuf.appendBytes(("tests").getBytes()).appendBytes("s".getBytes());
     @SuppressWarnings("resource")
     BufferInputStream oBufferInputStream = new BufferInputStream(obuf);
 
