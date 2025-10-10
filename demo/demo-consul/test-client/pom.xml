@@ -68,7 +68,7 @@
               <configuration>
                 <images>
                   <image>
-                    <name>hashicorp/consul</name>
+                    <name>hashicorp/consul:1.21</name>
                     <alias>consul</alias>
                     <run>
                       <namingStrategy>alias</namingStrategy>
