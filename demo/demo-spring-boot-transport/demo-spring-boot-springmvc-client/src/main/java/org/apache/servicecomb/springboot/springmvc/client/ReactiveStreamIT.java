@@ -21,6 +21,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.sse.SseEventResponseEntity;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
@@ -31,13 +32,22 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import jakarta.ws.rs.core.MediaType;
 
 @Component
 public class ReactiveStreamIT implements CategorizedTestCase {
   @Autowired
   @Qualifier("reactiveStreamProvider")
   ReactiveStreamClient reactiveStreamProvider;
+
+  private RestTemplate restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {
@@ -46,6 +56,7 @@ public class ReactiveStreamIT implements CategorizedTestCase {
     testSseModel(reactiveStreamProvider);
     testSseResponseEntity(reactiveStreamProvider);
     testSseMultipleData(reactiveStreamProvider);
+    sseStringWithAccept();
   }
 
   private void testSseString(ReactiveStreamClient client) throws Exception {
@@ -89,6 +100,48 @@ public class ReactiveStreamIT implements CategorizedTestCase {
     });
     countDownLatch.await(10, TimeUnit.SECONDS);
     return buffer.toString();
+  }
+
+  private void sseStringWithAccept() throws Exception {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(HttpHeaders.ACCEPT, MediaType.SERVER_SENT_EVENTS);
+    HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+    ResponseEntity<Publisher> responseEntity = restTemplate
+        .exchange("cse://springmvc/sseString", HttpMethod.GET, requestEntity, Publisher.class);
+    Publisher result = responseEntity.getBody();
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    StringBuilder buffer = new StringBuilder();
+    result.subscribe(new Subscriber<>() {
+      Subscription subscription;
+
+      @Override
+      public void onSubscribe(Subscription s) {
+        subscription = s;
+        subscription.request(1);
+      }
+
+      @Override
+      public void onNext(Object entity) {
+        SseEventResponseEntity<String> response = (SseEventResponseEntity<String>) entity;
+        for (String str : response.getData()) {
+          buffer.append(str);
+        }
+        subscription.request(1);
+      }
+
+      @Override
+      public void onError(Throwable t) {
+        subscription.cancel();
+        countDownLatch.countDown();
+      }
+
+      @Override
+      public void onComplete() {
+        countDownLatch.countDown();
+      }
+    });
+    countDownLatch.await(10, TimeUnit.SECONDS);
+    TestMgr.check("abc", buffer.toString());
   }
 
   private void testSseModel(ReactiveStreamClient client) throws Exception {

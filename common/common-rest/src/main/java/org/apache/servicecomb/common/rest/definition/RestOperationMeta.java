@@ -31,6 +31,7 @@ import jakarta.ws.rs.core.MediaType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
@@ -87,8 +88,6 @@ public class RestOperationMeta {
 
   // 快速构建URL path
   private URLPathBuilder pathBuilder;
-
-  protected static final String EVENTS_MEDIA_TYPE = MediaType.SERVER_SENT_EVENTS;
 
   public void init(OperationMeta operationMeta) {
     this.operationMeta = operationMeta;
@@ -260,10 +259,11 @@ public class RestOperationMeta {
           ProduceProcessorManager.INSTANCE.getOrCreateAcceptMap(serialViewClass));
     } else {
       for (String produce : produces) {
-        if (produce.contains(EVENTS_MEDIA_TYPE)) {
-          // When the produce type is event-stream, the ProduceEventStreamProcessor implementation class corresponding
-          // to event-stream is not added, and it is set to the default type ProduceJsonProcessor.
-          // In case of an exception, the response result is parsed.
+        if (produce.contains(MediaType.SERVER_SENT_EVENTS)) {
+          // The event-stream type initializes the ProduceJsonProcessor in memory to handle parsing results
+          // in exceptional scenarios. If a singleton parsing result is required in normal scenarios,
+          // adjustments need to be made here.
+          this.produceProcessorMap.put(produce, new ProduceJsonProcessor());
           continue;
         }
         if (produce.contains(";")) {
