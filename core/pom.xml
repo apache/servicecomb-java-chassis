@@ -45,6 +45,10 @@
       <artifactId>swagger-invocation-core</artifactId>
     </dependency>
     <dependency>
+      <groupId>jakarta.inject</groupId>
+      <artifactId>jakarta.inject-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.zipkin.brave</groupId>
       <artifactId>brave</artifactId>
     </dependency>
