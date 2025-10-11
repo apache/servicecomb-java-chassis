@@ -18,7 +18,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 public class BeansHolder {
   @Inject

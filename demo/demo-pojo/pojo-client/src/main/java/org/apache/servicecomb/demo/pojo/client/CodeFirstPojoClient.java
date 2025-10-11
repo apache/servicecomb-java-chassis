@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 import org.apache.servicecomb.demo.TestMgr;
@@ -41,6 +39,7 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.stereotype.Component;
 
 import io.vertx.core.Vertx;
+import jakarta.inject.Inject;
 
 @Component
 public class CodeFirstPojoClient implements CategorizedTestCase {

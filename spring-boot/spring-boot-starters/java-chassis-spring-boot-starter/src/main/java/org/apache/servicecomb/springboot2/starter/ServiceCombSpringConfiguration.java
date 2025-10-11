@@ -16,13 +16,13 @@
  */
 package org.apache.servicecomb.springboot2.starter;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.SCBApplicationListener;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+
+import jakarta.inject.Inject;
 
 @Configuration
 @ImportResource({BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE})

@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.huaweicloud.dashboard.monitor;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant;
+
+import jakarta.inject.Inject;
 
 public class MonitorBootListener implements BootListener {
 

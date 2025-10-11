@@ -22,12 +22,12 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.inject.Inject;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.StringValueResolver;
+
+import jakarta.inject.Inject;
 
 public final class SpringUtils {
   private SpringUtils() {
