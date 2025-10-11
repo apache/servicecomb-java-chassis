@@ -19,16 +19,24 @@ package org.apache.servicecomb.metrics.core.publish;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
+import org.apache.servicecomb.swagger.invocation.Response;
 
 import com.netflix.spectator.api.Statistic;
 
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RoutingContext;
+
 public final class PublishUtils {
+  public static final String EMPTY_RESULT = "-";
+
   private PublishUtils() {
   }
 
@@ -72,5 +80,19 @@ public final class PublishUtils {
         .computeIfAbsent(statusNode.getName(), status -> new OperationPerfGroup(transport, status));
     OperationPerf operationPerf = createOperationPerf(operation, statusNode);
     group.addOperationPerf(operationPerf);
+  }
+
+  public static String refactorStatus(Invocation invocation, Response response) {
+    if (invocation.getRequestEx() instanceof VertxServerRequestToHttpServletRequest) {
+      RoutingContext context = ((VertxServerRequestToHttpServletRequest) invocation.getRequestEx()).getContext();
+      if (context == null) {
+        return String.valueOf(response.getStatusCode());
+      }
+      HttpServerResponse contextResponse = context.response();
+      if (response.getStatusCode() == 200 && contextResponse.closed() && !contextResponse.ended()) {
+        return EMPTY_RESULT;
+      }
+    }
+    return String.valueOf(response.getStatusCode());
   }
 }
