@@ -45,6 +45,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.core.env.Environment;
 
 import io.vertx.core.MultiMap;
@@ -146,9 +147,10 @@ public class HighwayServerCodecFilterTest {
     Response response = codecFilter.onFilter(invocation, nextNode).get();
 
     assertThat(response.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
-    assertThat(Json.encode(((InvocationException) response.getResult()).getErrorData()))
-        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"Unexpected "
-            + "exception when processing null. encode request failed\"}");
+
+    JSONAssert.assertEquals(Json.encode(((InvocationException) response.getResult()).getErrorData()),
+        "{\"code\":\"SCB.50000000\",\"message\":\"Unexpected "
+            + "exception when processing null. encode request failed\"}", false);
   }
 
   private void success_invocation() throws InterruptedException, ExecutionException {
