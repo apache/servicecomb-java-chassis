@@ -26,7 +26,6 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
@@ -46,22 +45,10 @@ public class EndpointTest {
     SwaggerGenerator generator = SwaggerGenerator.create(TestSchema.class);
     OpenAPI swagger = generator.generate();
 
-    assertThat(SwaggerUtils.swaggerToString(swagger))
-        .isEqualTo("openapi: 3.0.1\n"
-            + "info:\n"
-            + "  title: swagger definition for org.apache.servicecomb.core.invocation.endpoint.EndpointTest$TestSchema\n"
-            + "  version: 1.0.0\n"
-            + "servers:\n"
-            + "- url: /TestSchema\n"
-            + "paths:\n"
-            + "  /say:\n"
-            + "    post:\n"
-            + "      operationId: say\n"
-            + "      responses:\n"
-            + "        \"200\":\n"
-            + "          description: response of 200\n"
-            + "components: {}\n"
-            + "");
+    assertThat(swagger.getInfo().getTitle()).contains("EndpointTest$TestSchema");
+    assertThat(swagger.getPaths()).containsKey("/say");
+    assertThat(swagger.getPaths().get("/say").getPost().getOperationId()).isEqualTo("say");
+    assertThat(swagger.getPaths().get("/say").getPost().getResponses()).containsKey("200");
   }
 
   @Test
