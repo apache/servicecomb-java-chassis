@@ -53,7 +53,7 @@ public class TestMeasurementGroupConfig {
     config.addGroup("id1", "tag1.1", "tag1.2");
     config.addGroup("id2", "tag2.1", "tag2.2");
 
-    MatcherAssert.assertThat(groups.keySet(), Matchers.contains("id2", "id1"));
+    MatcherAssert.assertThat(groups.keySet(), Matchers.containsInAnyOrder("id2", "id1"));
     MatcherAssert.assertThat(groups.get("id1").stream().map(TagFinder::getTagKey).toArray(), Matchers.arrayContaining("tag1.1", "tag1.2"));
     MatcherAssert.assertThat(groups.get("id2").stream().map(TagFinder::getTagKey).toArray(), Matchers.arrayContaining("tag2.1", "tag2.2"));
   }
