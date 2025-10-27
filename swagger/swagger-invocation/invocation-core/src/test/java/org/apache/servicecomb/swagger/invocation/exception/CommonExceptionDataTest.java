@@ -20,6 +20,8 @@ package org.apache.servicecomb.swagger.invocation.exception;
 import static com.google.common.collect.ImmutableMap.of;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import io.vertx.core.json.Json;
@@ -36,7 +38,11 @@ class CommonExceptionDataTest {
   void should_include_code_in_json_when_code_is_not_null() {
     CommonExceptionData data = new CommonExceptionData("code", "msg");
 
-    assertThat(Json.encode(data)).isEqualTo("{\"code\":\"code\",\"message\":\"msg\"}");
+    String json = Json.encode(data);
+    @SuppressWarnings("unchecked")
+    Map<String, Object> obj = Json.decodeValue(json, Map.class);
+
+    assertThat(obj).containsEntry("code", "code").containsEntry("message", "msg").hasSize(2);
   }
 
   @Test
