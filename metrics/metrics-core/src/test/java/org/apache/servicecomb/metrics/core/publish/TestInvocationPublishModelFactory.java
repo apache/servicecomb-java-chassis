@@ -30,7 +30,6 @@ import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
@@ -40,6 +39,8 @@ import com.google.common.eventbus.EventBus;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.vertx.core.json.Json;
+
+import org.skyscreamer.jsonassert.JSONAssert;
 
 public class TestInvocationPublishModelFactory {
   EventBus eventBus = new EventBus();
@@ -60,7 +61,7 @@ public class TestInvocationPublishModelFactory {
   Environment environment = Mockito.mock(Environment.class);
 
   @Test
-  public void createDefaultPublishModel() {
+  public void createDefaultPublishModel() throws Exception {
     Mockito.when(environment.getProperty(METRICS_WINDOW_TIME, int.class, DEFAULT_METRICS_WINDOW_TIME))
         .thenReturn(DEFAULT_METRICS_WINDOW_TIME);
     Mockito.when(environment.getProperty(
@@ -170,8 +171,8 @@ public class TestInvocationPublishModelFactory {
             }
           }
         """;
-    Assertions.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
-        Json.encodePrettily(model.getConsumer()));
+    JSONAssert.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
+        Json.encodePrettily(model.getConsumer()), false);
 
     expect = """
         {
@@ -269,8 +270,8 @@ public class TestInvocationPublishModelFactory {
           }
         }
         """;
-    Assertions.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
-        Json.encodePrettily(model.getProducer()));
+    JSONAssert.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
+        Json.encodePrettily(model.getProducer()), false);
   }
 
   protected void prepareInvocation() {
