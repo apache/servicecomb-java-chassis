@@ -41,7 +41,7 @@ class AddressManagerTest {
   public void kieAddressManagerTest() throws IllegalAccessException, NoSuchFieldException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
-    addressManager1 = new DashboardAddressManager(addresses, new EventBus());
+    addressManager1 = new DashboardAddressManager(addresses, new ArrayList<>(), new ArrayList<>(), new EventBus());
     Field addressManagerField = addressManager1.getClass().getSuperclass().getDeclaredField("index");
     addressManagerField.setAccessible(true);
     addressManagerField.set(addressManager1, 0);
@@ -65,7 +65,7 @@ class AddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new DashboardAddressManager(addresses, new EventBus());
+    addressManager1 = new DashboardAddressManager(addresses, new ArrayList<>(), new ArrayList<>(), new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseMonitoring");
     addressManager1.refreshEndpoint(event, "CseMonitoring");
 

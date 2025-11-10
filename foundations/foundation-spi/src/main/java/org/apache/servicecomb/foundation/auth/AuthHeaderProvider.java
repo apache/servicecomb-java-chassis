@@ -21,11 +21,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface AuthHeaderProvider {
-  default Map<String, String> authHeaders() {
+  default Map<String, String> authHeaders(String host) {
     return new HashMap<>(0);
   }
 
   default Map<String, String> getSignAuthHeaders(SignRequest request) {
-    return authHeaders();
+    String host = "";
+    if (request != null && request.getEndpoint() != null) {
+      host = request.getEndpoint().getHost();
+    }
+    return authHeaders(host);
   }
 }

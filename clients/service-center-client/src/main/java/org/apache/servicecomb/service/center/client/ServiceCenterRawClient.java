@@ -21,12 +21,17 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpStatus;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
+import org.apache.servicecomb.http.client.event.OperationEvents.UnAuthorizedOperationEvent;
 import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.eventbus.EventBus;
 
 public class ServiceCenterRawClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRawClient.class);
@@ -41,6 +46,8 @@ public class ServiceCenterRawClient {
 
   private final ServiceCenterAddressManager addressManager;
 
+  private EventBus eventBus;
+
   private ServiceCenterRawClient(String tenantName, HttpTransport httpTransport,
       ServiceCenterAddressManager addressManager) {
     this.httpTransport = httpTransport;
@@ -49,36 +56,35 @@ public class ServiceCenterRawClient {
   }
 
   public HttpResponse getHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, false, headers, content, HttpRequest.GET);
+    return doHttpRequest(url, false, headers, content, HttpRequest.GET, "");
   }
 
-  public HttpResponse postHttpRequestAbsoluteUrl(String url, Map<String, String> headers, String content)
+  public HttpResponse postHttpRequestAbsoluteUrl(String url, Map<String, String> headers, String content, String address)
       throws IOException {
-    return doHttpRequest(url, true, headers, content, HttpRequest.POST);
+    return doHttpRequest(url, true, headers, content, HttpRequest.POST, address);
   }
 
   public HttpResponse postHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, false, headers, content, HttpRequest.POST);
+    return doHttpRequest(url, false, headers, content, HttpRequest.POST, "");
   }
 
   public HttpResponse putHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, false, headers, content, HttpRequest.PUT);
+    return doHttpRequest(url, false, headers, content, HttpRequest.PUT, "");
   }
 
   public HttpResponse deleteHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, false, headers, content, HttpRequest.DELETE);
+    return doHttpRequest(url, false, headers, content, HttpRequest.DELETE, "");
   }
 
   private HttpResponse doHttpRequest(String url, boolean absoluteUrl, Map<String, String> headers, String content,
-      String method)
-      throws IOException {
-    String address = addressManager.address();
+      String method, String queryAddress) throws IOException {
+    String address = StringUtils.isEmpty(queryAddress) ? addressManager.address() : queryAddress;
     String formatUrl = addressManager.formatUrl(url, absoluteUrl, address);
     HttpRequest httpRequest = buildHttpRequest(formatUrl, headers, content, method);
-
+    HttpResponse httpResponse;
     try {
-      HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
-      addressManager.recordSuccessState(address);
+      httpResponse = httpTransport.doRequest(httpRequest);
+      recordAndSendUnAuthorizedEvent(httpResponse, address);
       return httpResponse;
     } catch (IOException e) {
       addressManager.recordFailState(address);
@@ -87,12 +93,24 @@ public class ServiceCenterRawClient {
       LOGGER.warn("send request to {} failed and retry to {} once. ", address, retryAddress, e);
       httpRequest = new HttpRequest(formatUrl, headers, content, method);
       try {
-        return httpTransport.doRequest(httpRequest);
+        httpResponse = httpTransport.doRequest(httpRequest);
+        recordAndSendUnAuthorizedEvent(httpResponse, retryAddress);
+        return httpResponse;
       } catch (IOException ioException) {
         addressManager.recordFailState(retryAddress);
         LOGGER.warn("retry to {} failed again. ", retryAddress, e);
         throw ioException;
       }
+    }
+  }
+
+  private void recordAndSendUnAuthorizedEvent(HttpResponse response, String address) {
+    if (this.eventBus != null && response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+      LOGGER.warn("request unauthorized from server [{}], message [{}]", address, response.getMessage());
+      addressManager.recordFailState(address);
+      this.eventBus.post(new UnAuthorizedOperationEvent(address));
+    } else {
+      addressManager.recordSuccessState(address);
     }
   }
 
@@ -106,6 +124,10 @@ public class ServiceCenterRawClient {
     }
     headers.put(HEADER_TENANT_NAME, tenantName);
     return new HttpRequest(url, headers, content, method);
+  }
+
+  public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
   }
 
   public static class Builder {

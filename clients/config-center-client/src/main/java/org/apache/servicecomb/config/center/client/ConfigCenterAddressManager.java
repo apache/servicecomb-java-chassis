@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config.center.client;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;
@@ -28,8 +29,9 @@ import com.google.common.eventbus.Subscribe;
 
 public class ConfigCenterAddressManager extends AbstractAddressManager {
 
-  public ConfigCenterAddressManager(String projectName, List<String> addresses, EventBus eventBus) {
-    super(projectName, addresses);
+  public ConfigCenterAddressManager(String projectName, List<String> addresses, List<String> sameSideAddresses,
+      List<String> diffSideAddresses, EventBus eventBus) {
+    super(projectName, addresses, sameSideAddresses, diffSideAddresses);
     eventBus.register(this);
   }
 

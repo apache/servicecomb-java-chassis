@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.http.client.common;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.http.client.event.EngineConnectChangedEvent;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.slf4j.Logger;
@@ -74,18 +75,57 @@ public class AbstractAddressManager {
 
   private EventBus eventBus;
 
-  public AbstractAddressManager(List<String> addresses) {
+  private List<String> sameSideAddresses = new ArrayList<>();
+
+  private final List<String> isolationSameSideAddresses = new ArrayList<>();
+
+  private List<String> diffSideAddresses = new ArrayList<>();
+
+  private final List<String> isolationDiffSideAddresses = new ArrayList<>();
+
+  public AbstractAddressManager(List<String> addresses, List<String> sameSideAddresses,
+      List<String> diffSideAddresses) {
     this.projectName = DEFAULT_PROJECT;
-    this.addresses.addAll(addresses);
-    this.defaultAddress.addAll(addresses);
+    initAddresses(addresses, sameSideAddresses, diffSideAddresses);
     this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
   }
 
-  public AbstractAddressManager(String projectName, List<String> addresses) {
+  private void initAddresses(List<String> addresses, List<String> sameSideAddresses, List<String> diffSideAddresses) {
+    if (addresses != null) {
+      this.addresses.addAll(addresses);
+      this.defaultAddress.addAll(addresses);
+    }
+    if (sameSideAddresses != null) {
+      this.sameSideAddresses.addAll(sameSideAddresses);
+      this.defaultAddress.addAll(sameSideAddresses);
+    }
+    if (diffSideAddresses != null) {
+      this.diffSideAddresses.addAll(diffSideAddresses);
+      this.defaultAddress.addAll(diffSideAddresses);
+    }
+  }
+
+  public AbstractAddressManager(String projectName, List<String> addresses, List<String> sameSideAddresses,
+      List<String> diffSideAddresses) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
-    this.addresses = this.transformAddress(addresses);
-    this.defaultAddress.addAll(addresses);
+    initAddressesWithFormat(addresses, sameSideAddresses, diffSideAddresses);
     this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
+  }
+
+  private void initAddressesWithFormat(List<String> addresses, List<String> sameSideAddresses,
+      List<String> diffSideAddresses) {
+    if (addresses != null) {
+      this.addresses = this.transformAddress(addresses);
+      this.defaultAddress.addAll(addresses);
+    }
+    if (sameSideAddresses != null) {
+      this.sameSideAddresses = this.transformAddress(sameSideAddresses);
+      this.defaultAddress.addAll(sameSideAddresses);
+    }
+    if (diffSideAddresses != null) {
+      this.diffSideAddresses = this.transformAddress(diffSideAddresses);
+      this.defaultAddress.addAll(diffSideAddresses);
+    }
   }
 
   private int getRandomIndex() {
@@ -156,8 +196,14 @@ public class AbstractAddressManager {
   }
 
   private String getDefaultAddress() {
+    if (!sameSideAddresses.isEmpty()) {
+      return getCurrentAddress(sameSideAddresses);
+    }
     if (!addresses.isEmpty()) {
       return getCurrentAddress(addresses);
+    }
+    if (!diffSideAddresses.isEmpty()) {
+      return getCurrentAddress(diffSideAddresses);
     }
     LOGGER.warn("all addresses are isolation, please check server status.");
     // when all addresses are isolation, it will use all default address for polling.
@@ -170,8 +216,9 @@ public class AbstractAddressManager {
       return getCurrentAddress(zoneOrRegionAddress);
     }
     LOGGER.warn("all auto discovery addresses are isolation, please check server status.");
+
     // when all available address are isolation, it will use config addresses for polling.
-    return getCurrentAddress(addresses);
+    return getDefaultAddress();
   }
 
   private String getCurrentAddress(List<String> addresses) {
@@ -215,12 +262,28 @@ public class AbstractAddressManager {
       LOGGER.warn("restore default address [{}]", address);
       addresses.add(address);
     }
+    if (isolationSameSideAddresses.remove(address)) {
+      LOGGER.warn("restore same side server address [{}]", address);
+      if (eventBus != null && sameSideAddresses.isEmpty()) {
+        eventBus.post(new EngineConnectChangedEvent());
+      }
+      sameSideAddresses.add(address);
+    }
+    if (isolationDiffSideAddresses.remove(address)) {
+      LOGGER.warn("restore different side server address [{}]", address);
+      diffSideAddresses.add(address);
+    }
   }
 
   public void resetFailureStatus(String address) {
     addressFailureStatus.put(address, 0);
   }
 
+  /**
+   * Only authentication failure, IO, and timeout exception record as failed.
+   *
+   * @param address request address
+   */
   public void recordFailState(String address) {
     synchronized (lock) {
       if (!addressFailureStatus.containsKey(address)) {
@@ -245,6 +308,17 @@ public class AbstractAddressManager {
         LOGGER.warn("isolation default address [{}]", address);
         defaultIsolationAddress.add(address);
       }
+      if (sameSideAddresses.remove(address)) {
+        LOGGER.warn("isolation same side server address [{}]", address);
+        isolationSameSideAddresses.add(address);
+        if (eventBus != null && sameSideAddresses.isEmpty() && !diffSideAddresses.isEmpty()) {
+          eventBus.post(new EngineConnectChangedEvent());
+        }
+      }
+      if (diffSideAddresses.remove(address)) {
+        LOGGER.warn("isolation different side server address [{}]", address);
+        isolationDiffSideAddresses.add(address);
+      }
       return;
     }
     if (availableZone.remove(address)) {
@@ -267,8 +341,32 @@ public class AbstractAddressManager {
 
   public List<String> getIsolationAddresses() {
     List<String> isolationAddresses = new ArrayList<>(defaultIsolationAddress);
+    isolationAddresses.addAll(isolationSameSideAddresses);
+    isolationAddresses.addAll(isolationDiffSideAddresses);
     isolationAddresses.addAll(isolationZoneAddress);
     isolationAddresses.addAll(isolationRegionAddress);
     return isolationAddresses;
+  }
+
+  public String compareAndGetAddress(String host) {
+    for (String address : defaultAddress) {
+      if (isAddressHostSame(address, host)) {
+        return address;
+      }
+    }
+    return "";
+  }
+
+  private boolean isAddressHostSame(String address, String host) {
+    if (StringUtils.isEmpty(host)) {
+      return false;
+    }
+    try {
+      URI uri = new URI(address);
+      return host.equals(uri.getHost());
+    } catch (Exception e) {
+      LOGGER.warn("Exception occurred while constructing URI using the address [{}]", address);
+    }
+    return false;
   }
 }

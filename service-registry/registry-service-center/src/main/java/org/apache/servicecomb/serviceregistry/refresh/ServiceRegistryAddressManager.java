@@ -18,6 +18,7 @@
 package org.apache.servicecomb.serviceregistry.refresh;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -31,8 +32,9 @@ import com.google.common.eventbus.Subscribe;
 public class ServiceRegistryAddressManager extends AbstractAddressManager {
   private static final String URI_PREFIX = "rest://";
 
-  public ServiceRegistryAddressManager(List<String> addresses, EventBus eventBus) {
-    super(addresses);
+  public ServiceRegistryAddressManager(List<String> addresses, List<String> sameSideAddresses,
+      List<String> diffSideAddresses, EventBus eventBus) {
+    super(addresses, sameSideAddresses, diffSideAddresses);
     eventBus.register(this);
   }
 

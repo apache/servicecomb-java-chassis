@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config.kie;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -169,15 +170,17 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
 
   private KieAddressManager configKieAddressManager() {
     return new KieAddressManager(
-        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), EventManager.getEventBus());
+        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), new ArrayList<>(), new ArrayList<>(),
+        EventManager.getEventBus());
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {

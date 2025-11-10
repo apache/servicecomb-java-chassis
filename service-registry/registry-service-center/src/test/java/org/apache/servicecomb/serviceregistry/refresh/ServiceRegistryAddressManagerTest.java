@@ -44,8 +44,10 @@ class ServiceRegistryAddressManagerTest {
   public void addressManagerTest() {
     IpPort ipPort = new IpPort("127.0.0.1", 30103);
     addresses.add(ipPort.toString());
-    addressManager1 = new ServiceRegistryAddressManager(addresses, new EventBus());
-    addressManager2 = new ServiceRegistryAddressManager(addresses, new EventBus());
+    addressManager1 = new ServiceRegistryAddressManager(addresses, new ArrayList<>(), new ArrayList<>(),
+        new EventBus());
+    addressManager2 = new ServiceRegistryAddressManager(addresses, new ArrayList<>(), new ArrayList<>(),
+        new EventBus());
 
     Assertions.assertNotNull(addressManager1);
     Assertions.assertNotNull(addressManager2);
@@ -70,7 +72,8 @@ class ServiceRegistryAddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new ServiceRegistryAddressManager(addresses, new EventBus());
+    addressManager1 = new ServiceRegistryAddressManager(addresses, new ArrayList<>(), new ArrayList<>(),
+        new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 
@@ -88,7 +91,8 @@ class ServiceRegistryAddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", new ArrayList<>());
-    addressManager1 = new ServiceRegistryAddressManager(addresses, EventManager.getEventBus());
+    addressManager1 = new ServiceRegistryAddressManager(addresses, new ArrayList<>(), new ArrayList<>(),
+        EventManager.getEventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 

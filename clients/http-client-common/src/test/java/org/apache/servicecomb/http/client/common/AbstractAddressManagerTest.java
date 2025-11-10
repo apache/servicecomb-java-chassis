@@ -46,9 +46,9 @@ public class AbstractAddressManagerTest {
   public void setUp() throws NoSuchFieldException, IllegalAccessException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
-    addressManager1 = new AbstractAddressManager(addresses);
-    addressManager2 = new AbstractAddressManager("project", addresses);
-    addressManager3 = new AbstractAddressManager(null, addresses);
+    addressManager1 = new AbstractAddressManager(addresses, new ArrayList<>(), new ArrayList<>());
+    addressManager2 = new AbstractAddressManager("project", addresses, new ArrayList<>(), new ArrayList<>());
+    addressManager3 = new AbstractAddressManager(null, addresses, new ArrayList<>(), new ArrayList<>());
     Field addressManagerField = addressManager1.getClass().getDeclaredField("index");
     addressManagerField.setAccessible(true);
     addressManagerField.set(addressManager1, 0);
@@ -88,7 +88,8 @@ public class AbstractAddressManagerTest {
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "TEST");
-    AbstractAddressManager addressManager = new AbstractAddressManager(addresses) {};
+    AbstractAddressManager addressManager = new AbstractAddressManager(addresses, new ArrayList<>(),
+        new ArrayList<>()) {};
 
     addressManager.refreshEndpoint(event, "TEST");
 
@@ -124,7 +125,7 @@ public class AbstractAddressManagerTest {
   @Test
   public void testMultipleThread() throws Exception {
 
-    AbstractAddressManager addressManager = new AbstractAddressManager(addresses);
+    AbstractAddressManager addressManager = new AbstractAddressManager(addresses, new ArrayList<>(), new ArrayList<>());
     String address = "http://127.0.0.3:30100";
 
     CountDownLatch latch = new CountDownLatch(2);
@@ -301,5 +302,16 @@ public class AbstractAddressManagerTest {
 
     uri = addressManager1.normalizeUri("rest://[2008::7:957f:b2d6:1af4:a1f8]:30100");
     Assertions.assertEquals("http://[2008::7:957f:b2d6:1af4:a1f8]:30100", uri);
+  }
+
+  @Test
+  public void compareAndGetAddressTest() {
+    List<String> testAddr = new ArrayList<>();
+    testAddr.add("https://192.168.20.160:30100");
+    testAddr.add("https://127.0.0.1:30100");
+    testAddr.add("https://127.0.0.3:30100");
+    AbstractAddressManager manager = new AbstractAddressManager(testAddr, new ArrayList<>(), new ArrayList<>());
+    Assertions.assertTrue(manager.compareAndGetAddress("192.168.20.16").isEmpty());
+    Assertions.assertEquals("https://192.168.20.160:30100", manager.compareAndGetAddress("192.168.20.160"));
   }
 }

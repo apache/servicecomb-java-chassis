@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.config;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -188,8 +189,9 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
@@ -198,6 +200,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     return new ConfigCenterAddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
         Deployment
             .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL(),
+        new ArrayList<>(), new ArrayList<>(),
         EventManager.getEventBus());
   }
 

@@ -40,8 +40,10 @@ class ConfigCenterAddressManagerTest {
   public void addressManagerTest() throws NoSuchFieldException, IllegalAccessException {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("https://127.0.0.2:30103");
-    addressManager1 = new ConfigCenterAddressManager("project", addresses, new EventBus());
-    addressManager2 = new ConfigCenterAddressManager(null, addresses, new EventBus());
+    addressManager1 = new ConfigCenterAddressManager("project", addresses, new ArrayList<>(),
+        new ArrayList<>(), new EventBus());
+    addressManager2 = new ConfigCenterAddressManager(null, addresses, new ArrayList<>(), new ArrayList<>(),
+        new EventBus());
     Field addressManagerField = addressManager1.getClass().getSuperclass().getDeclaredField("index");
     addressManagerField.setAccessible(true);
     addressManagerField.set(addressManager1, 0);
@@ -70,7 +72,8 @@ class ConfigCenterAddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new ConfigCenterAddressManager("project", addresses, new EventBus());
+    addressManager1 = new ConfigCenterAddressManager("project", addresses, new ArrayList<>(),
+        new ArrayList<>(), new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseConfigCenter");
     addressManager1.refreshEndpoint(event, "CseConfigCenter");
 

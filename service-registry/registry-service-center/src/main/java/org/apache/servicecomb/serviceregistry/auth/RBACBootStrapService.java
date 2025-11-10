@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.auth;
 
 import static org.apache.servicecomb.foundation.ssl.SSLOption.DEFAULT_OPTION;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +95,7 @@ public class RBACBootStrapService implements BootStrapService {
 
   private ServiceCenterAddressManager createAddressManager(Environment environment) {
     return new ServiceCenterAddressManager(getTenantName(environment),
-        getRBACAddressList(environment), EventManager.getEventBus());
+        getRBACAddressList(environment), new ArrayList<>(), new ArrayList<>(), EventManager.getEventBus());
   }
 
   private SSLProperties createSSLProperties(Environment environment, String tag) {
