@@ -18,7 +18,6 @@
 package org.apache.servicecomb.serviceregistry.refresh;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;

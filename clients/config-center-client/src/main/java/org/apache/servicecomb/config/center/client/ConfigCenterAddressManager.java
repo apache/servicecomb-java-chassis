@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.config.center.client;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;
