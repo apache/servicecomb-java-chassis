@@ -73,7 +73,7 @@
                     <name>${project.artifactId}:${project.version}</name>
                     <alias>${project.artifactId}</alias>
                     <build>
-                      <from>openjdk:17-jre</from>
+                      <from>openjdk:17.0.2</from>
                       <ports>
                         <port>7070</port>
                         <port>8080</port>
