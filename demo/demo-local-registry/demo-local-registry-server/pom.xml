@@ -66,7 +66,7 @@
                     <name>${project.artifactId}:${project.version}</name>
                     <alias>${project.artifactId}</alias>
                     <build>
-                      <from>openjdk:17-alpine</from>
+                      <from>openjdk:17-jre</from>
                       <ports>
                         <port>7070</port>
                         <port>8080</port>
