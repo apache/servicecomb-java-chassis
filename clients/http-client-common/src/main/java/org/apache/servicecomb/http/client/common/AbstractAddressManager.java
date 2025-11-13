@@ -103,20 +103,20 @@ public class AbstractAddressManager {
     if (CollectionUtils.isEmpty(addresses)) {
       return;
     }
-    List<String> tesmpList = new ArrayList<>();
+    List<String> tempList = new ArrayList<>();
     addressAutoRefreshed = addresses.stream().anyMatch(addr -> addr.contains(ZONE) || addr.contains(REGION));
     for (String address : addresses) {
       // Compatible IpPortManager init address is 127.0.0.1:30100
       if (!address.startsWith("http")) {
-        tesmpList.add(address);
+        tempList.add(address);
         continue;
       }
       URLEndPoint endpoint = new URLEndPoint(address);
-      tesmpList.add(endpoint.toString());
+      tempList.add(endpoint.toString());
       buildAffinityAddress(endpoint, ownRegion, ownAvailableZone);
     }
-    this.addresses.addAll(isFormat ? this.transformAddress(tesmpList) : tesmpList);
-    this.defaultAddress.addAll(isFormat ? this.transformAddress(tesmpList) : tesmpList);
+    this.addresses.addAll(isFormat ? this.transformAddress(tempList) : tempList);
+    this.defaultAddress.addAll(isFormat ? this.transformAddress(tempList) : tempList);
   }
 
   private void buildAffinityAddress(URLEndPoint endpoint, String ownRegion, String ownAvailableZone) {
