@@ -21,6 +21,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface AuthHeaderProvider {
+  /**
+   * Obtain RBAC authentication request header, host is the key of cache, spring-cloud module have specific usage of host
+   *
+   * @param host engine address ip
+   * @return auth headers
+   */
   default Map<String, String> authHeaders(String host) {
     return new HashMap<>(0);
   }

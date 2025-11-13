@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.config.kie;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
@@ -178,8 +178,12 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
   }
 
   private KieAddressManager configKieAddressManager() {
+    String region = DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.region", "").get();
+    String availableZone = DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.availableZone", "").get();
     return new KieAddressManager(
-        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), new ArrayList<>(), new ArrayList<>(),
+        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), region, availableZone,
         EventManager.getEventBus());
   }
 

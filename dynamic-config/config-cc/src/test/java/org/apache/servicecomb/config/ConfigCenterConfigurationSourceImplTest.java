@@ -37,7 +37,7 @@ class ConfigCenterConfigurationSourceImplTest {
     addresses.add("http://127.0.0.1:30103");
     addresses.add("http://127.0.0.2:30103");
     ConfigCenterAddressManager addressManager = new ConfigCenterAddressManager("test", addresses,
-        new ArrayList<>(), new ArrayList<>(), EventManager.getEventBus());
+        "", "", EventManager.getEventBus());
     Field addressManagerField = addressManager.getClass().getSuperclass().getDeclaredField("index");
     addressManagerField.setAccessible(true);
     addressManagerField.set(addressManager, 0);
@@ -48,8 +48,7 @@ class ConfigCenterConfigurationSourceImplTest {
     address = addressManager.address();
     Assertions.assertEquals("http://127.0.0.1:30103/v3/test", address);
 
-    addressManager = new ConfigCenterAddressManager(null, addresses, new ArrayList<>(), new ArrayList<>(),
-        EventManager.getEventBus());
+    addressManager = new ConfigCenterAddressManager(null, addresses, "", "", EventManager.getEventBus());
     addressManagerField = addressManager.getClass().getSuperclass().getDeclaredField("index");
     addressManagerField.setAccessible(true);
     addressManagerField.set(addressManager, 0);
@@ -68,7 +67,7 @@ class ConfigCenterConfigurationSourceImplTest {
     zoneAndRegion.put("sameRegion", new ArrayList<>());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "CseConfigCenter");
     ConfigCenterAddressManager addressManager = new ConfigCenterAddressManager("test", addresses,
-        new ArrayList<>(), new ArrayList<>(), EventManager.getEventBus());
+        "", "", EventManager.getEventBus());
     addressManager.onRefreshEndpointEvent(event);
 
     List<String> availableAZ = addressManager.getAvailableZone();

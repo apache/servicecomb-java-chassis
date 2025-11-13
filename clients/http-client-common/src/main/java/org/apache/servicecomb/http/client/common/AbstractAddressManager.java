@@ -30,6 +30,7 @@ import org.apache.servicecomb.http.client.event.EngineConnectChangedEvent;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
@@ -42,6 +43,10 @@ public class AbstractAddressManager {
   public static final String V4_PREFIX = "/v4/";
 
   private static final String V3_PREFIX = "/v3/";
+
+  private static final String ZONE = "availableZone";
+
+  private static final String REGION = "region";
 
   private static final int ISOLATION_THRESHOLD = 3;
 
@@ -75,57 +80,59 @@ public class AbstractAddressManager {
 
   private EventBus eventBus;
 
-  private List<String> sameSideAddresses = new ArrayList<>();
-
-  private final List<String> isolationSameSideAddresses = new ArrayList<>();
-
-  private List<String> diffSideAddresses = new ArrayList<>();
-
-  private final List<String> isolationDiffSideAddresses = new ArrayList<>();
-
-  public AbstractAddressManager(List<String> addresses, List<String> sameSideAddresses,
-      List<String> diffSideAddresses) {
+  public AbstractAddressManager(List<String> addresses, String ownRegion, String ownAvailableZone) {
     this.projectName = DEFAULT_PROJECT;
-    initAddresses(addresses, sameSideAddresses, diffSideAddresses);
+    parseAndInitAddresses(addresses, ownRegion, ownAvailableZone, false);
     this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
   }
 
-  private void initAddresses(List<String> addresses, List<String> sameSideAddresses, List<String> diffSideAddresses) {
-    if (addresses != null) {
-      this.addresses.addAll(addresses);
-      this.defaultAddress.addAll(addresses);
+  /**
+   * address support config with region/availableZone info, to enable engine affinity calls during startup
+   * address may be like:
+   *   https://192.168.20.13:30110?region=region1&availableZone=az
+   *   https://192.168.20.13:30100?region=region1&availableZone=az
+   * When address have no datacenter information, roundRobin using address
+   *
+   * @param addresses engine addresses
+   * @param ownRegion microservice region
+   * @param ownAvailableZone microservice zone
+   * @param isFormat is need format
+   */
+  private void parseAndInitAddresses(List<String> addresses, String ownRegion, String ownAvailableZone,
+      boolean isFormat) {
+    if (CollectionUtils.isEmpty(addresses)) {
+      return;
     }
-    if (sameSideAddresses != null) {
-      this.sameSideAddresses.addAll(sameSideAddresses);
-      this.defaultAddress.addAll(sameSideAddresses);
+    List<String> tesmpList = new ArrayList<>();
+    addressAutoRefreshed = addresses.stream().anyMatch(addr -> addr.contains(ZONE) || addr.contains(REGION));
+    for (String address : addresses) {
+      // Compatible IpPortManager init address is 127.0.0.1:30100
+      if (!address.startsWith("http")) {
+        tesmpList.add(address);
+        continue;
+      }
+      URLEndPoint endpoint = new URLEndPoint(address);
+      tesmpList.add(endpoint.toString());
+      buildAffinityAddress(endpoint, ownRegion, ownAvailableZone);
     }
-    if (diffSideAddresses != null) {
-      this.diffSideAddresses.addAll(diffSideAddresses);
-      this.defaultAddress.addAll(diffSideAddresses);
+    this.addresses.addAll(isFormat ? this.transformAddress(tesmpList) : tesmpList);
+    this.defaultAddress.addAll(isFormat ? this.transformAddress(tesmpList) : tesmpList);
+  }
+
+  private void buildAffinityAddress(URLEndPoint endpoint, String ownRegion, String ownAvailableZone) {
+    if (addressAutoRefreshed) {
+      if (regionAndAZMatch(ownRegion, ownAvailableZone, endpoint.getFirst(REGION), endpoint.getFirst(ZONE))) {
+        availableZone.add(endpoint.toString());
+      } else {
+        availableRegion.add(endpoint.toString());
+      }
     }
   }
 
-  public AbstractAddressManager(String projectName, List<String> addresses, List<String> sameSideAddresses,
-      List<String> diffSideAddresses) {
+  public AbstractAddressManager(String projectName, List<String> addresses, String ownRegion, String ownAvailableZone) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
-    initAddressesWithFormat(addresses, sameSideAddresses, diffSideAddresses);
+    parseAndInitAddresses(addresses, ownRegion, ownAvailableZone, true);
     this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
-  }
-
-  private void initAddressesWithFormat(List<String> addresses, List<String> sameSideAddresses,
-      List<String> diffSideAddresses) {
-    if (addresses != null) {
-      this.addresses = this.transformAddress(addresses);
-      this.defaultAddress.addAll(addresses);
-    }
-    if (sameSideAddresses != null) {
-      this.sameSideAddresses = this.transformAddress(sameSideAddresses);
-      this.defaultAddress.addAll(sameSideAddresses);
-    }
-    if (diffSideAddresses != null) {
-      this.diffSideAddresses = this.transformAddress(diffSideAddresses);
-      this.defaultAddress.addAll(diffSideAddresses);
-    }
   }
 
   private int getRandomIndex() {
@@ -196,14 +203,8 @@ public class AbstractAddressManager {
   }
 
   private String getDefaultAddress() {
-    if (!sameSideAddresses.isEmpty()) {
-      return getCurrentAddress(sameSideAddresses);
-    }
     if (!addresses.isEmpty()) {
       return getCurrentAddress(addresses);
-    }
-    if (!diffSideAddresses.isEmpty()) {
-      return getCurrentAddress(diffSideAddresses);
     }
     LOGGER.warn("all addresses are isolation, please check server status.");
     // when all addresses are isolation, it will use all default address for polling.
@@ -262,17 +263,6 @@ public class AbstractAddressManager {
       LOGGER.warn("restore default address [{}]", address);
       addresses.add(address);
     }
-    if (isolationSameSideAddresses.remove(address)) {
-      LOGGER.warn("restore same side server address [{}]", address);
-      if (eventBus != null && sameSideAddresses.isEmpty()) {
-        eventBus.post(new EngineConnectChangedEvent());
-      }
-      sameSideAddresses.add(address);
-    }
-    if (isolationDiffSideAddresses.remove(address)) {
-      LOGGER.warn("restore different side server address [{}]", address);
-      diffSideAddresses.add(address);
-    }
   }
 
   public void resetFailureStatus(String address) {
@@ -308,17 +298,6 @@ public class AbstractAddressManager {
         LOGGER.warn("isolation default address [{}]", address);
         defaultIsolationAddress.add(address);
       }
-      if (sameSideAddresses.remove(address)) {
-        LOGGER.warn("isolation same side server address [{}]", address);
-        isolationSameSideAddresses.add(address);
-        if (eventBus != null && sameSideAddresses.isEmpty() && !diffSideAddresses.isEmpty()) {
-          eventBus.post(new EngineConnectChangedEvent());
-        }
-      }
-      if (diffSideAddresses.remove(address)) {
-        LOGGER.warn("isolation different side server address [{}]", address);
-        isolationDiffSideAddresses.add(address);
-      }
       return;
     }
     if (availableZone.remove(address)) {
@@ -341,8 +320,6 @@ public class AbstractAddressManager {
 
   public List<String> getIsolationAddresses() {
     List<String> isolationAddresses = new ArrayList<>(defaultIsolationAddress);
-    isolationAddresses.addAll(isolationSameSideAddresses);
-    isolationAddresses.addAll(isolationDiffSideAddresses);
     isolationAddresses.addAll(isolationZoneAddress);
     isolationAddresses.addAll(isolationRegionAddress);
     return isolationAddresses;
@@ -368,5 +345,10 @@ public class AbstractAddressManager {
       LOGGER.warn("Exception occurred while constructing URI using the address [{}]", address);
     }
     return false;
+  }
+
+  private boolean regionAndAZMatch(String ownRegion, String ownAvailableZone, String engineRegion,
+      String engineAvailableZone) {
+    return ownRegion.equalsIgnoreCase(engineRegion) && ownAvailableZone.equals(engineAvailableZone);
   }
 }

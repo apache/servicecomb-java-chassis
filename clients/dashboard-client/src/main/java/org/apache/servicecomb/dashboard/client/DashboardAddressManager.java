@@ -29,9 +29,8 @@ import com.google.common.eventbus.Subscribe;
 
 public class DashboardAddressManager extends AbstractAddressManager {
 
-  public DashboardAddressManager(List<String> addresses, List<String> sameSideAddresses,
-      List<String> diffSideAddresses, EventBus eventBus) {
-    super(addresses, sameSideAddresses, diffSideAddresses);
+  public DashboardAddressManager(List<String> addresses, String ownRegion, String ownAvailableZone, EventBus eventBus) {
+    super(addresses, ownRegion, ownAvailableZone);
     eventBus.register(this);
   }
 

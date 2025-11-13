@@ -45,6 +45,8 @@ import org.apache.servicecomb.huaweicloud.dashboard.monitor.data.MonitorConstant
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataProvider;
 import org.apache.servicecomb.huaweicloud.dashboard.monitor.model.MonitorDataPublisher;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
   private static final String SSL_KEY = "mc.consumer";
 
@@ -76,7 +78,11 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
       throw new IllegalStateException("dashboard address is not configured.");
     }
 
-    return new DashboardAddressManager(addresses, new ArrayList<>(), new ArrayList<>(), EventManager.getEventBus());
+    String region = DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.region", "").get();
+    String availableZone = DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.availableZone", "").get();
+    return new DashboardAddressManager(addresses, region, availableZone, EventManager.getEventBus());
   }
 
   private HttpTransport createHttpTransport(DashboardAddressManager addressManager, RequestConfig requestConfig,

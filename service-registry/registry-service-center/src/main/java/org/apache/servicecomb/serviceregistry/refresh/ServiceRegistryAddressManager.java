@@ -31,9 +31,9 @@ import com.google.common.eventbus.Subscribe;
 public class ServiceRegistryAddressManager extends AbstractAddressManager {
   private static final String URI_PREFIX = "rest://";
 
-  public ServiceRegistryAddressManager(List<String> addresses, List<String> sameSideAddresses,
-      List<String> diffSideAddresses, EventBus eventBus) {
-    super(addresses, sameSideAddresses, diffSideAddresses);
+  public ServiceRegistryAddressManager(List<String> addresses, String ownRegion, String ownAvailableZone,
+      EventBus eventBus) {
+    super(addresses, ownRegion, ownAvailableZone);
     eventBus.register(this);
   }
 
