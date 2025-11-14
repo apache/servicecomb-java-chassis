@@ -19,8 +19,9 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.annotations.headers.Header;
@@ -31,10 +32,15 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.ws.rs.core.MediaType;
 
 public class TestApiResponse {
-  static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
+  SwaggerOperations swaggerOperations;
 
-  @AfterAll
-  public static void teardown() {
+  @BeforeEach
+  public void setUp() {
+    swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
+  }
+
+  @AfterEach
+  public void tearDown() {
     swaggerOperations = null;
   }
 

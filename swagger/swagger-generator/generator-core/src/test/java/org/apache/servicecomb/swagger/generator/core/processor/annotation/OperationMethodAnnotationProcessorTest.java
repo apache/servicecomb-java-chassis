@@ -26,8 +26,9 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,10 +43,15 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.core.MediaType;
 
 public class OperationMethodAnnotationProcessorTest {
-  static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
+  SwaggerOperations swaggerOperations;
 
-  @AfterAll
-  public static void teardown() {
+  @BeforeEach
+  public void setUp() {
+    swaggerOperations = SwaggerOperations.generate(TestClass.class);
+  }
+
+  @AfterEach
+  public void tearDown() {
     swaggerOperations = null;
   }
 
