@@ -26,6 +26,8 @@ import com.fasterxml.jackson.databind.introspect.Annotated;
 
 import io.swagger.v3.core.jackson.SwaggerAnnotationIntrospector;
 
+import java.util.Objects;
+
 
 public class JsonPropertyIntrospector extends SwaggerAnnotationIntrospector {
   private static final long serialVersionUID = 4157263023893695762L;
@@ -47,10 +49,10 @@ public class JsonPropertyIntrospector extends SwaggerAnnotationIntrospector {
   @Override
   public String findPropertyDescription(Annotated annotated) {
     Class<?> enumClass = annotated.getRawType();
-    if (enumClass.isEnum()) {
+    if (enumClass.isEnum() && Objects.nonNull(annotated.getAnnotated())) {
       return SwaggerEnum.JDK.findPropertyDescription(enumClass, annotated.getAnnotated().getAnnotations());
     }
-    if (EnumUtils.isDynamicEnum(enumClass)) {
+    if (EnumUtils.isDynamicEnum(enumClass) && Objects.nonNull(annotated.getAnnotated())) {
       return SwaggerEnum.DYNAMIC.findPropertyDescription(enumClass, annotated.getAnnotated().getAnnotations());
     }
 

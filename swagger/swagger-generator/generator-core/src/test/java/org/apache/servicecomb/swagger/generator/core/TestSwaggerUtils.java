@@ -28,11 +28,14 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
+import org.apache.servicecomb.swagger.generator.core.pojo.TestTypeClass;
+import org.apache.servicecomb.swagger.generator.core.pojo.TestTypeRecord;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
@@ -50,6 +53,7 @@ import io.swagger.v3.oas.models.parameters.RequestBody;
 
 @SuppressWarnings("rawtypes")
 public class TestSwaggerUtils {
+  Logger LOGGER = Logger.getLogger(TestSwaggerUtils.class.getName());
 
   @Test
   public void testSchemaMethod() {
@@ -117,12 +121,24 @@ public class TestSwaggerUtils {
     Map<String, TestType2> t3;
 
     TestType2[] t4;
+
+  }
+
+  private static class AllTypeTest3{
+    TestTypeRecord t5;
+  }
+  private static class AllTypeTest4{
+    TestTypeClass t5;
   }
 
   @Test
   public void testAddDefinitions() {
-    Field[] fields1 = AllTypeTest1.class.getDeclaredFields();
-    Field[] fields2 = AllTypeTest2.class.getDeclaredFields();
+    testAllType(AllTypeTest1.class, AllTypeTest2.class);
+  }
+
+  private void testAllType(Class clazz1, Class clazz2) {
+    Field[] fields1 = clazz1.getDeclaredFields();
+    Field[] fields2 = clazz2.getDeclaredFields();
     for (Field value : fields1) {
       for (Field field : fields2) {
         if (value.isSynthetic() || field.isSynthetic()) {
@@ -132,10 +148,16 @@ public class TestSwaggerUtils {
           testExcep(value.getGenericType(), field.getGenericType());
           fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
+          LOGGER.warning(value.getGenericType() + " " + field.getGenericType() + " " + e.getMessage());
           MatcherAssert.assertThat(e.getMessage(), containsString("duplicate param model:"));
         }
       }
     }
+  }
+
+  @Test
+  public void testAddDefinitionsWithRecord() {
+    testAllType(AllTypeTest3.class, AllTypeTest4.class);
   }
 
   private void testExcep(Type f1, Type f2) {
@@ -160,6 +182,14 @@ public class TestSwaggerUtils {
     schema = SwaggerUtils.getSchema(openAPI, schema); // resolve reference
     // should be ObjectSchema but swagger is not.
     // <pre> Assertions.assertTrue(schema instanceof ObjectSchema) </pre>
+    Assertions.assertEquals("object", schema.getType());
+
+    openAPI = new OpenAPI();
+    schema = SwaggerUtils.getSchema(openAPI, SwaggerUtils.resolveTypeSchemas(openAPI, TestTypeClass.class)); // resolve reference
+    Assertions.assertEquals("object", schema.getType());
+
+    openAPI = new OpenAPI();
+    schema = SwaggerUtils.getSchema(openAPI, SwaggerUtils.resolveTypeSchemas(openAPI, TestTypeRecord.class)); // resolve reference
     Assertions.assertEquals("object", schema.getType());
   }
 }
