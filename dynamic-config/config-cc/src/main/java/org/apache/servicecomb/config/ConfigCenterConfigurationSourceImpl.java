@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
@@ -188,8 +189,9 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
@@ -198,7 +200,17 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     return new ConfigCenterAddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
         Deployment
             .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL(),
-        EventManager.getEventBus());
+        getRegion(), getAvailableZone(), EventManager.getEventBus());
+  }
+
+  private String getRegion() {
+    return DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.region", "").get();
+  }
+
+  private String getAvailableZone() {
+    return DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.availableZone", "").get();
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {

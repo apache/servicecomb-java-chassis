@@ -169,7 +169,7 @@ public final class TokenCacheManager {
       request.setName(accountName);
       request.setPassword(new String(cipher.decrypt(password.toCharArray())));
 
-      RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request);
+      RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request, "");
 
       this.lastStatusCode = rbacTokenResponse.getStatusCode();
       this.lastErrorCode = rbacTokenResponse.getErrorCode();

@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
@@ -169,15 +170,21 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
 
   private KieAddressManager configKieAddressManager() {
+    String region = DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.region", "").get();
+    String availableZone = DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.availableZone", "").get();
     return new KieAddressManager(
-        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), EventManager.getEventBus());
+        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), region, availableZone,
+        EventManager.getEventBus());
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {
