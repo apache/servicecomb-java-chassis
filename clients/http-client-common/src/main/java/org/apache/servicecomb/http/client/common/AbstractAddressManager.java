@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -350,5 +351,15 @@ public class AbstractAddressManager {
   private boolean regionAndAZMatch(String ownRegion, String ownAvailableZone, String engineRegion,
       String engineAvailableZone) {
     return ownRegion.equalsIgnoreCase(engineRegion) && ownAvailableZone.equals(engineAvailableZone);
+  }
+
+  public void refreshAffinityAddress(Set<String> sameZone, Set<String> sameRegion) {
+    addressAutoRefreshed = true;
+    if (!sameZone.isEmpty()) {
+      availableZone.addAll(sameZone);
+    }
+    if (!sameRegion.isEmpty()) {
+      availableRegion.addAll(sameRegion);
+    }
   }
 }

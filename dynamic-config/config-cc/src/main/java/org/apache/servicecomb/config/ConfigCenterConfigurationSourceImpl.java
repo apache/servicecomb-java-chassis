@@ -54,7 +54,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
@@ -204,13 +203,11 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   }
 
   private String getRegion() {
-    return DynamicPropertyFactory.getInstance().
-        getStringProperty("servicecomb.datacenter.region", "").get();
+    return ConfigCenterConfig.INSTANCE.getRegion();
   }
 
   private String getAvailableZone() {
-    return DynamicPropertyFactory.getInstance().
-        getStringProperty("servicecomb.datacenter.availableZone", "").get();
+    return ConfigCenterConfig.INSTANCE.getAvailableZone();
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {

@@ -68,8 +68,8 @@ public class IpPortManager {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
     List<String> addresses = defaultIpPort.stream().map(IpPort::toString).collect(Collectors.toList());
-    addressManger = new ServiceRegistryAddressManager(addresses, getRegion(), getAvailableZone(),
-        EventManager.getEventBus());
+    addressManger = new ServiceRegistryAddressManager(addresses, "", "", EventManager.getEventBus());
+    addressManger.constructAffinityAddress(serviceRegistryConfig.getOriginAddress(), getRegion(), getAvailableZone());
     classificationAddress = new ClassificationAddress(serviceRegistryConfig, instanceCacheManager);
     LOGGER.info("Initial service center address is {}", getAvailableAddress());
   }

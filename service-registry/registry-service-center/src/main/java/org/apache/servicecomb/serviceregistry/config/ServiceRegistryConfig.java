@@ -132,6 +132,8 @@ public class ServiceRegistryConfig {
   private Function<ServiceRegistry, ServiceRegistryClient> serviceRegistryClientConstructor =
       serviceRegistry -> new ServiceRegistryClientImpl(this);
 
+  private List<String> originAddress;
+
   public ServiceRegistryConfig() {
   }
 
@@ -445,5 +447,14 @@ public class ServiceRegistryConfig {
 
   public ServiceRegistryClient createServiceRegistryClient(ServiceRegistry serviceRegistry) {
     return this.serviceRegistryClientConstructor.apply(serviceRegistry);
+  }
+
+  public List<String> getOriginAddress() {
+    return originAddress;
+  }
+
+  public ServiceRegistryConfig setOriginAddress(List<String> originAddress) {
+    this.originAddress = originAddress;
+    return this;
   }
 }
