@@ -17,9 +17,12 @@
 
 package org.apache.servicecomb.registry.sc;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -50,7 +53,8 @@ import org.springframework.core.env.Environment;
 public class SCClientUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCClientUtils.class);
 
-  private static volatile ServiceCenterAddressManager serviceAddressManager;
+  // Compatible chassis multi-registration center
+  private static final Map<String, ServiceCenterAddressManager> serviceAddressManagers = new ConcurrentHashMap<>();
 
   public static ServiceCenterAddressManager createAddressManager(SCConfigurationProperties discoveryProperties,
       Environment environment) {
@@ -70,18 +74,35 @@ public class SCClientUtils {
    */
   public static ServiceCenterAddressManager createAddressManager(String projectName, List<String> addresses,
       Environment environment) {
-    if (serviceAddressManager == null) {
+    String region = environment.getProperty("servicecomb.datacenter.region");
+    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
+    if (getServiceCenterAddressManager(addresses) == null) {
       synchronized (SCClientUtils.class) {
-        if (serviceAddressManager == null) {
+        if (getServiceCenterAddressManager(addresses) == null) {
+          String key = String.join(",", addresses);
           LOGGER.info("initialize discovery server={}", addresses);
-          String region = environment.getProperty("servicecomb.datacenter.region");
-          String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
-          serviceAddressManager = new ServiceCenterAddressManager(projectName, addresses, EventManager.getEventBus(),
-              region, availableZone);
+          ServiceCenterAddressManager addressManager = new ServiceCenterAddressManager(projectName, addresses,
+              EventManager.getEventBus(), region, availableZone);
+          serviceAddressManagers.put(key, addressManager);
+          return addressManager;
         }
       }
     }
-    return serviceAddressManager;
+    return getServiceCenterAddressManager(addresses);
+  }
+
+  private static ServiceCenterAddressManager getServiceCenterAddressManager(List<String> addresses) {
+    String forwardKey = String.join(",", addresses);
+    List<String> tempAddr = new ArrayList<>(addresses);
+    Collections.reverse(tempAddr);
+    String reverseKey = String.join(",", addresses);
+    if (serviceAddressManagers.get(forwardKey) != null) {
+      return serviceAddressManagers.get(forwardKey);
+    }
+    if (serviceAddressManagers.get(reverseKey) != null) {
+      return serviceAddressManagers.get(reverseKey);
+    }
+    return null;
   }
 
   // add other headers needed for registration by new ServiceCenterClient(...)
