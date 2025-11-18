@@ -95,7 +95,7 @@ public class SCClientUtils {
     String forwardKey = String.join(",", addresses);
     List<String> tempAddr = new ArrayList<>(addresses);
     Collections.reverse(tempAddr);
-    String reverseKey = String.join(",", addresses);
+    String reverseKey = String.join(",", tempAddr);
     if (serviceAddressManagers.get(forwardKey) != null) {
       return serviceAddressManagers.get(forwardKey);
     }
