@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -24,6 +25,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.foundation.auth.SignRequest;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 import org.apache.servicecomb.http.client.common.WebSocketListener;
@@ -108,7 +110,7 @@ public class ServiceCenterWatch implements WebSocketListener {
         Map<String, String> headers = new HashMap<>();
         headers.put("x-domain-name", this.tenantName);
         headers.putAll(this.extraGlobalHeaders);
-        headers.putAll(this.requestAuthHeaderProvider.loadAuthHeader(null));
+        headers.putAll(this.requestAuthHeaderProvider.loadAuthHeader(createSignRequest(address)));
         currentServerUri = convertAddress(address);
         LOGGER.info("start watch to address {}", currentServerUri);
         webSocketTransport = new WebSocketTransport(currentServerUri, sslProperties,
@@ -120,6 +122,17 @@ public class ServiceCenterWatch implements WebSocketListener {
         LOGGER.error("start watch failed. ", e);
       }
     });
+  }
+
+  private SignRequest createSignRequest(String url) {
+    try {
+      URI uri = URI.create(url);
+      SignRequest signRequest = new SignRequest();
+      signRequest.setEndpoint(uri);
+      return signRequest;
+    } catch (Exception e) {
+      return null;
+    }
   }
 
   private String convertAddress(String address) {

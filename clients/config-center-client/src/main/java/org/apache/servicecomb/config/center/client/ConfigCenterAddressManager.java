@@ -28,8 +28,9 @@ import com.google.common.eventbus.Subscribe;
 
 public class ConfigCenterAddressManager extends AbstractAddressManager {
 
-  public ConfigCenterAddressManager(String projectName, List<String> addresses, EventBus eventBus) {
-    super(projectName, addresses);
+  public ConfigCenterAddressManager(String projectName, List<String> addresses, EventBus eventBus, String region,
+      String availableZone) {
+    super(projectName, addresses, region, availableZone);
     eventBus.register(this);
   }
 

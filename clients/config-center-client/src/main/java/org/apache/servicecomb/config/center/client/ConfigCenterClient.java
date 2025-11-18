@@ -32,6 +32,7 @@ import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.apache.servicecomb.http.client.event.OperationEvents.UnAuthorizedOperationEvent;
 import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,12 +62,15 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
   private final Map<String, List<String>> dimensionConfigNames = new HashMap<>();
 
+  private EventBus eventBus;
+
   public ConfigCenterClient(ConfigCenterAddressManager addressManager, HttpTransport httpTransport) {
     this.addressManager = addressManager;
     this.httpTransport = httpTransport;
   }
 
   public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
     addressManager.setEventBus(eventBus);
   }
 
@@ -88,6 +92,7 @@ public class ConfigCenterClient implements ConfigCenterOperation {
           HttpRequest.GET);
 
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
+      recordAndSendUnAuthorizedEvent(httpResponse, address);
       if (httpResponse.getStatusCode() == HttpStatus.SC_OK) {
         Map<String, Map<String, Object>> allConfigMap = HttpUtils.deserialize(
             httpResponse.getContent(),
@@ -121,21 +126,17 @@ public class ConfigCenterClient implements ConfigCenterOperation {
         }
         queryConfigurationsResponse.setConfigurations(configurations);
         queryConfigurationsResponse.setChanged(true);
-        addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
         queryConfigurationsResponse.setChanged(false);
-        addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
         LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged.", dimensionsInfo);
         queryConfigurationsResponse.setChanged(false);
-        addressManager.recordSuccessState(address);
         return queryConfigurationsResponse;
       } else if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
         throw new OperationException("Bad request for query configurations.");
       } else {
-        addressManager.recordFailState(address);
         throw new OperationException(
             "read response failed. status:"
                 + httpResponse.getStatusCode()
@@ -148,6 +149,16 @@ public class ConfigCenterClient implements ConfigCenterOperation {
       addressManager.recordFailState(address);
       LOGGER.error("query configuration from {} failed, message={}", uri, e.getMessage());
       throw new OperationException("", e);
+    }
+  }
+
+  private void recordAndSendUnAuthorizedEvent(HttpResponse response, String address) {
+    if (this.eventBus != null && response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+      LOGGER.warn("query configuration unauthorized from server [{}], message [{}]", address, response.getMessage());
+      addressManager.recordFailState(address);
+      this.eventBus.post(new UnAuthorizedOperationEvent(address));
+    } else {
+      addressManager.recordSuccessState(address);
     }
   }
 

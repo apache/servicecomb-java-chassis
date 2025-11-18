@@ -84,8 +84,10 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
     if (addresses.isEmpty()) {
       throw new IllegalStateException("dashboard address is not configured.");
     }
+    String region = environment.getProperty("servicecomb.datacenter.region");
+    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
 
-    return new DashboardAddressManager(addresses, EventManager.getEventBus());
+    return new DashboardAddressManager(addresses, EventManager.getEventBus(), region, availableZone);
   }
 
   private HttpTransport createHttpTransport(DashboardAddressManager addressManager, RequestConfig requestConfig,
@@ -120,8 +122,9 @@ public class DefaultMonitorDataPublisher implements MonitorDataPublisher {
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }

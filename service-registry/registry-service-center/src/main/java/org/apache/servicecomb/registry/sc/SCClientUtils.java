@@ -17,9 +17,12 @@
 
 package org.apache.servicecomb.registry.sc;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -50,16 +53,62 @@ import org.springframework.core.env.Environment;
 public class SCClientUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCClientUtils.class);
 
-  public static ServiceCenterAddressManager createAddressManager(SCConfigurationProperties discoveryProperties) {
+  // Compatible chassis multi-registration center
+  private static final Map<String, ServiceCenterAddressManager> serviceAddressManagers = new ConcurrentHashMap<>();
+
+  public static ServiceCenterAddressManager createAddressManager(SCConfigurationProperties discoveryProperties,
+      Environment environment) {
     List<String> addresses = ConfigUtil.parseArrayValue(discoveryProperties.getAddress());
-    LOGGER.info("initialize discovery server={}", addresses);
-    return new ServiceCenterAddressManager("default", addresses, EventManager.getEventBus());
+    return createAddressManager("default", addresses, environment);
+  }
+
+  /**
+   * Ensure that the ServiceCenterAddressManager in the client created for RBAC authentication and registry discovery
+   * is the same. This ensures that when an error is reported due to the registry center address being unavailable,
+   * the authentication and registry discovery remain consistent.
+   *
+   * @param projectName projectName
+   * @param addresses   engine address
+   * @param environment environment
+   * @return Service Center Address Manager
+   */
+  public static ServiceCenterAddressManager createAddressManager(String projectName, List<String> addresses,
+      Environment environment) {
+    if (getServiceCenterAddressManager(addresses) == null) {
+      synchronized (SCClientUtils.class) {
+        if (getServiceCenterAddressManager(addresses) == null) {
+          String key = String.join(",", addresses);
+          LOGGER.info("initialize discovery server={}", addresses);
+          String region = environment.getProperty("servicecomb.datacenter.region");
+          String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
+          ServiceCenterAddressManager addressManager = new ServiceCenterAddressManager(projectName, addresses,
+              EventManager.getEventBus(), region, availableZone);
+          serviceAddressManagers.put(key, addressManager);
+          return addressManager;
+        }
+      }
+    }
+    return getServiceCenterAddressManager(addresses);
+  }
+
+  private static ServiceCenterAddressManager getServiceCenterAddressManager(List<String> addresses) {
+    String forwardKey = String.join(",", addresses);
+    List<String> tempAddr = new ArrayList<>(addresses);
+    Collections.reverse(tempAddr);
+    String reverseKey = String.join(",", tempAddr);
+    if (serviceAddressManagers.get(forwardKey) != null) {
+      return serviceAddressManagers.get(forwardKey);
+    }
+    if (serviceAddressManagers.get(reverseKey) != null) {
+      return serviceAddressManagers.get(reverseKey);
+    }
+    return null;
   }
 
   // add other headers needed for registration by new ServiceCenterClient(...)
   public static ServiceCenterClient serviceCenterClient(SCConfigurationProperties discoveryProperties,
       Environment environment) {
-    ServiceCenterAddressManager addressManager = createAddressManager(discoveryProperties);
+    ServiceCenterAddressManager addressManager = createAddressManager(discoveryProperties, environment);
 
     SSLProperties sslProperties = buildSslProperties(addressManager, environment);
 
@@ -135,7 +184,7 @@ public class SCClientUtils {
 
   public static ServiceCenterWatch serviceCenterWatch(SCConfigurationProperties discoveryProperties,
       List<AuthHeaderProvider> authHeaderProviders, Environment environment) {
-    ServiceCenterAddressManager addressManager = createAddressManager(discoveryProperties);
+    ServiceCenterAddressManager addressManager = createAddressManager(discoveryProperties, environment);
     SSLProperties sslProperties = buildSslProperties(addressManager, environment);
     return new ServiceCenterWatch(addressManager, sslProperties, getRequestAuthHeaderProvider(authHeaderProviders),
         "default", new HashMap<>(), EventManager.getEventBus());
@@ -143,8 +192,9 @@ public class SCClientUtils {
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }

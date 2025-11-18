@@ -42,6 +42,7 @@ import org.apache.servicecomb.http.client.auth.DefaultRequestAuthHeaderProvider;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
+import org.apache.servicecomb.registry.sc.SCClientUtils;
 import org.apache.servicecomb.service.center.client.ServiceCenterAddressManager;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.ServiceCenterRawClient;
@@ -128,8 +129,8 @@ public class RBACBootStrapService implements BootStrapService {
   }
 
   private ServiceCenterAddressManager createAddressManager(Environment environment) {
-    return new ServiceCenterAddressManager(getProjectName(environment),
-        getRBACAddressList(environment), EventManager.getEventBus());
+    return SCClientUtils.createAddressManager(getProjectName(environment), getRBACAddressList(environment),
+        environment);
   }
 
   private SSLProperties createSSLProperties(Environment environment) {
@@ -233,7 +234,7 @@ public class RBACBootStrapService implements BootStrapService {
   }
 
   private List<String> getRBACAddressList(Environment environment) {
-    String address = environment.getProperty(RBAC_ADDRESS, "http://127.0.0.1:30100)");
+    String address = environment.getProperty(RBAC_ADDRESS, "http://127.0.0.1:30100");
     return Arrays.asList(address.split(","));
   }
 

@@ -301,7 +301,7 @@ public class ServiceCenterRegistration extends AbstractTask {
         if (failedCount == 2) {
           LOGGER.error("send heart failed, and will try again.", e);
         } else {
-          LOGGER.warn("send heart failed, and will try again. message [{}]", e.getCause().getMessage());
+          LOGGER.warn("send heart failed, and will try again. message [{}]", e.getMessage());
         }
         eventBus.post(new HeartBeatEvent(false, microservice, microserviceInstance));
         startTask(new BackOffSleepTask(failedCount + 1, new SendHeartBeatTask(failedCount + 1)));

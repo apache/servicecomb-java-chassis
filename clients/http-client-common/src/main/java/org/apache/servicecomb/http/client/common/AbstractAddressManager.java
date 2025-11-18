@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.http.client.common;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.apache.servicecomb.http.client.event.EngineConnectChangedEvent;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
@@ -41,6 +43,10 @@ public class AbstractAddressManager {
   public static final String V4_PREFIX = "/v4/";
 
   private static final String V3_PREFIX = "/v3/";
+
+  private static final String ZONE = "availableZone";
+
+  private static final String REGION = "region";
 
   private static final int ISOLATION_THRESHOLD = 3;
 
@@ -74,17 +80,63 @@ public class AbstractAddressManager {
 
   private EventBus eventBus;
 
-  public AbstractAddressManager(List<String> addresses) {
+  public AbstractAddressManager(List<String> addresses, String ownRegion, String ownAvailableZone) {
     this.projectName = DEFAULT_PROJECT;
-    this.addresses.addAll(addresses);
-    this.defaultAddress.addAll(addresses);
+    parseAndInitAddresses(addresses, ownRegion, ownAvailableZone, false);
     this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
   }
 
-  public AbstractAddressManager(String projectName, List<String> addresses) {
+  /**
+   * address support config with region/availableZone info, to enable engine affinity calls during startup
+   * address may be like:
+   *   https://192.168.20.13:30110?region=region1&availableZone=az
+   *   https://192.168.20.13:30100?region=region1&availableZone=az
+   * When address have no datacenter information, roundRobin using address
+   *
+   * @param addresses engine addresses
+   * @param ownRegion microservice region
+   * @param ownAvailableZone microservice zone
+   * @param isFormat is need format
+   */
+  private void parseAndInitAddresses(List<String> addresses, String ownRegion, String ownAvailableZone,
+      boolean isFormat) {
+    if (CollectionUtils.isEmpty(addresses)) {
+      return;
+    }
+    List<String> tempList = new ArrayList<>();
+    addressAutoRefreshed = addresses.stream().anyMatch(addr -> addr.contains(ZONE) || addr.contains(REGION));
+    for (String address : addresses) {
+      // Compatible IpPortManager init address is 127.0.0.1:30100
+      if (!address.startsWith("http")) {
+        tempList.add(address);
+        continue;
+      }
+      URLEndPoint endpoint = new URLEndPoint(address);
+      tempList.add(endpoint.toString());
+      buildAffinityAddress(endpoint, ownRegion, ownAvailableZone);
+    }
+    this.addresses.addAll(isFormat ? this.transformAddress(tempList) : tempList);
+    this.defaultAddress.addAll(isFormat ? this.transformAddress(tempList) : tempList);
+  }
+
+  private void buildAffinityAddress(URLEndPoint endpoint, String ownRegion, String ownAvailableZone) {
+    if (addressAutoRefreshed) {
+      if (regionAndAZMatch(ownRegion, ownAvailableZone, endpoint.getFirst(REGION), endpoint.getFirst(ZONE))) {
+        availableZone.add(endpoint.toString());
+      } else {
+        availableRegion.add(endpoint.toString());
+      }
+    }
+  }
+
+  private boolean regionAndAZMatch(String ownRegion, String ownAvailableZone, String engineRegion,
+      String engineAvailableZone) {
+    return ownRegion.equalsIgnoreCase(engineRegion) && ownAvailableZone.equals(engineAvailableZone);
+  }
+
+  public AbstractAddressManager(String projectName, List<String> addresses, String ownRegion, String ownAvailableZone) {
     this.projectName = StringUtils.isEmpty(projectName) ? DEFAULT_PROJECT : projectName;
-    this.addresses = this.transformAddress(addresses);
-    this.defaultAddress.addAll(addresses);
+    parseAndInitAddresses(addresses, ownRegion, ownAvailableZone, true);
     this.index = !addresses.isEmpty() ? getRandomIndex() : 0;
   }
 
@@ -270,5 +322,27 @@ public class AbstractAddressManager {
     isolationAddresses.addAll(isolationZoneAddress);
     isolationAddresses.addAll(isolationRegionAddress);
     return isolationAddresses;
+  }
+
+  public String compareAndGetAddress(String host) {
+    for (String address : defaultAddress) {
+      if (isAddressHostSame(address, host)) {
+        return address;
+      }
+    }
+    return "";
+  }
+
+  private boolean isAddressHostSame(String address, String host) {
+    if (StringUtils.isEmpty(host)) {
+      return false;
+    }
+    try {
+      URI uri = new URI(address);
+      return host.equals(uri.getHost());
+    } catch (Exception e) {
+      LOGGER.warn("Exception occurred while constructing URI using the address [{}]", address);
+    }
+    return false;
   }
 }
