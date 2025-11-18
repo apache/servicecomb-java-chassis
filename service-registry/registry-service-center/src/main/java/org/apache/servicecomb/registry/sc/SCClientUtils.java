@@ -74,13 +74,13 @@ public class SCClientUtils {
    */
   public static ServiceCenterAddressManager createAddressManager(String projectName, List<String> addresses,
       Environment environment) {
-    String region = environment.getProperty("servicecomb.datacenter.region");
-    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
     if (getServiceCenterAddressManager(addresses) == null) {
       synchronized (SCClientUtils.class) {
         if (getServiceCenterAddressManager(addresses) == null) {
           String key = String.join(",", addresses);
           LOGGER.info("initialize discovery server={}", addresses);
+          String region = environment.getProperty("servicecomb.datacenter.region");
+          String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
           ServiceCenterAddressManager addressManager = new ServiceCenterAddressManager(projectName, addresses,
               EventManager.getEventBus(), region, availableZone);
           serviceAddressManagers.put(key, addressManager);
