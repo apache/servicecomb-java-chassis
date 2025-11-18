@@ -65,7 +65,6 @@ import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.event.NotPermittedEvent;
 import org.apache.servicecomb.registry.api.event.ServiceCenterEventBus;
 import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
