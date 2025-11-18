@@ -33,6 +33,8 @@ import org.apache.servicecomb.serviceregistry.refresh.ClassificationAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class IpPortManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(IpPortManager.class);
 
@@ -66,9 +68,20 @@ public class IpPortManager {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
     List<String> addresses = defaultIpPort.stream().map(IpPort::toString).collect(Collectors.toList());
-    addressManger = new ServiceRegistryAddressManager(addresses, EventManager.getEventBus());
+    addressManger = new ServiceRegistryAddressManager(addresses, "", "", EventManager.getEventBus());
+    addressManger.constructAffinityAddress(serviceRegistryConfig.getOriginAddress(), getRegion(), getAvailableZone());
     classificationAddress = new ClassificationAddress(serviceRegistryConfig, instanceCacheManager);
     LOGGER.info("Initial service center address is {}", getAvailableAddress());
+  }
+
+  private String getRegion() {
+    return DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.region", "").get();
+  }
+
+  private String getAvailableZone() {
+    return DynamicPropertyFactory.getInstance().
+        getStringProperty("servicecomb.datacenter.availableZone", "").get();
   }
 
   // we have to do this operation after the first time setup has already done

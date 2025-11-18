@@ -15,10 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client;
+package org.apache.servicecomb.http.client.event;
 
 public abstract class OperationEvents {
   public static class UnAuthorizedOperationEvent extends OperationEvents {
+    private final String address;
 
+    public UnAuthorizedOperationEvent(String address) {
+      this.address = address;
+    }
+
+    public String getAddress() {
+      return address;
+    }
   }
 }

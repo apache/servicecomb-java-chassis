@@ -75,6 +75,10 @@ public class KieConfig {
 
   private static final String CUSTOM_LABEL_VALUE_DEFAULT = "";
 
+  private static final String REGION = "servicecomb.datacenter.region";
+
+  private static final String AVAILABLE_ZONE = "servicecomb.datacenter.availableZone";
+
   private KieConfig() {
   }
 
@@ -184,5 +188,13 @@ public class KieConfig {
 
   public String getProxyPasswd() {
     return finalConfig.getString(VertxConst.PROXY_PASSWD, null);
+  }
+
+  public String getRegion() {
+    return finalConfig.getString(REGION, "");
+  }
+
+  public String getAvailableZone() {
+    return finalConfig.getString(AVAILABLE_ZONE, "");
   }
 }

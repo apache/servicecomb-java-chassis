@@ -46,6 +46,7 @@ import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpUtils;
+import org.apache.servicecomb.http.client.event.OperationEvents.UnAuthorizedOperationEvent;
 import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,6 +72,8 @@ public class KieClient implements KieConfigOperation {
 
   private final Map<String, List<String>> dimensionConfigNames = new HashMap<>();
 
+  private EventBus eventBus;
+
   public KieClient(KieAddressManager addressManager, HttpTransport httpTransport, KieConfiguration kieConfiguration) {
     this.httpTransport = httpTransport;
     this.addressManager = addressManager;
@@ -78,6 +81,7 @@ public class KieClient implements KieConfigOperation {
   }
 
   public void setEventBus(EventBus eventBus) {
+    this.eventBus = eventBus;
     addressManager.setEventBus(eventBus);
   }
 
@@ -91,6 +95,7 @@ public class KieClient implements KieConfigOperation {
 
       HttpRequest httpRequest = new HttpRequest(url, null, null, HttpRequest.GET);
       HttpResponse httpResponse = httpTransport.doRequest(httpRequest);
+      recordAndSendUnAuthorizedEvent(httpResponse, address);
       ConfigurationsResponse configurationsResponse = new ConfigurationsResponse();
       if (httpResponse.getStatusCode() == HttpStatus.SC_OK) {
         revision = httpResponse.getHeader("X-Kie-Revision");
@@ -100,7 +105,6 @@ public class KieClient implements KieConfigOperation {
         configurationsResponse.setConfigurations(configurations);
         configurationsResponse.setChanged(true);
         configurationsResponse.setRevision(revision);
-        addressManager.recordSuccessState(address);
         return configurationsResponse;
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
@@ -108,16 +112,13 @@ public class KieClient implements KieConfigOperation {
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_NOT_MODIFIED) {
         configurationsResponse.setChanged(false);
-        addressManager.recordSuccessState(address);
         return configurationsResponse;
       }
       if (httpResponse.getStatusCode() == HttpStatus.SC_TOO_MANY_REQUESTS) {
         LOGGER.warn("rate limited, keep the local dimension [{}] configs unchanged.", request.getLabelsQuery());
         configurationsResponse.setChanged(false);
-        addressManager.recordSuccessState(address);
         return configurationsResponse;
       }
-      addressManager.recordFailState(address);
       throw new OperationException(
           "read response failed. status:" + httpResponse.getStatusCode() + "; message:" +
               httpResponse.getMessage() + "; content:" + httpResponse.getContent());
@@ -125,6 +126,16 @@ public class KieClient implements KieConfigOperation {
       addressManager.recordFailState(address);
       LOGGER.error("query configuration from {} failed, message={}", url, e.getMessage());
       throw new OperationException("read response failed. ", e);
+    }
+  }
+
+  private void recordAndSendUnAuthorizedEvent(HttpResponse response, String address) {
+    if (this.eventBus != null && response.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
+      LOGGER.warn("query configuration unauthorized from server [{}], message [{}]", address, response.getMessage());
+      addressManager.recordFailState(address);
+      this.eventBus.post(new UnAuthorizedOperationEvent(address));
+    } else {
+      addressManager.recordSuccessState(address);
     }
   }
 
