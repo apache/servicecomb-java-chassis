@@ -22,7 +22,7 @@ import java.util.Map;
 
 public interface AuthHeaderProvider {
   /**
-   * Obtain RBAC authentication request header, host is the key of cache, spring-cloud module have specific usage of host
+   * Obtain RBAC authentication request header, host is the key of cache
    *
    * @param host engine address ip
    * @return auth headers

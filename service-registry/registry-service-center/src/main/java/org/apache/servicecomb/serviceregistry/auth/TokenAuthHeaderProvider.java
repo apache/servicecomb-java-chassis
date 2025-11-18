@@ -27,7 +27,7 @@ import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 public class TokenAuthHeaderProvider implements AuthHeaderProvider {
   @Override
   public Map<String, String> authHeaders(String host) {
-    String token = TokenCacheManager.getInstance().getToken(RBACBootStrapService.DEFAULT_REGISTRY_NAME);
+    String token = TokenCacheManager.getInstance().getToken(host);
     if (StringUtils.isEmpty(token)) {
       return new HashMap<>();
     }

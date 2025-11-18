@@ -35,6 +35,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
+import org.apache.servicecomb.http.client.event.OperationEvents.UnAuthorizedOperationEvent;
 import org.apache.servicecomb.http.client.utils.ServiceCombServiceAvailableUtils;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
@@ -152,7 +153,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         return;
       }
       holder.setStatusCode(response.statusCode());
-      sendUnAuthorizedEvent(response);
+      sendUnAuthorizedEvent(response, requestContext);
       response.exceptionHandler(e -> {
         LOGGER.error("error in processing response.", e);
         countDownLatch.countDown();
@@ -232,7 +233,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
         return;
       }
-      sendUnAuthorizedEvent(response);
+      sendUnAuthorizedEvent(response, requestContext);
       response.exceptionHandler(e -> {
         LOGGER.error("error in processing response.", e);
         countDownLatch.countDown();
@@ -247,10 +248,18 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     };
   }
 
-  private void sendUnAuthorizedEvent(HttpClientResponse response) {
+  private void sendUnAuthorizedEvent(HttpClientResponse response, RequestContext requestContext) {
     if (response.statusCode() == Status.UNAUTHORIZED.getStatusCode()) {
-      ServiceCenterEventBus.getEventBus().post(new NotPermittedEvent());
+      ServiceCenterEventBus.getEventBus().post(new UnAuthorizedOperationEvent(getAddressWithProtocol(requestContext)));
     }
+  }
+
+  private String getAddressWithProtocol(RequestContext requestContext) {
+    String ipAndPort = requestContext.getIpPort().toString();
+    if (ipAndPort.startsWith("http")) {
+      return ipAndPort;
+    }
+    return "https://" + ipAndPort;
   }
 
   private Handler<RestResponse> syncHandlerForInstances(CountDownLatch countDownLatch,
@@ -1007,7 +1016,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         return;
       }
       holder.setStatusCode(response.statusCode());
-      sendUnAuthorizedEvent(response);
+      sendUnAuthorizedEvent(response, restResponse.getRequestContext());
       countDownLatch.countDown();
     };
   }

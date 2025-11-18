@@ -313,4 +313,16 @@ public class AbstractAddressManagerTest {
     Assertions.assertTrue(manager.compareAndGetAddress("192.168.20.16").isEmpty());
     Assertions.assertEquals("https://192.168.20.160:30100", manager.compareAndGetAddress("192.168.20.160"));
   }
+
+  @Test
+  public void AddressAffinityTest() {
+    List<String> testAddr = new ArrayList<>();
+    testAddr.add("https://192.168.20.160:30100?region=region1&availableZone=zone1");
+    testAddr.add("https://127.0.0.1:30100");
+    AbstractAddressManager manager = new AbstractAddressManager(testAddr, "region1", "zone1");
+    Assertions.assertEquals("https://192.168.20.160:30100", manager.address());
+
+    AbstractAddressManager manager2 = new AbstractAddressManager("default", testAddr, "region1", "zone1");
+    Assertions.assertEquals("https://192.168.20.160:30100", manager2.address());
+  }
 }
