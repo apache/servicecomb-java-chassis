@@ -26,8 +26,9 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ServiceCenterAddressManager extends AbstractAddressManager {
-  public ServiceCenterAddressManager(String projectName, List<String> addresses, EventBus eventBus) {
-    super(projectName, addresses);
+  public ServiceCenterAddressManager(String projectName, List<String> addresses, EventBus eventBus, String region,
+      String availableZone) {
+    super(projectName, addresses, region, availableZone);
     eventBus.register(this);
   }
 

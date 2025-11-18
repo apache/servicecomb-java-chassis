@@ -69,7 +69,7 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
     ConfigCenterConfig configCenterConfig = new ConfigCenterConfig(environment);
     configConverter = new ConfigConverter(configCenterConfig.getFileSources());
 
-    ConfigCenterAddressManager configCenterAddressManager = configCenterAddressManager(configCenterConfig);
+    ConfigCenterAddressManager configCenterAddressManager = configCenterAddressManager(configCenterConfig, environment);
 
     HttpTransport httpTransport = createHttpTransport(configCenterAddressManager,
         buildRequestConfig(configCenterConfig), environment, configCenterConfig);
@@ -176,16 +176,18 @@ public class ConfigCenterDynamicPropertiesSource implements DynamicPropertiesSou
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
 
-  private ConfigCenterAddressManager configCenterAddressManager(ConfigCenterConfig configCenterConfig) {
+  private ConfigCenterAddressManager configCenterAddressManager(ConfigCenterConfig configCenterConfig, Environment environment) {
+    String region = environment.getProperty("servicecomb.datacenter.region");
+    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
     return new ConfigCenterAddressManager(configCenterConfig.getDomainName(),
-        configCenterConfig.getServerUri(),
-        EventManager.getEventBus());
+        configCenterConfig.getServerUri(), EventManager.getEventBus(), region, availableZone);
   }
 
   @Override

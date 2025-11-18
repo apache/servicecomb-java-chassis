@@ -49,13 +49,13 @@ public class SCAddressManager {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(SCAddressManager.class);
 
-  private boolean initialized = false;
-
   private final ServiceCenterClient serviceCenterClient;
 
   private final SCRegistration scRegistration;
 
   private final SCConfigurationProperties configurationProperties;
+
+  private final Map<String, HashSet<String>> lastEngineEndpointsCache = new HashMap<>();
 
   public SCAddressManager(SCConfigurationProperties configurationProperties,
       ServiceCenterClient serviceCenterClient,
@@ -68,9 +68,6 @@ public class SCAddressManager {
 
   @Subscribe
   public void onHeartBeatEvent(HeartBeatEvent event) {
-    if (initialized) {
-      return;
-    }
     if (event.isSuccess() && configurationProperties.isAutoDiscovery()) {
       for (Type type : Type.values()) {
         initEndPort(type.name());
@@ -79,19 +76,30 @@ public class SCAddressManager {
   }
 
   private void initEndPort(String key) {
-    List<MicroserviceInstance> instances = findServiceInstance("default",
-        key, "0+");
-    if ("SERVICECENTER".equals(key) && !instances.isEmpty()) {
-      initialized = true;
-    }
-    Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(instances);
+    List<MicroserviceInstance> instances = findServiceInstance("default", key, "0+");
+    HashSet<String> currentEngineEndpoints = new HashSet<>();
+    Map<String, List<String>> zoneAndRegion = generateZoneAndRegionAddress(instances, currentEngineEndpoints);
     if (zoneAndRegion == null) {
       return;
     }
-    EventManager.post(new RefreshEndpointEvent(zoneAndRegion, key));
+    if (isEngineEndpointsChanged(lastEngineEndpointsCache.get(key), currentEngineEndpoints)) {
+      LOGGER.info("auto discovery service [{}] addresses: [{}]", key, zoneAndRegion);
+      lastEngineEndpointsCache.put(key, currentEngineEndpoints);
+      EventManager.post(new RefreshEndpointEvent(zoneAndRegion, key));
+    }
   }
 
-  private Map<String, List<String>> generateZoneAndRegionAddress(List<MicroserviceInstance> instances) {
+  private boolean isEngineEndpointsChanged(Set<String> lastEngineEndpoints, Set<String> currentEngineEndpoints) {
+    if (lastEngineEndpoints == null || lastEngineEndpoints.isEmpty()) {
+      return true;
+    }
+    HashSet<String> compareTemp = new HashSet<>(lastEngineEndpoints);
+    compareTemp.removeAll(currentEngineEndpoints);
+    return !compareTemp.isEmpty() || lastEngineEndpoints.size() != currentEngineEndpoints.size();
+  }
+
+  private Map<String, List<String>> generateZoneAndRegionAddress(List<MicroserviceInstance> instances,
+      HashSet<String> currentEngineEndpoints) {
     if (instances.isEmpty()) {
       return null;
     }
@@ -107,6 +115,7 @@ public class SCAddressManager {
       } else {
         sameRegion.addAll(microserviceInstance.getEndpoints());
       }
+      currentEngineEndpoints.addAll(microserviceInstance.getEndpoints());
     }
     zoneAndRegion.put("sameZone", new ArrayList<>(sameZone));
     zoneAndRegion.put("sameRegion", new ArrayList<>(sameRegion));
