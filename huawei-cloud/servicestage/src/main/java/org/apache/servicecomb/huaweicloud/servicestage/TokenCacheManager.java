@@ -56,8 +56,6 @@ public final class TokenCacheManager {
 
   private TokenCache tokenCache;
 
-  private static final Object LOCK = new Object();
-
   public static TokenCacheManager getInstance() {
     return INSTANCE;
   }
@@ -192,13 +190,11 @@ public final class TokenCacheManager {
       if (StringUtils.isEmpty(address)) {
         address = registryName;
       }
-      synchronized (LOCK) {
-        try {
-          return cache.get(address);
-        } catch (Exception e) {
-          LOGGER.error("failed to create token", e);
-          return null;
-        }
+      try {
+        return cache.get(address);
+      } catch (Exception e) {
+        LOGGER.error("failed to create token", e);
+        return null;
       }
     }
 
