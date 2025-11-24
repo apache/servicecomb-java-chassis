@@ -25,11 +25,14 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.servicecomb.foundation.auth.SignRequest;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by   on 2019/10/16.
  */
 public class HttpTransportImpl implements HttpTransport {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpTransportImpl.class);
 
   private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
@@ -106,6 +109,7 @@ public class HttpTransportImpl implements HttpTransport {
       signRequest.setEndpoint(uri);
       return signRequest;
     } catch (Exception e) {
+      LOGGER.error("create signRequest failed!", e);
       return null;
     }
   }
