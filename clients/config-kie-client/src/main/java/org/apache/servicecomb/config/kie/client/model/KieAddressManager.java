@@ -27,8 +27,8 @@ import com.google.common.eventbus.Subscribe;
 
 public class KieAddressManager extends AbstractAddressManager {
 
-  public KieAddressManager(List<String> addresses, EventBus eventBus) {
-    super(addresses);
+  public KieAddressManager(List<String> addresses, EventBus eventBus, String region, String availableZone) {
+    super(addresses, region, availableZone);
     eventBus.register(this);
   }
 

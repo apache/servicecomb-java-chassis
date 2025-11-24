@@ -17,19 +17,16 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
+import java.net.URI;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.auth.Cipher;
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.http.client.event.EngineConnectChangedEvent;
-import org.apache.servicecomb.service.center.client.OperationEvents;
+import org.apache.servicecomb.http.client.event.OperationEvents;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
 import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
 import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
@@ -55,17 +52,15 @@ public final class TokenCacheManager {
 
   private static final TokenCacheManager INSTANCE = new TokenCacheManager();
 
-
-  private final Map<String, TokenCache> tokenCacheMap;
-
   private Map<String, ServiceCenterClient> serviceCenterClients;
+
+  private TokenCache tokenCache;
 
   public static TokenCacheManager getInstance() {
     return INSTANCE;
   }
 
   private TokenCacheManager() {
-    tokenCacheMap = new ConcurrentHashMapEx<>();
   }
 
   public void setServiceCenterClients(Map<String, ServiceCenterClient> serviceCenterClients) {
@@ -73,24 +68,17 @@ public final class TokenCacheManager {
   }
 
   public void addTokenCache(String registryName, String accountName, String password, Cipher cipher) {
-    Objects.requireNonNull(registryName, "registryName should not be null!");
-    if (tokenCacheMap.containsKey(registryName)) {
-      LOGGER.warn("duplicate token cache registration for serviceRegistry[{}]", registryName);
-      return;
-    }
-
-    tokenCacheMap.put(registryName, new TokenCache(registryName, accountName, password, cipher));
+    tokenCache = new TokenCache(registryName, accountName, password, cipher);
   }
 
-  public String getToken(String registryName) {
-    return Optional.ofNullable(tokenCacheMap.get(registryName))
-        .map(TokenCache::getToken)
-        .orElse(null);
+  public String getToken(String host) {
+    if (tokenCache == null) {
+      return null;
+    }
+    return tokenCache.getToken(host);
   }
 
   public class TokenCache {
-    private static final String UN_AUTHORIZED_CODE_HALF_OPEN = "401302";
-
     private static final long TOKEN_REFRESH_TIME_IN_SECONDS = 20 * 60 * 1000;
 
     private final String registryName;
@@ -104,10 +92,6 @@ public final class TokenCacheManager {
     private LoadingCache<String, String> cache;
 
     private final Cipher cipher;
-
-    private int lastStatusCode;
-
-    private String lastErrorCode;
 
     public TokenCache(String registryName, String accountName, String password,
         Cipher cipher) {
@@ -128,17 +112,17 @@ public final class TokenCacheManager {
           }
         });
         cache = CacheBuilder.newBuilder()
-            .maximumSize(1)
+            .maximumSize(10)
             .refreshAfterWrite(refreshTime(), TimeUnit.MILLISECONDS)
             .build(new CacheLoader<String, String>() {
               @Override
               public String load(String key) throws Exception {
-                return createHeaders();
+                return createHeaders(key);
               }
 
               @Override
               public ListenableFuture<String> reload(String key, String oldValue) throws Exception {
-                return Futures.submit(() -> createHeaders(), executorService);
+                return Futures.submit(() -> createHeaders(key), executorService);
               }
             });
         EventManager.getEventBus().register(this);
@@ -147,21 +131,22 @@ public final class TokenCacheManager {
 
     @Subscribe
     public void onNotPermittedEvent(OperationEvents.UnAuthorizedOperationEvent event) {
-      this.executorService.submit(() -> {
-        if (lastStatusCode == Status.UNAUTHORIZED.getStatusCode() && UN_AUTHORIZED_CODE_HALF_OPEN
-            .equals(lastErrorCode)) {
-          cache.refresh(registryName);
-        }
-      });
+      LOGGER.warn("address {} unAuthorized, refresh cache token!", event.getAddress());
+      cache.refresh(getHostByAddress(event.getAddress()));
     }
 
-    @Subscribe
-    public void onEngineConnectChangedEvent(EngineConnectChangedEvent event) {
-      cache.refresh(registryName);
+    private String getHostByAddress(String address) {
+      try {
+        URI uri = URI.create(address);
+        return uri.getHost();
+      } catch (Exception e) {
+        LOGGER.error("get host by address [{}] error!", address, e);
+        return registryName;
+      }
     }
 
-    private String createHeaders() {
-      LOGGER.info("start to create RBAC headers");
+    private String createHeaders(String host) {
+      LOGGER.info("start to create RBAC headers for host: {}", host);
 
       ServiceCenterClient serviceCenterClient = serviceCenterClients.get(this.registryName);
 
@@ -169,10 +154,7 @@ public final class TokenCacheManager {
       request.setName(accountName);
       request.setPassword(new String(cipher.decrypt(password.toCharArray())));
 
-      RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request);
-
-      this.lastStatusCode = rbacTokenResponse.getStatusCode();
-      this.lastErrorCode = rbacTokenResponse.getErrorCode();
+      RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request, host);
 
       if (Status.UNAUTHORIZED.getStatusCode() == rbacTokenResponse.getStatusCode()
           || Status.FORBIDDEN.getStatusCode() == rbacTokenResponse.getStatusCode()) {
@@ -185,8 +167,14 @@ public final class TokenCacheManager {
         LOGGER.warn("service center do not support RBAC token, you should not config account info");
         return INVALID_TOKEN;
       }
+      if (Status.INTERNAL_SERVER_ERROR.getStatusCode() == rbacTokenResponse.getStatusCode()) {
+        // return null for server_error, so the token information can be re-fetched on the next call.
+        // It will prompt 'CacheLoader returned null for key xxx'
+        LOGGER.warn("service center query RBAC token error!");
+        return null;
+      }
 
-      LOGGER.info("refresh token successfully {}", rbacTokenResponse.getStatusCode());
+      LOGGER.info("refresh host [{}] token successfully {}", host, rbacTokenResponse.getStatusCode());
       return rbacTokenResponse.getToken();
     }
 
@@ -194,13 +182,16 @@ public final class TokenCacheManager {
       return TOKEN_REFRESH_TIME_IN_SECONDS;
     }
 
-    public String getToken() {
+    public String getToken(String host) {
       if (!enabled()) {
         return null;
       }
-
+      String address = host;
+      if (StringUtils.isEmpty(address)) {
+        address = registryName;
+      }
       try {
-        return cache.get(registryName);
+        return cache.get(address);
       } catch (Exception e) {
         LOGGER.error("failed to create token", e);
         return null;

@@ -21,11 +21,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public interface AuthHeaderProvider {
-  default Map<String, String> authHeaders() {
+  /**
+   * Obtain RBAC authentication request header, host is the key of cache
+   *
+   * @param host engine address ip
+   * @return auth headers
+   */
+  default Map<String, String> authHeaders(String host) {
     return new HashMap<>(0);
   }
 
   default Map<String, String> getSignAuthHeaders(SignRequest request) {
-    return authHeaders();
+    String host = "";
+    if (request != null && request.getEndpoint() != null) {
+      host = request.getEndpoint().getHost();
+    }
+    return authHeaders(host);
   }
 }

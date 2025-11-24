@@ -18,17 +18,21 @@
 package org.apache.servicecomb.http.client.common;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.util.EntityUtils;
 import org.apache.servicecomb.foundation.auth.SignRequest;
 import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by   on 2019/10/16.
  */
 public class HttpTransportImpl implements HttpTransport {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpTransportImpl.class);
 
   private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
@@ -87,7 +91,7 @@ public class HttpTransportImpl implements HttpTransport {
       globalHeaders.forEach(httpRequest::addHeader);
     }
 
-    httpRequest.getHeaders().putAll(requestAuthHeaderProvider.loadAuthHeader(createSignRequest()));
+    httpRequest.getHeaders().putAll(requestAuthHeaderProvider.loadAuthHeader(createSignRequest(httpRequest.getUrl())));
 
     //get Http response
     org.apache.http.HttpResponse response = httpClient.execute(httpRequest.getRealRequest());
@@ -98,9 +102,16 @@ public class HttpTransportImpl implements HttpTransport {
         response.getAllHeaders());
   }
 
-  private static SignRequest createSignRequest() {
-    // Now the implementations do not process SignRequest, so return null. Maybe future will use it.
-    return null;
+  private static SignRequest createSignRequest(String url) {
+    try {
+      URI uri = URI.create(url);
+      SignRequest signRequest = new SignRequest();
+      signRequest.setEndpoint(uri);
+      return signRequest;
+    } catch (Exception e) {
+      LOGGER.error("create signRequest failed!", e);
+      return null;
+    }
   }
 
   @Override

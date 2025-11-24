@@ -53,7 +53,7 @@ public class ServiceCenterClientTest {
 
   public ServiceCenterClientTest() {
     this.addressManager = new ServiceCenterAddressManager("default", Arrays.asList("http://127.0.0.1:30100"),
-        new EventBus());
+        new EventBus(), "", "");
   }
 
   @Test

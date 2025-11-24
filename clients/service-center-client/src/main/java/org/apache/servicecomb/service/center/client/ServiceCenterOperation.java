@@ -184,7 +184,7 @@ public interface ServiceCenterOperation {
    * @return if heartbeat is successful
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
-  RbacTokenResponse queryToken(RbacTokenRequest request);
+  RbacTokenResponse queryToken(RbacTokenRequest request, String host);
 
   /**
    * Update properties of microservice

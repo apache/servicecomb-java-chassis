@@ -71,7 +71,7 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
   private void init(Environment environment) {
     KieConfig kieConfig = new KieConfig(environment);
     configConverter = new ConfigConverter(kieConfig.getFileSources());
-    KieAddressManager kieAddressManager = configKieAddressManager(kieConfig);
+    KieAddressManager kieAddressManager = configKieAddressManager(kieConfig, environment);
 
     RequestConfig.Builder requestBuilder = buildRequestConfigBuilder(kieConfig);
     if (kieConfig.enableLongPolling()
@@ -161,15 +161,18 @@ public class KieDynamicPropertiesSource implements DynamicPropertiesSource {
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
 
-  private KieAddressManager configKieAddressManager(KieConfig kieConfig) {
+  private KieAddressManager configKieAddressManager(KieConfig kieConfig, Environment environment) {
+    String region = environment.getProperty("servicecomb.datacenter.region");
+    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone");
     return new KieAddressManager(
-        Arrays.asList(kieConfig.getServerUri().split(",")), EventManager.getEventBus());
+        Arrays.asList(kieConfig.getServerUri().split(",")), EventManager.getEventBus(), region, availableZone);
   }
 
   @Override
