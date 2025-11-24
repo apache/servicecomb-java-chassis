@@ -93,8 +93,10 @@ public class RBACBootStrapService implements BootStrapService {
   }
 
   private ServiceCenterAddressManager createAddressManager(Environment environment) {
+    String region = environment.getProperty("servicecomb.datacenter.region", "");
+    String availableZone = environment.getProperty("servicecomb.datacenter.availableZone", "");
     return new ServiceCenterAddressManager(getTenantName(environment),
-        getRBACAddressList(environment), EventManager.getEventBus());
+        getRBACAddressList(environment), region, availableZone, EventManager.getEventBus());
   }
 
   private SSLProperties createSSLProperties(Environment environment, String tag) {

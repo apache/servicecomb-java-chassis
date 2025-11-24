@@ -46,12 +46,15 @@ class ServiceRegistryConfigBuilder {
 
   private boolean ssl;
 
+  private List<String> originAddress;
+
   public ServiceRegistryConfig build() {
     return new ServiceRegistryConfig()
         .setHttpVersion(getHttpVersion())
         .setInstances(getInstances())
         .setIpPort(getIpPort())
         .setSsl(isSsl())
+        .setOriginAddress(getOriginAddress())
         .setClientName(RegistryHttpClientOptionsSPI.CLIENT_NAME)
         .setWatchClientName(RegistryWatchHttpClientOptionsSPI.CLIENT_NAME)
         .setConnectionTimeout(getConnectionTimeout())
@@ -110,11 +113,16 @@ class ServiceRegistryConfigBuilder {
     return this.ssl;
   }
 
+  public List<String> getOriginAddress() {
+    return originAddress;
+  }
+
   public ArrayList<IpPort> getIpPort() {
     List<String> uriList = Objects
         .requireNonNull(Deployment.getSystemBootStrapInfo(ServiceCenterDefaultDeploymentProvider.SYSTEM_KEY_SERVICE_CENTER),
             "no sc address found!")
         .getAccessURL();
+    this.originAddress = uriList;
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     uriList.forEach(anUriList -> {
       try {

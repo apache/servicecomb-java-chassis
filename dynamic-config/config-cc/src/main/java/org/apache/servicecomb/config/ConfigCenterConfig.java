@@ -58,6 +58,10 @@ public final class ConfigCenterConfig {
 
   private static final String CLIENT_SOCKET_TIMEOUT = "servicecomb.config.client.timeout.socket";
 
+  private static final String REGION = "servicecomb.datacenter.region";
+
+  private static final String AVAILABLE_ZONE = "servicecomb.datacenter.availableZone";
+
   private ConfigCenterConfig() {
   }
 
@@ -153,5 +157,13 @@ public final class ConfigCenterConfig {
 
   public int getSocketTimeout(Configuration configuration) {
     return configuration.getInt(CLIENT_SOCKET_TIMEOUT, 5000);
+  }
+
+  public String getRegion() {
+    return finalConfig.getString(REGION, "");
+  }
+
+  public String getAvailableZone() {
+    return finalConfig.getString(AVAILABLE_ZONE, "");
   }
 }

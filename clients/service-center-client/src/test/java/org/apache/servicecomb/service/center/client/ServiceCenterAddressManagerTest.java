@@ -41,7 +41,7 @@ class ServiceCenterAddressManagerTest {
   @Test
   public void getUrlPrefix() {
     addresses.add("http://127.0.0.1:30103");
-    addressManager1 = new ServiceCenterAddressManager("project", addresses, new EventBus());
+    addressManager1 = new ServiceCenterAddressManager("project", addresses, "", "", new EventBus());
 
     Assertions.assertNotNull(addressManager1);
 
@@ -55,7 +55,7 @@ class ServiceCenterAddressManagerTest {
   @Test
   public void formatUrlTest() {
     addresses.add("http://127.0.0.1:30103");
-    addressManager1 = new ServiceCenterAddressManager("project", addresses, new EventBus());
+    addressManager1 = new ServiceCenterAddressManager("project", addresses, "", "", new EventBus());
     Assertions.assertNotNull(addressManager1);
 
     String address = addressManager1.address();
@@ -76,7 +76,7 @@ class ServiceCenterAddressManagerTest {
     Map<String, List<String>> zoneAndRegion = new HashMap<>();
     zoneAndRegion.put("sameZone", addressAZ);
     zoneAndRegion.put("sameRegion", addressRG);
-    addressManager1 = new ServiceCenterAddressManager("project", addresses, new EventBus());
+    addressManager1 = new ServiceCenterAddressManager("project", addresses, "", "", new EventBus());
     RefreshEndpointEvent event = new RefreshEndpointEvent(zoneAndRegion, "SERVICECENTER");
     addressManager1.refreshEndpoint(event, "SERVICECENTER");
 

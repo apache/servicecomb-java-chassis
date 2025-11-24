@@ -24,7 +24,7 @@ import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 
 public class EmptyAuthHeaderProvider implements AuthHeaderProvider {
   @Override
-  public Map<String, String> authHeaders() {
+  public Map<String, String> authHeaders(String host) {
     return new HashMap<>(0);
   }
 }

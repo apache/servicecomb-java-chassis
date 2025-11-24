@@ -169,15 +169,19 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
 
   private KieAddressManager configKieAddressManager() {
+    String region = KieConfig.INSTANCE.getRegion();
+    String availableZone = KieConfig.INSTANCE.getAvailableZone();
     return new KieAddressManager(
-        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), EventManager.getEventBus());
+        Arrays.asList(KieConfig.INSTANCE.getServerUri().split(",")), region, availableZone,
+        EventManager.getEventBus());
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {

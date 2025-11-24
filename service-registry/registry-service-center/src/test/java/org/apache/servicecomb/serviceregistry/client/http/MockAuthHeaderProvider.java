@@ -24,7 +24,7 @@ import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 
 public class MockAuthHeaderProvider implements AuthHeaderProvider {
   @Override
-  public Map<String, String> authHeaders() {
+  public Map<String, String> authHeaders(String host) {
     HashMap<String, String> headers = new HashMap<>();
     headers.put("X-Service-AK", "blah...");
     return headers;

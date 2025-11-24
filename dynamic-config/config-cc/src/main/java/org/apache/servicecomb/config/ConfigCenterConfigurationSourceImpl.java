@@ -188,8 +188,9 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private static RequestAuthHeaderProvider getRequestAuthHeaderProvider(List<AuthHeaderProvider> authHeaderProviders) {
     return signRequest -> {
+      String host = signRequest != null && signRequest.getEndpoint() != null ? signRequest.getEndpoint().getHost() : "";
       Map<String, String> headers = new HashMap<>();
-      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders()));
+      authHeaderProviders.forEach(provider -> headers.putAll(provider.authHeaders(host)));
       return headers;
     };
   }
@@ -198,7 +199,15 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
     return new ConfigCenterAddressManager(ConfigCenterConfig.INSTANCE.getDomainName(),
         Deployment
             .getSystemBootStrapInfo(ConfigCenterDefaultDeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL(),
-        EventManager.getEventBus());
+        getRegion(), getAvailableZone(), EventManager.getEventBus());
+  }
+
+  private String getRegion() {
+    return ConfigCenterConfig.INSTANCE.getRegion();
+  }
+
+  private String getAvailableZone() {
+    return ConfigCenterConfig.INSTANCE.getAvailableZone();
   }
 
   private void updateConfiguration(WatchedUpdateResult result) {
