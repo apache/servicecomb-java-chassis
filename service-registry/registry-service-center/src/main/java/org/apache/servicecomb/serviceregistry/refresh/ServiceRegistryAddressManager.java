@@ -27,6 +27,7 @@ import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.http.client.common.AbstractAddressManager;
+import org.apache.servicecomb.http.client.common.URLEndPoint;
 import org.apache.servicecomb.http.client.event.RefreshEndpointEvent;
 
 import com.google.common.eventbus.EventBus;
@@ -69,18 +70,29 @@ public class ServiceRegistryAddressManager extends AbstractAddressManager {
     if (!isAffinityAddress || (StringUtils.isEmpty(ownRegion) && StringUtils.isEmpty(ownAvailableZone))) {
       return;
     }
-    String regionAndZone = "region=" + ownRegion + "&availableZone=" + ownAvailableZone;
     Set<String> sameZone = new HashSet<>();
     Set<String> sameRegion = new HashSet<>();
     for (String address : addresses) {
       URI uri = URI.create(address);
       String ipPort = NetUtils.parseIpPort(uri).toString();
-      if (address.toLowerCase().contains(regionAndZone.toLowerCase())) {
+      if (isMatchRegionAndZone(address, ownRegion, ownAvailableZone)) {
         sameZone.add(ipPort);
       } else {
         sameRegion.add(ipPort);
       }
     }
     refreshAffinityAddress(sameZone, sameRegion);
+  }
+
+  private boolean isMatchRegionAndZone(String address, String ownRegion, String ownAvailableZone) {
+    try {
+      URLEndPoint endPoint = new URLEndPoint(address);
+      if (!StringUtils.equals(ownRegion, endPoint.getFirst(REGION))) {
+        return false;
+      }
+      return StringUtils.equals(ownAvailableZone, endPoint.getFirst(ZONE));
+    } catch (Exception e) {
+      return false;
+    }
   }
 }
