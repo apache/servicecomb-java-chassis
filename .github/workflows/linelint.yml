@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: install linelint
         run: cargo install linelint-cli
       - name: Run linelint check

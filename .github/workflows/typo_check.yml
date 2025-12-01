@@ -28,7 +28,7 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         # To run the typo check locally, you can follow these steps:
         # 1. Install typos locally using cargo:
         #    cargo install typos-cli
