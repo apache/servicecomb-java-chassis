@@ -21,7 +21,9 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,11 +32,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.ws.rs.core.MediaType;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestApiResponse {
-  static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
+
+  SwaggerOperations swaggerOperations;
+
+  @BeforeAll
+  public void setUp() {
+    swaggerOperations = SwaggerOperations.generate(ApiResponseAnnotation.class);
+  }
 
   @AfterAll
-  public static void teardown() {
+  public void tearDown() {
     swaggerOperations = null;
   }
 
