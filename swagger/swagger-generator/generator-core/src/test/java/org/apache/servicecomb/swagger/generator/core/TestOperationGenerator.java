@@ -25,10 +25,11 @@ import java.util.List;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.MatcherAssert;
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,15 +41,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class TestOperationGenerator {
   SwaggerOperations swaggerOperations;
 
-  @BeforeEach
+  @BeforeAll
   public void setUp() {
     swaggerOperations = SwaggerOperations.generate(TestClass.class);
   }
 
-  @AfterEach
+  @AfterAll
   public void tearDown() {
     swaggerOperations = null;
   }
