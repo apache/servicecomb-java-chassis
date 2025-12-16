@@ -62,7 +62,6 @@
     <jmockit.version>1.34</jmockit.version>
     <junit.version>4.13.2</junit.version>
     <junit5.version>5.13.4</junit5.version>
-    <log4j.version>1.2.17</log4j.version>
     <log4j2.version>2.25.2</log4j2.version>
     <maven-model.version>3.9.11</maven-model.version>
     <micrometer.version>1.16.0</micrometer.version>
@@ -82,7 +81,7 @@
     <seanyinx.version>1.0.0</seanyinx.version>
     <servo.version>0.13.2</servo.version>
     <servlet-api.version>6.0.0</servlet-api.version>
-    <slf4j.version>1.7.36</slf4j.version>
+    <slf4j.version>2.0.17</slf4j.version>
     <snakeyaml.version>2.5</snakeyaml.version>
     <swagger.version>2.2.41</swagger.version>
     <vertx.version>5.0.1</vertx.version>
@@ -371,7 +370,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
+        <artifactId>log4j-slf4j2-impl</artifactId>
         <version>${log4j2.version}</version>
       </dependency>
 
