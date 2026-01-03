@@ -35,4 +35,4 @@ jobs:
         # 2. Run the typo check with the following command:
         #    typos
       - name: Check typos
-        uses: crate-ci/typos@v1.38.1
+        uses: crate-ci/typos@v1.41.0
