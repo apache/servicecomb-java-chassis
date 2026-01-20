@@ -45,6 +45,8 @@ public class BufferInputStream extends ServletInputStream {
 
   @Override
   public int read() {
+    System.out.println("testReadDecorate==========read()=============");
+    new Exception().printStackTrace();
     return byteBuf.readUnsignedByte();
   }
 
@@ -94,7 +96,8 @@ public class BufferInputStream extends ServletInputStream {
     if (len > avail) {
       len = avail;
     }
-
+    System.out.println("testReadDecorate=================" + len + "=====" + avail);
+    new Exception().printStackTrace();
     byteBuf.readBytes(b, off, len);
     return len;
   }
