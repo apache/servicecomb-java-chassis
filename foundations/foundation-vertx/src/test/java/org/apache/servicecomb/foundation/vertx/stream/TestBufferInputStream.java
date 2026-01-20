@@ -65,10 +65,11 @@ public class TestBufferInputStream {
     out.close();
     BufferInputStream bufferInputStream = new BufferInputStream(buffer);
     GZIPInputStream gzipInputStream = new GZIPInputStream(bufferInputStream);
+    System.out.println("test index===============>" + bufferInputStream.getIndex());
     StringBuilder sb = new StringBuilder();
     byte[] bufferByte = new byte[256];
     int n;
-    while ((n = gzipInputStream.read(bufferByte)) > 0) {
+    while ((n = gzipInputStream.read(bufferByte)) >= 0) {
       sb.append(new String(bufferByte, 0, n));
     }
     gzipInputStream.close();
