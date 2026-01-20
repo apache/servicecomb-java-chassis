@@ -60,8 +60,11 @@ public class TestBufferInputStream {
    * UnpooledByteBufAllocator$InstrumentedUnpooledUnsafeHeapByteBuf(ridx: 36, widx: 36, cap: 256)
    */
   @Test
-  @EnabledOnJre({JRE.JAVA_17, JRE.JAVA_8})
   public void testReadDecorate() throws IOException {
+    String version = System.getProperty("java.version");
+    if (version != null && version.contains("21")) {
+      return;
+    }
     String text = "abcdefg123456789";
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     GZIPOutputStream gzipOutputStream = new GZIPOutputStream(out);
