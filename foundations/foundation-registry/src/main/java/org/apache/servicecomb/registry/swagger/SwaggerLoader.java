@@ -181,7 +181,7 @@ public class SwaggerLoader {
 
   private Swagger loadFromRemote(Microservice microservice, Collection<MicroserviceInstance> instances,
       String schemaId) {
-    String key = microservice.getServiceId() + "." + schemaId;
+    String key = microservice.getServiceName() + "." + schemaId;
     Swagger result = remoteSwagger.computeIfAbsent(key, k -> {
       String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), instances, schemaId);
       if (schemaContent != null) {
