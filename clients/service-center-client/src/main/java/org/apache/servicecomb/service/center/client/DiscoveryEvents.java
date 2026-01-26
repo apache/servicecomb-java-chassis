@@ -20,6 +20,11 @@ package org.apache.servicecomb.service.center.client;
 import java.util.List;
 
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class DiscoveryEvents {
   public static class InstanceChangedEvent extends DiscoveryEvents {
@@ -52,6 +57,46 @@ public abstract class DiscoveryEvents {
    * internal events to ask for a immediate instance pull
    */
   public static class PullInstanceEvent extends DiscoveryEvents {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PullInstanceEvent.class);
 
+    private final String appId;
+
+    private final String serviceName;
+
+    public PullInstanceEvent(String message) {
+      JsonNode messageNode = parseJsonString(message);
+      this.appId = getContextFromNode(messageNode, "appId");
+      this.serviceName = getContextFromNode(messageNode, "serviceName");
+    }
+
+    public String getAppId() {
+      return appId;
+    }
+
+    public String getServiceName() {
+      return serviceName;
+    }
+
+    private JsonNode parseJsonString(String message) {
+      try {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readTree(message);
+      } catch (Exception e) {
+        LOGGER.error("parse message [{}] failed!", message, e);
+        return null;
+      }
+    }
+
+    private String getContextFromNode(JsonNode messageNode, String itemKey) {
+      if (messageNode == null) {
+        return "";
+      }
+      try {
+        return messageNode.get("key").get(itemKey).asText();
+      } catch (Exception e) {
+        LOGGER.error("get [{}] context from node [{}] failed!", itemKey, e);
+        return "";
+      }
+    }
   }
 }

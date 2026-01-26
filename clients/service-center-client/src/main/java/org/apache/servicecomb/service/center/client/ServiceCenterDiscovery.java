@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
@@ -151,7 +152,45 @@ public class ServiceCenterDiscovery extends AbstractTask {
       return;
     }
     pullInstanceTaskOnceInProgress = true;
-    startTask(new PullInstanceOnceTask());
+    if (StringUtils.isEmpty(event.getAppId()) || StringUtils.isEmpty(event.getServiceName())) {
+      // If the application or service name cannot be resolved, pulled all services.
+      startTask(new PullInstanceOnceTask());
+      return;
+    }
+    try {
+      pullTargetService(event);
+    } finally {
+      pullInstanceTaskOnceInProgress = false;
+    }
+  }
+
+  private void pullTargetService(PullInstanceEvent event) {
+    SubscriptionKey currentKey = new SubscriptionKey(event.getAppId(), event.getServiceName());
+    if (instancesCache.get(currentKey) == null) {
+      // No pull during the service startup phase.
+      return;
+    }
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("pull [{}#{}] instances from service center", event.getAppId(), event.getServiceName());
+    }
+    String originRev = instancesCache.get(currentKey).revision;
+    for (int i = 1; i <= 3; i++) {
+      try {
+        pullInstance(currentKey, instancesCache.get(currentKey), true);
+        String currentRev = instancesCache.get(currentKey).revision;
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("current revision: [{}], origin revision: [{}]", currentRev, originRev);
+        }
+        if (!originRev.equals(currentRev)) {
+          break;
+        }
+        int positive = random.nextInt(300);
+        int sign = random.nextBoolean() ? 1 : -1;
+        Thread.sleep(i * 1000 + sign * positive);
+      } catch (Exception e) {
+        LOGGER.error("pull [{}#{}] instances failed.", event.getAppId(), event.getServiceName(), e);
+      }
+    }
   }
 
   private void pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
@@ -250,7 +289,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
         sb.append(endpoint.length() > 64 ? endpoint.substring(0, 64) : endpoint);
         sb.append("|");
       }
-      sb.append(instance.getServiceName());
+      sb.append(instance.getStatus());
       sb.append("|");
     }
     sb.append("#");
