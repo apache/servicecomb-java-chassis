@@ -181,6 +181,8 @@ public class SwaggerLoader {
 
   private Swagger loadFromRemote(Microservice microservice, Collection<MicroserviceInstance> instances,
       String schemaId) {
+    // The client does not restart, the serviceId changes after the provider is upgraded. As a result,
+    // the same schema is loaded repeatedly.
     String key = microservice.getServiceName() + "." + schemaId;
     Swagger result = remoteSwagger.computeIfAbsent(key, k -> {
       String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), instances, schemaId);
