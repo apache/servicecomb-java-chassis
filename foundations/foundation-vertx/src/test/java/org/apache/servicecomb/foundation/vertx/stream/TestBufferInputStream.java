@@ -38,7 +38,7 @@ public class TestBufferInputStream {
 
   @Before
   public void setUp() throws Exception {
-    ByteBuf buffer = Unpooled.buffer();
+    ByteBuf buffer = Mockito.mock(ByteBuf.class);
     instance = new BufferInputStream(buffer);
   }
 
