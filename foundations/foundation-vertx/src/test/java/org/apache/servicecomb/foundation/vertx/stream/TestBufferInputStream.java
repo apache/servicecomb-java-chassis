@@ -38,7 +38,7 @@ public class TestBufferInputStream {
 
   @Before
   public void setUp() throws Exception {
-    ByteBuf buffer = Mockito.mock(ByteBuf.class);
+    ByteBuf buffer = Unpooled.buffer();
     instance = new BufferInputStream(buffer);
   }
 
@@ -49,7 +49,7 @@ public class TestBufferInputStream {
 
   @Test
   public void testRead() {
-    Assertions.assertEquals(0, instance.read());
+    Assertions.assertEquals(-1, instance.read());
   }
 
   @Test
