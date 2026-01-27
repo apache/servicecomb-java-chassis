@@ -27,7 +27,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.mockito.Mockito;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -38,7 +37,7 @@ public class TestBufferInputStream {
 
   @Before
   public void setUp() throws Exception {
-    ByteBuf buffer = Mockito.mock(ByteBuf.class);
+    ByteBuf buffer = Unpooled.buffer();
     instance = new BufferInputStream(buffer);
   }
 
