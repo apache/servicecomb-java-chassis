@@ -46,7 +46,7 @@ public class BufferInputStream extends ServletInputStream {
   @Override
   public int read() {
     int avail = available();
-    if (avail <= 0) {
+    if (avail < 0) {
       return -1;
     }
     return byteBuf.readUnsignedByte();
