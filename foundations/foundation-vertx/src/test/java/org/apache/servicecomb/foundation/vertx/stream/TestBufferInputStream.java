@@ -119,17 +119,17 @@ public class TestBufferInputStream {
 
   @Test
   public void testReadShort() {
-    Assertions.assertEquals(0, instance.readShort());
+    Assertions.assertEquals(-1, instance.readShort());
   }
 
   @Test
   public void testReadInt() {
-    Assertions.assertEquals(0, instance.readInt());
+    Assertions.assertEquals(-1, instance.readInt());
   }
 
   @Test
   public void testReadLong() {
-    Assertions.assertEquals(0, instance.readLong());
+    Assertions.assertEquals(-1, instance.readLong());
   }
 
   @Test

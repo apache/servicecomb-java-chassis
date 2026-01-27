@@ -53,18 +53,34 @@ public class BufferInputStream extends ServletInputStream {
   }
 
   public boolean readBoolean() {
+    int avail = available();
+    if (avail <= 0) {
+      return false;
+    }
     return byteBuf.readBoolean();
   }
 
   public short readShort() {
+    int avail = available();
+    if (avail <= 0) {
+      return -1;
+    }
     return byteBuf.readShort();
   }
 
   public int readInt() {
+    int avail = available();
+    if (avail <= 0) {
+      return -1;
+    }
     return byteBuf.readInt();
   }
 
   public long readLong() {
+    int avail = available();
+    if (avail <= 0) {
+      return -1;
+    }
     return byteBuf.readLong();
   }
 
@@ -74,6 +90,9 @@ public class BufferInputStream extends ServletInputStream {
 
   public String readString() {
     int length = readInt();
+    if (length == -1) {
+      return "";
+    }
     byte[] bytes = new byte[length];
     byteBuf.readBytes(bytes);
     return new String(bytes, StandardCharsets.UTF_8);
