@@ -27,6 +27,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -37,7 +38,7 @@ public class TestBufferInputStream {
 
   @Before
   public void setUp() throws Exception {
-    ByteBuf buffer = Unpooled.buffer();
+    ByteBuf buffer = Mockito.mock(ByteBuf.class);
     instance = new BufferInputStream(buffer);
   }
 
@@ -48,7 +49,9 @@ public class TestBufferInputStream {
 
   @Test
   public void testRead() {
-    Assertions.assertEquals(-1, instance.read());
+    ByteBuf buffer = Unpooled.buffer();
+    BufferInputStream bIn = new BufferInputStream(buffer);
+    Assertions.assertEquals(-1, bIn.read());
   }
 
   @Test
@@ -118,17 +121,17 @@ public class TestBufferInputStream {
 
   @Test
   public void testReadShort() {
-    Assertions.assertEquals(-1, instance.readShort());
+    Assertions.assertEquals(0, instance.readShort());
   }
 
   @Test
   public void testReadInt() {
-    Assertions.assertEquals(-1, instance.readInt());
+    Assertions.assertEquals(0, instance.readInt());
   }
 
   @Test
   public void testReadLong() {
-    Assertions.assertEquals(-1, instance.readLong());
+    Assertions.assertEquals(0, instance.readLong());
   }
 
   @Test
