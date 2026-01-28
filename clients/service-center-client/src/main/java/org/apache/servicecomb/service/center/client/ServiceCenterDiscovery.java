@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -103,6 +105,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private final Random random = new Random();
 
+  private Timer timer;
+
   public ServiceCenterDiscovery(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
     super("service-center-discovery-task");
     this.serviceCenterClient = serviceCenterClient;
@@ -158,39 +162,54 @@ public class ServiceCenterDiscovery extends AbstractTask {
       return;
     }
     try {
-      pullTargetService(event);
+      String appId = event.getAppId();
+      String serviceName = event.getServiceName();
+      if (!refreshTargetServiceSuccess(appId, serviceName)) {
+        int positive = random.nextInt(300);
+        int sign = random.nextBoolean() ? 1 : -1;
+        long delayTime = 2000L + sign * positive;
+        if (timer == null) {
+          timer = new Timer("event-retry-pull-task");
+        }
+        timer.schedule(new PullTargetServiceTask(appId, serviceName), delayTime);
+      }
     } finally {
       pullInstanceTaskOnceInProgress = false;
     }
   }
 
-  private void pullTargetService(PullInstanceEvent event) {
-    SubscriptionKey currentKey = new SubscriptionKey(event.getAppId(), event.getServiceName());
+  class PullTargetServiceTask extends TimerTask {
+    private final String appId;
+
+    private final String serviceName;
+
+    public PullTargetServiceTask(String appId, String serviceName) {
+      this.appId = appId;
+      this.serviceName = serviceName;
+    }
+
+    @Override
+    public void run() {
+      refreshTargetServiceSuccess(appId, serviceName);
+    }
+  }
+
+  private boolean refreshTargetServiceSuccess(String appId, String serviceName) {
+    SubscriptionKey currentKey = new SubscriptionKey(appId, serviceName);
     if (instancesCache.get(currentKey) == null) {
       // No pull during the service startup phase.
-      return;
+      return true;
     }
     if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("pull [{}#{}] instances from service center", event.getAppId(), event.getServiceName());
+      LOGGER.debug("pull [{}#{}] instances from service center", appId, serviceName);
     }
     String originRev = instancesCache.get(currentKey).revision;
-    for (int i = 1; i <= 3; i++) {
-      try {
-        pullInstance(currentKey, instancesCache.get(currentKey), true);
-        String currentRev = instancesCache.get(currentKey).revision;
-        if (LOGGER.isDebugEnabled()) {
-          LOGGER.debug("current revision: [{}], origin revision: [{}]", currentRev, originRev);
-        }
-        if (!originRev.equals(currentRev)) {
-          break;
-        }
-        int positive = random.nextInt(300);
-        int sign = random.nextBoolean() ? 1 : -1;
-        Thread.sleep(i * 1000 + sign * positive);
-      } catch (Exception e) {
-        LOGGER.error("pull [{}#{}] instances failed.", event.getAppId(), event.getServiceName(), e);
-      }
+    pullInstance(currentKey, instancesCache.get(currentKey), true);
+    String currentRev = instancesCache.get(currentKey).revision;
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("current revision: [{}], origin revision: [{}]", currentRev, originRev);
     }
+    return !originRev.equals(currentRev);
   }
 
   private void pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
