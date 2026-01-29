@@ -130,6 +130,13 @@ public class ServiceRegistryListener {
     microserviceVersion.getVendorExtensions().put(CORE_MICROSERVICE_META, microserviceMeta);
   }
 
+  @EnableExceptionPropagation
+  @SubscriberOrder(-800)
+  @Subscribe
+  public void onDestroyMicroserviceEvent(DestroyMicroserviceEvent event) {
+    scbEngine.getSwaggerLoader().removeRemoteSwagger(event.getMicroserviceVersions().getInstances());
+  }
+
   public void destroy() {
     scbEngine.getEventBus().unregister(this);
   }

@@ -37,6 +37,7 @@ import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
@@ -181,7 +182,7 @@ public class SwaggerLoader {
 
   private Swagger loadFromRemote(Microservice microservice, Collection<MicroserviceInstance> instances,
       String schemaId) {
-    String key = microservice.getServiceName() + "." + schemaId;
+    String key = microservice.getServiceId() + "." + schemaId;
     Swagger result = remoteSwagger.computeIfAbsent(key, k -> {
       String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), instances, schemaId);
       if (schemaContent != null) {
@@ -197,7 +198,8 @@ public class SwaggerLoader {
       }
       return null;
     });
-
+    LOGGER.info(
+        "load [{}] schema from service center, map size [{}]", microservice.getServiceId(), remoteSwagger.size());
     if (result != null) {
       return result;
     }
@@ -211,5 +213,16 @@ public class SwaggerLoader {
         schemaId);
 
     return null;
+  }
+
+  public void removeRemoteSwagger(List<MicroserviceInstance> instances) {
+    if (CollectionUtils.isEmpty(instances)) {
+      return;
+    }
+    String serviceId = instances.get(0).getServiceId();
+    int originSize = remoteSwagger.size();
+    remoteSwagger.remove(serviceId);
+    LOGGER.info(
+        "remove [{}] swagger, origin size [{}], current size [{}]", serviceId, originSize, remoteSwagger.size());
   }
 }
