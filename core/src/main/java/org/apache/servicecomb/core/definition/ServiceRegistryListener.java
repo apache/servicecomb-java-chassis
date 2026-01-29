@@ -29,6 +29,7 @@ import org.apache.servicecomb.foundation.common.event.SubscriberOrder;
 import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.CreateMicroserviceVersionEvent;
 import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
+import org.apache.servicecomb.registry.api.event.RefreshRemoteSwaggerEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
@@ -132,5 +133,12 @@ public class ServiceRegistryListener {
 
   public void destroy() {
     scbEngine.getEventBus().unregister(this);
+  }
+
+  @EnableExceptionPropagation
+  @SubscriberOrder(-800)
+  @Subscribe
+  public void onRefreshRemoteSwaggerEvent(RefreshRemoteSwaggerEvent event) {
+    scbEngine.getSwaggerLoader().removeRemoteSwagger(event);
   }
 }

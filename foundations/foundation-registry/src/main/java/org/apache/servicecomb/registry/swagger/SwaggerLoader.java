@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -30,6 +31,7 @@ import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.event.RefreshRemoteSwaggerEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
@@ -37,6 +39,7 @@ import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
@@ -181,9 +184,7 @@ public class SwaggerLoader {
 
   private Swagger loadFromRemote(Microservice microservice, Collection<MicroserviceInstance> instances,
       String schemaId) {
-    // The client does not restart, the serviceId changes after the provider is upgraded. As a result,
-    // the same schema is loaded repeatedly.
-    String key = microservice.getServiceName() + "." + schemaId;
+    String key = microservice.getServiceId() + "." + schemaId;
     Swagger result = remoteSwagger.computeIfAbsent(key, k -> {
       String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), instances, schemaId);
       if (schemaContent != null) {
@@ -199,7 +200,8 @@ public class SwaggerLoader {
       }
       return null;
     });
-
+    LOGGER.info(
+        "load [{}] schema from service center, map size [{}]", microservice.getServiceId(), remoteSwagger.size());
     if (result != null) {
       return result;
     }
@@ -213,5 +215,25 @@ public class SwaggerLoader {
         schemaId);
 
     return null;
+  }
+
+  public void removeRemoteSwagger(RefreshRemoteSwaggerEvent event) {
+    List<String> serviceIds = event.getServiceIds();
+    if (CollectionUtils.isEmpty(serviceIds)) {
+      return;
+    }
+    List<String> matchKey =  remoteSwagger.keySet().stream().filter(key -> {
+      for (String serviceId : serviceIds) {
+        if (key.startsWith(serviceId)) {
+          return true;
+        }
+      }
+      return false;
+    }).collect(Collectors.toList());
+    for (String key : matchKey) {
+      remoteSwagger.remove(key);
+      LOGGER.info("remove local appid=[{}], serviceName=[{}], swagger [{}]", event.getAppId(),
+          event.getServiceName(), key);
+    }
   }
 }
