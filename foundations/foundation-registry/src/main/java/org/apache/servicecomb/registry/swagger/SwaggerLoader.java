@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -30,6 +31,7 @@ import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.event.RefreshRemoteSwaggerEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
@@ -215,14 +217,23 @@ public class SwaggerLoader {
     return null;
   }
 
-  public void removeRemoteSwagger(List<MicroserviceInstance> instances) {
-    if (CollectionUtils.isEmpty(instances)) {
+  public void removeRemoteSwagger(RefreshRemoteSwaggerEvent event) {
+    List<String> serviceIds = event.getServiceIds();
+    if (CollectionUtils.isEmpty(serviceIds)) {
       return;
     }
-    String serviceId = instances.get(0).getServiceId();
-    int originSize = remoteSwagger.size();
-    remoteSwagger.remove(serviceId);
-    LOGGER.info(
-        "remove [{}] swagger, origin size [{}], current size [{}]", serviceId, originSize, remoteSwagger.size());
+    List<String> matchKey =  remoteSwagger.keySet().stream().filter(key -> {
+      for (String serviceId : serviceIds) {
+        if (key.startsWith(serviceId)) {
+          return true;
+        }
+      }
+      return false;
+    }).toList();
+    for (String key : matchKey) {
+      remoteSwagger.remove(key);
+      LOGGER.info("remove local appid=[{}], serviceName=[{}], swagger [{}]", event.getAppId(),
+          event.getServiceName(), key);
+    }
   }
 }

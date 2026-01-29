@@ -33,6 +33,7 @@ import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.event.RefreshRemoteSwaggerEvent;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
@@ -41,8 +42,10 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class MicroserviceVersions {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceVersions.class);
@@ -183,11 +186,30 @@ public class MicroserviceVersions {
       return;
     }
 
+    // send refresh remote swagger info
+    sendRefreshRemoteSwaggerEvent();
+
     pulledInstances = microserviceInstances.getInstancesResponse().getInstances();
     pulledInstances.sort(Comparator.comparing(MicroserviceInstance::getInstanceId));
     String rev = microserviceInstances.getRevision();
 
     safeSetInstances(pulledInstances, rev);
+  }
+
+  private void sendRefreshRemoteSwaggerEvent() {
+    boolean refreshEnabled = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.remote.swagger.refresh.enabled", false).get();
+     if (!refreshEnabled) {
+      return;
+    }
+    List<String> serviceIds = new ArrayList<>();
+    if (CollectionUtils.isEmpty(pulledInstances)) {
+      return;
+    }
+    for (MicroserviceInstance instance : pulledInstances) {
+      serviceIds.add(instance.getServiceId());
+    }
+    appManager.getEventBus().post(new RefreshRemoteSwaggerEvent(serviceIds, appId, shortName));
   }
 
   protected MicroserviceInstances findServiceInstances() {
