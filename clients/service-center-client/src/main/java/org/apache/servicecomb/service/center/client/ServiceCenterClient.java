@@ -237,8 +237,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
 
   @Override
   public FindMicroserviceInstancesResponse findMicroserviceInstance(String consumerId, String appId, String serviceName,
-      String versionRule,
-      String revision) {
+      String versionRule, String revision) {
     try {
       Map<String, String> headers = new HashMap<>();
       headers.put("X-ConsumerId", consumerId);
