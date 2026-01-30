@@ -139,6 +139,7 @@ public class ServiceRegistryListener {
   @SubscriberOrder(-800)
   @Subscribe
   public void onRefreshRemoteSwaggerEvent(RefreshRemoteSwaggerEvent event) {
+    // clear history remote swagger cache when instances is changed.
     scbEngine.getSwaggerLoader().removeRemoteSwagger(event);
   }
 }
