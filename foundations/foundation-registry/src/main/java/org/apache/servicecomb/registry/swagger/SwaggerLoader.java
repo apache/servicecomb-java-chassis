@@ -200,8 +200,6 @@ public class SwaggerLoader {
       }
       return null;
     });
-    LOGGER.info(
-        "load [{}] schema from service center, map size [{}]", microservice.getServiceId(), remoteSwagger.size());
     if (result != null) {
       return result;
     }
