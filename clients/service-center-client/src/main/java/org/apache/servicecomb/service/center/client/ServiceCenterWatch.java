@@ -164,7 +164,7 @@ public class ServiceCenterWatch implements WebSocketListener {
   @Override
   public void onMessage(String s) {
     LOGGER.info("web socket receive message [{}], start query instance", s);
-    this.eventBus.post(new PullInstanceEvent());
+    this.eventBus.post(new PullInstanceEvent(s));
   }
 
   @Override
