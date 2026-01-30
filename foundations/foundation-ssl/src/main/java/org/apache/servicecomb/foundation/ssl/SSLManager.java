@@ -35,12 +35,16 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509ExtendedTrustManager;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 根据传递的SSLOption构造SSL上下文。请参考JSSE获取相关API的层次参考。
  *
  */
 public final class SSLManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SSLManager.class);
+
   private SSLManager() {
 
   }
@@ -199,7 +203,9 @@ public final class SSLManager {
     String[] result = new String[enabled.length];
     int count = 0;
     for (String e : enabled) {
+      LOGGER.info("enabled==================>" + e);
       for (String s : supported) {
+        LOGGER.info("supported==================>" + s);
         if (e.equals(s)) {
           result[count++] = e;
           break;
