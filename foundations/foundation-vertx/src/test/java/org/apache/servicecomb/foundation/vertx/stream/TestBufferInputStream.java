@@ -49,7 +49,9 @@ public class TestBufferInputStream {
 
   @Test
   public void testRead() {
-    Assertions.assertEquals(0, instance.read());
+    ByteBuf buffer = Unpooled.buffer();
+    BufferInputStream bIn = new BufferInputStream(buffer);
+    Assertions.assertEquals(-1, bIn.read());
   }
 
   @Test
