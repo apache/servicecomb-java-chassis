@@ -203,9 +203,7 @@ public final class SSLManager {
     String[] result = new String[enabled.length];
     int count = 0;
     for (String e : enabled) {
-      LOGGER.info("enabled==================>" + e);
       for (String s : supported) {
-        LOGGER.info("supported==================>" + s);
         if (e.equals(s)) {
           result[count++] = e;
           break;
