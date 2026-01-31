@@ -33,7 +33,7 @@ jobs:
       - name: Set up jdk
         uses: actions/setup-java@v3
         with:
-          java-version: '21'
+          java-version: '21.0.7'
           distribution: 'temurin'
       - name: Compilation and Installation
         run: mvn -B -Dcheckstyle.skip -Dspotbugs.skip=true clean install -Pit

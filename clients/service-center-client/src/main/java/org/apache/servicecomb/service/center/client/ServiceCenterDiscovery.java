@@ -24,8 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.http.client.task.AbstractTask;
 import org.apache.servicecomb.http.client.task.Task;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
@@ -104,6 +107,8 @@ public class ServiceCenterDiscovery extends AbstractTask {
 
   private final Random random = new Random();
 
+  private Timer timer;
+
   public ServiceCenterDiscovery(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
     super("service-center-discovery-task");
     this.serviceCenterClient = serviceCenterClient;
@@ -153,7 +158,60 @@ public class ServiceCenterDiscovery extends AbstractTask {
       return;
     }
     pullInstanceTaskOnceInProgress = true;
-    startTask(new PullInstanceOnceTask());
+    if (StringUtils.isEmpty(event.getAppId()) || StringUtils.isEmpty(event.getServiceName())) {
+      // If the application or service name cannot be resolved, pulled all services.
+      startTask(new PullInstanceOnceTask());
+      return;
+    }
+    try {
+      String appId = event.getAppId();
+      String serviceName = event.getServiceName();
+      if (!refreshTargetServiceSuccess(appId, serviceName)) {
+        int positive = random.nextInt(300);
+        int sign = random.nextBoolean() ? 1 : -1;
+        long delayTime = 2000L + sign * positive;
+        if (timer == null) {
+          timer = new Timer("event-retry-pull-task");
+        }
+        timer.schedule(new PullTargetServiceTask(appId, serviceName), delayTime);
+      }
+    } finally {
+      pullInstanceTaskOnceInProgress = false;
+    }
+  }
+
+  class PullTargetServiceTask extends TimerTask {
+    private final String appId;
+
+    private final String serviceName;
+
+    public PullTargetServiceTask(String appId, String serviceName) {
+      this.appId = appId;
+      this.serviceName = serviceName;
+    }
+
+    @Override
+    public void run() {
+      refreshTargetServiceSuccess(appId, serviceName);
+    }
+  }
+
+  private boolean refreshTargetServiceSuccess(String appId, String serviceName) {
+    SubscriptionKey currentKey = new SubscriptionKey(appId, serviceName);
+    if (instancesCache.get(currentKey) == null) {
+      // No pull during the service startup phase.
+      return true;
+    }
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("pull [{}#{}] instances from service center", appId, serviceName);
+    }
+    String originRev = instancesCache.get(currentKey).revision;
+    pullInstance(currentKey, instancesCache.get(currentKey), true);
+    String currentRev = instancesCache.get(currentKey).revision;
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("current revision: [{}], origin revision: [{}]", currentRev, originRev);
+    }
+    return !originRev.equals(currentRev);
   }
 
   private List<SubscriptionKey> pullInstance(SubscriptionKey k, SubscriptionValue v, boolean sendChangedEvent) {
@@ -265,7 +323,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
         sb.append(endpoint.length() > 64 ? endpoint.substring(0, 64) : endpoint);
         sb.append("|");
       }
-      sb.append(instance.getServiceName());
+      sb.append(instance.getStatus());
       sb.append("|");
     }
     sb.append("#");

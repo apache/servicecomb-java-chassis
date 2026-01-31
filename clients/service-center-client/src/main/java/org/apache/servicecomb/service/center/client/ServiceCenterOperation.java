@@ -114,8 +114,7 @@ public interface ServiceCenterOperation {
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.n
    */
   FindMicroserviceInstancesResponse findMicroserviceInstance(String consumerId, String appId, String serviceName,
-      String versionRule,
-      String revision);
+      String versionRule, String revision);
 
   /**
    * Delete a microservice instance
