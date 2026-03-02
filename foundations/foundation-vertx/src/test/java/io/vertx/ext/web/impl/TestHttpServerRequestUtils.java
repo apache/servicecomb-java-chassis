@@ -38,6 +38,7 @@ public class TestHttpServerRequestUtils {
     Mockito.when(request.scheme()).thenReturn("http");
     Mockito.when(context.request()).thenReturn(wrapper);
     Mockito.when(request.authority()).thenReturn(HostAndPort.create("localhost", 8080));
+    Mockito.when(request.uri()).thenReturn("/test");
     RequestBody requestBody = Mockito.mock(RequestBody.class);
     Mockito.when(context.body()).thenReturn(requestBody);
 
