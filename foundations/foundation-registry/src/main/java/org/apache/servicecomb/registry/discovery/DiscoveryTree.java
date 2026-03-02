@@ -134,7 +134,7 @@ public class DiscoveryTree {
     VersionedCache instanceVersionedCache = DiscoveryManager.INSTANCE
         .getInstanceCacheManager()
         .getOrCreateVersionedCache(appId, microserviceName, versionRule);
-    LOGGER.info("======================================>" + instanceVersionedCache.data().toString());
+
     return discovery(context, instanceVersionedCache);
   }
 

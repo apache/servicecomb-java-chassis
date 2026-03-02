@@ -167,6 +167,13 @@ public class MicroserviceVersions {
   public void pullInstances() {
     lastPullTime = System.currentTimeMillis();
     MicroserviceInstances microserviceInstances = findServiceInstances();
+    if (microserviceInstances == null || microserviceInstances.getInstancesResponse() == null
+        || microserviceInstances.getInstancesResponse().getInstances().isEmpty()) {
+      LOGGER.info("=======================> findServiceInstances is empty");
+    } else {
+      LOGGER.info("pulledInstances =======================>" +
+          microserviceInstances.getInstancesResponse().getInstances().get(0).toString());
+    }
     lastPulledResult = microserviceInstances;
     if (microserviceInstances == null) {
       // pulled failed, did not get anything
