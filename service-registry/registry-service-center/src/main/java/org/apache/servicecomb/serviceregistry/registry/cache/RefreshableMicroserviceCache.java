@@ -115,10 +115,11 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
         revisionId,
         serviceInstances.getRevision());
     for (MicroserviceInstance instance : instances) {
-      LOGGER.info("service id={}, instance id={}, endpoints={}",
+      LOGGER.info("service id={}, instance id={}, endpoints={}, status={}",
           instance.getServiceId(),
           instance.getInstanceId(),
-          instance.getEndpoints());
+          instance.getEndpoints(),
+          instance.getStatus());
     }
     safeSetInstances(instances, serviceInstances.getRevision());
   }
