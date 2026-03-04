@@ -36,6 +36,7 @@ import org.apache.servicecomb.config.event.DynamicConfigurationChangedEvent;
 import org.apache.servicecomb.config.event.RefreshGovernanceConfigurationEvent;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
@@ -110,6 +111,7 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
   @Override
   public void setEnvironment(Environment environment) {
     super.setEnvironment(environment);
+    LegacyPropertyFactory.setEnvironment(environment);
     if (isExternalInit()) {
       return;
     }

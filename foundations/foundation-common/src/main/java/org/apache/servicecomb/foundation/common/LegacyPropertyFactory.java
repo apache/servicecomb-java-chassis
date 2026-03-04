@@ -15,29 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.ssl;
+package org.apache.servicecomb.foundation.common;
 
 import org.springframework.core.env.Environment;
 
-public interface SSLOptionFactory {
-  static SSLOptionFactory createSSLOptionFactory(String tag, Environment environment) {
-    String name = SSLOption.getStringProperty(environment,
-        null,
-        "ssl." + tag + ".sslOptionFactory",
-        "ssl.sslOptionFactory");
-    return createSSLOptionFactory(name);
+public class LegacyPropertyFactory {
+  private static Environment environment;
+
+  public static void setEnvironment(Environment environment) {
+    LegacyPropertyFactory.environment = environment;
   }
 
-  static SSLOptionFactory createSSLOptionFactory(String className) {
-    if (className != null && !className.isEmpty()) {
-      try {
-        return (SSLOptionFactory) Class.forName(className).getDeclaredConstructor().newInstance();
-      } catch (ReflectiveOperationException e) {
-        throw new IllegalStateException("Failed to create SSLOptionFactory.", e);
-      }
-    }
-    return null;
+  public static Environment getEnvironment() {
+    return environment;
   }
 
-  SSLOption createSSLOption();
+  public static String getStringProperty(String key, String defaultValue) {
+    return environment.getProperty(key, defaultValue);
+  }
+
+  public static int getIntProperty(String key, int defaultValue) {
+    return environment.getProperty(key, int.class, defaultValue);
+  }
 }

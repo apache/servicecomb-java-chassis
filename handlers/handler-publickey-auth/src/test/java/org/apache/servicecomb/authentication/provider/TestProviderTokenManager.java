@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.servicecomb.authentication.AuthenticationToken;
 import org.apache.servicecomb.authentication.consumer.ConsumerTokenManager;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.KeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -40,12 +41,21 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestProviderTokenManager {
 
 
   @BeforeEach
   public void setUp() {
+    Environment environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA"))
+        .thenReturn("RSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA"))
+        .thenReturn("SHA256withRSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keySize", int.class, 2048))
+        .thenReturn(2048);
     ConfigUtil.installDynamicConfig();
   }
 

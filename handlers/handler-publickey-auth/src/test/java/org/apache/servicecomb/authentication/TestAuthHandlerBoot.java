@@ -22,6 +22,7 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.Keypair4Auth;
 import org.apache.servicecomb.registry.RegistrationManager;
@@ -32,6 +33,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestAuthHandlerBoot {
   private SCBEngine engine;
@@ -39,6 +42,14 @@ public class TestAuthHandlerBoot {
   @BeforeEach
   public void setUp() {
     ConfigUtil.installDynamicConfig();
+    Environment environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA"))
+        .thenReturn("RSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA"))
+        .thenReturn("SHA256withRSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keySize", int.class, 2048))
+        .thenReturn(2048);
     engine = SCBBootstrap.createSCBEngineForTest().run();
   }
 

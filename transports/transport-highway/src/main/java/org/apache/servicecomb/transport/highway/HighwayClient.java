@@ -26,6 +26,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -78,10 +79,10 @@ public class HighwayClient {
         .getLongProperty("servicecomb.request.timeout", TcpClientConfig.DEFAULT_LOGIN_TIMEOUT).get());
 
     SSLOptionFactory factory =
-        SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
+        SSLOptionFactory.createSSLOptionFactory(SSL_KEY, LegacyPropertyFactory.getEnvironment());
     SSLOption sslOption;
     if (factory == null) {
-      sslOption = SSLOption.buildFromYaml(SSL_KEY);
+      sslOption = SSLOption.buildFromYaml(SSL_KEY, LegacyPropertyFactory.getEnvironment());
     } else {
       sslOption = factory.createSSLOption();
     }
