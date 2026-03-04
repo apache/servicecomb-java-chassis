@@ -24,21 +24,9 @@ import java.io.Reader;
 import java.net.URL;
 import java.util.Properties;
 
-import org.apache.commons.configuration.SystemConfiguration;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.ConfigSourceMaker;
-import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConcurrentMapConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.FixedDelayPollingScheduler;
-
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.jupiter.api.Assertions;
