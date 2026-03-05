@@ -19,6 +19,7 @@ package org.apache.servicecomb.huaweicloud.servicestage;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,25 +66,21 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider, BootStrapServ
 
   private final Map<String, String> headers = new HashMap<>();
 
-  private boolean enabled = true;
-
   private boolean loaded = false;
 
   public AKSKAuthHeaderProvider() {
   }
 
   public Map<String, String> authHeaders() {
-    if (enabled && !environment.getProperty(CONFIG_AKSK_ENABLED, boolean.class, true)) {
-      enabled = false;
-      return headers;
+    if (!environment.getProperty(CONFIG_AKSK_ENABLED, boolean.class, true)) {
+      return Collections.emptyMap();
     }
 
     if (StringUtils.isEmpty(getAccessKey())) {
       LOGGER.warn("ak sk auth enabled but access key is not configured, disable it at runtime. "
               + "Config [{}] to false to disable it implicitly.",
           CONFIG_AKSK_ENABLED);
-      enabled = false;
-      return headers;
+      return Collections.emptyMap();
     }
 
     if (!loaded) {
