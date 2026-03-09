@@ -138,6 +138,10 @@ public class ServiceCenterDiscovery extends AbstractTask {
       synchronized (lock) {
         if (this.instancesCache.get(subscriptionKey) == null) {
           SubscriptionValue value = new SubscriptionValue();
+          if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("find {}#{} microservice instances from service-center.", subscriptionKey.appId,
+                subscriptionKey.serviceName);
+          }
           pullInstance(subscriptionKey, value, false);
           this.instancesCache.put(subscriptionKey, value);
         }
