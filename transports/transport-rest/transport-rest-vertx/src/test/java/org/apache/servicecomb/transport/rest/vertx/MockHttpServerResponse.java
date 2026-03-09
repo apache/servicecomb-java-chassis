@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
 import java.util.Map;
@@ -219,6 +220,11 @@ class MockHttpServerResponse implements HttpServerResponse {
 
   @Override
   public Future<Void> sendFile(FileChannel channel, long offset, long length) {
+    return null;
+  }
+
+  @Override
+  public Future<Void> sendFile(RandomAccessFile file, long offset, long length) {
     return null;
   }
 
