@@ -21,13 +21,27 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.utils.KeyPairUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 
 public class TestAuthenticationToken {
-
+  @BeforeAll
+  public static void setUpClass() {
+    Environment environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keyGeneratorAlgorithm", "RSA"))
+        .thenReturn("RSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.signAlgorithm", "SHA256withRSA"))
+        .thenReturn("SHA256withRSA");
+    Mockito.when(environment.getProperty("servicecomb.publicKey.accessControl.keySize", int.class, 2048))
+        .thenReturn(2048);
+  }
 
   @Test
   public void testRSAAuthenticationToken()

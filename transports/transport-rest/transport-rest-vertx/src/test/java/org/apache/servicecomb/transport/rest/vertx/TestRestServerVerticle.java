@@ -28,6 +28,7 @@ import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -38,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
@@ -63,6 +65,8 @@ public class TestRestServerVerticle {
 
   @Before
   public void setUp() {
+    Environment environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
     ConfigUtil.installDynamicConfig();
     instance = new RestServerVerticle();
     startPromise = Promise.promise();

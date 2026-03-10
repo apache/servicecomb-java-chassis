@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -48,10 +49,10 @@ public class TcpServer {
     NetServer netServer;
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =
-          SSLOptionFactory.createSSLOptionFactory(sslKey, null);
+          SSLOptionFactory.createSSLOptionFactory(sslKey, LegacyPropertyFactory.getEnvironment());
       SSLOption sslOption;
       if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(sslKey);
+        sslOption = SSLOption.buildFromYaml(sslKey, LegacyPropertyFactory.getEnvironment());
       } else {
         sslOption = factory.createSSLOption();
       }

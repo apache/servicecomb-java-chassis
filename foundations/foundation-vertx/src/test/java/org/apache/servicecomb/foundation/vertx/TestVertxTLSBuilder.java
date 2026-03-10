@@ -17,12 +17,11 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import io.vertx.core.http.ClientAuth;
@@ -31,21 +30,20 @@ import io.vertx.core.http.HttpServerOptions;
 import mockit.Mock;
 import mockit.MockUp;
 import org.junit.jupiter.api.Assertions;
+import org.mockito.Mockito;
+import org.springframework.core.env.Environment;
 
 public class TestVertxTLSBuilder {
-  @BeforeClass
-  public static void classSetup() {
-    ArchaiusUtils.resetConfig();
-  }
+  Environment environment = Mockito.mock(Environment.class);
 
-  @AfterClass
-  public static void classTeardown() {
-    ArchaiusUtils.resetConfig();
+  @Before
+  public void classSetup() {
+    LegacyPropertyFactory.setEnvironment(environment);
   }
 
   @Test
   public void testBuildHttpServerOptions() {
-    SSLOption option = SSLOption.buildFromYaml("rest.provider");
+    SSLOption option = SSLOption.buildFromYaml("rest.provider", environment);
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpServerOptions serverOptions = new HttpServerOptions();
     VertxTLSBuilder.buildNetServerOptions(option, custom, serverOptions);
@@ -78,7 +76,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildHttpClientOptions_ssl_withFactory() {
-    ArchaiusUtils.setProperty("ssl.exist.sslOptionFactory", SSLOptionFactoryForTest.class.getName());
+    Mockito.when(environment.getProperty("ssl.checkCN.host")).thenReturn("true");
     HttpClientOptions clientOptions = new HttpClientOptions();
     VertxTLSBuilder.buildHttpClientOptions("exist", clientOptions);
     Assertions.assertTrue(clientOptions.isSsl());
@@ -87,7 +85,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildHttpClientOptions() {
-    SSLOption option = SSLOption.buildFromYaml("rest.consumer");
+    SSLOption option = SSLOption.buildFromYaml("rest.consumer", environment);
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildHttpClientOptions(option, custom, serverOptions);
@@ -97,7 +95,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildClientOptionsBase() {
-    SSLOption option = SSLOption.buildFromYaml("rest.consumer");
+    SSLOption option = SSLOption.buildFromYaml("rest.consumer", environment);
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     VertxTLSBuilder.buildClientOptionsBase(option, custom, serverOptions);
@@ -107,7 +105,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildClientOptionsBaseFileNull() {
-    SSLOption option = SSLOption.buildFromYaml("rest.consumer");
+    SSLOption option = SSLOption.buildFromYaml("rest.consumer", environment);
     option.setKeyStore(null);
     option.setTrustStore(null);
     option.setCrl(null);
@@ -120,7 +118,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildClientOptionsBaseAuthPeerFalse() {
-    SSLOption option = SSLOption.buildFromYaml("rest.consumer");
+    SSLOption option = SSLOption.buildFromYaml("rest.consumer", environment);
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     new MockUp<SSLOption>() {
@@ -137,7 +135,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildClientOptionsBaseSTORE_JKS() {
-    SSLOption option = SSLOption.buildFromYaml("rest.consumer");
+    SSLOption option = SSLOption.buildFromYaml("rest.consumer", environment);
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     new MockUp<SSLOption>() {
@@ -154,7 +152,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildClientOptionsBaseSTORE_PKCS12() {
-    SSLOption option = SSLOption.buildFromYaml("rest.consumer");
+    SSLOption option = SSLOption.buildFromYaml("rest.consumer", environment);
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpClientOptions serverOptions = new HttpClientOptions();
     new MockUp<SSLOption>() {
@@ -171,7 +169,7 @@ public class TestVertxTLSBuilder {
 
   @Test
   public void testBuildHttpServerOptionsRequest() {
-    SSLOption option = SSLOption.buildFromYaml("rest.provider");
+    SSLOption option = SSLOption.buildFromYaml("rest.provider", environment);
     SSLCustom custom = SSLCustom.createSSLCustom(option.getSslCustomClass());
     HttpServerOptions serverOptions = new HttpServerOptions();
 

@@ -23,6 +23,7 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.LegacyPropertyFactory;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.Assertions;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 import mockit.Mock;
 import mockit.MockUp;
@@ -44,6 +46,8 @@ public class TestHighwayTransport {
 
   @BeforeClass
   public static void setup() {
+    Environment environment = Mockito.mock(Environment.class);
+    LegacyPropertyFactory.setEnvironment(environment);
     VertxUtils.blockCloseVertxByName("transport");
     Thread.getAllStackTraces().keySet().forEach(t -> LOGGER.info("before: {}", t.getName()));
   }
