@@ -379,8 +379,10 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       throw new Exception("sse response data is null!");
     }
     for (Object data : datas) {
+      String value = data instanceof String ? (String) data
+          : RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(data);
       eventBuilder.append("data: ")
-          .append(RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(data))
+          .append(value)
           .append("\n");
     }
   }
