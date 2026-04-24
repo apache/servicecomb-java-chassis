@@ -54,10 +54,12 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
   private ProduceProcessorManager() {
     super(NAME);
     produceProcessor.forEach(processor -> {
-      nonSerialViewMap.put(processor.getName(), processor);
-      Map<String, ProduceProcessor> prodProcessorMap = getObjMap()
-          .computeIfAbsent(processor.getName(), key -> new HashMap<>());
-      prodProcessorMap.putIfAbsent(processor.getSerializationView(), processor);
+      if (!MediaType.SERVER_SENT_EVENTS.equals(processor.getName())) {
+        nonSerialViewMap.put(processor.getName(), processor);
+        Map<String, ProduceProcessor> prodProcessorMap = getObjMap()
+            .computeIfAbsent(processor.getName(), key -> new HashMap<>());
+        prodProcessorMap.putIfAbsent(processor.getSerializationView(), processor);
+      }
     });
     jsonProcessorMap = ensureFindValue(MediaType.APPLICATION_JSON);
     plainProcessorMap = ensureFindValue(MediaType.TEXT_PLAIN);
