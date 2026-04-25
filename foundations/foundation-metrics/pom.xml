@@ -32,8 +32,8 @@
       <artifactId>foundation-common</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-core</artifactId>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-ext-archaius</artifactId>
     </dependency>
     <dependency>
       <groupId>com.netflix.spectator</groupId>

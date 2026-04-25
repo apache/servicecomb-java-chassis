@@ -1,0 +1,103 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <version>2.10.0-SNAPSHOT</version>
+    <artifactId>foundations</artifactId>
+  </parent>
+
+  <artifactId>foundation-ext-archaius</artifactId>
+  <name>Java Chassis::Foundations::Ext-Archaius</name>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.netflix.archaius</groupId>
+      <artifactId>archaius-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- 使用 dependency 插件，在打包前把 jar 解压到你的编译目录 -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-commons-configuration</id>
+            <!-- 必须在 package 阶段之前执行，这里选 prepare-package -->
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>commons-configuration</groupId>
+                  <artifactId>commons-configuration</artifactId>
+                  <version>${commons-configuration.version}</version>
+                  <!-- 解压到哪里？直接解压到项目的 classes 目录，和你的代码混在一起 -->
+                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                  <!-- 覆盖已有文件 -->
+                  <overWrite>true</overWrite>
+                  <!-- 【必须】排除掉原来的签名文件，防止最终 jar 报 SecurityException -->
+                  <excludes>META-INF/*,digesterRules.xml,properties.dtd,PropertyList-1.0.dtd</excludes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>commons-lang</groupId>
+                  <artifactId>commons-lang</artifactId>
+                  <version>${commons-lang.version}</version>
+                  <!-- 解压到哪里？直接解压到项目的 classes 目录，和你的代码混在一起 -->
+                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                  <!-- 覆盖已有文件 -->
+                  <overWrite>true</overWrite>
+                  <!-- 【必须】排除掉原来的签名文件，防止最终 jar 报 SecurityException -->
+                  <excludes>META-INF/*,digesterRules.xml,properties.dtd,PropertyList-1.0.dtd</excludes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.netflix.archaius</groupId>
+                  <artifactId>archaius-core</artifactId>
+                  <version>${archaius.version}</version>
+                  <!-- 解压到哪里？直接解压到项目的 classes 目录，和你的代码混在一起 -->
+                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                  <!-- 覆盖已有文件 -->
+                  <overWrite>true</overWrite>
+                  <!-- 【必须】排除掉原来的签名文件，防止最终 jar 报 SecurityException -->
+                  <excludes>META-INF/*,sampleapp.properties</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <inherited>false</inherited>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

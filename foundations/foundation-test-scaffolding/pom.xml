@@ -32,13 +32,8 @@
       <artifactId>spring-context</artifactId>
     </dependency>
     <dependency>
-      <groupId>com.netflix.archaius</groupId>
-      <artifactId>archaius-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>commons-configuration</groupId>
-      <artifactId>commons-configuration</artifactId>
-      <scope>compile</scope>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-ext-archaius</artifactId>
     </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
