@@ -86,7 +86,7 @@
     <snakeyaml.version>2.5</snakeyaml.version>
     <swagger.version>2.2.41</swagger.version>
     <vertx.version>5.0.8</vertx.version>
-    <zipkin.version>3.5.1</zipkin.version>
+    <zipkin.version>3.6.1</zipkin.version>
     <zipkin-reporter.version>3.4.0</zipkin-reporter.version>
     <jetcd-core.version>0.8.6</jetcd-core.version>
     <consul-client.version>1.8.0</consul-client.version>
