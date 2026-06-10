@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -296,9 +297,15 @@ public class ServiceCenterDiscovery extends AbstractTask {
   }
 
   private synchronized void pullAllInstance() {
+    List<SubscriptionKey> emptyInstancesCache = new ArrayList<>();
     instancesCache.forEach((k, v) -> {
       pullInstance(k, v, true);
+      if (v.instancesCache.isEmpty()) {
+        emptyInstancesCache.add(k);
+      }
     });
+    emptyInstancesCache.forEach(instancesCache::remove);
+    emptyInstancesCache.clear();
   }
 
   private static String instanceToString(List<MicroserviceInstance> instances) {
