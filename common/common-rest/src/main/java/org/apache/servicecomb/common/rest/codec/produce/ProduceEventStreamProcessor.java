@@ -325,6 +325,7 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
 
   private byte[] readALineOfBytesFromBuffer(ByteBuf buffer) {
     matchingDelimiterIndex = 0;
+    int newLineStartPos = buffer.readerIndex();
     try (final ByteArrayOutputStream bos = new ByteArrayOutputStream(buffer.readableBytes())) {
       while (buffer.readableBytes() > 0 && matchingDelimiterIndex < lineDelimiterBytes.length) {
         final byte b = buffer.readByte();
@@ -336,7 +337,7 @@ public class ProduceEventStreamProcessor implements ProduceProcessor {
       if (matchingDelimiterIndex < lineDelimiterBytes.length) {
         // The newline character was not matched, so this part of the buffer does not constitute a complete line of
         // content and needs to remain in the buffer, waiting for the next segment to arrive for processing.
-        buffer.writeBytes(bos.toByteArray());
+        buffer.readerIndex(newLineStartPos);
         return null;
       }
       matchingDelimiterIndex = 0;
