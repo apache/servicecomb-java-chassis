@@ -36,6 +36,7 @@ public class TestHttpServerRequestUtils {
     HttpServerRequestInternal request = Mockito.mock(HttpServerRequestInternal.class);
     HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request, AllowForwardHeaders.NONE, null);
     Mockito.when(request.scheme()).thenReturn("http");
+    Mockito.when(request.uri()).thenReturn("http://localhost:8080");
     Mockito.when(context.request()).thenReturn(wrapper);
     Mockito.when(request.authority()).thenReturn(HostAndPort.create("localhost", 8080));
     RequestBody requestBody = Mockito.mock(RequestBody.class);
