@@ -39,6 +39,7 @@
     <module>handler-publickey-auth</module>
     <module>handler-router</module>
     <module>handler-governance</module>
+    <module>handler-localservice</module>
   </modules>
 
 </project>
